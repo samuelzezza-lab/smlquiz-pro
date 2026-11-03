@@ -19,3 +19,5 @@
 .load-more{display:flex;margin:18px auto 0;min-height:42px;align-items:center;justify-content:center}
 
 .digital-consent{display:flex;align-items:flex-start;gap:10px;margin:16px 0;padding:12px;border:1px solid var(--line);border-radius:12px;color:#c4cce0;font-size:12px;line-height:1.5}.digital-consent input{margin-top:2px;flex:0 0 auto}
+
+.share-preview{margin-bottom:18px;border-color:rgba(72,224,187,.35)}.share-preview small{color:var(--mint);letter-spacing:1.5px;font-size:10px}.share-preview h2{margin:8px 0}.share-preview strong{font:800 30px Manrope;color:var(--mint)}.share-preview p{color:var(--muted);margin:7px 0 0}
