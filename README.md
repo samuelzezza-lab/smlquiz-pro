@@ -27,7 +27,7 @@ The frontend uses the existing tables `facolta`, `materie`, `domande`, and their
 
 ## Current implementation status
 
-The first frontend foundation is committed:
+The first frontend foundation is committed and the GitHub Actions production build has passed:
 - Responsive dark OLED/glass interface and navigation.
 - Supabase Auth sign-in, sign-up, sign-out and password reset.
 - Live faculty, subject and year filters from the existing database.
