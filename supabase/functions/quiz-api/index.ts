@@ -212,16 +212,26 @@ Deno.serve(async (req: Request) => {
         ? await admin.from("quiz_attempt_questions").select("attempt_id,esito_corretto").in("attempt_id", attemptIds)
         : { data: [], error: null };
       if (answerError) throw answerError;
-      const scoreByAttempt = new Map<string, number>();
+      const statsByAttempt = new Map<string, { score: number; correct: number; wrong: number }>();
       for (const answer of answerRows ?? []) {
-        const score = scoreByAttempt.get(answer.attempt_id) ?? 0;
-        scoreByAttempt.set(answer.attempt_id, score + (answer.esito_corretto === true ? 1 : answer.esito_corretto === false ? -0.25 : 0));
+        const stats = statsByAttempt.get(answer.attempt_id) ?? { score: 0, correct: 0, wrong: 0 };
+        if (answer.esito_corretto === true) {
+          stats.correct++;
+          stats.score++;
+        } else if (answer.esito_corretto === false) {
+          stats.wrong++;
+          stats.score -= 0.25;
+        }
+        statsByAttempt.set(answer.attempt_id, stats);
       }
-      return json({ attempts: (data ?? []).map((x) => ({
-        id: x.id, subject: names.get(x.materia_id) ?? "Quiz",
-        score: Number((scoreByAttempt.get(x.id) ?? 0).toFixed(2)), total: x.total_questions,
-        date: x.completed_at ?? x.started_at, mode: x.mode,
-      })) });
+      return json({ attempts: (data ?? []).map((x) => {
+        const stats = statsByAttempt.get(x.id) ?? { score: 0, correct: 0, wrong: 0 };
+        return {
+          id: x.id, subject: names.get(x.materia_id) ?? "Quiz",
+          score: Number(stats.score.toFixed(2)), correct: stats.correct, wrong: stats.wrong,
+          total: x.total_questions, date: x.completed_at ?? x.started_at, mode: x.mode,
+        };
+      }) });
     }
 
     if (action === "start") {
