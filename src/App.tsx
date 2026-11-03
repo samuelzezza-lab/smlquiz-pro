@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { Activity, ArrowRight, Award, BarChart3, BookOpen, Calculator, CheckCircle2, ChevronDown, CircleHelp, Clock3, CreditCard, GraduationCap, LayoutDashboard, LogOut, Menu, Search, Settings, ShieldCheck, Sparkles, Target, Trophy, UserRound, WifiOff, X } from 'lucide-react'
+import { Activity, ArrowRight, Award, BarChart3, BookOpen, Brain, Calculator, CheckCircle2, ChevronDown, CircleHelp, Clock3, CreditCard, GraduationCap, LayoutDashboard, LogOut, Menu, Search, Settings, ShieldCheck, Sparkles, Target, Trophy, UserRound, WifiOff, X } from 'lucide-react'
 import { supabase, supabaseReady, requireSupabase } from './lib/supabase'
 import { languages, t, type Language } from './i18n'
 
