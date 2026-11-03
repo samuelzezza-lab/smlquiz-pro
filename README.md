@@ -1,51 +1,90 @@
 # SMLQUIZ Pro
 
-Web app React + TypeScript + Vite, connected to the existing Supabase project.
+Piattaforma di quiz universitari realizzata con React, TypeScript e Vite, collegata al progetto Supabase esistente **SML QUIZ**.
 
-## Start locally
+## Avvio locale
 
-1. Install Node.js 22 or newer.
-2. Copy `.env.example` to `.env.local`.
-3. Set the public Supabase URL and publishable/anon key.
-4. Run `npm install` and `npm run dev`.
+1. Usa Node.js 22 o successivo.
+2. Copia `.env.example` in `.env.local`.
+3. Inserisci l'URL Supabase e la chiave pubblica (publishable/anon).
+4. Esegui `npm install` e `npm run dev`.
 
-Never put a Supabase service-role key, Stripe secret key, or webhook secret in browser variables or source files.
+Non inserire mai nel frontend o in variabili `VITE_*` la service-role key di Supabase, la chiave segreta Stripe o il segreto del webhook.
 
-## Cloudflare Pages
+## Dati del catalogo verificati
+
+Nel database collegato risultano:
+- 25 facoltà
+- 551 materie
+- 541 quiz pronti da 10 domande
+- 5.410 domande
+
+## Funzioni presenti
+
+- Interfaccia responsive scura, navigazione laterale e barra superiore.
+- PWA con manifest, icone e service worker per la shell offline.
+- Supabase Auth: registrazione, accesso, uscita e recupero password.
+- Filtro facoltà, anno di corso e ricerca materie; caricamento progressivo dell'elenco.
+- Quiz a quattro opzioni, timer, spiegazioni e punteggio +1 / −0,25.
+- Salvataggio delle risposte lato server, storico, report TXT e condivisione WhatsApp/Telegram.
+- Limite di 5 quiz gratuiti al giorno e utilizzo crediti gestiti sul backend.
+- Portafoglio crediti, coupon, profilo, classifica, streak, badge e ripasso degli errori.
+- Segnalazione domande, cancellazione account e storico transazioni.
+- Calcolatore media ponderata con salvataggio locale.
+- Impostazioni accessibilità, ingrandimento testo, audio, fullscreen e debugger locale.
+- Dizionari di interfaccia per italiano, inglese, francese, tedesco, spagnolo e cinese; alcune stringhe delle schermate devono ancora essere tradotte integralmente.
+- Pagine informative legali, informative cookie e pannello preferenze.
+
+## Funzioni Supabase attive
+
+Il progetto esistente è `fgrwwauwnxvrcgqqpksp` nella regione `eu-west-2`.
+
+Edge Functions attive:
+- `quiz-cache` — lasciata invariata.
+- `quiz-api` — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report e classifica.
+- `stripe-checkout` — creazione Checkout protetta da flag server.
+- `stripe-webhook` — verifica firma Stripe e accredito idempotente dei crediti.
+
+Lo storico calcola il punteggio effettivo dalle risposte registrate, senza usare il solo numero di risposte corrette.
+
+## Configurazione Cloudflare Pages
 
 - Build command: `npm run build`
-- Output folder: `dist`
-- Root directory: `/`
-- Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` as build environment variables.
-- Optional later: `VITE_TURNSTILE_SITE_KEY`, `VITE_ADSENSE_CLIENT`, `VITE_APP_URL`.
+- Output directory: `dist`
+- Progetto Pages: `smlquiz-pro`
 
-## Existing Supabase project
+Il workflow GitHub Actions `Deploy SMLQUIZ Pro to Cloudflare Pages` richiede questi GitHub Actions secrets:
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+- `VITE_TURNSTILE_SITE_KEY` (quando configurato)
+- `VITE_ADSENSE_CLIENT` e `VITE_ADSENSE_SLOT` (solo dopo approvazione e consenso)
 
-Project: `fgrwwauwnxvrcgqqpksp` (SML QUIZ, eu-west-2).
+È presente anche il workflow CI per compilare il progetto ad ogni push. Il deploy Cloudflare è manuale e non va considerato completato finché i secrets non sono configurati e il workflow non termina con successo.
 
-The frontend uses the existing tables `facolta`, `materie`, `domande`, and their existing relations. Auth is Supabase Auth. The existing `quiz-cache` Edge Function is intentionally left unchanged.
+## Pagamenti Stripe
 
-## Current implementation status
+I pacchetti configurati sono 5 quiz a 1 €, 10 quiz a 2 € e 15 quiz a 3 €.
 
-The first frontend foundation is committed and the GitHub Actions production build has passed:
-- Responsive dark OLED/glass interface and navigation.
-- Supabase Auth sign-in, sign-up, sign-out and password reset.
-- Live faculty, subject and year filters from the existing database.
-- Four-answer quiz flow, explanations, scoring (+1 / -0.25), timer, keyboard controls and audio feedback.
-- Local autosave, local attempt history, TXT export, WhatsApp sharing.
-- Weighted grade calculator, language selector foundation, font zoom, fullscreen, offline indicator and PWA shell.
-- Basic settings and legal-information placeholders.
-- Automatic GitHub Actions production build check.
+I pagamenti live restano disattivati finché non viene abilitato esplicitamente il flag server `STRIPE_LIVE_ENABLED=true`. Per la configurazione servono, nei Supabase secrets:
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SIGNING_SECRET`
+- `APP_URL`
+- `APP_ORIGIN` (origine autorizzata per le richieste browser)
 
-## Not enabled yet
+Il frontend mantiene `VITE_STRIPE_CHECKOUT_ENABLED=false`. Non sono stati effettuati addebiti reali.
 
-Do not treat the site as commercially ready. The following need additional backend work, configuration, real testing, or owner-provided legal/business information:
-- Server-enforced daily free credits, paid-credit consumption, coupon redemption and anti-abuse rules.
-- Secure Stripe Checkout and webhook credit fulfillment. Existing live prices are referenced in the UI, but checkout is deliberately disabled and no live payment is performed.
-- Cloudflare Turnstile verification, AdSense approval/placement and cookie-consent integration.
-- Persistent quiz history, streaks, badges, weak-topic analytics, leaderboard, transaction receipts and account deletion workflow.
-- Full six-language translation of every screen.
-- Complete legal texts, fiscal identity, PEC, support contact and reviewed refund/withdrawal terms.
-- Automated security/performance testing and end-to-end testing.
+## Prima della pubblicazione al pubblico
 
-A browser-only implementation must never be trusted to grant or consume credits. These checks belong on authenticated server-side endpoints and database transactions.
+- Completare i dati del titolare nei documenti legali: nome/ragione sociale, P. IVA, indirizzo, PEC ed email di supporto.
+- Far verificare informativa privacy, cookie, condizioni, recesso e contenuti digitali.
+- Attivare e verificare Turnstile lato Supabase Auth.
+- Configurare la protezione delle password compromesse in Supabase Auth.
+- Verificare le impostazioni di consenso pubblicitario prima di caricare AdSense.
+- Configurare i secrets Cloudflare e completare un deploy verificato.
+- Eseguire test end-to-end con account dedicati e test pagamenti Stripe in modalità test prima di valutare l'attivazione live.
+
+## Sicurezza e dati esistenti
+
+Le tabelle esistenti restano nel progetto originale. Le operazioni che gestiscono risposte, crediti e acquisti passano dal backend autenticato. La funzione `quiz-cache` non viene modificata. Non sono state create nuove tabelle né è stato creato un nuovo progetto Supabase.
