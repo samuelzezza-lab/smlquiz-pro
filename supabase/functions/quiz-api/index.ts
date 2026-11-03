@@ -122,7 +122,24 @@ Deno.serve(async (req: Request) => {
     }
     if (action === "delete-account") {
       if (body.confirmation !== "ELIMINA" || typeof body.password !== "string" || body.password.length < 8) return json({ error: "Conferma la cancellazione e inserisci la password attuale" }, 400);
-      const { data: verified, error: verifyError } = await admin.auth.signInWithPassword({ email: authData.user.email ?? "", password: body.password });
+      let publishableKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY") ?? "";
+      const publishableKeysJson = Deno.env.get("SUPABASE_PUBLISHABLE_KEYS");
+      if (publishableKeysJson) {
+        try {
+          const keys = JSON.parse(publishableKeysJson) as Record<string, unknown>;
+          if (typeof keys.default === "string") publishableKey = keys.default;
+        } catch {
+          return json({ error: "Configurazione autenticazione non valida" }, 500);
+        }
+      }
+      if (!publishableKey) return json({ error: "Configurazione autenticazione incompleta" }, 500);
+      const verifier = createClient(url, publishableKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+      const { data: verified, error: verifyError } = await verifier.auth.signInWithPassword({
+        email: authData.user.email ?? "",
+        password: body.password,
+      });
       if (verifyError || verified.user?.id !== userId) return json({ error: "Password non corretta" }, 401);
       const { data: attempts, error: attemptsError } = await admin.from("quiz_attempts").select("id").eq("user_id", userId);
       if (attemptsError) throw attemptsError;
@@ -190,9 +207,19 @@ Deno.serve(async (req: Request) => {
         : { data: [], error: null };
       if (subjectsError) throw subjectsError;
       const names = new Map((subjects ?? []).map((s) => [s.id, s.nome]));
+      const attemptIds = (data ?? []).map((x) => x.id);
+      const { data: answerRows, error: answerError } = attemptIds.length
+        ? await admin.from("quiz_attempt_questions").select("attempt_id,esito_corretto").in("attempt_id", attemptIds)
+        : { data: [], error: null };
+      if (answerError) throw answerError;
+      const scoreByAttempt = new Map<string, number>();
+      for (const answer of answerRows ?? []) {
+        const score = scoreByAttempt.get(answer.attempt_id) ?? 0;
+        scoreByAttempt.set(answer.attempt_id, score + (answer.esito_corretto === true ? 1 : answer.esito_corretto === false ? -0.25 : 0));
+      }
       return json({ attempts: (data ?? []).map((x) => ({
         id: x.id, subject: names.get(x.materia_id) ?? "Quiz",
-        score: Number(x.score ?? 0), total: x.total_questions,
+        score: Number((scoreByAttempt.get(x.id) ?? 0).toFixed(2)), total: x.total_questions,
         date: x.completed_at ?? x.started_at, mode: x.mode,
       })) });
     }
