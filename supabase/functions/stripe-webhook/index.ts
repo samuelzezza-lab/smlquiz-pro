@@ -16,13 +16,20 @@ Deno.serve(async(req:Request)=>{
   if(!["checkout.session.completed","checkout.session.async_payment_succeeded"].includes(event.type))return Response.json({received:true});
   const session=event.data?.object;
   if(session?.mode!=="payment"||session?.payment_status!=="paid")return Response.json({received:true,ignored:true});
-  const userId=String(session.metadata?.user_id??session.client_reference_id??"");
-  const credits=Number(session.metadata?.credits??0);
-  const priceId=String(session.metadata?.price_id??"");
+  const metadata=session.metadata??"";
+  const userId=String(metadata.user_id??session.client_reference_id??"");
+  const credits=Number(metadata.credits??0);
+  const priceId=String(metadata.price_id??"");
   const amount=Number(session.amount_total??0);
-  if(!userId||!allowed.has(credits)||allowed.get(credits)!==amount||session.currency!=="eur"||!priceId)return new Response("Invalid checkout metadata",400);
+  const selected=allowed.get(priceId);
+  const consentAt=Date.parse(String(metadata.digital_content_consent_at??""));
+  if(!userId||!selected||selected.credits!==credits||selected.amount!==amount||session.currency!=="eur"||
+     metadata.digital_content_consent!=="true"||!Number.isFinite(consentAt)||consentAt>Date.now()+60_000||
+     (session.client_reference_id&&session.client_reference_id!==userId)){
+   return new Response("Invalid checkout metadata",{status:400});
+  }
   const paymentIntent=typeof session.payment_intent==="string"?session.payment_intent:session.payment_intent?.id;
-  if(!paymentIntent)return new Response("Missing payment intent",400);
+  if(!paymentIntent)return new Response("Missing payment intent",{status:400});
   const admin=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
   const {data,error}=await admin.rpc("add_quiz_credits",{p_user_id:userId,p_credits:credits,p_stripe_event_id:event.id,p_payment_intent_id:paymentIntent,p_description:"Acquisto pacchetto "+credits+" quiz"});
   if(error){console.error("Credit fulfillment failed",error);return new Response("Credit fulfillment failed",{status:500});}
