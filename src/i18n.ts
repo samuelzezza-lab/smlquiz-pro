@@ -294,7 +294,7 @@ const zh:Record<string,string>={
  backToLogin:'返回登录',sendLink:'发送链接',waitThreeSeconds:'请等待 3 秒…',
  cookieTitle:'隐私很重要',cookieDescription:'我们仅使用必要的技术存储。未经同意，广告工具将保持关闭。',
  sessionSaved:'已保存的学习进度安全。',about:'关于我们',
- sharedResultLabel:'分享的成绩',sharedCorrect:'道正确',
+ sharedResultLabel:'分享的成绩',sharedCorrect:'答对',
  loadMore:'加载更多科目',
  digitalContentConsent:'我请求立即提供数字内容，并确认一旦开始提供，在法律规定的情况下我可能失去撤回权。',digitalConsentRequired:'请先确认数字内容所需的同意。'
 }
