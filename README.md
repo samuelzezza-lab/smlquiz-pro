@@ -41,10 +41,10 @@ Nel database collegato risultano:
 Il progetto esistente è `fgrwwauwnxvrcgqqpksp` nella regione `eu-west-2`.
 
 Edge Functions attive:
-- `quiz-cache` — lasciata invariata.
-- `quiz-api` — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report e classifica.
-- `stripe-checkout` — creazione Checkout protetta da flag server.
-- `stripe-webhook` — verifica firma Stripe e accredito idempotente dei crediti.
+- `quiz-cache` v12 — lasciata invariata.
+- `quiz-api` v8 — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report e classifica.
+- `stripe-checkout` v5 — creazione Checkout protetta da flag server e consenso digitale verificato.
+- `stripe-webhook` v6 — verifica firma Stripe, pacchetto/importo/valuta e consenso prima dell'accredito idempotente dei crediti.
 
 Lo storico calcola il punteggio effettivo dalle risposte registrate, senza usare il solo numero di risposte corrette.
 
@@ -62,7 +62,7 @@ Il workflow GitHub Actions `Deploy SMLQUIZ Pro to Cloudflare Pages` richiede que
 - `VITE_TURNSTILE_SITE_KEY` (quando configurato)
 - `VITE_ADSENSE_CLIENT` e `VITE_ADSENSE_SLOT` (solo dopo approvazione e consenso)
 
-È presente anche il workflow CI per compilare il progetto ad ogni push. Il deploy Cloudflare è manuale e non va considerato completato finché i secrets non sono configurati e il workflow non termina con successo.
+È presente il workflow CI per compilare il progetto ad ogni push e un controllo Deno dedicato per verificare il codice delle tre Edge Functions. Il deploy Cloudflare è manuale e non va considerato completato finché i secrets non sono configurati e il workflow non termina con successo.
 
 ## Pagamenti Stripe
 
