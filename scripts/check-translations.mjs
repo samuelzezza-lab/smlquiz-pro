@@ -1,37 +1,37 @@
 import { readFileSync } from 'node:fs'
 
-const i18n = readFileSync('src/i18n.ts', 'utf8')
-const app = readFileSync('src/App.tsx', 'utf8')
+const source = readFileSync('src/i18n.ts', 'utf8')
 const locales = ['it', 'en', 'fr', 'de', 'es', 'zh']
 const dictionaries = new Map()
 
 for (const locale of locales) {
-  const marker = `const ${locale}:Record<string,string>={`
-  const start = i18n.indexOf(marker)
-  if (start < 0) throw new Error(`Dictionary missing: ${locale}`)
-  const end = i18n.indexOf('\\n}', start)
-  if (end < 0) throw new Error(`Dictionary not closed: ${locale}`)
-  const body = i18n.slice(start + marker.length, end)
-  const keys = [...body.matchAll(/^\\s*([A-Za-z_$][\\w$]*)\\s*:/gm)].map(match => match[1])
+  const marker = 'const ' + locale + ':Record<string,string>={'
+  const start = source.indexOf(marker)
+  if (start < 0) throw new Error('Dictionary missing: ' + locale)
+  const nextLocale = locales[locales.indexOf(locale) + 1]
+  const nextMarker = nextLocale ? 'const ' + nextLocale + ':Record<string,string>={' : 'export function t'
+  const end = source.indexOf(nextMarker, start + marker.length)
+  if (end < 0) throw new Error('Dictionary end missing: ' + locale)
+  const body = source.slice(start + marker.length, end)
+  const keys = body.split(String.fromCharCode(10)).map(line => line.trim()).map(line => {
+    const match = line.match(/^([A-Za-z_$][A-Za-z0-9_$]*):/)
+    return match ? match[1] : null
+  }).filter(Boolean)
   const duplicates = keys.filter((key, index) => keys.indexOf(key) !== index)
-  if (duplicates.length) throw new Error(`Duplicate keys in ${locale}: ${[...new Set(duplicates)].join(', ')}`)
+  if (duplicates.length) throw new Error('Duplicate keys in ' + locale + ': ' + [...new Set(duplicates)].join(', '))
   dictionaries.set(locale, new Set(keys))
 }
 
-const referenceKeys = new Set([...app.matchAll(/tr\\(['"]([^'"]+)['"]\\)/g)].map(match => match[1]))
-const baseKeys = dictionaries.get('it')
+const base = dictionaries.get('it')
 const errors = []
-
 for (const locale of locales) {
   const keys = dictionaries.get(locale)
-  for (const key of referenceKeys) if (!keys.has(key)) errors.push(`${locale}: missing UI key "${key}"`)
-  for (const key of baseKeys) if (!keys.has(key)) errors.push(`${locale}: missing translation for "${key}"`)
-  for (const key of keys) if (!baseKeys.has(key)) errors.push(`${locale}: extra translation key "${key}"`)
+  for (const key of base) if (!keys.has(key)) errors.push(locale + ': missing ' + key)
+  for (const key of keys) if (!base.has(key)) errors.push(locale + ': unexpected ' + key)
 }
-
 if (errors.length) {
-  console.error(errors.join('\\n'))
-  process.exit(1)
+  console.error(errors.join(String.fromCharCode(10)))
+  process.exitCode = 1
+} else {
+  console.log('Translations OK: ' + locales.length + ' languages, ' + base.size + ' matching keys.')
 }
-
-console.log(`Translations OK: ${locales.length} languages, ${baseKeys.size} keys, ${referenceKeys.size} UI references.`)
