@@ -1,0 +1,25 @@
+name: Supabase Edge Functions
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/functions/**"
+      - ".github/workflows/edge-functions.yml"
+  pull_request:
+    paths:
+      - "supabase/functions/**"
+      - ".github/workflows/edge-functions.yml"
+jobs:
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+      - name: Check quiz API
+        run: deno check supabase/functions/quiz-api/index.ts
+      - name: Check Stripe checkout
+        run: deno check supabase/functions/stripe-checkout/index.ts
+      - name: Check Stripe webhook
+        run: deno check supabase/functions/stripe-webhook/index.ts
