@@ -120,6 +120,36 @@ Deno.serve(async (req: Request) => {
       if (achievements.error) throw achievements.error;
       return json({ streak: streak.data ?? { current_streak: 0, longest_streak: 0, last_study_date: null }, achievements: achievements.data ?? [] });
     }
+    if (action === "delete-account") {
+      if (body.confirmation !== "ELIMINA" || typeof body.password !== "string" || body.password.length < 8) return json({ error: "Conferma la cancellazione e inserisci la password attuale" }, 400);
+      const { data: verified, error: verifyError } = await admin.auth.signInWithPassword({ email: authData.user.email ?? "", password: body.password });
+      if (verifyError || verified.user?.id !== userId) return json({ error: "Password non corretta" }, 401);
+      const { data: attempts, error: attemptsError } = await admin.from("quiz_attempts").select("id").eq("user_id", userId);
+      if (attemptsError) throw attemptsError;
+      const attemptIds = (attempts ?? []).map((x) => x.id);
+      if (attemptIds.length) {
+        const { error } = await admin.from("quiz_attempt_questions").delete().in("attempt_id", attemptIds);
+        if (error) throw error;
+      }
+      const deletions = await Promise.all([
+        admin.from("quiz_credit_ledger").delete().eq("user_id", userId),
+        admin.from("quiz_coupon_redemptions").delete().eq("user_id", userId),
+        admin.from("question_reports").delete().eq("user_id", userId),
+        admin.from("user_achievements").delete().eq("user_id", userId),
+        admin.from("user_streaks").delete().eq("user_id", userId),
+        admin.from("user_profiles").delete().eq("user_id", userId),
+        admin.from("user_quiz_wallets").delete().eq("user_id", userId),
+        admin.from("risposte_utenti").delete().eq("user_id", userId),
+      ]);
+      const failed = deletions.find((x) => x.error);
+      if (failed?.error) throw failed.error;
+      const { error: attemptsDeleteError } = await admin.from("quiz_attempts").delete().eq("user_id", userId);
+      if (attemptsDeleteError) throw attemptsDeleteError;
+      const { error: deleteUserError } = await admin.auth.admin.deleteUser(userId);
+      if (deleteUserError) throw deleteUserError;
+      return json({ deleted: true });
+    }
+
     if (action === "coupon") {
       const code = String(body.code ?? "").trim().toUpperCase();
       if (!code || code.length > 64) return json({ error: "Inserisci un codice valido" }, 400);
