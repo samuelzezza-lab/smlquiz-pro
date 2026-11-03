@@ -16,11 +16,16 @@ Deno.serve(async(req:Request)=>{
  try{
   const body=await req.json(),priceId=String(body.priceId??""),selected=packages.get(priceId);
   if(!selected)return reply({error:"Pacchetto non riconosciuto"},400);
+  const consentTimestamp=Date.parse(String(body.digitalContentConsentAt??""));
+  if(body.digitalContentConsent!==true||!Number.isFinite(consentTimestamp)||consentTimestamp>Date.now()+60_000||Date.now()-consentTimestamp>10*60_000){
+   return reply({error:"Conferma il consenso richiesto per i contenuti digitali prima di procedere."},400);
+  }
   const origin=new URL(appUrl).origin;
   const form=new URLSearchParams();
   form.set("mode","payment");form.set("line_items[0][price]",priceId);form.set("line_items[0][quantity]","1");
   form.set("client_reference_id",authData.user.id);
   form.set("metadata[user_id]",authData.user.id);form.set("metadata[credits]",String(selected.credits));form.set("metadata[price_id]",priceId);
+  form.set("metadata[digital_content_consent]","true");form.set("metadata[digital_content_consent_at]",new Date(consentTimestamp).toISOString());
   form.set("success_url",origin+"/?checkout=success&session_id={CHECKOUT_SESSION_ID}");
   form.set("cancel_url",origin+"/?checkout=cancelled");
   form.set("billing_address_collection","auto");
