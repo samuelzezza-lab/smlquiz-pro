@@ -73,7 +73,39 @@ export default function App(){
 
 
 
- async function startQuiz(s:Subject){if(!user){setPage('account');notify('Accedi per iniziare un quiz.');return}if(!supabase)return;const available=quizSets.filter(q=>q.materia_id===s.id).sort((a,b)=>a.quiz_number-b.quiz_number);if(!available.length){notify('Non ci sono quiz pronti per questa materia.');return}setBusy(true);setSubject(s);try{const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'start',materiaId:s.id,quizSetId:available[0].id,idempotencyKey:crypto.randomUUID()}});if(error)throw error;if(data?.error)throw new Error(data.error);setAttemptId(data.attemptId);setQuestions(data.questions as Question[]);setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);setWrongQuestions([]);setReviewMode(false);setSeconds((data.questions?.length||10)*45);setStarted(Date.now());setPage('study');void refreshWallet()}catch(err){const message=err instanceof Error?err.message:'Errore durante il caricamento delle domande.';notify(message);if(message.toLowerCase().includes('terminato i 5 quiz')||message.toLowerCase().includes('esaurito'))setUpsellOpen(true)}finally{setBusy(false)}}
+ async function startQuiz(s:Subject){
+  if(!user){setPage('account');notify('Accedi per iniziare un quiz.');return}
+  if(!supabase)return;
+  const available=quizSets.filter(q=>q.materia_id===s.id&&q.status==='ready'&&q.question_count===10);
+  setBusy(true);setSubject(s);
+  try{
+   let quizSetId=available.length?available[Math.floor(Math.random()*available.length)].id:'';
+   if(!quizSetId){
+    notify('Sto preparando il primo quiz di questa materia con l’IA…');
+    for(let attempt=0;attempt<8&&!quizSetId;attempt++){
+     const generated=await supabase.functions.invoke('quiz-cache',{body:{action:'get_quiz',materia_id:s.id,quiz_number:1}});
+     if(generated.error)throw generated.error;
+     if(generated.data?.error)throw new Error(generated.data.error);
+     if(generated.data?.quiz_set_id){quizSetId=String(generated.data.quiz_set_id);break}
+     if(generated.data?.ready===false||generated.data?.status==='pending'||generated.data?.status==='generating'){
+      await new Promise(resolve=>window.setTimeout(resolve,3500));
+      continue;
+     }
+     throw new Error('Il generatore non ha restituito un quiz pronto. Riprova tra poco.');
+    }
+    if(!quizSetId)throw new Error('La generazione è ancora in corso. Riprova tra qualche secondo.');
+    setQuizSets(v=>[...v.filter(q=>q.id!==quizSetId),{id:quizSetId,materia_id:s.id,quiz_number:1,status:'ready',question_count:10}]);
+   }
+   const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'start',materiaId:s.id,quizSetId,idempotencyKey:crypto.randomUUID()}});
+   if(error)throw error;
+   if(data?.error)throw new Error(data.error);
+   setAttemptId(data.attemptId);setQuestions(data.questions as Question[]);setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);setWrongQuestions([]);setReviewMode(false);setSeconds((data.questions?.length||10)*45);setStarted(Date.now());setPage('study');void refreshWallet()
+  }catch(err){
+   const message=err instanceof Error?err.message:'Errore durante il caricamento delle domande.';
+   notify(message);
+   if(message.toLowerCase().includes('terminato i 5 quiz')||message.toLowerCase().includes('esaurito'))setUpsellOpen(true)
+  }finally{setBusy(false)}
+ }
  async function submit(){if(!choice||!current||revealed)return;if(reviewMode){const good=choice===current.risposta_corretta;setAnswerFeedback({correct:good,correctAnswer:current.risposta_corretta||'',explanation:current.spiegazione||null});if(good)setCorrect(v=>v+1);else setWrong(v=>v+1);setRevealed(true);return}if(!attemptId||!supabase)return;setBusy(true);try{const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'answer',attemptId,questionId:current.id,selectedAnswer:choice}});if(error)throw error;if(data?.error)throw new Error(data.error);const good=Boolean(data.correct);setAnswerFeedback({correct:good,correctAnswer:data.correctAnswer,explanation:data.explanation});if(good)setCorrect(v=>v+1);else{setWrong(v=>v+1);setWrongQuestions(v=>[...v.filter(q=>q.id!==current.id),{...current,risposta_corretta:data.correctAnswer,spiegazione:data.explanation}])}try{const ctx=new AudioContext(),osc=ctx.createOscillator(),gain=ctx.createGain();osc.connect(gain);gain.connect(ctx.destination);osc.frequency.value=good?760:220;gain.gain.value=.035;osc.start();osc.stop(ctx.currentTime+.13)}catch{}setRevealed(true)}catch(err){notify(err instanceof Error?err.message:'Non è stato possibile salvare la risposta.')}finally{setBusy(false)}}
  function next(){if(index<questions.length-1){setIndex(v=>v+1);setChoice(null);setAnswerFeedback(null);setRevealed(false)}else void finish()}
  async function finish(){if(reviewMode){setQuestions([]);setStarted(null);setReviewMode(false);setPage('progress');notify('Ripasso completato.');return}if(!attemptId||!supabase)return;try{const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'finish',attemptId}});if(error)throw error;if(data?.error)throw new Error(data.error);const item:Attempt={id:attemptId,subject:subject?.nome||'Quiz',score:Number(data.score),total:Number(data.total),correct:Number(data.correct),wrong:Number(data.wrong),date:new Date().toISOString()};setHistory(v=>[item,...v.filter(x=>x.id!==item.id)]);setReviewQuestions(wrongQuestions);setWrongQuestions([]);setQuestions([]);setStarted(null);setAttemptId(null);setPage('progress');notify('Quiz completato: '+item.score.toFixed(2)+' punti.');void refreshWallet()}catch(err){notify(err instanceof Error?err.message:'Errore nel salvataggio del quiz.')}}
