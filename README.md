@@ -26,6 +26,7 @@ Nel database collegato risultano:
 - Supabase Auth: registrazione, accesso, uscita e recupero password.
 - Filtro facoltà, anno di corso e ricerca materie; caricamento progressivo dell'elenco.
 - Quiz a quattro opzioni, timer, spiegazioni e punteggio +1 / −0,25.
+- Generazione dinamica dei quiz mancanti tramite Anthropic, usando la Edge Function esistente `quiz-cache` (non modificata), con controllo qualità, duplicati e salvataggio nel catalogo.
 - Salvataggio delle risposte lato server, storico, report TXT e condivisione WhatsApp/Telegram.
 - Limite di 5 quiz gratuiti al giorno e utilizzo crediti gestiti sul backend.
 - Portafoglio crediti, coupon, profilo, classifica, streak, badge e ripasso degli errori.
