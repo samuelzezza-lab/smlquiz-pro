@@ -13,10 +13,7 @@ for (const locale of locales) {
   const end = source.indexOf(nextMarker, start + marker.length)
   if (end < 0) throw new Error('Dictionary end missing: ' + locale)
   const body = source.slice(start + marker.length, end)
-  const keys = body.split(String.fromCharCode(10)).map(line => line.trim()).map(line => {
-    const match = line.match(/^([A-Za-z_$][A-Za-z0-9_$]*):/)
-    return match ? match[1] : null
-  }).filter(Boolean)
+  const keys = [...body.matchAll(/(?:^|,|\\n)\\s*([A-Za-z_$][A-Za-z0-9_$]*)\\s*:/g)].map(match => match[1])
   const duplicates = keys.filter((key, index) => keys.indexOf(key) !== index)
   if (duplicates.length) throw new Error('Duplicate keys in ' + locale + ': ' + [...new Set(duplicates)].join(', '))
   dictionaries.set(locale, new Set(keys))
