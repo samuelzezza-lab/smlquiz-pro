@@ -15,3 +15,5 @@
 .turnstile-wrap{display:flex;justify-content:center;min-height:65px;margin:10px 0}.turnstile-warning{font-size:9px;color:#e6b877;border:1px solid #e6b87733;background:#e6b8770b;border-radius:7px;padding:9px;margin:10px 0}.ad-slot{min-height:90px;margin:0 0 28px;padding:9px;border:1px dashed #72809a2a;border-radius:9px;text-align:center}.ad-slot>small{display:block;color:#596987;font-size:7px;letter-spacing:1.3px;margin-bottom:7px}
 
 .legal-modal{position:relative;width:min(100%,760px);max-height:min(82vh,900px);overflow:auto;padding:28px}.legal-modal h2{font:800 23px Manrope;margin:12px 0 16px}.legal-draft-note{padding:10px 12px;border:1px solid #e7b66d44;background:#e7b66d0d;border-radius:8px;color:#e7bd83;font-size:9px;line-height:1.5;margin-bottom:18px}.legal-section{padding:12px 0;border-top:1px solid var(--line)}.legal-section h3{font:700 12px Manrope;margin:0 0 6px;color:#e8edfa}.legal-section p{font-size:10px;line-height:1.7;color:#9eabc4;margin:0}.legal-modal>.primary{margin-top:16px}.legal-card .simple-link{margin-top:10px}
+
+.load-more{display:flex;margin:18px auto 0;min-height:42px;align-items:center;justify-content:center}
