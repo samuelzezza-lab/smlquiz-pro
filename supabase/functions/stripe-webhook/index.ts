@@ -1,5 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-const allowed = new Map([[5,100],[10,200],[15,300]]);
+const allowed = new Map([['price_1UWEWpBCybXKHSfREO6VERj5',{credits:5,amount:100}],['price_1UWEYHBCybXKHSfRXIqOpDZU',{credits:10,amount:200}],['price_1UWEZwBCybXKHSfRuy0N3K0X',{credits:15,amount:300}]]);
 function equalHex(a:string,b:string){if(a.length!==b.length)return false;let out=0;for(let i=0;i<a.length;i++)out|=a.charCodeAt(i)^b.charCodeAt(i);return out===0;}
 async function signature(secret:string,timestamp:string,body:string){const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);const signed=await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(timestamp+"."+body));return [...new Uint8Array(signed)].map(x=>x.toString(16).padStart(2,"0")).join("");}
 Deno.serve(async(req:Request)=>{
