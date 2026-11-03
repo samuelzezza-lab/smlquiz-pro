@@ -83,6 +83,7 @@ const it:Record<string,string>={
  upsellDescription:'Puoi tornare domani oppure aggiungere crediti al tuo account.',
  backToStudy:'Torna allo studio',
  legalDraftWarning:'Questa è una bozza: completa i dati mancanti e richiedi una revisione legale prima della pubblicazione.'
+ skipToContent:'Vai al contenuto principale',
 }
 const en:Record<string,string>={
  overview:'Overview',study:'Study area',progress:'My progress',account:'Account',settings:'Settings',
@@ -163,6 +164,7 @@ const en:Record<string,string>={
  upsellDescription:'You can come back tomorrow or add credits to your account.',
  backToStudy:'Back to study',
  legalDraftWarning:'This is a draft: complete the missing details and obtain legal review before publication.'
+ skipToContent:'Skip to main content',
 }
 const fr:Record<string,string>={
  overview:'Vue générale',study:'Espace étude',progress:'Mes progrès',account:'Compte',settings:'Paramètres',
@@ -243,6 +245,7 @@ const fr:Record<string,string>={
  upsellDescription:'Vous pouvez revenir demain ou ajouter des crédits à votre compte.',
  backToStudy:'Retour à l’étude',
  legalDraftWarning:'Ceci est un brouillon : complétez les informations manquantes et faites vérifier le document avant publication.'
+ skipToContent:'Aller au contenu principal',
 }
 const de:Record<string,string>={
  overview:'Übersicht',study:'Lernbereich',progress:'Mein Fortschritt',account:'Konto',settings:'Einstellungen',
@@ -323,6 +326,7 @@ const de:Record<string,string>={
  upsellDescription:'Du kannst morgen wiederkommen oder Guthaben hinzufügen.',
  backToStudy:'Zurück zum Lernen',
  legalDraftWarning:'Dies ist ein Entwurf: Ergänze die fehlenden Angaben und lasse ihn vor der Veröffentlichung rechtlich prüfen.'
+ skipToContent:'Zum Hauptinhalt springen',
 }
 const es:Record<string,string>={
  overview:'Resumen',study:'Zona de estudio',progress:'Mi progreso',account:'Cuenta',settings:'Ajustes',
@@ -403,6 +407,7 @@ const es:Record<string,string>={
  upsellDescription:'Puedes volver mañana o añadir créditos a tu cuenta.',
  backToStudy:'Volver al estudio',
  legalDraftWarning:'Este es un borrador: completa los datos que faltan y solicita una revisión legal antes de publicar.'
+ skipToContent:'Ir al contenido principal',
 }
 const zh:Record<string,string>={
  overview:'总览',study:'学习区',progress:'学习进度',account:'账户',settings:'设置',
@@ -483,6 +488,7 @@ const zh:Record<string,string>={
  upsellDescription:'你可以明天再来，或为账户充值积分。',
  backToStudy:'返回学习区',
  legalDraftWarning:'此文件为草稿：请补充缺失信息，并在发布前进行法律审查。'
+ skipToContent:'跳转到主要内容',
 }
 const dictionaries:Record<Language,Record<string,string>>={it,en,fr,de,es,zh}
 export function t(lang:Language,key:string){return dictionaries[lang][key]??it[key]??key}
