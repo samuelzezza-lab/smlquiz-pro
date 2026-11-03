@@ -125,13 +125,13 @@ Deno.serve(async (req: Request) => {
       }
       const attemptId = started.attempt_id as string;
       const { data: rows, error: rowsError } = await admin.from("quiz_attempt_questions")
-        .select("domanda_id,position").eq("attempt_id", attemptId).order("position");
+        .select("domanda_id,position,domande!inner(id,testo_domanda,opzioni)")
+        .eq("attempt_id", attemptId).order("position");
       if (rowsError) throw rowsError;
-      const questionMap = new Map(selected.map((q) => [q.id, q]));
       const questions = (rows ?? []).map((row) => {
-        const q = questionMap.get(row.domanda_id);
-        return q ? { id: q.id, testo_domanda: q.testo_domanda, opzioni: q.opzioni, position: row.position } : null;
-      }).filter(Boolean);
+        const q = row.domande as unknown as { id: string; testo_domanda: string; opzioni: string[] };
+        return { id: q.id, testo_domanda: q.testo_domanda, opzioni: q.opzioni, position: row.position };
+      });
       return json({ attemptId, accessSource: started.access_source, existing: started.existing, questions });
     }
 
