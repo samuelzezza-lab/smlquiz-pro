@@ -3,7 +3,6 @@ import { readFileSync } from 'node:fs'
 const source = readFileSync('src/i18n.ts', 'utf8')
 const locales = ['it', 'en', 'fr', 'de', 'es', 'zh']
 const dictionaries = new Map()
-const keyPattern = String.raw\`(?:^|,|\\n)\\s*([A-Za-z_$][A-Za-z0-9_$]*)\\s*:\`
 
 for (const locale of locales) {
   const marker = 'const ' + locale + ':Record<string,string>={'
@@ -14,7 +13,7 @@ for (const locale of locales) {
   const end = source.indexOf(nextMarker, start + marker.length)
   if (end < 0) throw new Error('Dictionary end missing: ' + locale)
   const body = source.slice(start + marker.length, end)
-  const keys = [...body.matchAll(new RegExp(keyPattern, 'g'))].map(match => match[1])
+  const keys = [...body.matchAll(/(?:^|,|\n)\s*([A-Za-z_$][A-Za-z0-9_$]*)\s*:/g)].map(match => match[1])
   const duplicates = keys.filter((key, index) => keys.indexOf(key) !== index)
   if (duplicates.length) throw new Error('Duplicate keys in ' + locale + ': ' + [...new Set(duplicates)].join(', '))
   dictionaries.set(locale, new Set(keys))
