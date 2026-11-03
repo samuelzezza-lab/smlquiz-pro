@@ -49,7 +49,8 @@ const it:Record<string,string>={
  backToLogin:'Torna all’accesso',sendLink:'Invia link',waitThreeSeconds:'Attendi 3 secondi…',
  cookieTitle:'La tua privacy conta',cookieDescription:'Usiamo solo cookie tecnici necessari. Eventuali strumenti pubblicitari resteranno disattivati finché non darai il consenso.',
  sessionSaved:'I tuoi progressi salvati sono al sicuro.',about:'Chi siamo',
- loadMore:'Mostra altre materie'
+ loadMore:'Mostra altre materie',
+ digitalContentConsent:'Chiedo l’avvio immediato della fornitura dei contenuti digitali e riconosco che, una volta iniziata, potrei perdere il diritto di recesso nei casi previsti dalla legge.',digitalConsentRequired:'Conferma il consenso richiesto per i contenuti digitali prima di procedere.'
 }
 const en:Record<string,string>={
  overview:'Overview',study:'Study area',progress:'My progress',account:'Account',settings:'Settings',
@@ -96,7 +97,8 @@ const en:Record<string,string>={
  backToLogin:'Back to sign in',sendLink:'Send link',waitThreeSeconds:'Wait 3 seconds…',
  cookieTitle:'Your privacy matters',cookieDescription:'We use only necessary technical storage. Advertising tools remain disabled until you consent.',
  sessionSaved:'Your saved progress is safe.',about:'About us',
- loadMore:'Load more subjects'
+ loadMore:'Load more subjects',
+ digitalContentConsent:'I request immediate delivery of the digital content and acknowledge that, once delivery begins, I may lose my withdrawal right where the law provides.',digitalConsentRequired:'Please confirm the required digital-content consent before continuing.'
 }
 const fr:Record<string,string>={
  overview:'Vue générale',study:'Espace étude',progress:'Mes progrès',account:'Compte',settings:'Paramètres',
@@ -143,7 +145,8 @@ const fr:Record<string,string>={
  backToLogin:'Retour à la connexion',sendLink:'Envoyer le lien',waitThreeSeconds:'Attendez 3 secondes…',
  cookieTitle:'Votre vie privée compte',cookieDescription:'Seuls les stockages techniques nécessaires sont utilisés. La publicité reste désactivée sans consentement.',
  sessionSaved:'Vos progrès enregistrés sont en sécurité.',about:'À propos',
- loadMore:'Afficher plus de matières'
+ loadMore:'Afficher plus de matières',
+ digitalContentConsent:'Je demande le début immédiat de la fourniture du contenu numérique et reconnais qu’une fois commencée, je peux perdre mon droit de rétractation lorsque la loi le prévoit.',digitalConsentRequired:'Veuillez confirmer le consentement requis pour le contenu numérique.'
 }
 const de:Record<string,string>={
  overview:'Übersicht',study:'Lernbereich',progress:'Mein Fortschritt',account:'Konto',settings:'Einstellungen',
@@ -190,7 +193,8 @@ const de:Record<string,string>={
  backToLogin:'Zurück zur Anmeldung',sendLink:'Link senden',waitThreeSeconds:'Warte 3 Sekunden…',
  cookieTitle:'Deine Privatsphäre ist wichtig',cookieDescription:'Wir verwenden nur notwendige technische Speicherung. Werbung bleibt ohne Zustimmung deaktiviert.',
  sessionSaved:'Dein gespeicherter Fortschritt ist sicher.',about:'Über uns',
- loadMore:'Weitere Fächer laden'
+ loadMore:'Weitere Fächer laden',
+ digitalContentConsent:'Ich verlange den sofortigen Beginn der Bereitstellung digitaler Inhalte und bestätige, dass ich nach Beginn mein Widerrufsrecht verlieren kann, soweit gesetzlich vorgesehen.',digitalConsentRequired:'Bitte bestätige die erforderliche Zustimmung zu digitalen Inhalten.'
 }
 const es:Record<string,string>={
  overview:'Resumen',study:'Zona de estudio',progress:'Mi progreso',account:'Cuenta',settings:'Ajustes',
@@ -237,7 +241,8 @@ const es:Record<string,string>={
  backToLogin:'Volver al acceso',sendLink:'Enviar enlace',waitThreeSeconds:'Espera 3 segundos…',
  cookieTitle:'Tu privacidad importa',cookieDescription:'Usamos solo almacenamiento técnico necesario. La publicidad seguirá desactivada sin consentimiento.',
  sessionSaved:'Tus progresos guardados están seguros.',about:'Quiénes somos',
- loadMore:'Cargar más asignaturas'
+ loadMore:'Cargar más asignaturas',
+ digitalContentConsent:'Solicito el inicio inmediato del suministro del contenido digital y reconozco que, una vez iniciado, puedo perder el derecho de desistimiento cuando la ley lo establezca.',digitalConsentRequired:'Confirma el consentimiento requerido para el contenido digital.'
 }
 const zh:Record<string,string>={
  overview:'总览',study:'学习区',progress:'学习进度',account:'账户',settings:'设置',
@@ -284,7 +289,8 @@ const zh:Record<string,string>={
  backToLogin:'返回登录',sendLink:'发送链接',waitThreeSeconds:'请等待 3 秒…',
  cookieTitle:'隐私很重要',cookieDescription:'我们仅使用必要的技术存储。未经同意，广告工具将保持关闭。',
  sessionSaved:'已保存的学习进度安全。',about:'关于我们',
- loadMore:'加载更多科目'
+ loadMore:'加载更多科目',
+ digitalContentConsent:'我请求立即提供数字内容，并确认一旦开始提供，在法律规定的情况下我可能失去撤回权。',digitalConsentRequired:'请先确认数字内容所需的同意。'
 }
 const dictionaries:Record<Language,Record<string,string>>={it,en,fr,de,es,zh}
 export function t(lang:Language,key:string){return dictionaries[lang][key]??it[key]??key}
