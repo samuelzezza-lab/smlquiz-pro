@@ -42,7 +42,7 @@ Il progetto esistente è `fgrwwauwnxvrcgqqpksp` nella regione `eu-west-2`.
 
 Edge Functions attive:
 - `quiz-cache` v12 — lasciata invariata.
-- `quiz-api` v8 — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report e classifica.
+- `quiz-api` v9 — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report e classifica.
 - `stripe-checkout` v5 — creazione Checkout protetta da flag server e consenso digitale verificato.
 - `stripe-webhook` v6 — verifica firma Stripe, pacchetto/importo/valuta e consenso prima dell'accredito idempotente dei crediti.
 
