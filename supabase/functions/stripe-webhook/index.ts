@@ -16,7 +16,7 @@ Deno.serve(async(req:Request)=>{
   if(!["checkout.session.completed","checkout.session.async_payment_succeeded"].includes(event.type))return Response.json({received:true});
   const session=event.data?.object;
   if(session?.mode!=="payment"||session?.payment_status!=="paid")return Response.json({received:true,ignored:true});
-  const metadata=session.metadata??"";
+  const metadata=session.metadata??{};
   const userId=String(metadata.user_id??session.client_reference_id??"");
   const credits=Number(metadata.credits??0);
   const priceId=String(metadata.price_id??"");
