@@ -50,6 +50,46 @@ Deno.serve(async (req: Request) => {
     const body = await req.json();
     const action = String(body.action ?? "");
 
+    if (action === "profile") {
+      const displayName = String(body.displayName ?? "").trim().slice(0, 60);
+      const language = ["it","en","fr","de","es","zh"].includes(String(body.language)) ? String(body.language) : "it";
+      const { data: existing, error: readError } = await admin.from("user_profiles").select("user_id").eq("user_id", userId).maybeSingle();
+      if (readError) throw readError;
+      const values = { display_name: displayName, language, updated_at: new Date().toISOString() };
+      const result = existing
+        ? await admin.from("user_profiles").update(values).eq("user_id", userId).select("user_id,display_name,language,privacy_policy_version,terms_version,consented_at").single()
+        : await admin.from("user_profiles").insert({ user_id: userId, ...values }).select("user_id,display_name,language,privacy_policy_version,terms_version,consented_at").single();
+      if (result.error) throw result.error;
+      return json({ profile: result.data });
+    }
+    if (action === "consent") {
+      if (body.accepted !== true) return json({ error: "Il consenso richiesto non risulta accettato" }, 400);
+      const values = { privacy_policy_version: "2026-11-03", terms_version: "2026-11-03", consented_at: new Date().toISOString(), updated_at: new Date().toISOString() };
+      const { data: existing, error: readError } = await admin.from("user_profiles").select("user_id").eq("user_id", userId).maybeSingle();
+      if (readError) throw readError;
+      const result = existing
+        ? await admin.from("user_profiles").update(values).eq("user_id", userId)
+        : await admin.from("user_profiles").insert({ user_id: userId, ...values });
+      if (result.error) throw result.error;
+      return json({ accepted: true });
+    }
+    if (action === "streaks") {
+      const [streak, achievements] = await Promise.all([
+        admin.from("user_streaks").select("current_streak,longest_streak,last_study_date").eq("user_id", userId).maybeSingle(),
+        admin.from("user_achievements").select("achievement_key,unlocked_at").eq("user_id", userId).order("unlocked_at", { ascending: false }),
+      ]);
+      if (streak.error) throw streak.error;
+      if (achievements.error) throw achievements.error;
+      return json({ streak: streak.data ?? { current_streak: 0, longest_streak: 0, last_study_date: null }, achievements: achievements.data ?? [] });
+    }
+    if (action === "coupon") {
+      const code = String(body.code ?? "").trim().toUpperCase();
+      if (!code || code.length > 64) return json({ error: "Inserisci un codice valido" }, 400);
+      const { data, error } = await admin.rpc("redeem_quiz_coupon", { p_user_id: userId, p_code: code });
+      if (error) return json({ error: error.message }, 400);
+      return json({ ...data, success: true });
+    }
+
     if (action === "wallet") {
       const dayStart = romeDayStart();
       const [wallet, usage, ledger] = await Promise.all([
@@ -179,11 +219,40 @@ Deno.serve(async (req: Request) => {
         p_attempt_id: attemptId, p_score: correct,
       });
       if (completeError) throw completeError;
-      return json({ total, correct, wrong, score: Number((correct - wrong * 0.25).toFixed(2)) });
+      const { data: streak, error: streakError } = await admin.rpc("update_user_streak", { p_user_id: userId });
+      if (streakError) throw streakError;
+      const { count: completedCount, error: countError } = await admin.from("quiz_attempts").select("id", { count: "exact", head: true }).eq("user_id", userId).eq("status", "completed");
+      if (countError) throw countError;
+      const { data: completedAttempts, error: allError } = await admin.from("quiz_attempts").select("id").eq("user_id", userId).eq("status", "completed");
+      if (allError) throw allError;
+      const completedIds = (completedAttempts ?? []).map((x) => x.id);
+      const { data: allAnswers, error: allAnswersError } = completedIds.length
+        ? await admin.from("quiz_attempt_questions").select("esito_corretto").in("attempt_id", completedIds)
+        : { data: [], error: null };
+      if (allAnswersError) throw allAnswersError;
+      const totalCorrect = (allAnswers ?? []).filter((x) => x.esito_corretto === true).length;
+      const unlocked: string[] = [];
+      if ((completedCount ?? 0) >= 1) unlocked.push("first_quiz");
+      if ((completedCount ?? 0) >= 5) unlocked.push("five_quizzes");
+      if (totalCorrect >= 25) unlocked.push("twenty_five_correct");
+      if ((streak?.current_streak ?? 0) >= 3) unlocked.push("streak_3");
+      if ((streak?.current_streak ?? 0) >= 7) unlocked.push("streak_7");
+      if (unlocked.length) {
+        const rows = unlocked.map((achievement_key) => ({ user_id: userId, achievement_key }));
+        const { error: achievementError } = await admin.from("user_achievements").upsert(rows, { onConflict: "user_id,achievement_key", ignoreDuplicates: true });
+        if (achievementError) throw achievementError;
+      }
+      return json({ total, correct, wrong, score: Number((correct - wrong * 0.25).toFixed(2)), streak, unlocked });
     }
 
     if (action === "report") {
-      return json({ error: "Il modulo di segnalazione verrà attivato insieme alla tabella dedicata." }, 501);
+      const questionId = String(body.questionId ?? "");
+      const category = String(body.category ?? "altro");
+      const details = String(body.details ?? "").trim().slice(0, 2000);
+      if (!questionId || !["errore_testo","risposta_errata","spiegazione","duplicato","altro"].includes(category)) return json({ error: "Seleziona un tipo di segnalazione valido" }, 400);
+      const { data, error } = await admin.from("question_reports").insert({ user_id: userId, question_id: questionId, category, details }).select("id").single();
+      if (error) throw error;
+      return json({ submitted: true, reportId: data.id });
     }
 
     return json({ error: "Operazione non riconosciuta" }, 400);
