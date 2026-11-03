@@ -40,7 +40,7 @@ export const legalDocuments:LegalDocument[] = [
   {heading:'Nessuna garanzia di esito',text:'I quiz e le spiegazioni sono strumenti di studio e non garantiscono il superamento di esami, TOLC, concorsi o selezioni. Verificare sempre le informazioni con programmi, testi e fonti ufficiali.'},
   {heading:'Segnalazioni',text:'L’utente può segnalare quesiti imprecisi o errati. Le segnalazioni vengono esaminate e possono portare alla correzione o rimozione del contenuto.'}
  ]},
- {key:'intellectual',title:'Proprietà intellettuale e divieto di estrazione',summary:'Tutela del catalogo, dei contenuti e del software.',draft:false,sections:[
+ {key:'intellectual',title:'Proprietà intellettuale e divieto di estrazione',summary:'Tutela del catalogo, dei contenuti e del software.',draft:true,sections:[
   {heading:'Contenuti originali',text:'Il software, il design, i testi originali, la struttura del catalogo, le spiegazioni e la selezione/organizzazione dei quesiti sono tutelati nei limiti previsti dalla normativa applicabile.'},
   {heading:'Divieto di estrazione',text:'È vietato utilizzare bot, crawler, scraping, API non documentate o altri strumenti per estrarre, copiare, raccogliere o ricostruire in massa i quesiti, le opzioni, le spiegazioni o la struttura del database.'},
   {heading:'Segnalazione di violazioni',text:'Per segnalare una violazione o richiedere autorizzazioni: [EMAIL LEGALE]. Il titolare può adottare misure tecniche e legali proporzionate per tutelare il servizio.'}
