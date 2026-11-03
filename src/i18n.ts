@@ -48,7 +48,8 @@ const it:Record<string,string>={
  emailPlaceholder:'nome@email.com',passwordPlaceholder:'Almeno 8 caratteri',forgotPassword:'Hai dimenticato la password?',
  backToLogin:'Torna all’accesso',sendLink:'Invia link',waitThreeSeconds:'Attendi 3 secondi…',
  cookieTitle:'La tua privacy conta',cookieDescription:'Usiamo solo cookie tecnici necessari. Eventuali strumenti pubblicitari resteranno disattivati finché non darai il consenso.',
- sessionSaved:'I tuoi progressi salvati sono al sicuro.',about:'Chi siamo'
+ sessionSaved:'I tuoi progressi salvati sono al sicuro.',about:'Chi siamo',
+ loadMore:'Mostra altre materie'
 }
 const en:Record<string,string>={
  overview:'Overview',study:'Study area',progress:'My progress',account:'Account',settings:'Settings',
@@ -94,7 +95,8 @@ const en:Record<string,string>={
  emailPlaceholder:'name@email.com',passwordPlaceholder:'At least 8 characters',forgotPassword:'Forgot your password?',
  backToLogin:'Back to sign in',sendLink:'Send link',waitThreeSeconds:'Wait 3 seconds…',
  cookieTitle:'Your privacy matters',cookieDescription:'We use only necessary technical storage. Advertising tools remain disabled until you consent.',
- sessionSaved:'Your saved progress is safe.',about:'About us'
+ sessionSaved:'Your saved progress is safe.',about:'About us',
+ loadMore:'Load more subjects'
 }
 const fr:Record<string,string>={
  overview:'Vue générale',study:'Espace étude',progress:'Mes progrès',account:'Compte',settings:'Paramètres',
@@ -140,7 +142,8 @@ const fr:Record<string,string>={
  emailPlaceholder:'nom@email.com',passwordPlaceholder:'Au moins 8 caractères',forgotPassword:'Mot de passe oublié ?',
  backToLogin:'Retour à la connexion',sendLink:'Envoyer le lien',waitThreeSeconds:'Attendez 3 secondes…',
  cookieTitle:'Votre vie privée compte',cookieDescription:'Seuls les stockages techniques nécessaires sont utilisés. La publicité reste désactivée sans consentement.',
- sessionSaved:'Vos progrès enregistrés sont en sécurité.',about:'À propos'
+ sessionSaved:'Vos progrès enregistrés sont en sécurité.',about:'À propos',
+ loadMore:'Afficher plus de matières'
 }
 const de:Record<string,string>={
  overview:'Übersicht',study:'Lernbereich',progress:'Mein Fortschritt',account:'Konto',settings:'Einstellungen',
@@ -186,7 +189,8 @@ const de:Record<string,string>={
  emailPlaceholder:'name@email.com',passwordPlaceholder:'Mindestens 8 Zeichen',forgotPassword:'Passwort vergessen?',
  backToLogin:'Zurück zur Anmeldung',sendLink:'Link senden',waitThreeSeconds:'Warte 3 Sekunden…',
  cookieTitle:'Deine Privatsphäre ist wichtig',cookieDescription:'Wir verwenden nur notwendige technische Speicherung. Werbung bleibt ohne Zustimmung deaktiviert.',
- sessionSaved:'Dein gespeicherter Fortschritt ist sicher.',about:'Über uns'
+ sessionSaved:'Dein gespeicherter Fortschritt ist sicher.',about:'Über uns',
+ loadMore:'Weitere Fächer laden'
 }
 const es:Record<string,string>={
  overview:'Resumen',study:'Zona de estudio',progress:'Mi progreso',account:'Cuenta',settings:'Ajustes',
@@ -232,7 +236,8 @@ const es:Record<string,string>={
  emailPlaceholder:'nombre@email.com',passwordPlaceholder:'Al menos 8 caracteres',forgotPassword:'¿Olvidaste tu contraseña?',
  backToLogin:'Volver al acceso',sendLink:'Enviar enlace',waitThreeSeconds:'Espera 3 segundos…',
  cookieTitle:'Tu privacidad importa',cookieDescription:'Usamos solo almacenamiento técnico necesario. La publicidad seguirá desactivada sin consentimiento.',
- sessionSaved:'Tus progresos guardados están seguros.',about:'Quiénes somos'
+ sessionSaved:'Tus progresos guardados están seguros.',about:'Quiénes somos',
+ loadMore:'Cargar más asignaturas'
 }
 const zh:Record<string,string>={
  overview:'总览',study:'学习区',progress:'学习进度',account:'账户',settings:'设置',
@@ -278,7 +283,8 @@ const zh:Record<string,string>={
  emailPlaceholder:'name@email.com',passwordPlaceholder:'至少 8 个字符',forgotPassword:'忘记密码？',
  backToLogin:'返回登录',sendLink:'发送链接',waitThreeSeconds:'请等待 3 秒…',
  cookieTitle:'隐私很重要',cookieDescription:'我们仅使用必要的技术存储。未经同意，广告工具将保持关闭。',
- sessionSaved:'已保存的学习进度安全。',about:'关于我们'
+ sessionSaved:'已保存的学习进度安全。',about:'关于我们',
+ loadMore:'加载更多科目'
 }
 const dictionaries:Record<Language,Record<string,string>>={it,en,fr,de,es,zh}
 export function t(lang:Language,key:string){return dictionaries[lang][key]??it[key]??key}
