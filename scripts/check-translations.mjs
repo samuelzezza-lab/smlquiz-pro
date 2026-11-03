@@ -9,7 +9,7 @@ for (const locale of locales) {
   const start = source.indexOf(marker)
   if (start < 0) throw new Error('Dictionary missing: ' + locale)
   const nextLocale = locales[locales.indexOf(locale) + 1]
-  const nextMarker = nextLocale ? 'const ' + nextLocale + ':Record<string,string>={' : 'export function t'
+  const nextMarker = nextLocale ? 'const ' + nextLocale + ':Record<string,string>={' : 'const dictionaries:'
   const end = source.indexOf(nextMarker, start + marker.length)
   if (end < 0) throw new Error('Dictionary end missing: ' + locale)
   const body = source.slice(start + marker.length, end)
