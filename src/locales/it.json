@@ -512,5 +512,8 @@
   "yearSuffix": "° anno",
   "historyCleared": "Cronologia cancellata.",
   "unlimitedQuizzes": "quiz illimitati",
-  "sessionsUnit": "quiz"
+  "sessionsUnit": "quiz",
+  "universitySaveFailed": "Salvataggio università non riuscito.",
+  "answerSaveFailed": "Non è stato possibile salvare la risposta.",
+  "quizSaveFailed": "Errore nel salvataggio del quiz."
 }
