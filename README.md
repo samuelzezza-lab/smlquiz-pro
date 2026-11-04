@@ -60,7 +60,7 @@ Il workflow GitHub Actions `Deploy SMLQUIZ Pro to Cloudflare Pages` richiede que
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
 - `VITE_TURNSTILE_SITE_KEY` (quando configurato)
-- `VITE_ADSENSE_CLIENT` e `VITE_ADSENSE_SLOT` (solo dopo approvazione e consenso)
+- GitHub Actions variables `VITE_INFOLINKS_PID` e `VITE_INFOLINKS_WSID` (ID pubblici Infolinks; se non impostati, lo script pubblicitario non viene caricato)
 
 È presente il workflow CI per compilare il progetto ad ogni push e un controllo Deno dedicato per verificare il codice delle tre Edge Functions. Il deploy Cloudflare è manuale e non va considerato completato finché i secrets non sono configurati e il workflow non termina con successo.
 
@@ -82,7 +82,7 @@ Il frontend mantiene `VITE_STRIPE_CHECKOUT_ENABLED=false`. Non sono stati effett
 - Far verificare informativa privacy, cookie, condizioni, recesso e contenuti digitali.
 - Attivare e verificare Turnstile lato Supabase Auth.
 - Configurare la protezione delle password compromesse in Supabase Auth.
-- Verificare le impostazioni di consenso pubblicitario prima di caricare AdSense.
+- Verificare le impostazioni di consenso pubblicitario prima di caricare Infolinks.
 - Configurare i secrets Cloudflare e completare un deploy verificato.
 - Eseguire test end-to-end con account dedicati e test pagamenti Stripe in modalità test prima di valutare l'attivazione live.
 
