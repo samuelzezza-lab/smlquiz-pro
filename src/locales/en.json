@@ -503,5 +503,10 @@
   "quizzesDoneToday": "Quizzes completed today",
   "examNameDefault": "Exam",
   "storageLocalFailed": "Not enough local storage: free up browser space to save your progress.",
-  "profileSaveDeviceFailed": "Unable to save the quiz on this device: check available storage."
+  "profileSaveDeviceFailed": "Unable to save the quiz on this device: check available storage.",
+  "captchaSetupWarning": "Anti-bot protection must be configured before registration can be enabled.",
+  "freeLabel": "free",
+  "extraLabel": "extra",
+  "freeCreditsLabel": "free quizzes",
+  "purchasedExtraLabel": "extra quizzes"
 }
