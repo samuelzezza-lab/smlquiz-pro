@@ -45,6 +45,7 @@ Deno.serve(async (req: Request) => {
   const { data: authData, error: authError } = await admin.auth.getUser(token);
   if (authError || !authData.user) return json({ error: "Sessione non valida. Accedi di nuovo." }, 401);
   const userId = authData.user.id;
+  const isOwner = (authData.user.email ?? "").trim().toLowerCase() === "samuel.zezza@gmail.com";
 
   try {
     const body = await req.json();
@@ -188,9 +189,10 @@ Deno.serve(async (req: Request) => {
       if (usage.error) throw usage.error;
       if (ledger.error) throw ledger.error;
       return json({
-        paidCredits: wallet.data?.balance ?? 0,
-        freeUsed: usage.count ?? 0,
-        freeRemaining: Math.max(0, 5 - (usage.count ?? 0)),
+        paidCredits: isOwner ? 1000000000 : (wallet.data?.balance ?? 0),
+        freeUsed: isOwner ? 0 : (usage.count ?? 0),
+        freeRemaining: isOwner ? 1000000000 : Math.max(0, 5 - (usage.count ?? 0)),
+        ownerUnlimited: isOwner,
         ledger: ledger.data ?? [],
       });
     }
@@ -253,6 +255,18 @@ Deno.serve(async (req: Request) => {
       if (!bank || bank.length !== 10) return json({ error: "Il quiz non contiene 10 domande verificate" }, 409);
       const selected = [...bank].sort(() => Math.random() - 0.5);
       const questionIds = selected.map((q) => q.id);
+      if (isOwner) {
+        const { data: ownerWallet, error: ownerWalletError } = await admin.from("user_quiz_wallets")
+          .select("balance").eq("user_id", userId).maybeSingle();
+        if (ownerWalletError) throw ownerWalletError;
+        if (!ownerWallet || ownerWallet.balance < 100000000) {
+          const { error: refillError } = await admin.from("user_quiz_wallets").upsert({
+            user_id: userId, balance: 1000000000, updated_at: new Date().toISOString(),
+          }, { onConflict: "user_id" });
+          if (refillError) throw refillError;
+        }
+      }
+
       const { data: started, error: startError } = await admin.rpc("start_quiz_attempt", {
         p_user_id: userId,
         p_materia_id: materiaId,
