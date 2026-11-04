@@ -200,7 +200,7 @@ Deno.serve(async (req: Request) => {
       const pageSize = 1000;
       while (true) {
         const { data: rows, error } = await admin.from("quiz_attempt_questions")
-          .select("domanda_id,answered_at,domande!inner(id,testo_domanda,opzioni,risposta_corretta,spiegazione),quiz_attempts!inner(user_id)")
+          .select("domanda_id,answered_at,domande!inner(id,testo_domanda,opzioni,risposta_corretta,spiegazione,traduzioni),quiz_attempts!inner(user_id)")
           .eq("quiz_attempts.user_id", userId)
           .eq("esito_corretto", false)
           .order("answered_at", { ascending: false })
@@ -211,7 +211,7 @@ Deno.serve(async (req: Request) => {
           const q = Array.isArray(raw) ? raw[0] : raw;
           if (q?.id && !unique.has(q.id)) unique.set(q.id, {
             id: q.id, testo_domanda: q.testo_domanda, opzioni: q.opzioni,
-            risposta_corretta: q.risposta_corretta, spiegazione: q.spiegazione,
+            risposta_corretta: q.risposta_corretta, spiegazione: q.spiegazione, traduzioni: q.traduzioni ?? {},
           });
         }
         if (!rows || rows.length < pageSize) break;
