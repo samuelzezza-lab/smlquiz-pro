@@ -168,3 +168,38 @@ button,a,select,[role='button'],.nav-link,.answer,.subject-card>button{touch-act
  .home-page>.section-head .db-label{white-space:nowrap}
  .home-page .subject-card h3{min-height:0}
 }
+
+
+/* SMLQUIZ · rifinitura Area Studio */
+.study-page{padding-top:clamp(28px,4vw,48px);max-width:1240px}
+.study-page>.page-heading{margin-bottom:24px}
+.study-page>.page-heading h1{font-size:clamp(28px,3vw,35px);letter-spacing:-1.2px}
+.study-page>.page-heading p{font-size:13px;line-height:1.65;max-width:570px}
+.study-page .study-tools{grid-template-columns:minmax(0,1fr) auto;gap:18px;padding:21px 22px;margin:0 0 16px;border-color:#a78bfa2b;background:radial-gradient(ellipse at 0% 0%,#a78bfa12,transparent 48%),linear-gradient(145deg,#111c31,#0b1424);box-shadow:0 12px 30px #0002}
+.study-page .study-tools>div:first-child b{font:700 14px Manrope;color:#f0f3ff}
+.study-page .study-tools p{font-size:11px;line-height:1.6}
+.study-page .study-tools label{font-size:10px;font-weight:700;color:#b6c2d8}
+.study-page .study-tools select{min-width:92px;padding:10px 12px;border-radius:8px;font-size:11px}
+.study-page .goal-progress{padding-top:14px;border-top:1px solid var(--line)}
+.study-page .goal-progress>span{display:block;margin-bottom:10px;font-size:10px;color:#aebbd2}
+.study-page .goal-progress .progress-track{height:7px;margin:0;background:#ffffff12}
+.study-page .goal-progress .progress-track i{background:linear-gradient(90deg,#927be8,#48e0bb);box-shadow:0 0 12px #48e0bb30}
+.study-page .bookmarks-panel{padding:22px;margin:0;border-color:rgba(151,171,215,.15);background:linear-gradient(145deg,#101a2d,#0a1323);box-shadow:0 12px 30px #0002}
+.study-page .bookmarks-panel .panel-title{align-items:center;margin-bottom:17px}
+.study-page .bookmarks-panel h3{font:700 15px Manrope;color:#f0f3ff}
+.study-page .bookmarks-panel .panel-title p{font-size:10px;line-height:1.6}
+.study-page .bookmarks-panel .panel-title>b{min-width:34px;height:34px;display:grid;place-items:center;border:1px solid #a78bfa35;border-radius:10px;background:#a78bfa12;color:#c9bbff;font:800 14px Manrope}
+.study-page .bookmark-row{align-items:center;gap:18px;padding:16px 0;border-top:1px solid rgba(151,171,215,.12);font-size:11px;line-height:1.65}
+.study-page .bookmark-row span{color:#dce4f5}
+.study-page .bookmark-row .simple-link{flex:none;padding:7px 10px;border:1px solid #e98d7b33;border-radius:7px;color:#e8a093;font-size:9px}
+.study-page .bookmarks-panel>.empty{min-height:160px;margin-top:8px;padding:25px;border:1px dashed rgba(151,171,215,.18);border-radius:10px;background:#080f1b;color:#aebbd2;font-size:11px;line-height:1.7}
+@media(max-width:800px){
+ .study-page .study-tools{grid-template-columns:1fr;padding:17px}
+ .study-page .goal-progress{grid-column:auto}
+ .study-page .bookmarks-panel{padding:17px}
+}
+@media(max-width:520px){
+ .study-page>.page-heading h1{font-size:25px}
+ .study-page .study-tools label{justify-content:space-between}
+ .study-page .bookmark-row{align-items:flex-start;flex-direction:column;gap:9px}
+}
