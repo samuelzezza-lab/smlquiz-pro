@@ -117,3 +117,54 @@ button,a,select,[role='button'],.nav-link,.answer,.subject-card>button{touch-act
 .challenge-invite h2{font-size:18px;margin:7px 0;color:#edf1ff}
 .challenge-invite p{color:#91a0ba;font-size:12px;line-height:1.6}
 @media(max-width:520px){.challenge-invite{align-items:stretch;flex-direction:column}.challenge-invite .primary{width:100%;justify-content:center}.challenge-result{align-items:flex-start;flex-direction:column}.challenge-actions>*{flex:1 1 42%}}
+
+
+/* SMLQUIZ · rifinitura schermata Avvia Quiz */
+.home-page{padding-top:clamp(28px,4vw,48px)}
+.home-page>.page-heading{align-items:center;margin-bottom:22px}
+.home-page>.page-heading>div:first-child{min-width:0}
+.home-page>.page-heading .eyebrow{margin-bottom:10px}
+.home-page>.page-heading h1{font-size:clamp(28px,3vw,36px);letter-spacing:-1.35px}
+.home-page>.page-heading p{max-width:560px;font-size:13px;line-height:1.65}
+.home-page>.page-heading .count{min-width:148px;justify-content:center;padding:11px 15px;background:linear-gradient(145deg,#171d36,#10182b);border-color:#a78bfa35;box-shadow:0 10px 30px #0002}
+.home-page>.page-heading .count b{font-size:25px}
+.home-page>.filters{padding:19px;background:linear-gradient(145deg,rgba(17,27,47,.96),rgba(10,18,33,.96));border-color:rgba(157,139,229,.18);box-shadow:0 14px 38px rgba(0,0,0,.12)}
+.home-page>.filters label{font-size:10px;font-weight:700;color:#aebbd2}
+.home-page>.filters label>div{height:44px;margin-top:9px;border-radius:9px;background:#080f1d;border-color:rgba(151,171,215,.18);transition:border-color .18s,box-shadow .18s}
+.home-page>.filters label>div:focus-within{border-color:#a78bfa99;box-shadow:0 0 0 3px #a78bfa16}
+.home-page>.filters select,.home-page>.filters input{font-size:12px}
+.home-page>.filters input{height:100%}
+.home-page>.section-head{align-items:center;margin:28px 0 14px}
+.home-page>.section-head h2{font-size:17px;letter-spacing:-.25px}
+.home-page>.section-head p{font-size:11px}
+.home-page>.section-head .db-label{padding:7px 10px;border:1px solid #48e0bb2b;border-radius:30px;background:#48e0bb0b;color:#80dfc5;font-size:9px;letter-spacing:.35px}
+.home-page .subject-grid{gap:14px}
+.home-page .subject-card{position:relative;display:flex;flex-direction:column;min-height:188px;padding:18px;border-radius:13px;background:linear-gradient(145deg,rgba(18,29,49,.98),rgba(10,18,33,.98));border-color:rgba(151,171,215,.14);box-shadow:0 8px 24px rgba(0,0,0,.10);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.home-page .subject-card:before{content:"";position:absolute;inset:0 18px auto;height:1px;background:linear-gradient(90deg,transparent,#b7a6ff55,transparent);opacity:.55}
+.home-page .subject-card:hover{transform:translateY(-3px);border-color:#a78bfa66;box-shadow:0 15px 34px #0003,0 0 0 1px #a78bfa0d}
+.home-page .subject-card-top{margin-bottom:2px}
+.home-page .subject-card-top>svg{width:20px;height:20px}
+.home-page .subject-card-top small{border:1px solid #a78bfa20;background:#a78bfa0b;color:#b8abd9;font-size:8px}
+.home-page .subject-card h3{font-size:13px;line-height:1.45;margin:14px 0 6px;min-height:38px;color:#f0f3ff}
+.home-page .subject-card p{font-size:10px;line-height:1.55;margin:0 0 16px;min-height:31px}
+.home-page .subject-card>button{margin-top:auto;padding-top:12px;font-size:10px;color:#c3b3ff;justify-content:space-between;transition:color .18s}
+.home-page .subject-card>button:hover{color:#69e2c2}
+.home-page .subject-card>button:disabled{opacity:.45}
+.home-page .empty{min-height:150px;justify-content:center;border:1px dashed rgba(151,171,215,.2);border-radius:13px;background:rgba(12,20,37,.55)}
+.home-page .load-more{min-width:190px;border-radius:9px}
+@media(max-width:800px){
+ .home-page{padding-top:25px}
+ .home-page>.page-heading{gap:14px}
+ .home-page>.page-heading .count{align-self:stretch;min-width:0;justify-content:flex-start}
+ .home-page>.filters{gap:12px;padding:15px}
+ .home-page .subject-grid{gap:10px}
+ .home-page .subject-card{min-height:0;padding:16px}
+}
+@media(max-width:520px){
+ .home-page>.page-heading{flex-direction:column;align-items:stretch}
+ .home-page>.page-heading .count{align-self:flex-start}
+ .home-page>.page-heading p{font-size:12px}
+ .home-page>.section-head{align-items:flex-start;gap:8px}
+ .home-page>.section-head .db-label{white-space:nowrap}
+ .home-page .subject-card h3{min-height:0}
+}
