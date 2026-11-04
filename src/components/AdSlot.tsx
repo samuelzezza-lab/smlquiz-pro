@@ -1,23 +1,33 @@
 import { useEffect } from 'react'
 
 declare global {
-  interface Window { adsbygoogle?: unknown[] }
+  interface Window {
+    infolinks_pid?: number
+    infolinks_wsid?: number
+  }
 }
+
 export default function AdSlot() {
-  const client = import.meta.env.VITE_ADSENSE_CLIENT as string | undefined
-  const slot = import.meta.env.VITE_ADSENSE_SLOT as string | undefined
+  const publisherId = import.meta.env.VITE_INFOLINKS_PID as string | undefined
+  const websiteId = import.meta.env.VITE_INFOLINKS_WSID as string | undefined
+
   useEffect(() => {
-    if (!client || !slot) return
-    if (!document.querySelector('script[data-sml-adsense]')) {
-      const script = document.createElement('script')
-      script.async = true
-      script.crossOrigin = 'anonymous'
-      script.dataset.smlAdsense = 'true'
-      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=' + encodeURIComponent(client)
-      document.head.appendChild(script)
-    }
-    try { (window.adsbygoogle = window.adsbygoogle || []).push({}) } catch { /* AdSense may not be approved or available yet. */ }
-  }, [client, slot])
-  if (!client || !slot) return null
-  return <div className="ad-slot" aria-label="Spazio pubblicitario"><small>SPAZIO PUBBLICITARIO</small><ins className="adsbygoogle" style={{ display: 'block', minHeight: 90 }} data-ad-client={client} data-ad-slot={slot} data-ad-format="auto" data-full-width-responsive="true"/></div>
+    if (!publisherId || !websiteId) return
+    const pid = Number(publisherId)
+    const wsid = Number(websiteId)
+    if (!Number.isFinite(pid) || !Number.isFinite(wsid) || pid <= 0 || wsid <= 0) return
+
+    window.infolinks_pid = pid
+    window.infolinks_wsid = wsid
+
+    if (document.querySelector('script[data-sml-infolinks]')) return
+    const script = document.createElement('script')
+    script.async = true
+    script.dataset.smlInfolinks = 'true'
+    script.src = 'https://resources.infolinks.com/js/infolinks_main.js'
+    document.body.appendChild(script)
+  }, [publisherId, websiteId])
+
+  if (!publisherId || !websiteId || Number(publisherId) <= 0 || Number(websiteId) <= 0) return null
+  return <div className="ad-slot" aria-label="Pubblicità Infolinks"><small>Pubblicità</small></div>
 }
