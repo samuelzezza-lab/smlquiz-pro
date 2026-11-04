@@ -291,5 +291,12 @@
   "pointsLabel": "Punkte",
   "correctFem": "richtig",
   "logoutMessage": "Abmeldung erfolgt.",
-  "accountSignInRequired": "Melde dich an, um ein Paket zu kaufen."
+  "accountSignInRequired": "Melde dich an, um ein Paket zu kaufen.",
+  "reviewSaveFailed": "Nicht genügend lokaler Speicher: Die Wiederholung konnte nicht gespeichert werden.",
+  "reviewCompleted": "Wiederholung abgeschlossen.",
+  "disconnected": "Offline",
+  "reviewWrongTitle": "Falsche Antworten wiederholen",
+  "reviewWrongDescription": "Übe erneut die Fragen, die du in abgeschlossenen Quiz falsch beantwortet hast.",
+  "reviewWrongButton": "Falsche Fragen wiederholen",
+  "reviewWrongEmpty": "Noch keine Fragen zur Wiederholung. Schließe ein Quiz ab, um Fehler zu sammeln."
 }
