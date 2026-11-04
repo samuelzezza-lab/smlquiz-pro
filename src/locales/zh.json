@@ -512,5 +512,8 @@
   "yearSuffix": "年级",
   "historyCleared": "历史记录已清除。",
   "unlimitedQuizzes": "无限测验",
-  "sessionsUnit": "场测验"
+  "sessionsUnit": "场测验",
+  "universitySaveFailed": "无法保存大学信息。",
+  "answerSaveFailed": "无法保存答案。",
+  "quizSaveFailed": "保存测验时出错。"
 }
