@@ -243,3 +243,76 @@ button,a,select,[role='button'],.nav-link,.answer,.subject-card>button{touch-act
  .progress-page .history-line{align-items:flex-start}
  .progress-page .history-line>strong{margin-left:auto}
 }
+
+
+/* SMLQUIZ · Account, impostazioni e strumenti */
+.account-page,.settings-page,.calculator-page,.legal-page{padding-top:clamp(26px,4vw,46px);max-width:1280px}
+.account-page>.page-heading h1,.settings-page>.page-heading h1,.calculator-page>.page-heading h1,.legal-page>.page-heading h1{font-size:clamp(27px,3vw,35px);letter-spacing:-1.1px}
+.account-page>.page-heading p,.settings-page>.page-heading p,.calculator-page>.page-heading p,.legal-page>.page-heading p{font-size:12px;line-height:1.7}
+.account-page .panel,.settings-page .panel,.calculator-page .panel,.legal-page .panel{border-color:rgba(151,171,215,.15);background:linear-gradient(145deg,#101a2d,#0a1323);box-shadow:0 10px 28px #0002}
+.account-page .account-welcome{padding:22px;border-color:#a78bfa30;background:radial-gradient(ellipse at 0 0,#a78bfa12,transparent 55%),linear-gradient(145deg,#121e34,#0b1424)}
+.account-page .account-avatar{box-shadow:0 0 0 4px #a78bfa18;border:1px solid #a78bfa55}
+.account-page .account-identity h2{font:800 19px Manrope;letter-spacing:-.5px}
+.account-page .account-identity p,.account-page .account-panel-heading p{font-size:10px;line-height:1.6}
+.account-page .account-metrics{gap:12px;margin:15px 0}
+.account-page .account-metric{padding:17px;border-color:#97abd726;background:linear-gradient(145deg,#121e33,#0b1424);border-radius:12px}
+.account-page .account-metric>span{font-size:9px;color:#aebbd2}
+.account-page .account-metric>strong{font:800 26px Manrope;color:#f0f3ff}
+.account-page .account-panel,.account-page .account-buy-panel{padding:20px}
+.account-page .account-panel-heading h3{font:700 14px Manrope;color:#f0f3ff}
+.account-page .account-kicker{font-size:8px;letter-spacing:1.1px;color:#b6a4ff}
+.account-page .account-detail{padding:14px 0;border-color:#97abd71c}
+.account-page .account-detail>span:first-child{font-size:9px;color:#aebbd2}
+.account-page .account-detail>strong{font-size:11px;color:#e6ecfa}
+.account-page .account-buy-panel .account-balance{padding:15px;border-radius:10px;background:#080f1c;border:1px solid #97abd720}
+.account-page .account-balance>strong{font:800 30px Manrope;color:#70dfc1}
+.account-page .account-package{padding:13px 0;border-color:#97abd71c}
+.account-page .account-package>div strong{font-size:11px}
+.account-page .account-package>button{border-radius:7px}
+.account-page .account-security-panel{padding:15px;border-color:#48e0bb30;background:#48e0bb08}
+.account-page .account-danger-panel{padding:17px;border-color:#ef8b8038;background:#ef8b8008}
+.account-page .auth-form{padding:26px;border-radius:15px}
+.account-page .auth-form>h2{font:800 21px Manrope;letter-spacing:-.5px}
+.account-page .auth-form>input{min-height:44px;border-radius:9px;background:#080f1c;border-color:#97abd72c}
+.account-page .auth-form>input:focus{border-color:#a78bfa;box-shadow:0 0 0 3px #a78bfa18}
+.account-page .auth-tabs{padding:4px;border-radius:9px;background:#080f1c}
+.account-page .auth-tabs button{border-radius:7px}
+.settings-page>.settings{padding:8px 22px}
+.settings-page .settings>div{min-height:64px;gap:18px;padding:14px 0;border-color:#97abd71c}
+.settings-page .settings>div>b{font:700 11px Manrope;color:#e5ebf8}
+.settings-page .settings input:not([type=checkbox]),.settings-page .settings select{min-height:40px;padding:9px 12px;border-radius:8px;background:#080f1c;border:1px solid #97abd72b;color:#e8eefc;font-size:11px}
+.settings-page .settings button{border-radius:8px}
+.calculator-page .calculator-grid{gap:16px}
+.calculator-page .calc-panel,.calculator-page .calc-result{padding:22px}
+.calculator-page .panel-title h3{font:700 14px Manrope}
+.calculator-page .exam-row{gap:10px;padding:13px 0;border-color:#97abd71c}
+.calculator-page .exam-row input{min-height:40px;padding:9px 11px;border-radius:8px;background:#080f1c;border:1px solid #97abd72b;color:#e8eefc;font-size:11px}
+.calculator-page .exam-row label{font-size:9px;color:#aebbd2}
+.calculator-page .calc-result{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;border-color:#48e0bb30;background:radial-gradient(ellipse at 0 0,#48e0bb12,transparent 60%),linear-gradient(145deg,#111e32,#0a1424)}
+.calculator-page .calc-result>b{font:800 clamp(35px,5vw,52px) Manrope;color:#72e0c1;letter-spacing:-2px}
+.calculator-page .calc-result>small{font-size:9px;letter-spacing:1px;color:#b7c4d9}
+.legal-page .legal-grid{gap:13px}
+.legal-page .legal-card{padding:19px;transition:transform .18s,border-color .18s}
+.legal-page .legal-card:hover{transform:translateY(-2px);border-color:#a78bfa66}
+.legal-page .legal-card>svg{color:#b6a4ff}
+.legal-page .legal-card h3{font:700 13px Manrope;color:#f0f3ff}
+.legal-page .legal-card p{font-size:10px;line-height:1.7;color:#aebbd2}
+.legal-page .legal-notice{border-color:#e5b86c35;background:#e5b86c0a}
+@media(max-width:800px){
+ .account-page .account-welcome,.account-page .account-panel,.account-page .account-buy-panel{padding:16px}
+ .settings-page>.settings{padding:5px 16px}
+ .calculator-page .calc-panel,.calculator-page .calc-result{padding:17px}
+ .calculator-page .exam-row{grid-template-columns:1fr 1fr}
+ .calculator-page .exam-row>input{grid-column:1/-1}
+}
+@media(max-width:520px){
+ .account-page>.page-heading h1,.settings-page>.page-heading h1,.calculator-page>.page-heading h1,.legal-page>.page-heading h1{font-size:25px}
+ .account-page .account-welcome{align-items:flex-start;gap:14px}
+ .account-page .account-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .account-page .account-metric{padding:13px}
+ .account-page .account-metric>strong{font-size:22px}
+ .settings-page .settings>div{align-items:flex-start;flex-direction:column;gap:9px}
+ .settings-page .settings>div>*:last-child{max-width:100%}
+ .calculator-page .exam-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ .legal-page .legal-grid{grid-template-columns:1fr}
+}
