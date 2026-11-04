@@ -424,3 +424,8 @@ button,a,select,[role='button'],.nav-link,.answer,.subject-card>button{touch-act
 .university-ranking-name small{color:var(--muted)}
 .university-ranking-row>strong{white-space:nowrap;color:#a78bfa;font-size:17px}
 @media(max-width:760px){.university-form-grid{grid-template-columns:1fr}.university-ranking-row{grid-template-columns:32px minmax(0,1fr) auto;gap:9px;padding:11px}.university-ranking-row>strong{font-size:15px}}
+
+.university-ranking-row.rank-gold .university-rank{background:rgba(245,190,75,.2);color:#f4c86b}
+.university-ranking-row.rank-silver .university-rank{background:rgba(190,205,225,.17);color:#c8d4e8}
+.university-ranking-row.rank-bronze .university-rank{background:rgba(196,130,91,.18);color:#d79b77}
+.university-ranking-row.my-university .university-ranking-name b{color:#d9ceff}
