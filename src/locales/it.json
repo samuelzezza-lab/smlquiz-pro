@@ -291,5 +291,12 @@
   "pointsLabel": "punti",
   "correctFem": "corrette",
   "logoutMessage": "Disconnessione effettuata.",
-  "accountSignInRequired": "Accedi per acquistare un pacchetto."
+  "accountSignInRequired": "Accedi per acquistare un pacchetto.",
+  "reviewSaveFailed": "Spazio locale insufficiente: non è stato possibile salvare il ripasso.",
+  "reviewCompleted": "Ripasso completato.",
+  "disconnected": "Non connesso",
+  "reviewWrongTitle": "Rivedi le risposte sbagliate",
+  "reviewWrongDescription": "Riprendi le domande a cui hai risposto in modo errato nei quiz completati.",
+  "reviewWrongButton": "Rivedi le domande sbagliate",
+  "reviewWrongEmpty": "Non hai ancora domande da ripassare. Completa un quiz per raccogliere gli errori."
 }
