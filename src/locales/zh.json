@@ -508,5 +508,9 @@
   "freeLabel": "免费",
   "extraLabel": "额外",
   "freeCreditsLabel": "免费测验",
-  "purchasedExtraLabel": "额外测验"
+  "purchasedExtraLabel": "额外测验",
+  "yearSuffix": "年级",
+  "historyCleared": "历史记录已清除。",
+  "unlimitedQuizzes": "无限测验",
+  "sessionsUnit": "场测验"
 }
