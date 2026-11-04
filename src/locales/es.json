@@ -512,5 +512,8 @@
   "yearSuffix": ".º año",
   "historyCleared": "Historial borrado.",
   "unlimitedQuizzes": "quizzes ilimitados",
-  "sessionsUnit": "quizzes"
+  "sessionsUnit": "quizzes",
+  "universitySaveFailed": "No se pudo guardar la universidad.",
+  "answerSaveFailed": "No se pudo guardar la respuesta.",
+  "quizSaveFailed": "Error al guardar el quiz."
 }
