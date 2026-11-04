@@ -280,5 +280,16 @@
   "legal_about_heading_1": "Nuestro método",
   "legal_about_text_1": "Creemos en preguntas claras, explicaciones útiles, comentarios transparentes y herramientas que faciliten el estudio metódico. La plataforma evoluciona y los avisos de los usuarios ayudan a mejorarla.",
   "legal_about_heading_2": "Contacto",
-  "legal_about_text_2": "La identidad del operador y los datos de contacto de soporte no se publican en esta versión. Serán necesarios para ofrecer el servicio al público y comercialmente."
+  "legal_about_text_2": "La identidad del operador y los datos de contacto de soporte no se publican en esta versión. Serán necesarios para ofrecer el servicio al público y comercialmente.",
+  "averageWeightedLabel": "Gewichteter Durchschnitt",
+  "checkoutStripeNotice": "Stripe Checkout ist vorbereitet. Live-Zahlungen bleiben bis zur abgeschlossenen Produktionskonfiguration deaktiviert.",
+  "localDebuggerLabel": "Lokaler Debugger",
+  "studySmarter": "CLEVERER LERNEN",
+  "streakDaysUnit": "Tage",
+  "wait": "Bitte warten…",
+  "accountUserLabel": "Studierendenkonto",
+  "pointsLabel": "Punkte",
+  "correctFem": "richtig",
+  "logoutMessage": "Abmeldung erfolgt.",
+  "accountSignInRequired": "Melde dich an, um ein Paket zu kaufen."
 }
