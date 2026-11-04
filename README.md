@@ -26,7 +26,7 @@ Nel database collegato risultano:
 - Supabase Auth: registrazione, accesso, uscita e recupero password.
 - Filtro facoltà, anno di corso e ricerca materie; caricamento progressivo dell'elenco.
 - Quiz a quattro opzioni, timer, spiegazioni e punteggio +1 / −0,25.
-- Generazione dinamica dei quiz mancanti tramite Anthropic, usando la Edge Function esistente `quiz-cache` (non modificata), con controllo qualità, duplicati e salvataggio nel catalogo.
+- Generazione dinamica dei quiz mancanti tramite il servizio AI configurato nella Edge Function `quiz-cache`, con controllo qualità, duplicati e salvataggio nel catalogo.
 - Salvataggio delle risposte lato server, storico, report TXT e condivisione WhatsApp/Telegram.
 - Limite di 5 quiz gratuiti al giorno e utilizzo crediti gestiti sul backend.
 - Portafoglio crediti, coupon, profilo, classifica, streak, badge e ripasso degli errori.
@@ -41,7 +41,7 @@ Nel database collegato risultano:
 Il progetto esistente è `fgrwwauwnxvrcgqqpksp` nella regione `eu-west-2`.
 
 Edge Functions attive:
-- `quiz-cache` v12 — lasciata invariata.
+- `quiz-cache` v18 — funzione di generazione aggiornata; nessun provider AI è fissato nel frontend.
 - `quiz-api` v9 — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report e classifica.
 - `stripe-checkout` v5 — creazione Checkout protetta da flag server e consenso digitale verificato.
 - `stripe-webhook` v6 — verifica firma Stripe, pacchetto/importo/valuta e consenso prima dell'accredito idempotente dei crediti.
@@ -88,4 +88,4 @@ Il frontend mantiene `VITE_STRIPE_CHECKOUT_ENABLED=false`. Non sono stati effett
 
 ## Sicurezza e dati esistenti
 
-Le tabelle esistenti restano nel progetto originale. Le operazioni che gestiscono risposte, crediti e acquisti passano dal backend autenticato. La funzione `quiz-cache` non viene modificata. Non sono state create nuove tabelle né è stato creato un nuovo progetto Supabase.
+Le tabelle esistenti restano nel progetto originale. Le operazioni che gestiscono risposte, crediti e acquisti passano dal backend autenticato. La funzione `quiz-cache` gestisce la generazione sul backend; il provider AI è configurato esclusivamente tramite segreti server. Non sono state create nuove tabelle né è stato creato un nuovo progetto Supabase.
