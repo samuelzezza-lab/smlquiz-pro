@@ -291,5 +291,12 @@
   "pointsLabel": "points",
   "correctFem": "correctes",
   "logoutMessage": "Déconnexion effectuée.",
-  "accountSignInRequired": "Connectez-vous pour acheter un forfait."
+  "accountSignInRequired": "Connectez-vous pour acheter un forfait.",
+  "reviewSaveFailed": "Espace local insuffisant : impossible d’enregistrer la révision.",
+  "reviewCompleted": "Révision terminée.",
+  "disconnected": "Hors ligne",
+  "reviewWrongTitle": "Revoir les réponses incorrectes",
+  "reviewWrongDescription": "Reprenez les questions auxquelles vous avez mal répondu dans les quiz terminés.",
+  "reviewWrongButton": "Revoir les questions incorrectes",
+  "reviewWrongEmpty": "Aucune question à réviser pour le moment. Terminez un quiz pour enregistrer vos erreurs."
 }
