@@ -200,6 +200,33 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    if (action === "wrong-questions") {
+      const unique = new Map();
+      let offset = 0;
+      const pageSize = 1000;
+      while (true) {
+        const { data: rows, error } = await admin.from("quiz_attempt_questions")
+          .select("domanda_id,answered_at,domande!inner(id,testo_domanda,opzioni,risposta_corretta,spiegazione),quiz_attempts!inner(user_id,status)")
+          .eq("quiz_attempts.user_id", userId)
+          .eq("quiz_attempts.status", "completed")
+          .eq("esito_corretto", false)
+          .order("answered_at", { ascending: false })
+          .range(offset, offset + pageSize - 1);
+        if (error) throw error;
+        for (const row of rows ?? []) {
+          const raw = row.domande;
+          const q = Array.isArray(raw) ? raw[0] : raw;
+          if (q?.id && !unique.has(q.id)) unique.set(q.id, {
+            id: q.id, testo_domanda: q.testo_domanda, opzioni: q.opzioni,
+            risposta_corretta: q.risposta_corretta, spiegazione: q.spiegazione,
+          });
+        }
+        if (!rows || rows.length < pageSize) break;
+        offset += pageSize;
+      }
+      return json({ questions: [...unique.values()], total: unique.size });
+    }
+
     if (action === "weak-topics") {
       const { data: attempts, error: attemptsError } = await admin.from("quiz_attempts")
         .select("id,completed_at").eq("user_id", userId).eq("status", "completed").gte("completed_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()).limit(1000);
