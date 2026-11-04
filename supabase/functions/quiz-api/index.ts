@@ -199,7 +199,7 @@ Deno.serve(async (req: Request) => {
 
     if (action === "weak-topics") {
       const { data: attempts, error: attemptsError } = await admin.from("quiz_attempts")
-        .select("id").eq("user_id", userId).eq("status", "completed").limit(1000);
+        .select("id,completed_at").eq("user_id", userId).eq("status", "completed").gte("completed_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()).limit(1000);
       if (attemptsError) throw attemptsError;
       const attemptIds = (attempts ?? []).map((x) => x.id);
       if (!attemptIds.length) return json({ topics: [] });
@@ -239,6 +239,7 @@ Deno.serve(async (req: Request) => {
       const { data, error } = await admin.from("quiz_attempts")
         .select("id,materia_id,score,total_questions,completed_at,status,mode,started_at")
         .eq("user_id", userId).eq("status", "completed")
+        .gte("completed_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
         .order("completed_at", { ascending: false }).limit(100);
       if (error) throw error;
       const ids = [...new Set((data ?? []).map((x) => x.materia_id))];
