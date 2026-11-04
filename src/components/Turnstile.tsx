@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { t, type Language } from '../i18n'
 
 type TurnstileOptions = {
   sitekey: string
@@ -15,8 +16,8 @@ declare global {
     }
   }
 }
-type Props = { siteKey: string; onVerify: (token: string) => void; resetKey: number }
-export default function Turnstile({ siteKey, onVerify, resetKey }: Props) {
+type Props = { siteKey: string; onVerify: (token: string) => void; resetKey: number; language: Language }
+export default function Turnstile({ siteKey, onVerify, resetKey, language }: Props) {
   const container = useRef<HTMLDivElement>(null)
   const callback = useRef(onVerify)
   callback.current = onVerify
@@ -52,6 +53,6 @@ export default function Turnstile({ siteKey, onVerify, resetKey }: Props) {
       if (widgetId && window.turnstile) window.turnstile.remove(widgetId)
     }
   }, [siteKey, resetKey])
-  if (!siteKey) return <div className="turnstile-warning">Protezione anti-bot da configurare prima di aprire le registrazioni.</div>
+  if (!siteKey) return <div className="turnstile-warning">{t(language, 'captchaSetupWarning')}</div>
   return <div className="turnstile-wrap"><div ref={container}/></div>
 }
