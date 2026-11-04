@@ -20,7 +20,7 @@ type WeakTopic = { topic:string; correct:number; wrong:number; total:number; err
 const packages = [{ count:5,price:'1,00 €',id:'price_1UWEWpBCybXKHSfREO6VERj5' },{ count:10,price:'2,00 €',id:'price_1UWEYHBCybXKHSfRXIqOpDZU' },{ count:15,price:'3,00 €',id:'price_1UWEZwBCybXKHSfRuy0N3K0X' }]
 const historyKey='smlquiz.history.v1'
 const turnstileSiteKey=import.meta.env.VITE_TURNSTILE_SITE_KEY||''
-function loadHistory():Attempt[]{try{const saved=JSON.parse(localStorage.getItem(historyKey)||'[]');if(Array.isArray(saved))return saved;if(saved?.v===2&&Array.isArray(saved.d))return saved.d.map((x:string[])=>({id:x[0],subject:x[1],score:x[2],total:x[3],correct:x[4],wrong:x[5],date:x[6]}));return []}catch{return []}}
+function loadHistory():Attempt[]{try{const saved=JSON.parse(localStorage.getItem(historyKey)||'[]');if(Array.isArray(saved))return saved;if(saved?.v===2&&Array.isArray(saved.d))return saved.d.map((x:string[])=>({id:x[0],subject:x[1],score:Number(x[2]),total:Number(x[3]),correct:Number(x[4]),wrong:Number(x[5]),date:x[6]}));return []}catch{return []}}
 function compactHistory(items:Attempt[]){return {v:2,d:items.slice(0,50).map(h=>[h.id,h.subject,h.score,h.total,h.correct,h.wrong,h.date])}}
 function dateLabel(value:string){return new Intl.DateTimeFormat('it-IT',{day:'2-digit',month:'short',year:'numeric'}).format(new Date(value))}
 export default function App(){
