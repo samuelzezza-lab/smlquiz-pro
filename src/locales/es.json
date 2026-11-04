@@ -291,5 +291,12 @@
   "pointsLabel": "puntos",
   "correctFem": "correctas",
   "logoutMessage": "Sesión cerrada.",
-  "accountSignInRequired": "Inicia sesión para comprar un paquete."
+  "accountSignInRequired": "Inicia sesión para comprar un paquete.",
+  "reviewSaveFailed": "Espacio local insuficiente: no se pudo guardar el repaso.",
+  "reviewCompleted": "Repaso completado.",
+  "disconnected": "Sin conexión",
+  "reviewWrongTitle": "Repasar respuestas incorrectas",
+  "reviewWrongDescription": "Vuelve a practicar las preguntas que respondiste incorrectamente en los cuestionarios completados.",
+  "reviewWrongButton": "Repasar preguntas incorrectas",
+  "reviewWrongEmpty": "Todavía no hay preguntas para repasar. Completa un cuestionario para guardar tus errores."
 }
