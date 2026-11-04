@@ -257,5 +257,6 @@
   "currentPasswordLabel": "Contraseña actual",
   "couponLabel": "Código de cupón",
   "adLabel": "Publicidad",
-  "titleBrand": "SMLQUIZ Pro — Tus estudios, bajo control"
+  "titleBrand": "SMLQUIZ Pro — Tus estudios, bajo control",
+  "metaDescription": "SMLQUIZ Pro — quizzes, simulacros y estadísticas de estudio."
 }
