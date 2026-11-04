@@ -203,3 +203,43 @@ button,a,select,[role='button'],.nav-link,.answer,.subject-card>button{touch-act
  .study-page .study-tools label{justify-content:space-between}
  .study-page .bookmark-row{align-items:flex-start;flex-direction:column;gap:9px}
 }
+
+
+/* SMLQUIZ · rifinitura I miei progressi */
+.progress-page{padding-top:clamp(28px,4vw,48px);max-width:1320px}
+.progress-page>.page-heading h1{font-size:clamp(28px,3vw,35px);letter-spacing:-1.2px}
+.progress-page>.page-heading p{max-width:690px;font-size:12px;line-height:1.7}
+.progress-page>.stats{gap:14px;margin:0 0 17px}
+.progress-page>.stats .stat{position:relative;overflow:hidden;padding:19px;border-color:rgba(151,171,215,.15);background:linear-gradient(145deg,#111c30,#0a1323);box-shadow:0 10px 28px #0002}
+.progress-page>.stats .stat:after{content:"";position:absolute;inset:auto 0 0;height:2px;background:linear-gradient(90deg,#927be8,#48e0bb);opacity:.6}
+.progress-page>.stats .stat>span{font-size:10px;color:#a5b2c9}
+.progress-page>.stats .stat>b{font-size:28px;letter-spacing:-1px;color:#f0f3ff}
+.progress-page>.stats .stat>small{font-size:9px}
+.progress-page>.panel{padding:21px;margin-bottom:15px;border-color:rgba(151,171,215,.15);background:linear-gradient(145deg,#101a2d,#0a1323);box-shadow:0 10px 28px #0002}
+.progress-page>.panel .panel-title{align-items:center;margin-bottom:17px}
+.progress-page>.panel .panel-title h3{font-size:14px;color:#f0f3ff}
+.progress-page>.panel .panel-title p{font-size:10px;line-height:1.6}
+.progress-page>.panel .panel-title>svg{color:#b6a4ff}
+.progress-page .review-wrong-panel{border-color:#a78bfa35;background:radial-gradient(ellipse at 0% 0%,#a78bfa12,transparent 52%),linear-gradient(145deg,#111b30,#0b1424)}
+.progress-page .review-wrong-panel>p{font-size:11px;color:#b3bfd4}
+.progress-page .history-line{padding:14px 0;gap:13px;border-color:rgba(151,171,215,.12)}
+.progress-page .history-line>svg{width:18px;height:18px;color:#b7a6ff}
+.progress-page .history-line b{font-size:11px}
+.progress-page .history-line small{font-size:9px}
+.progress-page .history-line>strong{font:700 11px Manrope;color:#6be0c0;white-space:nowrap}
+.progress-page .empty{min-height:115px;padding:22px;border:1px dashed rgba(151,171,215,.16);border-radius:10px;background:#080f1b;color:#aebbd2;font-size:11px;line-height:1.65}
+.progress-page .challenge-share-panel{padding:17px;margin:15px 0;border-color:#688fff45;background:linear-gradient(145deg,#121d35,#0b1426)}
+.progress-page .challenge-share-panel .challenge-actions{gap:8px}
+.progress-page .challenge-share-panel .challenge-actions>*{min-height:37px}
+@media(max-width:800px){
+ .progress-page>.stats{gap:10px}
+ .progress-page>.stats .stat{padding:15px}
+ .progress-page>.panel{padding:17px}
+}
+@media(max-width:520px){
+ .progress-page>.page-heading h1{font-size:25px}
+ .progress-page>.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .progress-page>.stats .stat>b{font-size:23px}
+ .progress-page .history-line{align-items:flex-start}
+ .progress-page .history-line>strong{margin-left:auto}
+}
