@@ -20,12 +20,14 @@ export default function AdSlot() {
     window.infolinks_pid = pid
     window.infolinks_wsid = wsid
 
-    if (document.querySelector('script[data-sml-infolinks]')) return
+    const existing = document.querySelector('script[data-sml-infolinks]') as HTMLScriptElement | null
+    if (existing) return () => { existing.remove(); delete window.infolinks_pid; delete window.infolinks_wsid }
     const script = document.createElement('script')
     script.async = true
     script.dataset.smlInfolinks = 'true'
     script.src = 'https://resources.infolinks.com/js/infolinks_main.js'
     document.body.appendChild(script)
+    return () => { script.remove(); delete window.infolinks_pid; delete window.infolinks_wsid }
   }, [publisherId, websiteId])
 
   if (!publisherId || !websiteId || Number(publisherId) <= 0 || Number(websiteId) <= 0) return null
