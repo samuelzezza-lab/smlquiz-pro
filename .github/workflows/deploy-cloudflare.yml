@@ -32,8 +32,8 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
           VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
-          VITE_ADSENSE_CLIENT: ${{ secrets.VITE_ADSENSE_CLIENT }}
-          VITE_ADSENSE_SLOT: ${{ secrets.VITE_ADSENSE_SLOT }}
+          VITE_INFOLINKS_PID: ${{ vars.VITE_INFOLINKS_PID }}
+          VITE_INFOLINKS_WSID: ${{ vars.VITE_INFOLINKS_WSID }}
           VITE_STRIPE_CHECKOUT_ENABLED: 'false'
       - name: Create Cloudflare Pages project if needed
         run: npx wrangler pages project create smlquiz-pro --production-branch main || true
