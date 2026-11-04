@@ -352,10 +352,16 @@ Deno.serve(async (req: Request) => {
         return json({ correct: row.esito_corretto, correctAnswer: question.risposta_corretta, explanation: question.spiegazione, alreadyAnswered: true });
       }
       const correct = selectedAnswer === question.risposta_corretta;
-      const { error: updateError } = await admin.from("quiz_attempt_questions")
+      const { data: savedAnswer, error: updateError } = await admin.from("quiz_attempt_questions")
         .update({ risposta_selezionata: selectedAnswer, esito_corretto: correct, answered_at: new Date().toISOString() })
-        .eq("id", row.id);
+        .eq("id", row.id).is("risposta_selezionata", null).select("id").maybeSingle();
       if (updateError) throw updateError;
+      if (!savedAnswer) {
+        const { data: currentAnswer, error: currentError } = await admin.from("quiz_attempt_questions")
+          .select("esito_corretto").eq("id", row.id).maybeSingle();
+        if (currentError) throw currentError;
+        return json({ correct: currentAnswer?.esito_corretto === true, correctAnswer: question.risposta_corretta, explanation: question.spiegazione, alreadyAnswered: true });
+      }
       return json({ correct, correctAnswer: question.risposta_corretta, explanation: question.spiegazione, alreadyAnswered: false });
     }
 
