@@ -52,11 +52,11 @@ Deno.serve(async (req: Request) => {
     const action = String(body.action ?? "");
 
     if (action === "profile") {
-      const { data: existing, error: readError } = await admin.from("user_profiles").select("user_id,display_name,language,leaderboard_opt_in,privacy_policy_version,terms_version,consented_at").eq("user_id", userId).maybeSingle();
+      const { data: existing, error: readError } = await admin.from("user_profiles").select("user_id,display_name,language,leaderboard_opt_in,university_name,university_city,university_course,privacy_policy_version,terms_version,consented_at").eq("user_id", userId).maybeSingle();
       if (readError) throw readError;
       if (body.mode === "read") {
         if (existing) return json({ profile: existing });
-        const { data, error } = await admin.from("user_profiles").insert({ user_id: userId, display_name: authData.user.email?.split("@")[0] ?? "" }).select("user_id,display_name,language,leaderboard_opt_in,privacy_policy_version,terms_version,consented_at").single();
+        const { data, error } = await admin.from("user_profiles").insert({ user_id: userId, display_name: authData.user.email?.split("@")[0] ?? "" }).select("user_id,display_name,language,leaderboard_opt_in,university_name,university_city,university_course,privacy_policy_version,terms_version,consented_at").single();
         if (error) throw error;
         return json({ profile: data });
       }
@@ -64,11 +64,14 @@ Deno.serve(async (req: Request) => {
         display_name: String(body.displayName ?? existing?.display_name ?? "").trim().slice(0, 60),
         language: ["it","en","fr","de","es","zh"].includes(String(body.language ?? existing?.language)) ? String(body.language ?? existing?.language) : "it",
         leaderboard_opt_in: body.leaderboardOptIn === true,
+        university_name: String(body.universityName ?? existing?.university_name ?? "").trim().slice(0, 140) || null,
+        university_city: String(body.universityCity ?? existing?.university_city ?? "").trim().slice(0, 80) || null,
+        university_course: String(body.universityCourse ?? existing?.university_course ?? "").trim().slice(0, 120) || null,
         updated_at: new Date().toISOString(),
       };
       const result = existing
-        ? await admin.from("user_profiles").update(values).eq("user_id", userId).select("user_id,display_name,language,leaderboard_opt_in,privacy_policy_version,terms_version,consented_at").single()
-        : await admin.from("user_profiles").insert({ user_id: userId, ...values }).select("user_id,display_name,language,leaderboard_opt_in,privacy_policy_version,terms_version,consented_at").single();
+        ? await admin.from("user_profiles").update(values).eq("user_id", userId).select("user_id,display_name,language,leaderboard_opt_in,university_name,university_city,university_course,privacy_policy_version,terms_version,consented_at").single()
+        : await admin.from("user_profiles").insert({ user_id: userId, ...values }).select("user_id,display_name,language,leaderboard_opt_in,university_name,university_city,university_course,privacy_policy_version,terms_version,consented_at").single();
       if (result.error) throw result.error;
       return json({ profile: result.data });
     }
