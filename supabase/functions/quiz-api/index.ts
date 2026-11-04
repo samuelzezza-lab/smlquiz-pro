@@ -188,9 +188,8 @@ Deno.serve(async (req: Request) => {
       const pageSize = 1000;
       while (true) {
         const { data: rows, error } = await admin.from("quiz_attempt_questions")
-          .select("domanda_id,answered_at,domande!inner(id,testo_domanda,opzioni,risposta_corretta,spiegazione),quiz_attempts!inner(user_id,status)")
+          .select("domanda_id,answered_at,domande!inner(id,testo_domanda,opzioni,risposta_corretta,spiegazione),quiz_attempts!inner(user_id)")
           .eq("quiz_attempts.user_id", userId)
-          .eq("quiz_attempts.status", "completed")
           .eq("esito_corretto", false)
           .order("answered_at", { ascending: false })
           .range(offset, offset + pageSize - 1);
