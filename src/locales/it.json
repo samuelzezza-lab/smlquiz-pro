@@ -503,5 +503,10 @@
   "quizzesDoneToday": "Quiz completati oggi",
   "examNameDefault": "Esame",
   "storageLocalFailed": "Spazio locale insufficiente: libera spazio nel browser per conservare tutti i progressi.",
-  "profileSaveDeviceFailed": "Non riesco a salvare il quiz sul dispositivo: controlla lo spazio disponibile."
+  "profileSaveDeviceFailed": "Non riesco a salvare il quiz sul dispositivo: controlla lo spazio disponibile.",
+  "captchaSetupWarning": "Protezione anti-bot da configurare prima di aprire le registrazioni.",
+  "freeLabel": "gratis",
+  "extraLabel": "extra",
+  "freeCreditsLabel": "quiz gratuiti",
+  "purchasedExtraLabel": "quiz extra"
 }
