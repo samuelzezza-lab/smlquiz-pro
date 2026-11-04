@@ -280,5 +280,16 @@
   "legal_about_heading_1": "我们的方法",
   "legal_about_text_1": "我们重视清晰的问题、有用的解释、透明的反馈以及帮助系统学习的工具。平台持续改进，用户反馈也会推动其完善。",
   "legal_about_heading_2": "联系方式",
-  "legal_about_text_2": "此版本未公布运营者身份及支持联系方式。公开及商业提供服务时必须补充这些信息。"
+  "legal_about_text_2": "此版本未公布运营者身份及支持联系方式。公开及商业提供服务时必须补充这些信息。",
+  "averageWeightedLabel": "Media ponderada",
+  "checkoutStripeNotice": "Stripe Checkout está preparado. Los pagos reales permanecerán desactivados hasta completar la configuración de producción.",
+  "localDebuggerLabel": "Depurador local",
+  "studySmarter": "ESTUDIA MEJOR",
+  "streakDaysUnit": "días",
+  "wait": "Espera…",
+  "accountUserLabel": "Cuenta de estudiante",
+  "pointsLabel": "puntos",
+  "correctFem": "correctas",
+  "logoutMessage": "Sesión cerrada.",
+  "accountSignInRequired": "Inicia sesión para comprar un paquete."
 }
