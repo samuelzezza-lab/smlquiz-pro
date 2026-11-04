@@ -197,6 +197,44 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    if (action === "weak-topics") {
+      const { data: attempts, error: attemptsError } = await admin.from("quiz_attempts")
+        .select("id").eq("user_id", userId).eq("status", "completed").limit(1000);
+      if (attemptsError) throw attemptsError;
+      const attemptIds = (attempts ?? []).map((x) => x.id);
+      if (!attemptIds.length) return json({ topics: [] });
+      const { data: answers, error: answersError } = await admin.from("quiz_attempt_questions")
+        .select("domanda_id,esito_corretto").in("attempt_id", attemptIds);
+      if (answersError) throw answersError;
+      const questionIds = [...new Set((answers ?? []).map((x) => x.domanda_id))];
+      const { data: questions, error: questionsError } = questionIds.length
+        ? await admin.from("domande").select("id,concetto_chiave,capitolo_id").in("id", questionIds)
+        : { data: [], error: null };
+      if (questionsError) throw questionsError;
+      const chapterIds = [...new Set((questions ?? []).map((x) => x.capitolo_id).filter(Boolean))];
+      const { data: chapters, error: chaptersError } = chapterIds.length
+        ? await admin.from("capitoli").select("id,nome").in("id", chapterIds)
+        : { data: [], error: null };
+      if (chaptersError) throw chaptersError;
+      const chapterNames = new Map((chapters ?? []).map((x) => [x.id, x.nome]));
+      const topicByQuestion = new Map((questions ?? []).map((x) => [
+        x.id, String(x.concetto_chiave || chapterNames.get(x.capitolo_id) || "Argomento non classificato").trim(),
+      ]));
+      const totals = new Map<string, { correct: number; wrong: number }>();
+      for (const answer of answers ?? []) {
+        const topic = topicByQuestion.get(answer.domanda_id) || "Argomento non classificato";
+        const stats = totals.get(topic) ?? { correct: 0, wrong: 0 };
+        if (answer.esito_corretto === true) stats.correct++;
+        if (answer.esito_corretto === false) stats.wrong++;
+        totals.set(topic, stats);
+      }
+      const topics = [...totals.entries()].map(([topic, stats]) => ({
+        topic, correct: stats.correct, wrong: stats.wrong, total: stats.correct + stats.wrong,
+        errorRate: stats.correct + stats.wrong ? stats.wrong / (stats.correct + stats.wrong) : 0,
+      })).filter((x) => x.total > 0).sort((a, b) => b.errorRate - a.errorRate || b.wrong - a.wrong).slice(0, 8);
+      return json({ topics });
+    }
+
     if (action === "history") {
       const { data, error } = await admin.from("quiz_attempts")
         .select("id,materia_id,score,total_questions,completed_at,status,mode,started_at")
