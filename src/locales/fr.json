@@ -512,5 +512,8 @@
   "yearSuffix": "e année",
   "historyCleared": "Historique effacé.",
   "unlimitedQuizzes": "quiz illimités",
-  "sessionsUnit": "quiz"
+  "sessionsUnit": "quiz",
+  "universitySaveFailed": "Échec de l’enregistrement de l’université.",
+  "answerSaveFailed": "Impossible d’enregistrer la réponse.",
+  "quizSaveFailed": "Erreur lors de l’enregistrement du quiz."
 }
