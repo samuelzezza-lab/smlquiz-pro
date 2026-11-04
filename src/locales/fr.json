@@ -280,5 +280,16 @@
   "legal_about_heading_1": "Unser Ansatz",
   "legal_about_text_1": "Wir setzen auf klare Fragen, hilfreiche Erklärungen, transparentes Feedback und Werkzeuge für strukturiertes Lernen. Die Plattform entwickelt sich weiter; Nutzerhinweise tragen zur Verbesserung bei.",
   "legal_about_heading_2": "Kontakt",
-  "legal_about_text_2": "Die Identität des Betreibers und Support-Kontaktdaten sind in dieser Version nicht veröffentlicht. Sie sind für den öffentlichen und kommerziellen Betrieb erforderlich."
+  "legal_about_text_2": "Die Identität des Betreibers und Support-Kontaktdaten sind in dieser Version nicht veröffentlicht. Sie sind für den öffentlichen und kommerziellen Betrieb erforderlich.",
+  "averageWeightedLabel": "Moyenne pondérée",
+  "checkoutStripeNotice": "Le paiement Stripe est prêt. Les paiements réels restent désactivés jusqu’à la configuration de production.",
+  "localDebuggerLabel": "Débogueur local",
+  "studySmarter": "ÉTUDIER PLUS EFFICACEMENT",
+  "streakDaysUnit": "jours",
+  "wait": "Patientez…",
+  "accountUserLabel": "Compte étudiant",
+  "pointsLabel": "points",
+  "correctFem": "correctes",
+  "logoutMessage": "Déconnexion effectuée.",
+  "accountSignInRequired": "Connectez-vous pour acheter un forfait."
 }
