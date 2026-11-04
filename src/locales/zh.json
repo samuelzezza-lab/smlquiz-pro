@@ -503,5 +503,10 @@
   "quizzesDoneToday": "今日已完成测验",
   "examNameDefault": "考试",
   "storageLocalFailed": "本地存储空间不足：请释放浏览器空间以保存学习进度。",
-  "profileSaveDeviceFailed": "无法在此设备上保存测验：请检查可用空间。"
+  "profileSaveDeviceFailed": "无法在此设备上保存测验：请检查可用空间。",
+  "captchaSetupWarning": "启用注册前必须配置反机器人保护。",
+  "freeLabel": "免费",
+  "extraLabel": "额外",
+  "freeCreditsLabel": "免费测验",
+  "purchasedExtraLabel": "额外测验"
 }
