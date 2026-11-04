@@ -369,3 +369,40 @@ button,a,select,[role='button'],.nav-link,.answer,.subject-card>button{touch-act
  .shell.quiz-active .side-metrics{grid-template-columns:1fr 1fr}
  .shell.quiz-active .side-metrics>div:last-child{grid-column:1/-1}
 }
+
+/* SMLQUIZ · aggiornamento finale: statistiche, prestazioni e mobile */
+.progress-page>.stats{grid-template-columns:repeat(5,minmax(0,1fr))}
+.progress-page .subject-performance{padding:21px;margin:0 0 15px;border-color:rgba(151,171,215,.15);background:linear-gradient(145deg,#101a2d,#0a1323);box-shadow:0 10px 28px #0002}
+.progress-page .subject-performance .panel-title{align-items:center;margin-bottom:16px}
+.progress-page .subject-performance .panel-title h3{font-size:14px;color:#f0f3ff}
+.progress-page .subject-performance .panel-title p{font-size:10px;line-height:1.6}
+.progress-page .subject-performance .panel-title>svg{color:#b6a4ff}
+.progress-page .performance-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 14px;align-items:center;padding:13px 0;border-top:1px solid rgba(151,171,215,.12)}
+.progress-page .performance-row>div:first-child{display:flex;flex-direction:column;gap:4px;min-width:0}
+.progress-page .performance-row b{overflow:hidden;text-overflow:ellipsis;font-size:11px;color:#e8eefc}
+.progress-page .performance-row small{font-size:9px;color:#9eacc4}
+.progress-page .performance-row>strong{font:700 12px Manrope;color:#70dfc1}
+.progress-page .performance-track{grid-column:1/-1;height:6px;overflow:hidden;border-radius:20px;background:#ffffff12}
+.progress-page .performance-track i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#927be8,#48e0bb)}
+/* Touch target e spaziatura coerenti su telefoni e tablet */
+@media(max-width:800px){
+ .progress-page>.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .progress-page .subject-performance{padding:17px}
+ .shell .topbar button,.shell .topbar select,.shell .nav-link,.shell .quiz button,.shell .subject-card>button{min-height:42px}
+ .shell .quiz .answer{min-height:54px}
+ .shell .content{padding-left:clamp(12px,3vw,20px);padding-right:clamp(12px,3vw,20px)}
+}
+@media(max-width:520px){
+ .progress-page>.stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .progress-page>.stats .stat{min-width:0;padding:13px}
+ .progress-page>.stats .stat>span{font-size:9px;line-height:1.4}
+ .progress-page>.stats .stat>b{font-size:21px}
+ .progress-page .subject-performance{padding:14px}
+ .shell .quiz-top-actions button,.shell .quiz-bottom button{min-height:44px}
+ .shell .quiz .answer{min-height:56px;padding:12px}
+ .shell .subject-card>button{min-height:44px}
+}
+@media(prefers-reduced-motion:reduce){
+ .shell *, .shell *::before, .shell *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+
