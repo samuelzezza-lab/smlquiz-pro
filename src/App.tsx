@@ -24,7 +24,7 @@ function dateLabel(value:string){return new Intl.DateTimeFormat('it-IT',{day:'2-
 export default function App(){
  const [user,setUser]=useState<User|null>(null),[page,setPage]=useState<Page>('home')
  const [faculties,setFaculties]=useState<Faculty[]>([]),[subjects,setSubjects]=useState<Subject[]>([]),[quizSets,setQuizSets]=useState<QuizSet[]>([])
- const [wallet,setWallet]=useState<{paidCredits:number;freeUsed:number;freeRemaining:number;ledger:LedgerEntry[]}>({paidCredits:0,freeUsed:0,freeRemaining:5,ledger:[]}),[attemptId,setAttemptId]=useState<string|null>(null)
+ const [wallet,setWallet]=useState<{paidCredits:number;freeUsed:number;freeRemaining:number;ledger:LedgerEntry[];ownerUnlimited?:boolean}>({paidCredits:0,freeUsed:0,freeRemaining:5,ledger:[]}),[attemptId,setAttemptId]=useState<string|null>(null)
  const [answerFeedback,setAnswerFeedback]=useState<{correct:boolean;correctAnswer:string;explanation:string|null}|null>(null)
  const [couponCode,setCouponCode]=useState(''),[couponBusy,setCouponBusy]=useState(false)
  const [reportOpen,setReportOpen]=useState(false),[reportCategory,setReportCategory]=useState('altro'),[reportDetails,setReportDetails]=useState('')
