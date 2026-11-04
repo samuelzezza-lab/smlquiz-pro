@@ -512,5 +512,8 @@
   "yearSuffix": "Studienjahr",
   "historyCleared": "Verlauf gelöscht.",
   "unlimitedQuizzes": "unbegrenzte Quiz",
-  "sessionsUnit": "Quiz"
+  "sessionsUnit": "Quiz",
+  "universitySaveFailed": "Universität konnte nicht gespeichert werden.",
+  "answerSaveFailed": "Die Antwort konnte nicht gespeichert werden.",
+  "quizSaveFailed": "Fehler beim Speichern des Quiz."
 }
