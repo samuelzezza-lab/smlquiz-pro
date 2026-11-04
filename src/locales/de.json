@@ -503,5 +503,10 @@
   "quizzesDoneToday": "Heute abgeschlossene Quiz",
   "examNameDefault": "Prüfung",
   "storageLocalFailed": "Nicht genügend lokaler Speicher: Gib Browserspeicher frei, um deinen Fortschritt zu speichern.",
-  "profileSaveDeviceFailed": "Das Quiz kann nicht auf diesem Gerät gespeichert werden: Prüfe den verfügbaren Speicher."
+  "profileSaveDeviceFailed": "Das Quiz kann nicht auf diesem Gerät gespeichert werden: Prüfe den verfügbaren Speicher.",
+  "captchaSetupWarning": "Der Bot-Schutz muss eingerichtet werden, bevor Registrierungen möglich sind.",
+  "freeLabel": "kostenlos",
+  "extraLabel": "zusätzlich",
+  "freeCreditsLabel": "kostenlose Quiz",
+  "purchasedExtraLabel": "zusätzliche Quiz"
 }
