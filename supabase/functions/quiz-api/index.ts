@@ -379,7 +379,7 @@ Deno.serve(async (req: Request) => {
       const correct = (answers ?? []).filter((x) => x.esito_corretto === true).length;
       const wrong = (answers ?? []).filter((x) => x.esito_corretto === false).length;
       const { error: completeError } = await admin.rpc("complete_quiz_attempt", {
-        p_attempt_id: attemptId, p_score: correct,
+        p_attempt_id: attemptId, p_score: Number((correct - wrong * 0.25).toFixed(2)),
       });
       if (completeError) throw completeError;
       const { data: streak, error: streakError } = await admin.rpc("update_user_streak", { p_user_id: userId });
