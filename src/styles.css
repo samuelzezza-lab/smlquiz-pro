@@ -406,3 +406,21 @@ button,a,select,[role='button'],.nav-link,.answer,.subject-card>button{touch-act
  .shell *, .shell *::before, .shell *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
 
+
+/* University versus university competition */
+.leaderboard-page{display:grid;gap:22px}
+.university-profile-panel,.university-ranking-panel{padding:clamp(18px,3vw,28px)}
+.university-form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:20px 0}
+.university-form-grid label{display:grid;gap:8px;color:var(--muted,#9ca3af);font-size:13px;font-weight:650}
+.university-form-grid input,.university-form-grid select{width:100%;min-width:0;min-height:46px;border:1px solid var(--line);border-radius:12px;background:#080f1c;color:var(--text);padding:0 13px;font:inherit}
+.university-consent{display:flex;align-items:flex-start;gap:10px;margin:4px 0 18px;max-width:850px;line-height:1.5}
+.university-consent input{margin-top:3px;accent-color:#8b5cf6}
+.university-ranking-list{display:grid;gap:9px;margin-top:16px}
+.university-ranking-row{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:13px;padding:14px;border:1px solid var(--line);border-radius:14px;background:#ffffff04}
+.university-ranking-row.my-university{border-color:rgba(139,92,246,.65);background:rgba(139,92,246,.09)}
+.university-rank{display:grid;place-items:center;width:32px;height:32px;border-radius:10px;background:rgba(139,92,246,.14);font-weight:800}
+.university-ranking-name{display:grid;gap:4px;min-width:0}
+.university-ranking-name b{overflow-wrap:anywhere}
+.university-ranking-name small{color:var(--muted)}
+.university-ranking-row>strong{white-space:nowrap;color:#a78bfa;font-size:17px}
+@media(max-width:760px){.university-form-grid{grid-template-columns:1fr}.university-ranking-row{grid-template-columns:32px minmax(0,1fr) auto;gap:9px;padding:11px}.university-ranking-row>strong{font-size:15px}}
