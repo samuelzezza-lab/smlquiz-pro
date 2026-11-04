@@ -503,5 +503,10 @@
   "quizzesDoneToday": "Quiz terminés aujourd’hui",
   "examNameDefault": "Examen",
   "storageLocalFailed": "Espace local insuffisant : libérez de l’espace dans le navigateur pour conserver votre progression.",
-  "profileSaveDeviceFailed": "Impossible d’enregistrer le quiz sur cet appareil : vérifiez l’espace disponible."
+  "profileSaveDeviceFailed": "Impossible d’enregistrer le quiz sur cet appareil : vérifiez l’espace disponible.",
+  "captchaSetupWarning": "La protection anti-robot doit être configurée avant l’ouverture des inscriptions.",
+  "freeLabel": "gratuit",
+  "extraLabel": "supplémentaire",
+  "freeCreditsLabel": "quiz gratuits",
+  "purchasedExtraLabel": "quiz supplémentaires"
 }
