@@ -508,5 +508,9 @@
   "freeLabel": "kostenlos",
   "extraLabel": "zusätzlich",
   "freeCreditsLabel": "kostenlose Quiz",
-  "purchasedExtraLabel": "zusätzliche Quiz"
+  "purchasedExtraLabel": "zusätzliche Quiz",
+  "yearSuffix": "Studienjahr",
+  "historyCleared": "Verlauf gelöscht.",
+  "unlimitedQuizzes": "unbegrenzte Quiz",
+  "sessionsUnit": "Quiz"
 }
