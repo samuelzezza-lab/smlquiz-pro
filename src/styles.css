@@ -316,3 +316,56 @@ button,a,select,[role='button'],.nav-link,.answer,.subject-card>button{touch-act
  .calculator-page .exam-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
  .legal-page .legal-grid{grid-template-columns:1fr}
 }
+
+
+/* SMLQUIZ · modalità simulazione: focus e leggibilità */
+.shell.quiz-active{background:radial-gradient(ellipse at 50% -20%,#4c3d8250,transparent 48%),#050915}
+.shell.quiz-active .main{margin-left:0;min-height:100dvh}
+.shell.quiz-active .content{width:min(100%,1120px);padding:clamp(18px,4vw,42px) clamp(14px,3vw,32px);display:flex;flex-direction:column;justify-content:center}
+.shell.quiz-active .quiz-grid{width:100%;max-width:1050px;margin:0 auto;grid-template-columns:minmax(0,1fr) 250px;gap:16px;align-items:start}
+.shell.quiz-active .quiz{padding:clamp(18px,3vw,30px);border-color:#a78bfa38;background:linear-gradient(145deg,#121d33,#091321);box-shadow:0 24px 70px #0006}
+.shell.quiz-active .quiz-top{align-items:center;gap:15px}
+.shell.quiz-active .quiz-top h2{font-size:clamp(15px,2vw,19px)}
+.shell.quiz-active .quiz-top-actions{display:flex;align-items:center;gap:10px}
+.shell.quiz-active .quiz-top-actions .secondary{padding:9px 12px;font-size:10px}
+.shell.quiz-active .progress-label{font-size:10px}
+.shell.quiz-active .progress-track{height:6px;margin-bottom:30px}
+.shell.quiz-active .q-label{display:inline-block;margin-bottom:7px}
+.shell.quiz-active .question-heading-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.shell.quiz-active .question{max-width:850px;font-size:clamp(17px,2vw,21px);line-height:1.6;letter-spacing:-.2px;margin:9px 0 22px;color:#f0f3ff}
+.shell.quiz-active .bookmark-button{flex:none;border:1px solid #a78bfa38;background:#a78bfa0c;color:#c6b8ff;border-radius:8px;padding:8px 10px;font-size:9px}
+.shell.quiz-active .bookmark-button.active{background:#a78bfa20;border-color:#a78bfa85}
+.shell.quiz-active .answers{gap:10px}
+.shell.quiz-active .answer{min-height:54px;padding:13px 15px;font-size:12px;line-height:1.6;border-color:#97abd72b;background:#080f1d;transition:border-color .15s,background .15s,transform .15s}
+.shell.quiz-active .answer:not(:disabled):hover{border-color:#a78bfa85;background:#a78bfa0d;transform:translateY(-1px)}
+.shell.quiz-active .answer>span{width:29px;height:29px;border:1px solid #97abd722;background:#ffffff08}
+.shell.quiz-active .explain{padding:16px;font-size:11px;line-height:1.6}
+.shell.quiz-active .quiz-bottom{margin-top:25px;padding-top:18px}
+.shell.quiz-active .quiz-bottom>span{font-size:9px}
+.shell.quiz-active .side-metrics{position:sticky;top:20px;padding:20px;border-color:#48e0bb26;background:linear-gradient(145deg,#101e2e,#091421)}
+.shell.quiz-active .side-metrics>svg{color:#65ddbd}
+.shell.quiz-active .side-metrics h3{font-size:13px}
+.shell.quiz-active .side-metrics>div{font-size:10px}
+.shell.quiz-active .side-metrics>div b{font-size:12px;color:#70dfc1}
+.shell.quiz-active .resume-quiz-panel{width:min(100%,680px);margin:auto;padding:clamp(22px,4vw,38px);border-color:#a78bfa40;background:linear-gradient(145deg,#121d33,#091321);box-shadow:0 24px 70px #0006}
+.shell.quiz-active .resume-quiz-panel h2{font:800 24px Manrope;letter-spacing:-.7px}
+.shell.quiz-active .resume-quiz-panel p{max-width:500px;font-size:12px;line-height:1.7;color:#aab7cf}
+@media(max-width:800px){
+ .shell.quiz-active .content{padding:14px 14px calc(20px + env(safe-area-inset-bottom))}
+ .shell.quiz-active .quiz-grid{grid-template-columns:1fr;gap:12px}
+ .shell.quiz-active .side-metrics{position:static;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:14px}
+ .shell.quiz-active .side-metrics>svg,.shell.quiz-active .side-metrics h3,.shell.quiz-active .side-metrics p{grid-column:1/-1}
+ .shell.quiz-active .side-metrics>div{display:flex;flex-direction:column;gap:4px;padding:9px;border:1px solid #97abd71c;border-radius:7px}
+}
+@media(max-width:520px){
+ .shell.quiz-active .quiz{padding:15px}
+ .shell.quiz-active .quiz-top{align-items:flex-start;flex-direction:column}
+ .shell.quiz-active .quiz-top-actions{width:100%;justify-content:space-between}
+ .shell.quiz-active .question-heading-row{flex-direction:column-reverse;gap:5px}
+ .shell.quiz-active .question{font-size:16px;margin:7px 0 16px}
+ .shell.quiz-active .answer{font-size:11px;min-height:50px;padding:11px}
+ .shell.quiz-active .quiz-bottom{gap:14px}
+ .shell.quiz-active .quiz-bottom .primary{width:100%}
+ .shell.quiz-active .side-metrics{grid-template-columns:1fr 1fr}
+ .shell.quiz-active .side-metrics>div:last-child{grid-column:1/-1}
+}
