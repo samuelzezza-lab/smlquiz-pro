@@ -503,5 +503,10 @@
   "quizzesDoneToday": "Quizzes completados hoy",
   "examNameDefault": "Examen",
   "storageLocalFailed": "Almacenamiento local insuficiente: libera espacio en el navegador para guardar tu progreso.",
-  "profileSaveDeviceFailed": "No se puede guardar el quiz en este dispositivo: comprueba el espacio disponible."
+  "profileSaveDeviceFailed": "No se puede guardar el quiz en este dispositivo: comprueba el espacio disponible.",
+  "captchaSetupWarning": "La protección anti-bots debe configurarse antes de habilitar los registros.",
+  "freeLabel": "gratis",
+  "extraLabel": "extra",
+  "freeCreditsLabel": "quizzes gratuitos",
+  "purchasedExtraLabel": "quizzes extra"
 }
