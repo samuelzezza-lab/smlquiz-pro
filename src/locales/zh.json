@@ -291,5 +291,12 @@
   "accountSignInRequired": "登录后购买套餐。",
   "legal_about_text_0": "SMLQUIZ Pro 旨在让大学练习更有条理、更易使用且可衡量。我们希望帮助学生了解所掌握的知识、发现不足并持续练习。",
   "legal_about_text_1": "我们重视清晰的问题、有用的解释、透明的反馈以及帮助系统学习的工具。平台持续改进，用户反馈也会推动其完善。",
-  "legal_about_text_2": "此版本未公布运营者身份及支持联系方式。公开及商业提供服务时必须补充这些信息。"
+  "legal_about_text_2": "此版本未公布运营者身份及支持联系方式。公开及商业提供服务时必须补充这些信息。",
+  "reviewSaveFailed": "本地存储空间不足，无法保存错题复习。",
+  "reviewCompleted": "复习完成。",
+  "disconnected": "离线",
+  "reviewWrongTitle": "复习错题",
+  "reviewWrongDescription": "重新练习已完成测验中答错的问题。",
+  "reviewWrongButton": "复习错题",
+  "reviewWrongEmpty": "目前没有需要复习的问题。完成一次测验即可收集错题。"
 }
