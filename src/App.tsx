@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useMemo, useState, type FormEvent, type CSSProperties } from 'react'
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useState, type FormEvent, type CSSProperties } from 'react'
 import { Activity, ArrowRight, Award, BarChart3, BookOpen, Brain, Calculator, CheckCircle2, Clipboard, ChevronDown, CircleHelp, Clock3, CreditCard, GraduationCap, LayoutDashboard, LogOut, Menu, Search, Settings, ShieldCheck, Sparkles, Target, Trophy, UserRound, WifiOff, X } from 'lucide-react'
 import { supabase, supabaseReady, requireSupabase } from './lib/supabase'
 import { languages, t, type Language } from './i18n'
@@ -45,6 +45,8 @@ export default function App(){
  const [subject,setSubject]=useState<Subject|null>(null),[questions,setQuestions]=useState<Question[]>([]),[index,setIndex]=useState(0),[choice,setChoice]=useState<string|null>(null),[revealed,setRevealed]=useState(false),[correct,setCorrect]=useState(0),[wrong,setWrong]=useState(0),[seconds,setSeconds]=useState(0),[started,setStarted]=useState<number|null>(null)
  const [exams,setExams]=useState(()=>{try{const saved=JSON.parse(localStorage.getItem('smlquiz.exams.v1')||'null');return Array.isArray(saved)&&saved.length?saved:[{grade:'28',cfu:'6'},{grade:'30',cfu:'9'}]}catch{return [{grade:'28',cfu:'6'},{grade:'30',cfu:'9'}]}})
  const tr=(key:string)=>t(language,key)
+ useLayoutEffect(()=>{const previous=window.history.scrollRestoration;window.history.scrollRestoration='manual';window.scrollTo(0,0);return()=>{window.history.scrollRestoration=previous}},[])
+ useLayoutEffect(()=>{window.scrollTo(0,0)},[page])
  const isOwner=wallet.ownerUnlimited===true
  const notify=(message:string)=>{setToast(message);setDebugLogs(v=>[{time:new Date().toLocaleTimeString('it-IT'),message},...v].slice(0,40));window.setTimeout(()=>setToast(''),3500)}
  useEffect(()=>{if(!supabase)return;supabase.auth.getSession().then(({data})=>setUser(data.session?.user?{id:data.session.user.id,email:data.session.user.email,acceptedPrivacy:data.session.user.user_metadata?.accepted_privacy===true}:null));const {data}=supabase.auth.onAuthStateChange((_e,s)=>setUser(s?.user?{id:s.user.id,email:s.user.email,acceptedPrivacy:s.user.user_metadata?.accepted_privacy===true}:null));return()=>data.subscription.unsubscribe()},[])
