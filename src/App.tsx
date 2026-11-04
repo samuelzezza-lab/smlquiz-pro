@@ -95,13 +95,17 @@ export default function App(){
  async function startQuiz(s:Subject){
   if(!user){go('account');notify('Accedi o registrati per iniziare un quiz.');return}
   if(!supabase)return;
-  const readySets=quizSets.filter(q=>q.materia_id===s.id&&q.status==='ready'&&q.question_count===10);
-  const nextQuizNumber=readySets.reduce((max,q)=>Math.max(max,q.quiz_number),0)+1;
+  const readySets=quizSets.filter(q=>q.materia_id===s.id&&q.status==='ready'&&q.question_count===10).sort((a,b)=>a.quiz_number-b.quiz_number);
   setBusy(true);setSubject(s);
   try{
-   let quizSetId='';
+   const {data:completedRows,error:completedError}=await supabase.from('quiz_attempts').select('quiz_set_id').eq('user_id',user.id).eq('materia_id',s.id).eq('status','completed').not('quiz_set_id','is',null);
+   if(completedError)throw completedError;
+   const completedSetIds=new Set((completedRows||[]).map((row:any)=>row.quiz_set_id).filter(Boolean));
+   const firstUncompleted=readySets.find(q=>!completedSetIds.has(q.id));
+   const nextQuizNumber=firstUncompleted?.quiz_number??(readySets.reduce((max,q)=>Math.max(max,q.quiz_number),0)+1);
+   let quizSetId=firstUncompleted?.id||'';
    const targetSet=quizSets.find(q=>q.materia_id===s.id&&q.quiz_number===nextQuizNumber);
-   if(targetSet?.status==='ready'&&targetSet.question_count===10)quizSetId=targetSet.id;
+   if(!quizSetId&&targetSet?.status==='ready'&&targetSet.question_count===10)quizSetId=targetSet.id;
    if(!quizSetId){
     notify('Sto preparando il quiz '+nextQuizNumber+' di questa materia con l’IA…');
     for(let attempt=0;attempt<12&&!quizSetId;attempt++){
