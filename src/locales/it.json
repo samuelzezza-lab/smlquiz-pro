@@ -508,5 +508,9 @@
   "freeLabel": "gratis",
   "extraLabel": "extra",
   "freeCreditsLabel": "quiz gratuiti",
-  "purchasedExtraLabel": "quiz extra"
+  "purchasedExtraLabel": "quiz extra",
+  "yearSuffix": "° anno",
+  "historyCleared": "Cronologia cancellata.",
+  "unlimitedQuizzes": "quiz illimitati",
+  "sessionsUnit": "quiz"
 }
