@@ -11,6 +11,18 @@ function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: corsHeaders });
 }
 
+function localizedQuestion<T extends { testo_domanda?: string; opzioni?: string[]; risposta_corretta?: string; spiegazione?: string | null; traduzioni?: Record<string, any> }>(q: T, language: string) {
+  const translated = language === "it" ? null : q.traduzioni?.[language];
+  if (!translated) return q;
+  return {
+    ...q,
+    testo_domanda: translated.testo_domanda || q.testo_domanda,
+    opzioni: Array.isArray(translated.opzioni) && translated.opzioni.length === 4 ? translated.opzioni : q.opzioni,
+    risposta_corretta: translated.risposta_corretta || q.risposta_corretta,
+    spiegazione: translated.spiegazione ?? q.spiegazione,
+  };
+}
+
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Operazione non riuscita";
 }
@@ -300,7 +312,7 @@ Deno.serve(async (req: Request) => {
       if (!set || set.question_count !== 10) return json({ error: "Questo quiz non è ancora disponibile" }, 404);
 
       const { data: bank, error: bankError } = await admin.from("domande")
-        .select("id,testo_domanda,opzioni").eq("quiz_id", quizSetId);
+        .select("id,testo_domanda,opzioni,traduzioni").eq("quiz_id", quizSetId);
       if (bankError) throw bankError;
       if (!bank || bank.length !== 10) return json({ error: "Il quiz non contiene 10 domande verificate" }, 409);
       const selected = [...bank].sort(() => Math.random() - 0.5);
@@ -334,12 +346,13 @@ Deno.serve(async (req: Request) => {
       }
       const attemptId = started.attempt_id as string;
       const { data: rows, error: rowsError } = await admin.from("quiz_attempt_questions")
-        .select("domanda_id,position,domande!inner(id,testo_domanda,opzioni)")
+        .select("domanda_id,position,domande!inner(id,testo_domanda,opzioni,traduzioni)")
         .eq("attempt_id", attemptId).order("position");
       if (rowsError) throw rowsError;
+      const language = ["it", "en", "fr", "de", "es", "zh"].includes(String(body.language)) ? String(body.language) : "it";
       const questions = (rows ?? []).map((row) => {
-        const q = row.domande as unknown as { id: string; testo_domanda: string; opzioni: string[] };
-        return { id: q.id, testo_domanda: q.testo_domanda, opzioni: q.opzioni, position: row.position };
+        const q = row.domande as unknown as { id: string; testo_domanda: string; opzioni: string[]; traduzioni?: Record<string, any> };
+        return { ...localizedQuestion(q, language), id: q.id, position: row.position, traduzioni: q.traduzioni ?? {} };
       });
       return json({ attemptId, accessSource: started.access_source, existing: started.existing, questions });
     }
@@ -347,21 +360,26 @@ Deno.serve(async (req: Request) => {
     if (action === "answer") {
       const attemptId = String(body.attemptId ?? "");
       const questionId = String(body.questionId ?? "");
-      const selectedAnswer = String(body.selectedAnswer ?? "");
-      if (!attemptId || !questionId || !selectedAnswer) return json({ error: "Risposta incompleta" }, 400);
+      const selectedIndex = Number(body.selectedIndex);
+      const legacySelectedAnswer = String(body.selectedAnswer ?? "");
+      if (!attemptId || !questionId || (!Number.isInteger(selectedIndex) && !legacySelectedAnswer)) return json({ error: "Risposta incompleta" }, 400);
       const { data: attempt, error: attemptError } = await admin.from("quiz_attempts")
         .select("id,status").eq("id", attemptId).eq("user_id", userId).maybeSingle();
       if (attemptError) throw attemptError;
       if (!attempt || attempt.status !== "started") return json({ error: "Sessione non valida o già conclusa" }, 409);
       const { data: row, error: rowError } = await admin.from("quiz_attempt_questions")
-        .select("id,risposta_selezionata,esito_corretto,domande!inner(id,opzioni,risposta_corretta,spiegazione)")
+        .select("id,risposta_selezionata,esito_corretto,domande!inner(id,opzioni,risposta_corretta,spiegazione,traduzioni)")
         .eq("attempt_id", attemptId).eq("domanda_id", questionId).maybeSingle();
       if (rowError) throw rowError;
       if (!row) return json({ error: "Domanda non appartenente a questa sessione" }, 404);
-      const question = row.domande as unknown as { opzioni: string[]; risposta_corretta: string; spiegazione: string | null };
+      const question = row.domande as unknown as { opzioni: string[]; risposta_corretta: string; spiegazione: string | null; traduzioni?: Record<string, any> };
+      const selectedAnswer = Number.isInteger(selectedIndex) && selectedIndex >= 0 && selectedIndex < question.opzioni.length
+        ? question.opzioni[selectedIndex] : legacySelectedAnswer;
       if (!question.opzioni.includes(selectedAnswer)) return json({ error: "Risposta non valida" }, 400);
+      const language = ["it", "en", "fr", "de", "es", "zh"].includes(String(body.language)) ? String(body.language) : "it";
+      const localized = localizedQuestion(question, language) as typeof question;
       if (row.risposta_selezionata !== null) {
-        return json({ correct: row.esito_corretto, correctAnswer: question.risposta_corretta, explanation: question.spiegazione, alreadyAnswered: true });
+        return json({ correct: row.esito_corretto, correctAnswer: localized.risposta_corretta, explanation: localized.spiegazione, alreadyAnswered: true });
       }
       const correct = selectedAnswer === question.risposta_corretta;
       const { data: savedAnswer, error: updateError } = await admin.from("quiz_attempt_questions")
