@@ -280,5 +280,16 @@
   "legal_about_heading_1": "Our approach",
   "legal_about_text_1": "We believe in clear questions, useful explanations, transparent feedback, and tools that support structured study. The platform is evolving, and user reports help improve it.",
   "legal_about_heading_2": "Contact",
-  "legal_about_text_2": "The operator’s identity and support contact details are not published in this version. They will be required for public and commercial service delivery."
+  "legal_about_text_2": "The operator’s identity and support contact details are not published in this version. They will be required for public and commercial service delivery.",
+  "averageWeightedLabel": "Media ponderata",
+  "checkoutStripeNotice": "Checkout predisposto con Stripe. I pagamenti reali restano disattivati finché non viene completata la configurazione di produzione.",
+  "localDebuggerLabel": "Debugger locale",
+  "studySmarter": "STUDY SMARTER",
+  "streakDaysUnit": "giorni",
+  "wait": "Attendi…",
+  "accountUserLabel": "Account studente",
+  "pointsLabel": "punti",
+  "correctFem": "corrette",
+  "logoutMessage": "Disconnessione effettuata.",
+  "accountSignInRequired": "Accedi per acquistare un pacchetto."
 }
