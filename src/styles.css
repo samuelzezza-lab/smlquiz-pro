@@ -61,3 +61,5 @@ input,select,textarea{font-size:16px}
 @media(min-width:801px){.sidebar{transform:none;will-change:auto}}
 @media(max-width:800px){html{scroll-behavior:auto}.topbar{padding-top:env(safe-area-inset-top);height:calc(62px + env(safe-area-inset-top))}.sidebar{padding-top:calc(25px + env(safe-area-inset-top));padding-bottom:calc(17px + env(safe-area-inset-bottom))}.content{padding-left:max(15px,env(safe-area-inset-left));padding-right:max(15px,env(safe-area-inset-right))}.footer{padding-bottom:calc(22px + env(safe-area-inset-bottom))}.hero-graphic{pointer-events:none}.panel,.stat,.subject-card,.account-metric{min-width:0}img,video,canvas,svg{max-width:100%}}
 @media(max-width:380px){.topbar{padding-left:12px;padding-right:12px}.content{padding-left:12px;padding-right:12px}.hero-text{max-width:100%}.hero-graphic{opacity:.16}}
+
+.online-dot.offline{background:#e8a05f;box-shadow:0 0 8px #e8a05f88}
