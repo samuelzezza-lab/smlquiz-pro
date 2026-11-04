@@ -275,9 +275,9 @@
   "legal_transparency_summary": "云服务、安全和供应商。",
   "legal_about_title": "关于我们",
   "legal_about_summary": "SMLQUIZ Pro 的使命与价值观。",
-  "legal_about_heading_0": "SMLQUIZ Pro nasce per rendere l’esercitazione universitaria più organizzata, accessibile e misurabile. Vogliamo aiutare gli studenti a individuare ciò che conoscono, riconoscere le lacune e allenarsi con costanza.",
-  "legal_about_heading_1": "Crediamo in domande chiare, spiegazioni utili, feedback trasparente e strumenti che aiutino a studiare con metodo. La piattaforma è in evoluzione e le segnalazioni degli utenti contribuiscono a migliorarla.",
-  "legal_about_heading_2": "L’identità del gestore e i recapiti di assistenza non sono pubblicati in questa versione. Saranno necessari per l’erogazione pubblica e commerciale del servizio.",
+  "legal_about_heading_0": "我们的使命",
+  "legal_about_heading_1": "我们的方法",
+  "legal_about_heading_2": "联系方式",
   "averageWeightedLabel": "加权平均分",
   "checkoutStripeNotice": "Stripe Checkout 已准备就绪。完成生产配置前，真实付款仍处于禁用状态。",
   "localDebuggerLabel": "本地调试器",
@@ -288,5 +288,8 @@
   "pointsLabel": "分",
   "correctFem": "正确",
   "logoutMessage": "已退出登录。",
-  "accountSignInRequired": "登录后购买套餐。"
+  "accountSignInRequired": "登录后购买套餐。",
+  "legal_about_text_0": "SMLQUIZ Pro 旨在让大学练习更有条理、更易使用且可衡量。我们希望帮助学生了解所掌握的知识、发现不足并持续练习。",
+  "legal_about_text_1": "我们重视清晰的问题、有用的解释、透明的反馈以及帮助系统学习的工具。平台持续改进，用户反馈也会推动其完善。",
+  "legal_about_text_2": "此版本未公布运营者身份及支持联系方式。公开及商业提供服务时必须补充这些信息。"
 }
