@@ -76,33 +76,15 @@ Deno.serve(async (req: Request) => {
       return json({ profile: result.data });
     }
 
-    if (action === "leaderboard") {
-      const { data: attempts, error: attemptsError } = await admin.from("quiz_attempts").select("id,user_id").eq("status", "completed").limit(10000);
-      if (attemptsError) throw attemptsError;
-      const attemptIds = (attempts ?? []).map((x) => x.id);
-      const { data: answers, error: answersError } = attemptIds.length
-        ? await admin.from("quiz_attempt_questions").select("attempt_id,esito_corretto").in("attempt_id", attemptIds)
-        : { data: [], error: null };
-      if (answersError) throw answersError;
-      const byAttempt = new Map<string,{correct:number;wrong:number}>();
-      for (const answer of answers ?? []) {
-        const s = byAttempt.get(answer.attempt_id) ?? {correct:0,wrong:0};
-        if (answer.esito_corretto === true) s.correct++;
-        if (answer.esito_corretto === false) s.wrong++;
-        byAttempt.set(answer.attempt_id,s);
-      }
-      const byUser = new Map<string,{score:number;correct:number;sessions:number}>();
-      for (const attempt of attempts ?? []) {
-        const s = byAttempt.get(attempt.id) ?? {correct:0,wrong:0};
-        const u = byUser.get(attempt.user_id) ?? {score:0,correct:0,sessions:0};
-        u.score += s.correct - s.wrong * 0.25; u.correct += s.correct; u.sessions++;
-        byUser.set(attempt.user_id,u);
-      }
-      const { data: profiles, error: profilesError } = await admin.from("user_profiles").select("user_id,display_name").eq("leaderboard_opt_in",true).neq("display_name","");
-      if (profilesError) throw profilesError;
-      const ranked = (profiles ?? []).map((p) => ({ name:p.display_name, ...(byUser.get(p.user_id) ?? {score:0,correct:0,sessions:0}) }))
-        .filter((x) => x.sessions > 0).sort((a,b) => b.score-a.score).slice(0,50);
-      return json({ leaderboard: ranked });
+    if (action === "university-leaderboard") {
+      const { data: profile, error: profileError } = await admin.from("user_profiles")
+        .select("university_course").eq("user_id", userId).maybeSingle();
+      if (profileError) throw profileError;
+      const course = String(profile?.university_course ?? "").trim();
+      if (!course) return json({ leaderboard: [], needsProfile: true });
+      const { data, error } = await admin.rpc("get_university_leaderboard", { p_course: course });
+      if (error) throw error;
+      return json({ leaderboard: data ?? [], course });
     }
     if (action === "consent") {
       if (body.accepted !== true) return json({ error: "Il consenso richiesto non risulta accettato" }, 400);
