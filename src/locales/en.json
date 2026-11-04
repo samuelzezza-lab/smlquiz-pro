@@ -280,5 +280,16 @@
   "legal_about_heading_1": "Notre méthode",
   "legal_about_text_1": "Nous croyons aux questions claires, aux explications utiles, aux retours transparents et aux outils favorisant une méthode de travail. La plateforme évolue grâce aux signalements des utilisateurs.",
   "legal_about_heading_2": "Contact",
-  "legal_about_text_2": "L’identité de l’exploitant et les coordonnées du support ne sont pas publiées dans cette version. Elles seront nécessaires pour la mise à disposition publique et commerciale du service."
+  "legal_about_text_2": "L’identité de l’exploitant et les coordonnées du support ne sont pas publiées dans cette version. Elles seront nécessaires pour la mise à disposition publique et commerciale du service.",
+  "averageWeightedLabel": "Weighted average",
+  "checkoutStripeNotice": "Stripe Checkout is prepared. Live payments remain disabled until production configuration is complete.",
+  "localDebuggerLabel": "Local debugger",
+  "studySmarter": "STUDY SMARTER",
+  "streakDaysUnit": "days",
+  "wait": "Please wait…",
+  "accountUserLabel": "Student account",
+  "pointsLabel": "points",
+  "correctFem": "correct",
+  "logoutMessage": "Signed out.",
+  "accountSignInRequired": "Sign in to purchase a package."
 }
