@@ -85,25 +85,28 @@ export default function App(){
  async function startQuiz(s:Subject){
   if(!user){setPage('account');notify('Accedi per iniziare un quiz.');return}
   if(!supabase)return;
-  const available=quizSets.filter(q=>q.materia_id===s.id&&q.status==='ready'&&q.question_count===10);
+  const readySets=quizSets.filter(q=>q.materia_id===s.id&&q.status==='ready'&&q.question_count===10);
+  const nextQuizNumber=readySets.reduce((max,q)=>Math.max(max,q.quiz_number),0)+1;
   setBusy(true);setSubject(s);
   try{
-   let quizSetId=available.length?available[Math.floor(Math.random()*available.length)].id:'';
+   let quizSetId='';
+   const targetSet=quizSets.find(q=>q.materia_id===s.id&&q.quiz_number===nextQuizNumber);
+   if(targetSet?.status==='ready'&&targetSet.question_count===10)quizSetId=targetSet.id;
    if(!quizSetId){
-    notify('Sto preparando il primo quiz di questa materia con l’IA…');
-    for(let attempt=0;attempt<8&&!quizSetId;attempt++){
-     const generated=await supabase.functions.invoke('quiz-cache',{body:{action:'get_quiz',materia_id:s.id,quiz_number:1}});
+    notify('Sto preparando il quiz '+nextQuizNumber+' di questa materia con l’IA…');
+    for(let attempt=0;attempt<12&&!quizSetId;attempt++){
+     const generated=await supabase.functions.invoke('quiz-cache',{body:{action:'get_quiz',materia_id:s.id,quiz_number:nextQuizNumber}});
      if(generated.error)throw generated.error;
      if(generated.data?.error)throw new Error(generated.data.error);
      if(generated.data?.quiz_set_id){quizSetId=String(generated.data.quiz_set_id);break}
      if(generated.data?.ready===false||generated.data?.status==='pending'||generated.data?.status==='generating'){
-      await new Promise(resolve=>window.setTimeout(resolve,3500));
+      await new Promise(resolve=>window.setTimeout(resolve,3000));
       continue;
      }
      throw new Error('Il generatore non ha restituito un quiz pronto. Riprova tra poco.');
     }
     if(!quizSetId)throw new Error('La generazione è ancora in corso. Riprova tra qualche secondo.');
-    setQuizSets(v=>[...v.filter(q=>q.id!==quizSetId),{id:quizSetId,materia_id:s.id,quiz_number:1,status:'ready',question_count:10}]);
+    setQuizSets(v=>[...v.filter(q=>q.id!==quizSetId),{id:quizSetId,materia_id:s.id,quiz_number:nextQuizNumber,status:'ready',question_count:10}]);
    }
    const idempotencyKey=crypto.randomUUID();
    let data:any=null;
