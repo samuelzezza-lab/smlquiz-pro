@@ -512,5 +512,8 @@
   "yearSuffix": "year",
   "historyCleared": "History cleared.",
   "unlimitedQuizzes": "unlimited quizzes",
-  "sessionsUnit": "quizzes"
+  "sessionsUnit": "quizzes",
+  "universitySaveFailed": "Could not save university.",
+  "answerSaveFailed": "Could not save the answer.",
+  "quizSaveFailed": "Error saving the quiz."
 }
