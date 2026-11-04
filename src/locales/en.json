@@ -291,5 +291,12 @@
   "pointsLabel": "points",
   "correctFem": "correct",
   "logoutMessage": "Signed out.",
-  "accountSignInRequired": "Sign in to purchase a package."
+  "accountSignInRequired": "Sign in to purchase a package.",
+  "reviewSaveFailed": "Not enough local storage: your review could not be saved.",
+  "reviewCompleted": "Review completed.",
+  "disconnected": "Offline",
+  "reviewWrongTitle": "Review incorrect answers",
+  "reviewWrongDescription": "Practice again with questions you answered incorrectly in completed quizzes.",
+  "reviewWrongButton": "Review incorrect questions",
+  "reviewWrongEmpty": "There are no questions to review yet. Complete a quiz to collect mistakes."
 }
