@@ -489,3 +489,158 @@ img,svg{max-width:100%}
 @media(prefers-reduced-motion:no-preference){
  .subject-card,.panel,.stat,.answer,.primary,.secondary{transition:transform .18s ease,border-color .18s ease,background-color .18s ease,box-shadow .18s ease}
 }
+
+
+/* SMLQUIZ · accessibilità touch e campi di testo su smartphone/tablet */
+@media (max-width: 800px) {
+  html, body, #root, .shell, .main, .content {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  input,
+  textarea,
+  select,
+  button,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select,
+  .filters input,
+  .filters select,
+  .auth-form > input,
+  .settings input:not([type="checkbox"]),
+  .settings select,
+  .exam-row input,
+  .university-form-grid input,
+  .university-form-grid select {
+    box-sizing: border-box;
+    min-height: 48px;
+    font-size: 16px !important;
+    line-height: 1.4;
+    max-width: 100%;
+  }
+
+  textarea {
+    min-height: 112px;
+    padding: 12px;
+    resize: vertical;
+  }
+
+  button,
+  .primary,
+  .secondary,
+  .nav-link,
+  .auth-tabs button,
+  .subject-card > button,
+  .quiz .answer,
+  .settings button {
+    min-height: 48px;
+  }
+
+  img,
+  video,
+  iframe,
+  canvas,
+  svg {
+    max-width: 100%;
+  }
+
+  .content,
+  .panel,
+  .stat,
+  .subject-card,
+  .quiz,
+  .filters,
+  .auth-grid,
+  .auth-form,
+  .settings,
+  .calculator-grid,
+  .account-grid,
+  .leaderboard-page {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .content > *,
+  .panel > *,
+  .welcome > *,
+  .page-heading > * {
+    min-width: 0;
+  }
+
+  .columns,
+  .quiz-grid,
+  .account-grid,
+  .calculator-grid,
+  .auth-grid,
+  .university-form-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .topbar,
+  .top-actions,
+  .crumb {
+    min-width: 0;
+  }
+
+  .topbar {
+    gap: 10px;
+  }
+
+  .top-actions {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .top-actions select {
+    min-height: 48px;
+    font-size: 16px;
+  }
+
+  .filters label > div {
+    min-height: 48px;
+  }
+
+  .filters input,
+  .filters select {
+    min-height: 46px;
+  }
+}
+
+@media (max-width: 520px) {
+  .content {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+
+  .stats,
+  .progress-page > .stats,
+  .subject-grid,
+  .legal-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .quiz-top-actions,
+  .quiz-bottom,
+  .package-row,
+  .settings > div {
+    flex-wrap: wrap;
+  }
+
+  .auth-form > input,
+  .settings input:not([type="checkbox"]),
+  .settings select,
+  .exam-row input {
+    width: 100%;
+  }
+
+  .footer {
+    gap: 10px;
+    overflow-wrap: anywhere;
+  }
+}
