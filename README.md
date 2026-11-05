@@ -25,7 +25,7 @@ Nel database collegato risultano:
 
 - Interfaccia responsive scura, navigazione laterale e barra superiore.
 - PWA con manifest, icone e service worker per la shell offline.
-- Supabase Auth: registrazione, accesso, uscita e recupero password.
+- Supabase Auth: registrazione, accesso, uscita e recupero password; le nuove password sono controllate con il servizio gratuito Pwned Passwords tramite hash parziale, senza inviare la password.
 - Filtro facoltà, anno di corso e ricerca materie; caricamento progressivo dell'elenco.
 - Quiz a quattro opzioni, timer, spiegazioni e punteggio +1 / −0,25.
 - Generazione dinamica dei quiz mancanti predisposta nella Edge Function `quiz-cache`; per i nuovi quiz usa Anthropic Claude tramite `ANTHROPIC_API_KEY` e, facoltativamente, `ANTHROPIC_MODEL` (predefinito `claude-haiku-5-5`). I quiz già pronti funzionano senza generazione. La generazione di quiz nuovi resta sospesa finché non viene configurata la chiave Anthropic.
@@ -85,7 +85,7 @@ Il frontend mantiene `VITE_STRIPE_CHECKOUT_ENABLED=false`. Non sono stati effett
 - Completare i dati del titolare nei documenti legali: nome/ragione sociale, P. IVA, indirizzo, PEC ed email di supporto.
 - Far verificare informativa privacy, cookie, condizioni, recesso e contenuti digitali.
 - Attivare e verificare Turnstile lato Supabase Auth.
-- Configurare la protezione delle password compromesse in Supabase Auth.
+- La protezione integrata Supabase contro password compromesse resta disattivata; il controllo gratuito lato registrazione è una mitigazione e non sostituisce il controllo integrato su tutti i flussi.
 - Verificare le impostazioni di consenso pubblicitario prima di caricare Infolinks.
 - Configurare i secrets Cloudflare e completare un deploy verificato.
 - Eseguire test end-to-end con account dedicati e test pagamenti Stripe in modalità test prima di valutare l'attivazione live.
