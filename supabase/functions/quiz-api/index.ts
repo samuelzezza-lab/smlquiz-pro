@@ -468,6 +468,89 @@ Deno.serve(async (req: Request) => {
       }) });
     }
 
+    if (action === "translate-quiz-set") {
+      const quizSetId = String(body.quizSetId ?? "").trim();
+      const language = String(body.language ?? "");
+      const languageNames: Record<string, string> = { en: "English", fr: "French", de: "German", es: "Spanish", zh: "Simplified Chinese" };
+      if (!quizSetId || !languageNames[language]) return json({ error: "Lingua o quiz non valido." }, 400);
+      const { data: questions, error: questionsError } = await admin.from("domande")
+        .select("id,testo_domanda,concetto_chiave,opzioni,risposta_corretta,spiegazione,traduzioni")
+        .eq("quiz_id", quizSetId);
+      if (questionsError) throw questionsError;
+      if (!questions || questions.length !== 10) return json({ error: "Il quiz non contiene 10 domande verificate." }, 409);
+      const missing = questions.filter((q: any) => {
+        const t = q.traduzioni?.[language];
+        return !t || !t.testo_domanda || !Array.isArray(t.opzioni) || t.opzioni.length !== 4
+          || !t.risposta_corretta || !t.spiegazione;
+      });
+      if (!missing.length) return json({ translated: true, cached: true });
+      const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
+      if (!anthropicKey) return json({ error: "Traduzione non disponibile: manca la chiave Anthropic sul server." }, 503);
+      const model = Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5";
+      const prompt = [
+        "Traduci integralmente in " + languageNames[language] + " le domande universitarie seguenti.",
+        "Mantieni invariati significato, livello, numeri, formule, simboli, unità di misura e nomi propri.",
+        "Traduci anche opzioni, risposta corretta, spiegazione e concetto chiave.",
+        "Non cambiare il contenuto scientifico e non aggiungere informazioni.",
+        "Mantieni le quattro opzioni nello stesso ordine dell'originale.",
+        "Restituisci esclusivamente un array JSON valido con un oggetto per ogni domanda e gli stessi id.",
+        'Schema: [{"id":"...","testo_domanda":"...","concetto_chiave":"...","opzioni":["...","...","...","..."],"risposta_corretta":"...","spiegazione":"..."}]',
+        "Domande: " + JSON.stringify(missing.map((q: any) => ({
+          id: q.id, testo_domanda: q.testo_domanda, concetto_chiave: q.concetto_chiave,
+          opzioni: q.opzioni, risposta_corretta: q.risposta_corretta, spiegazione: q.spiegazione,
+        }))),
+      ].join("\\n");
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": anthropicKey,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({ model, max_tokens: 12000, messages: [{ role: "user", content: prompt }] }),
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        console.error("Anthropic translation error:", detail.slice(0, 500));
+        return json({ error: "Il servizio di traduzione non è disponibile in questo momento." }, 502);
+      }
+      const payload = await response.json();
+      const rawText = (payload.content ?? [])
+        .filter((part: any) => part.type === "text" && typeof part.text === "string")
+        .map((part: any) => part.text).join("\\n").trim();
+      const jsonStart = rawText.indexOf("[");
+      const jsonEnd = rawText.lastIndexOf("]");
+      if (jsonStart < 0 || jsonEnd <= jsonStart) return json({ error: "La traduzione generata non è valida." }, 502);
+      const translatedRows = JSON.parse(rawText.slice(jsonStart, jsonEnd + 1));
+      if (!Array.isArray(translatedRows) || translatedRows.length !== missing.length) {
+        return json({ error: "La traduzione non contiene tutte le domande richieste." }, 502);
+      }
+      const byId = new Map<string, any>(translatedRows.map((t: any) => [String(t.id), t]));
+      for (const question of missing as any[]) {
+        const t = byId.get(question.id);
+        const options = Array.isArray(t?.opzioni) ? t.opzioni.map((x: any) => String(x).trim()) : [];
+        const correct = String(t?.risposta_corretta ?? "").trim();
+        if (!t || !String(t.testo_domanda ?? "").trim() || options.length !== 4
+          || new Set(options.map((x: string) => x.toLocaleLowerCase())).size !== 4
+          || !options.includes(correct) || !String(t.spiegazione ?? "").trim()) {
+          return json({ error: "Una o più traduzioni non hanno superato i controlli di qualità." }, 502);
+        }
+        const merged = {
+          ...(question.traduzioni ?? {}),
+          [language]: {
+            testo_domanda: String(t.testo_domanda).trim(),
+            concetto_chiave: String(t.concetto_chiave ?? question.concetto_chiave ?? "").trim(),
+            opzioni: options,
+            risposta_corretta: correct,
+            spiegazione: String(t.spiegazione).trim(),
+          },
+        };
+        const { error: saveError } = await admin.from("domande").update({ traduzioni: merged }).eq("id", question.id);
+        if (saveError) throw saveError;
+      }
+      return json({ translated: true, cached: false, count: missing.length });
+    }
+
     if (action === "start") {
       const materiaId = String(body.materiaId ?? "");
       const quizSetId = String(body.quizSetId ?? "");
@@ -522,7 +605,13 @@ Deno.serve(async (req: Request) => {
       const language = ["it", "en", "fr", "de", "es", "zh"].includes(String(body.language)) ? String(body.language) : "it";
       const questions = (rows ?? []).map((row) => {
         const q = row.domande as unknown as { id: string; testo_domanda: string; opzioni: string[]; traduzioni?: Record<string, any> };
-        return { ...localizedQuestion(q, language), id: q.id, position: row.position, traduzioni: q.traduzioni ?? {} };
+        const localized = localizedQuestion(q, language);
+        return {
+          id: q.id,
+          testo_domanda: localized.testo_domanda ?? q.testo_domanda,
+          opzioni: localized.opzioni ?? q.opzioni,
+          position: row.position,
+        };
       });
       return json({ attemptId, accessSource: started.access_source, existing: started.existing, questions });
     }
@@ -543,15 +632,17 @@ Deno.serve(async (req: Request) => {
       if (rowError) throw rowError;
       if (!row) return json({ error: "Domanda non appartenente a questa sessione" }, 404);
       const question = row.domande as unknown as { opzioni: string[]; risposta_corretta: string; spiegazione: string | null; traduzioni?: Record<string, any> };
-      const selectedAnswer = Number.isInteger(selectedIndex) && selectedIndex >= 0 && selectedIndex < question.opzioni.length
-        ? question.opzioni[selectedIndex] : legacySelectedAnswer;
-      if (!question.opzioni.includes(selectedAnswer)) return json({ error: "Risposta non valida" }, 400);
       const language = ["it", "en", "fr", "de", "es", "zh"].includes(String(body.language)) ? String(body.language) : "it";
       const localized = localizedQuestion(question, language) as typeof question;
+      const localizedOptions = localized.opzioni ?? question.opzioni;
+      const localizedCorrect = localized.risposta_corretta ?? question.risposta_corretta;
+      const selectedAnswer = Number.isInteger(selectedIndex) && selectedIndex >= 0 && selectedIndex < localizedOptions.length
+        ? localizedOptions[selectedIndex] : legacySelectedAnswer;
+      if (!localizedOptions.includes(selectedAnswer)) return json({ error: "Risposta non valida" }, 400);
       if (row.risposta_selezionata !== null) {
         return json({ correct: row.esito_corretto, correctAnswer: localized.risposta_corretta, explanation: localized.spiegazione, alreadyAnswered: true });
       }
-      const correct = selectedAnswer === question.risposta_corretta;
+      const correct = selectedAnswer === localizedCorrect;
       const { data: savedAnswer, error: updateError } = await admin.from("quiz_attempt_questions")
         .update({ risposta_selezionata: selectedAnswer, esito_corretto: correct, answered_at: new Date().toISOString() })
         .eq("id", row.id).is("risposta_selezionata", null).select("id").maybeSingle();
@@ -560,9 +651,9 @@ Deno.serve(async (req: Request) => {
         const { data: currentAnswer, error: currentError } = await admin.from("quiz_attempt_questions")
           .select("esito_corretto").eq("id", row.id).maybeSingle();
         if (currentError) throw currentError;
-        return json({ correct: currentAnswer?.esito_corretto === true, correctAnswer: question.risposta_corretta, explanation: question.spiegazione, alreadyAnswered: true });
+        return json({ correct: currentAnswer?.esito_corretto === true, correctAnswer: localizedCorrect, explanation: localized.spiegazione, alreadyAnswered: true });
       }
-      return json({ correct, correctAnswer: question.risposta_corretta, explanation: question.spiegazione, alreadyAnswered: false });
+      return json({ correct, correctAnswer: localizedCorrect, explanation: localized.spiegazione, alreadyAnswered: false });
     }
 
     if (action === "referral-claim") {
