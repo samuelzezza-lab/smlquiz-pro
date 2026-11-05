@@ -194,6 +194,66 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    if (action === "study-tutor") {
+      const question = String(body.question ?? "").trim().slice(0, 1800);
+      if (question.length < 3) return json({ error: "Scrivi una domanda un po' più dettagliata." }, 400);
+      const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
+      if (!anthropicKey) return json({ error: "Tutor non ancora configurato: manca la chiave Anthropic sul server." }, 503);
+
+      const { data: attempts, error: attemptsError } = await admin.from("quiz_attempts")
+        .select("materia_id,score,total_questions,completed_at")
+        .eq("user_id", userId).eq("status", "completed")
+        .order("completed_at", { ascending: false }).limit(12);
+      if (attemptsError) throw attemptsError;
+      const subjectIds = [...new Set((attempts ?? []).map((a: any) => a.materia_id).filter(Boolean))];
+      const subjectNames = new Map<string, string>();
+      if (subjectIds.length) {
+        const { data: subjectRows, error: subjectError } = await admin.from("materie")
+          .select("id,nome").in("id", subjectIds);
+        if (subjectError) throw subjectError;
+        for (const row of subjectRows ?? []) subjectNames.set(row.id, row.nome);
+      }
+      const performance = (attempts ?? []).map((a: any) =>
+        (subjectNames.get(a.materia_id) ?? a.materia_id) + ": " + a.score + "/" + a.total_questions
+      );
+      const model = Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5";
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "x-api-key": anthropicKey,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          max_tokens: 1200,
+          system: [
+            "Sei il tutor didattico di SMLQUIZ. Rispondi in italiano, con parole semplici e spiegazioni corrette.",
+            "Spiega i passaggi, fai esempi brevi e, quando utile, proponi un piccolo esercizio con soluzione.",
+            "Non inventare regole ufficiali TOLC, programmi universitari o fonti. Se non sei sicuro, dichiaralo.",
+            "Non dare solo la risposta: aiuta lo studente a capire il ragionamento. Mantieni la risposta chiara e non troppo lunga."
+          ].join(" "),
+          messages: [{
+            role: "user",
+            content: "Risultati recenti dello studente (solo contesto facoltativo): " +
+              (performance.length ? performance.join("; ") : "nessun quiz completato") +
+              "\\n\\nDomanda dello studente: " + question
+          }],
+        }),
+      });
+      if (!response.ok) {
+        const detail = await response.text();
+        console.error("Anthropic tutor error:", detail.slice(0, 500));
+        return json({ error: "Il tutor non è disponibile in questo momento. Riprova tra poco." }, 502);
+      }
+      const payload = await response.json();
+      const answer = (payload.content ?? [])
+        .filter((part: any) => part.type === "text" && typeof part.text === "string")
+        .map((part: any) => part.text).join("\\n").trim();
+      if (!answer) return json({ error: "Il tutor non ha prodotto una risposta. Riprova." }, 502);
+      return json({ answer });
+    }
+
     if (action === "wrong-questions") {
       const unique = new Map();
       let offset = 0;
