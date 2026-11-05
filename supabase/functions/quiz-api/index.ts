@@ -674,19 +674,32 @@ Deno.serve(async (req: Request) => {
         .select("id", { count: "exact", head: true })
         .eq("user_id", userId).eq("status", "completed");
       if (completedError) throw completedError;
-      if ((count ?? 0) > 0) return json({ claimed: false, reason: "existing_activity" });
+      const hasCompletedQuiz = (count ?? 0) > 0;
       const { data: inviter, error: inviterError } = await admin.auth.admin.getUserById(inviterId);
       if (inviterError || !inviter.user) return json({ error: "Il link invito non appartiene a un account valido." }, 400);
       const { data: existing, error: existingError } = await admin.from("user_referrals")
         .select("id,inviter_id,status").eq("referred_user_id", userId).maybeSingle();
       if (existingError) throw existingError;
-      if (existing) return json({ claimed: existing.inviter_id === inviterId, alreadyClaimed: true, status: existing.status });
+      if (existing) {
+        if (existing.inviter_id !== inviterId) return json({ claimed: false, alreadyClaimed: true });
+        if (existing.status === "pending" && hasCompletedQuiz) {
+          const { data: rewarded, error: rewardError } = await admin.rpc("reward_user_referral", { p_referral_id: existing.id });
+          if (rewardError) throw rewardError;
+          return json({ claimed: true, alreadyClaimed: true, status: rewarded ? "rewarded" : "pending", rewarded, rewardCredits: 1 });
+        }
+        return json({ claimed: true, alreadyClaimed: true, status: existing.status });
+      }
       const { data: referral, error: referralError } = await admin.from("user_referrals")
         .insert({ inviter_id: inviterId, referred_user_id: userId })
         .select("id").single();
       if (referralError) {
         if (referralError.code === "23505") return json({ claimed: false, alreadyClaimed: true });
         throw referralError;
+      }
+      if (hasCompletedQuiz) {
+        const { data: rewarded, error: rewardError } = await admin.rpc("reward_user_referral", { p_referral_id: referral.id });
+        if (rewardError) throw rewardError;
+        return json({ claimed: true, status: rewarded ? "rewarded" : "pending", rewarded, rewardCredits: 1 });
       }
       return json({ claimed: true, status: "pending", rewardCredits: 1 });
     }
