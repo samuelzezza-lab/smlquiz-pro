@@ -152,7 +152,7 @@ Deno.serve(async (req: Request) => {
         if (claimed !== true) {
           const { data: current } = await db.from("quiz_sets")
             .select("id,status").eq("materia_id", materiaId).eq("quiz_number", quizNumber).single();
-          return json({ status: current?.status ?? "generating", quiz_number: quizNumber, ready: false }, 202);
+          return json({ status: current?.status ?? "generating", quiz_number: quizNumber, ready: false }, 200);
         }
 
         const { data: claimedQuiz, error: claimedError } = await db.from("quiz_sets")
