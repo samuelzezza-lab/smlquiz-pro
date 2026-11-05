@@ -18,10 +18,10 @@ jobs:
         with:
           deno-version: v2.x
       - name: Check quiz API
-        run: deno check supabase/functions/quiz-api/index.ts
+        run: deno check --node-modules-dir=auto supabase/functions/quiz-api/index.ts
       - name: Check quiz cache
-        run: deno check supabase/functions/quiz-cache/index.ts
+        run: deno check --node-modules-dir=auto supabase/functions/quiz-cache/index.ts
       - name: Check Stripe checkout
-        run: deno check supabase/functions/stripe-checkout/index.ts
+        run: deno check --node-modules-dir=auto supabase/functions/stripe-checkout/index.ts
       - name: Check Stripe webhook
-        run: deno check supabase/functions/stripe-webhook/index.ts
+        run: deno check --node-modules-dir=auto supabase/functions/stripe-webhook/index.ts
