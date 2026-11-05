@@ -5,130 +5,61 @@ import { CalendarDays, Copy, Brain, Users, ShieldCheck, Send } from 'lucide-reac
 type Subject = { id: string; nome: string }
 type Attempt = { id: string; subject: string; score: number; total: number; correct: number; wrong: number; date: string }
 
-export function FreeStudyPlanner({ subjects, dailyGoal }: { subjects: Subject[]; dailyGoal: number }) {
-  const [subjectId, setSubjectId] = useState('')
-  const [examDate, setExamDate] = useState('')
-  const [plan, setPlan] = useState<{ date: string; task: string }[]>([])
-  const [saveStatus,setSaveStatus] = useState('')
-  const selected = subjects.find(s => s.id === subjectId)
-  useEffect(() => {
-    let active=true
-    const load=async()=>{
-      try {
-        const saved=JSON.parse(localStorage.getItem('smlquiz.study-plan.v1')||'null')
-        if(saved&&Array.isArray(saved.rows)){
-          setSubjectId(typeof saved.subjectId==='string'?saved.subjectId:'')
-          setExamDate(typeof saved.examDate==='string'?saved.examDate:'')
-          setPlan(saved.rows.filter((row:any)=>row&&typeof row.date==='string'&&typeof row.task==='string'))
-        }
-      } catch { localStorage.removeItem('smlquiz.study-plan.v1') }
-      if(!supabase)return
-      try {
-        const {data:userData}=await supabase.auth.getUser()
-        if(!userData.user)return
-        const {data,error}=await supabase.from('user_study_plans').select('subject_id,exam_date,plan').eq('user_id',userData.user.id).maybeSingle()
-        if(!active||error||!data||!Array.isArray(data.plan))return
-        const rows=data.plan.filter((row:any)=>row&&typeof row.date==='string'&&typeof row.task==='string')
-        setSubjectId(data.subject_id||'')
-        setExamDate(data.exam_date||'')
-        setPlan(rows)
-        localStorage.setItem('smlquiz.study-plan.v1',JSON.stringify({subjectId:data.subject_id,examDate:data.exam_date,rows}))
-        setSaveStatus('Piano recuperato dal tuo account.')
-      } catch {}
-    }
-    void load()
-    return()=>{active=false}
-  }, [])
-  useEffect(() => {
-    if (!subjectId && subjects.length) setSubjectId(subjects[0].id)
-  }, [subjects, subjectId])
-  async function createPlan() {
-    if (!selected || !examDate) return
-    const exam = new Date(examDate + 'T00:00:00')
-    if (!Number.isFinite(exam.getTime()) || exam.getTime() < new Date(new Date().toDateString()).getTime()) return
-    const start = new Date(); start.setHours(0,0,0,0)
-    const end = new Date(examDate+'T00:00:00')
-    const days = Math.max(1, Math.ceil((end.getTime()-start.getTime())/86400000))
-    const sessions = Math.min(120, days*dailyGoal)
-    let tasks = ['Ripasso degli argomenti','Svolgi un quiz','Rivedi gli errori','Ripasso mirato e quiz']
-    let programNote = 'Piano generale creato; il programma specifico non è ancora disponibile.'
-    if(supabase){
-      try {
-        const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'study-program',materiaId:selected.id}})
-        const modules=Array.isArray(data?.program?.moduli)?data.program.moduli:[]
-        const specific=modules.flatMap((module:any)=>Array.isArray(module.argomenti)?module.argomenti.map((topic:string)=>String(module.titolo)+' — '+String(topic)):[])
-        if(!error&&specific.length){tasks=specific;programNote='Piano costruito sul programma specifico della materia.'}
-        else if(data?.error){programNote='Piano generale creato: '+String(data.error)}
-      } catch {}
-    }
-    const rows = Array.from({length:sessions},(_,i)=>{
-      const date = new Date(start.getTime()+Math.floor(i/dailyGoal)*86400000)
-      return {date:date.toLocaleDateString('it-IT',{weekday:'short',day:'2-digit',month:'short'}),task:tasks[i%tasks.length]}
+export function FreeStudyPlanner({ subjects, dailyGoal, history }: { subjects: Subject[]; dailyGoal: number; history: Attempt[] }) {
+  type PlanRow = { date: string; task: string; done?: boolean; focus?: string }
+  const [subjectId,setSubjectId]=useState('')
+  const [examDate,setExamDate]=useState('')
+  const [plan,setPlan]=useState<PlanRow[]>([])
+  const [saveStatus,setSaveStatus]=useState('')
+  const [busy,setBusy]=useState(false)
+  const selected=subjects.find(s=>s.id===subjectId)
+  const subjectHistory=useMemo(()=>history.filter(h=>h.subject.toLocaleLowerCase()===selected?.nome.toLocaleLowerCase()),[history,selected])
+  const accuracy=subjectHistory.length?Math.round(subjectHistory.reduce((a,h)=>a+h.correct,0)/Math.max(1,subjectHistory.reduce((a,h)=>a+h.total,0))*100):null
+  useEffect(()=>{let active=true;async function load(){try{const saved=JSON.parse(localStorage.getItem('smlquiz.study-plan.v1')||'null');if(saved&&Array.isArray(saved.rows)){setSubjectId(saved.subjectId||'');setExamDate(saved.examDate||'');setPlan(saved.rows.filter((r:any)=>r&&typeof r.date==='string'&&typeof r.task==='string'))}}catch{localStorage.removeItem('smlquiz.study-plan.v1')}
+    if(!supabase)return;try{const {data:u}=await supabase.auth.getUser();if(!u.user)return;const {data,error}=await supabase.from('user_study_plans').select('subject_id,exam_date,plan').eq('user_id',u.user.id).maybeSingle();if(!active||error||!data||!Array.isArray(data.plan))return;setSubjectId(data.subject_id||'');setExamDate(data.exam_date||'');setPlan(data.plan.filter((r:any)=>r&&typeof r.date==='string'&&typeof r.task==='string'));localStorage.setItem('smlquiz.study-plan.v1',JSON.stringify({subjectId:data.subject_id,examDate:data.exam_date,rows:data.plan}));setSaveStatus('Percorso recuperato dal tuo account.')}catch{}
+  }void load();return()=>{active=false}},[])
+  useEffect(()=>{if(!subjectId&&subjects.length)setSubjectId(subjects[0].id)},[subjects,subjectId])
+  function persist(rows:PlanRow[]){setPlan(rows);try{localStorage.setItem('smlquiz.study-plan.v1',JSON.stringify({subjectId,subject:selected?.nome,examDate,rows}))}catch{}}
+  async function createPlan(){
+    if(!selected||!examDate||busy)return
+    const start=new Date();start.setHours(0,0,0,0);const end=new Date(examDate+'T00:00:00')
+    if(!Number.isFinite(end.getTime())||end<start){setSaveStatus('Scegli una data di esame futura.');return}
+    setBusy(true);setSaveStatus('Sto organizzando il percorso in base alla materia e ai tuoi risultati…')
+    const days=Math.max(1,Math.ceil((end.getTime()-start.getTime())/86400000))
+    let topics:string[]=[]
+    if(supabase){try{const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'study-program',materiaId:selected.id}});const modules=Array.isArray(data?.program?.moduli)?data.program.moduli:[];topics=modules.flatMap((m:any)=>Array.isArray(m.argomenti)?m.argomenti.map((x:string)=>String(m.titolo||'Modulo')+' — '+String(x)):[]).filter(Boolean);if(error||!topics.length)topics=[]}catch{}}
+    const totalSessions=Math.min(180,Math.max(1,days*dailyGoal))
+    const priority=accuracy===null?['Studio guidato dei concetti fondamentali','Quiz di verifica iniziale','Riepilogo e memorizzazione']:accuracy<60?['Recupero dei concetti base','Esercizi guidati sugli errori','Quiz mirato: consolidamento']:accuracy<80?['Consolidamento degli argomenti incerti','Quiz misto a difficoltà crescente','Ripasso attivo e richiamo']:['Ripasso avanzato','Simulazione quiz a tempo','Richiamo rapido e verifica finale']
+    const schedule=Array.from({length:totalSessions},(_,i)=>{
+      const day=Math.floor(i/dailyGoal);const date=new Date(start.getTime()+day*86400000)
+      const dateString=date.toLocaleDateString('it-IT',{weekday:'long',day:'2-digit',month:'long'})
+      const topic=topics.length?topics[Math.floor(i/Math.max(1,dailyGoal))%topics.length]:null
+      const phase=Math.min(2,Math.floor(i/Math.max(1,totalSessions/3)))
+      const task=topic?(phase===0?'Studia e schematizza: ':phase===1?'Esercitati e verifica: ':'Ripassa e consolida: ')+topic:priority[i%priority.length]
+      const focus=topic||selected.nome
+      return {date:dateString,task,focus,done:false}
     })
-    setPlan(rows)
-    try { localStorage.setItem('smlquiz.study-plan.v1',JSON.stringify({subjectId:selected.id,subject:selected.nome,examDate,rows})) } catch {}
-    setSaveStatus(programNote+' Piano salvato su questo dispositivo.')
-    if(supabase){
-      try {
-        const {data:userData}=await supabase.auth.getUser()
-        if(userData.user){
-          const {error}=await supabase.from('user_study_plans').upsert({user_id:userData.user.id,subject_id:selected.id,exam_date:examDate,plan:rows,updated_at:new Date().toISOString()},{onConflict:'user_id'})
-          if(error)throw error
-          setSaveStatus(programNote+' Piano salvato e sincronizzato con il tuo account.')
-        }
-      } catch { setSaveStatus(programNote+' Piano salvato su questo dispositivo; sincronizzazione account non riuscita.') }
-    }
+    // Le sessioni finali sono dedicate al richiamo globale e alla simulazione, senza aggiungere giornate oltre l'esame.
+    if(schedule.length){schedule[schedule.length-1]={...schedule[schedule.length-1],task:'Simulazione finale e revisione degli ultimi errori',focus:selected.nome}}
+    persist(schedule)
+    let status=topics.length?'Percorso creato usando gli argomenti del programma della materia.':'Percorso personalizzato creato; programma dettagliato non disponibile, quindi le attività sono strutturate per fasi di apprendimento.'
+    if(accuracy!==null)status+=' I tuoi quiz mostrano '+accuracy+'% di accuratezza: intensità e ripassi sono calibrati su questo dato.'
+    setSaveStatus(status+' Salvataggio…')
+    if(supabase){try{const {data:u}=await supabase.auth.getUser();if(u.user){const {error}=await supabase.from('user_study_plans').upsert({user_id:u.user.id,subject_id:selected.id,exam_date:examDate,plan:schedule,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error)throw error;status+=' Sincronizzato con l’account.'}else status+=' Salvato su questo dispositivo.'}catch{status+=' Salvato sul dispositivo; sincronizzazione account non riuscita.'}}else status+=' Salvato su questo dispositivo.'
+    setSaveStatus(status);setBusy(false)
   }
+  async function toggle(index:number){const rows=plan.map((r,i)=>i===index?{...r,done:!r.done}:r);persist(rows);if(supabase){try{const {data:u}=await supabase.auth.getUser();if(u.user){const {error}=await supabase.from('user_study_plans').upsert({user_id:u.user.id,subject_id:subjectId,exam_date:examDate,plan:rows,updated_at:new Date().toISOString()},{onConflict:'user_id'});if(error)throw error;setSaveStatus('Progresso aggiornato e sincronizzato.')}}catch{setSaveStatus('Progresso aggiornato sul dispositivo.')}}}
+  const completed=plan.filter(r=>r.done).length
   return <div className="panel" style={{marginTop:16,padding:20}}>
-    <div className="panel-title"><div><h3><CalendarDays size={18} style={{verticalAlign:'middle',marginRight:8}}/>Piano di studio automatico</h3><p>Il piano viene salvato sul dispositivo e, se accedi, sincronizzato con il tuo account.</p></div></div>
+    <div className="panel-title"><div><h3><CalendarDays size={18} style={{verticalAlign:'middle',marginRight:8}}/>Piano di studio automatico</h3><p>Un percorso organizzato fino all’esame, con attività distribuite giorno per giorno e progressi registrabili.</p></div></div>
     <div style={{display:'flex',gap:12,flexWrap:'wrap',alignItems:'end'}}>
       <label style={{flex:'1 1 220px'}}>Materia<select style={{display:'block',width:'100%'}} value={subjectId} onChange={e=>setSubjectId(e.target.value)}>{subjects.map(s=><option key={s.id} value={s.id}>{s.nome}</option>)}</select></label>
       <label>Data esame<input type="date" min={new Date().toISOString().slice(0,10)} value={examDate} onChange={e=>setExamDate(e.target.value)}/></label>
-      <button className="primary" type="button" disabled={!subjectId||!examDate} onClick={()=>void createPlan()}>Crea piano</button>
+      <button className="primary" type="button" disabled={!subjectId||!examDate||busy} onClick={()=>void createPlan()}>{busy?'Elaborazione…':'Genera il mio percorso'}</button>
     </div>
+    {selected&&<div style={{marginTop:12,display:'flex',gap:16,flexWrap:'wrap'}}><small>{subjectHistory.length} quiz storici sulla materia</small><small>{accuracy===null?'Accuratezza: dati ancora insufficienti':'Accuratezza media: '+accuracy+'%'}</small><small>{dailyGoal} sessioni al giorno</small></div>}
     {saveStatus&&<small role="status" style={{display:'block',marginTop:8}}>{saveStatus}</small>}
-    {plan.length>0&&<div style={{marginTop:14,maxHeight:300,overflow:'auto'}}><b>{selected?.nome} · {plan.length} sessioni</b>{plan.map((r,i)=><div key={i} className="performance-row"><div><b>{r.date}</b><small>{r.task}</small></div></div>)}</div>}
-  </div>
-}
-
-export function FreeTutor({ history }: { history: Attempt[] }) {
-  const [messages,setMessages] = useState<{role:'user'|'assistant';text:string}[]>([])
-  const [question,setQuestion] = useState('')
-  const [busy,setBusy] = useState(false)
-  const insights = useMemo(()=>{
-    const totals = new Map<string,{correct:number;total:number}>()
-    history.forEach(h=>{const v=totals.get(h.subject)||{correct:0,total:0};v.correct+=h.correct;v.total+=h.total;totals.set(h.subject,v)})
-    return [...totals.entries()].map(([subject,v])=>({subject,accuracy:Math.round(100*v.correct/Math.max(1,v.total)),total:v.total})).filter(x=>x.total>0).sort((a,b)=>a.accuracy-b.accuracy).slice(0,3)
-  },[history])
-  async function ask(e:any) {
-    e.preventDefault()
-    const prompt=question.trim()
-    if(!prompt||busy)return
-    if(!supabase){setMessages(v=>[...v,{role:'assistant',text:'Il servizio non è al momento disponibile.'}]);return}
-    setMessages(v=>[...v,{role:'user',text:prompt}])
-    setQuestion('')
-    setBusy(true)
-    try {
-      const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'study-tutor',question:prompt}})
-      if(error)throw error
-      if(data?.error)throw new Error(data.error)
-      setMessages(v=>[...v,{role:'assistant',text:String(data?.answer||'Non sono riuscito a formulare una risposta. Riprova.')}])
-    } catch(err) {
-      setMessages(v=>[...v,{role:'assistant',text:err instanceof Error?err.message:'Il tutor non è disponibile. Riprova tra poco.'}])
-    } finally { setBusy(false) }
-  }
-  return <div className="panel" style={{marginTop:16,padding:20}}>
-    <div className="panel-title"><div><h3><Brain size={18} style={{verticalAlign:'middle',marginRight:8}}/>Tutor di studio AI</h3><p>Chiedi spiegazioni, esempi ed esercizi. Il tutor può usare i tuoi risultati recenti per aiutarti.</p></div></div>
-    {insights.length?<div style={{marginBottom:12}}>{insights.map(x=><div key={x.subject} className="performance-row"><div><b>{x.subject} · {x.accuracy}% corrette</b><small>{x.accuracy<60?'Da rinforzare: ripassa i concetti e rivedi gli errori.':x.accuracy<80?'Da consolidare: esercitati sui punti più difficili.':'Buon livello: mantieni la materia con ripassi periodici.'}</small></div></div>)}</div>:<p>Completa almeno un quiz per permettere al tutor di considerare anche i tuoi risultati.</p>}
-    <div aria-live="polite" style={{display:'grid',gap:8,maxHeight:280,overflowY:'auto',margin:'12px 0'}}>
-      {messages.map((m,i)=><div key={i} style={{justifySelf:m.role==='user'?'end':'start',maxWidth:'92%',padding:12,borderRadius:12,background:m.role==='user'?'var(--accent-soft, #263b58)':'var(--surface-2, #20242c)',whiteSpace:'pre-wrap'}}><b>{m.role==='user'?'Tu':'Tutor'}</b><div>{m.text}</div></div>)}
-      {busy&&<p aria-live="polite">Il tutor sta preparando la risposta…</p>}
-    </div>
-    <form onSubmit={ask} style={{display:'grid',gap:8}}>
-      <textarea rows={2} maxLength={1800} required value={question} onChange={e=>setQuestion(e.target.value)} placeholder="Es. Mi spieghi le equazioni di secondo grado con un esempio?"/>
-      <button className="primary" type="submit" disabled={busy||!question.trim()}>{busy?'Attendi…':'Chiedi al tutor'} <Send size={15}/></button>
-    </form>
-    <small style={{display:'block',marginTop:8,opacity:.75}}>Le risposte AI richiedono la chiave Anthropic sul server; il limite condiviso è di 20 richieste AI al giorno per utente.</small>
+    {plan.length>0&&<div style={{marginTop:16}}><div style={{display:'flex',justifyContent:'space-between',gap:10,flexWrap:'wrap'}}><b>{selected?.nome} · {completed}/{plan.length} sessioni completate</b><b>{Math.round(completed/plan.length*100)}%</b></div><div className="progress-track" style={{margin:'8px 0 14px'}}><i style={{width:(completed/plan.length*100)+'%'}}/></div><div style={{maxHeight:440,overflow:'auto'}}>{plan.map((r,i)=><label key={i} className="performance-row" style={{display:'flex',alignItems:'center',gap:12,cursor:'pointer',opacity:r.done?.65:1}}><input type="checkbox" checked={Boolean(r.done)} onChange={()=>void toggle(i)}/><div style={{flex:1}}><b style={{textDecoration:r.done?'line-through':'none'}}>{r.date}</b><small>{r.task}</small></div></label>)}</div></div>}
   </div>
 }
 
