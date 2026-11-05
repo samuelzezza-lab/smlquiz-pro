@@ -237,7 +237,7 @@ Deno.serve(async (req: Request) => {
             role: "user",
             content: "Risultati recenti dello studente (solo contesto facoltativo): " +
               (performance.length ? performance.join("; ") : "nessun quiz completato") +
-              "\\n\\nDomanda dello studente: " + question
+              "\n\nDomanda dello studente: " + question
           }],
         }),
       });
@@ -249,7 +249,7 @@ Deno.serve(async (req: Request) => {
       const payload = await response.json();
       const answer = (payload.content ?? [])
         .filter((part: any) => part.type === "text" && typeof part.text === "string")
-        .map((part: any) => part.text).join("\\n").trim();
+        .map((part: any) => part.text).join("\n").trim();
       if (!answer) return json({ error: "Il tutor non ha prodotto una risposta. Riprova." }, 502);
       return json({ answer });
     }
