@@ -252,7 +252,7 @@ Deno.serve(async (req: Request) => {
           "Corso di laurea: " + String(subject.corso_di_laurea ?? "non specificato"),
           "Classe di laurea: " + String(subject.classe_laurea ?? "non specificata"),
           "Anno di corso: " + String(subject.anno_corso ?? "non specificato"),
-        ].join("\\n");
+        ].join("\n");
         const response = await fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",
           headers: {
@@ -270,7 +270,7 @@ Deno.serve(async (req: Request) => {
         const payload = await response.json();
         const rawText = (payload.content ?? [])
           .filter((part: any) => part.type === "text" && typeof part.text === "string")
-          .map((part: any) => part.text).join("\\n").trim();
+          .map((part: any) => part.text).join("\n").trim();
         const jsonStart = rawText.indexOf("{");
         const jsonEnd = rawText.lastIndexOf("}");
         if (jsonStart < 0 || jsonEnd <= jsonStart) throw new Error("Il programma generato non è un JSON valido.");
@@ -499,7 +499,7 @@ Deno.serve(async (req: Request) => {
           id: q.id, testo_domanda: q.testo_domanda, concetto_chiave: q.concetto_chiave,
           opzioni: q.opzioni, risposta_corretta: q.risposta_corretta, spiegazione: q.spiegazione,
         }))),
-      ].join("\\n");
+      ].join("\n");
       const response = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: {
@@ -517,7 +517,7 @@ Deno.serve(async (req: Request) => {
       const payload = await response.json();
       const rawText = (payload.content ?? [])
         .filter((part: any) => part.type === "text" && typeof part.text === "string")
-        .map((part: any) => part.text).join("\\n").trim();
+        .map((part: any) => part.text).join("\n").trim();
       const jsonStart = rawText.indexOf("[");
       const jsonEnd = rawText.lastIndexOf("]");
       if (jsonStart < 0 || jsonEnd <= jsonStart) return json({ error: "La traduzione generata non è valida." }, 502);
