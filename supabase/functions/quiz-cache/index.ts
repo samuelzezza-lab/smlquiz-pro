@@ -407,7 +407,7 @@ Deno.serve(async (req: Request) => {
       if (qError) throw qError;
       if (!allQuestions || allQuestions.length !== 600) return json({ error: "Archivio quiz incompleto." }, 409);
       const questions = shuffle(allQuestions as { id: string; concetto_chiave: string; testo_domanda: string; opzioni: string[] }[]).slice(0, 10);
-      const fingerprint = await sha256(questions.map((q: { id: string }) => q.id).sort().join(":"));
+      const fingerprint = await sha256((questions as { id: string }[]).map((q) => q.id).sort().join(":"));
       return json({ mode: "simulation", materia_id: materiaId, mix_fingerprint: fingerprint, questions });
     }
 
