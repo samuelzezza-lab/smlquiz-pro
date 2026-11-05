@@ -83,7 +83,8 @@ jobs:
               names="$(echo "$body" | jq -r '.result[]?.name' | paste -sd, -)"
               echo "PAGES_PROJECT project=$project domains=${names:-none}"
               echo "$body" | jq -r '.result[]?.name | select(. == "smlquiz.it" or . == "www.smlquiz.it")' | while read -r domain; do
-                echo "CUSTOM_DOMAIN_MATCH project=$project domain=$domain"
+                details="$(echo "$body" | jq -c --arg domain "$domain" '.result[] | select(.name == $domain) | {name,status,verification_data,validation_data}')"
+                echo "CUSTOM_DOMAIN_MATCH project=$project details=$details"
               done
             fi
           done
