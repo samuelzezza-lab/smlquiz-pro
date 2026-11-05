@@ -57,7 +57,7 @@ export function FreeAdminOverview({ subjectsCount, readyCount }: { subjectsCount
  <div className="panel-title"><div><h3><ShieldCheck size={18}/> Pannello amministratore</h3><p>Gestione protetta del catalogo e delle segnalazioni.</p></div><button className="secondary" type="button" onClick={()=>void load()} disabled={busy}>Aggiorna</button></div>
  <div className="stats"><div className="stat"><span>Materie</span><b>{subjectsCount}</b></div><div className="stat"><span>Quiz pronti</span><b>{readyCount}</b></div><div className="stat"><span>Domande recenti</span><b>{items.questions.length}</b></div><div className="stat"><span>Segnalazioni recenti</span><b>{items.reports.length}</b></div></div>
  {items.systemStatus&&<div className="performance-row" style={{flexWrap:'wrap',gap:12,marginTop:12}}>
-  <div><b>Generazione AI e tutor</b><small>{items.systemStatus.anthropicConfigured?'Anthropic configurato · '+items.systemStatus.anthropicModel:'Chiave Anthropic da configurare in Supabase'}</small></div>
+  <div><b>Generazione domande AI</b><small>{items.systemStatus.anthropicConfigured?'Anthropic configurato · '+items.systemStatus.anthropicModel:'Chiave Anthropic da configurare in Supabase'}</small></div>
   <div><b>Pagamenti Stripe</b><small>{items.systemStatus.stripeLiveEnabled?'Pagamenti reali attivi':'Pagamenti reali disattivati'} · {items.systemStatus.stripeSecretConfigured?'chiave presente':'chiave assente'} · {items.systemStatus.stripeWebhookConfigured?'webhook presente':'webhook assente'}</small></div>
  </div>}
  {message&&<p role="status">{message}</p>}
