@@ -338,7 +338,7 @@ Deno.serve(async (req: Request) => {
 
         const concepts = new Set<string>();
         for (const q of generated) {
-          const incompleteStem = typeof q?.testo_domanda === "string" && /^(?:è|indica|riguarda|mira a|prevede|descrive|è usata per|è tipica di|è utile quando)\\s*:?$/i.test(q.testo_domanda.trim());
+          const incompleteStem = typeof q?.testo_domanda === "string" && /^(?:è|indica|riguarda|mira a|prevede|descrive|è usata per|è tipica di|è utile quando)\s*:?$/i.test(q.testo_domanda.trim());
           if (incompleteStem || !q || typeof q.concetto_chiave !== "string" || !q.concetto_chiave.trim()
             || typeof q.testo_domanda !== "string" || !q.testo_domanda.trim()
             || !Array.isArray(q.opzioni) || q.opzioni.length !== 4
