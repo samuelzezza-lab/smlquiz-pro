@@ -76,6 +76,8 @@ Deno.serve(async (req: Request) => {
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
     const anthropicModel = Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5";
+    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    const geminiModel = Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash";
     if (!supabaseUrl || !anonKey || !serviceKey) return json({ error: "Configurazione server incompleta." }, 500);
 
     const authHeader = req.headers.get("Authorization");
@@ -151,7 +153,7 @@ Deno.serve(async (req: Request) => {
       if (quizError) throw quizError;
 
       if (!quiz || quiz.status !== "ready") {
-        if (!anthropicKey) return json({ error: "Chiave Anthropic non configurata sul server. Aggiungi ANTHROPIC_API_KEY nei segreti Supabase." }, 503);
+        if (!anthropicKey && !geminiKey) return json({ error: "Nessun provider AI configurato: serve ANTHROPIC_API_KEY oppure GEMINI_API_KEY nei segreti Supabase." }, 503);
         const { data: claimed, error: claimError } = await db.rpc("claim_quiz_generation", {
           p_materia_id: materiaId, p_quiz_number: quizNumber,
         });
@@ -313,28 +315,80 @@ Deno.serve(async (req: Request) => {
           required: ["concetto_chiave", "testo_domanda", "opzioni", "risposta_corretta", "spiegazione"],
           additionalProperties: false
         };
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: {
-            "x-api-key": anthropicKey,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
-          },
-          body: JSON.stringify({
-            model: anthropicModel,
-            max_tokens: 20000,
-            messages: [{ role: "user", content: prompt }],
-          }),
-        });
-        if (!response.ok) {
-          const detail = await response.text();
-          throw new Error("Anthropic API: " + detail.slice(0, 500));
+        let rawText = "";
+        let providerUsed = "anthropic";
+        let anthropicFailure = "";
+        let useGemini = !anthropicKey;
+        if (anthropicKey) {
+          const response = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+              "x-api-key": anthropicKey,
+              "anthropic-version": "2023-06-01",
+              "content-type": "application/json",
+            },
+            body: JSON.stringify({
+              model: anthropicModel,
+              max_tokens: 20000,
+              messages: [{ role: "user", content: prompt }],
+            }),
+          });
+          if (response.ok) {
+            const payload = await response.json();
+            rawText = (payload.content ?? [])
+              .filter((part: any) => part.type === "text" && typeof part.text === "string")
+              .map((part: any) => part.text).join("\n");
+          } else {
+            const detail = await response.text();
+            anthropicFailure = "Anthropic API (" + response.status + "): " + detail.slice(0, 500);
+            useGemini = response.status === 402
+              || /credit balance|billing_error|insufficient_quota|payment required|credit.*low/i.test(detail);
+            if (!useGemini) throw new Error(anthropicFailure);
+          }
         }
-        const payload = await response.json();
-        const rawText = (payload.content ?? [])
-          .filter((part: any) => part.type === "text" && typeof part.text === "string")
-          .map((part: any) => part.text)
-          .join("\n");
+        if (useGemini) {
+          if (!geminiKey) {
+            throw new Error((anthropicFailure ? anthropicFailure + ". " : "")
+              + "Credito Anthropic esaurito: per continuare configura GEMINI_API_KEY nei segreti Supabase.");
+          }
+          const geminiResponse = await fetch(
+            "https://generativelanguage.googleapis.com/v1beta/models/" + encodeURIComponent(geminiModel)
+              + ":generateContent?key=" + encodeURIComponent(geminiKey),
+            {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                contents: [{ role: "user", parts: [{ text: prompt }] }],
+                generationConfig: {
+                  responseMimeType: "application/json",
+                  responseSchema: {
+                    type: "ARRAY",
+                    items: {
+                      type: "OBJECT",
+                      properties: {
+                        concetto_chiave: { type: "STRING" },
+                        testo_domanda: { type: "STRING" },
+                        opzioni: { type: "ARRAY", items: { type: "STRING" } },
+                        risposta_corretta: { type: "STRING" },
+                        spiegazione: { type: "STRING" }
+                      },
+                      required: ["concetto_chiave", "testo_domanda", "opzioni", "risposta_corretta", "spiegazione"]
+                    }
+                  }
+                }
+              })
+            }
+          );
+          if (!geminiResponse.ok) {
+            const detail = await geminiResponse.text();
+            throw new Error("Gemini API (" + geminiResponse.status + "): " + detail.slice(0, 500));
+          }
+          const geminiPayload = await geminiResponse.json();
+          rawText = (geminiPayload.candidates?.[0]?.content?.parts ?? [])
+            .filter((part: any) => typeof part.text === "string")
+            .map((part: any) => part.text).join("\n");
+          providerUsed = "gemini";
+        }
         const generated = parseGeneratedArray(rawText);
         if (!Array.isArray(generated)) throw new Error("Anthropic non ha restituito un array di domande valido.");
         if (generated.length !== 10) {
