@@ -245,6 +245,7 @@ Deno.serve(async (req: Request) => {
           "PROGRAMMA DI RIFERIMENTO: " + (savedStandardProgram ? JSON.stringify(savedStandardProgram) : "Nessun programma specifico salvato. Usa il programma standard italiano orientativo della disciplina, coerente con facoltà, classe di laurea, corso e anno. Non inventare un piano ufficiale di uno specifico ateneo e non restituire il programma: genera esclusivamente le 10 domande richieste."),
           "Numero del quiz: " + quizNumber + " su 60.",
           "Ogni quiz contiene 10 domande. L'intero percorso comprende fino a 60 quiz e 600 domande per materia.",
+          "Ogni testo deve essere una domanda completa e autosufficiente: non usare frammenti come È:, Indica:, Riguarda:, Mira a: o Prevede:",
           "",
           "OBIETTIVO DIDATTICO E PIANO DEI 60 QUIZ",
           "Costruisci mentalmente una mappa ampia e ordinata degli argomenti fondamentali, intermedi e specialistici della materia. Distribuisci progressivamente la copertura nell'arco dei 60 quiz: non esaurire subito un singolo capitolo e non concentrarti sempre sugli argomenti più noti.",
@@ -337,7 +338,8 @@ Deno.serve(async (req: Request) => {
 
         const concepts = new Set<string>();
         for (const q of generated) {
-          if (!q || typeof q.concetto_chiave !== "string" || !q.concetto_chiave.trim()
+          const incompleteStem = typeof q?.testo_domanda === "string" && /^(?:è|indica|riguarda|mira a|prevede|descrive|è usata per|è tipica di|è utile quando)\\s*:?$/i.test(q.testo_domanda.trim());
+          if (incompleteStem || !q || typeof q.concetto_chiave !== "string" || !q.concetto_chiave.trim()
             || typeof q.testo_domanda !== "string" || !q.testo_domanda.trim()
             || !Array.isArray(q.opzioni) || q.opzioni.length !== 4
             || q.opzioni.some((o: unknown) => typeof o !== "string" || !o.trim())
