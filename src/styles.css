@@ -429,3 +429,63 @@ button,a,select,[role='button'],.nav-link,.answer,.subject-card>button{touch-act
 .university-ranking-row.rank-silver .university-rank{background:rgba(190,205,225,.17);color:#c8d4e8}
 .university-ranking-row.rank-bronze .university-rank{background:rgba(196,130,91,.18);color:#d79b77}
 .university-ranking-row.my-university .university-ranking-name b{color:#d9ceff}
+
+
+/* SMLQUIZ · rifinitura responsive e fluidità generale */
+html{scroll-behavior:smooth;scroll-padding-top:82px;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid #a78bfa;outline-offset:3px}
+button,.nav-link,.subject-card,.panel,.stat,.answer{ -webkit-backface-visibility:hidden;backface-visibility:hidden}
+img,svg{max-width:100%}
+.content,.panel,.stat,.subject-card,.quiz,.filters{min-width:0}
+@media(max-width:800px){
+ html{scroll-padding-top:70px}
+ body{overscroll-behavior-y:contain}
+ .topbar{padding-top:env(safe-area-inset-top);height:calc(62px + env(safe-area-inset-top))}
+ .content{padding-top:clamp(18px,4vw,28px);padding-bottom:calc(34px + env(safe-area-inset-bottom))}
+ .welcome,.page-heading{align-items:flex-start;flex-direction:column;gap:13px}
+ .welcome h1,.page-heading h1{font-size:clamp(23px,6vw,29px);line-height:1.16}
+ .hero{min-height:235px;padding:25px 22px}
+ .hero h2{font-size:clamp(24px,6vw,30px)}
+ .hero-graphic{right:-95px;opacity:.45;transform:scale(.82);transform-origin:center}
+ .filters{grid-template-columns:minmax(0,1fr);gap:12px}
+ .filters label>div{min-height:44px}
+ .subject-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .subject-card{padding:14px}
+ .quiz-grid{min-width:0}
+ .quiz{min-width:0}
+ .question,.answer{overflow-wrap:anywhere}
+ .footer{margin:0 16px;padding-bottom:calc(20px + env(safe-area-inset-bottom))}
+ .toast{right:12px;bottom:calc(12px + env(safe-area-inset-bottom));left:12px;max-width:none}
+ .cookie-banner{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));max-width:none}
+}
+@media(max-width:520px){
+ .subject-grid{grid-template-columns:minmax(0,1fr)}
+ .stats,.progress-page>.stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .stat{padding:13px}
+ .stat>b{font-size:22px}
+ .hero{min-height:220px}
+ .hero-graphic{right:-145px;opacity:.28}
+ .hero-text{max-width:100%}
+ .hero p{max-width:290px}
+ .section-head{align-items:flex-start;gap:10px}
+ .quiz-top-actions{flex-wrap:wrap}
+ .quiz-bottom{flex-wrap:wrap}
+ .quiz-bottom>*{min-width:0}
+ .account-welcome,.account-detail,.account-ledger-row{min-width:0}
+ .account-detail strong{overflow-wrap:anywhere}
+ .university-ranking-row{grid-template-columns:30px minmax(0,1fr)}
+ .university-ranking-row>strong{grid-column:2;white-space:normal}
+ .auth-grid{margin:18px auto;gap:18px}
+ .auth-intro{padding:8px 0}
+ .auth-intro h2{font-size:27px}
+ .exam-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ .settings>div{align-items:flex-start}
+ .cookie-banner{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+ .cookie-banner>div{grid-column:1/-1}
+ .cookie-banner button{min-height:44px}
+}
+@media(prefers-reduced-motion:no-preference){
+ .subject-card,.panel,.stat,.answer,.primary,.secondary{transition:transform .18s ease,border-color .18s ease,background-color .18s ease,box-shadow .18s ease}
+}
