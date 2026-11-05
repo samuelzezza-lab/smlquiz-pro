@@ -65,6 +65,30 @@ jobs:
             fi
             echo "ATTACHED_CUSTOM_DOMAIN=$(echo "$response" | jq -r '.result.name') status=$(echo "$response" | jq -r '.result.status')"
           fi
+      - name: Point smlquiz.it DNS to the production Pages project
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -eu
+          zones="$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/zones?name=smlquiz.it")"
+          zone_id="$(echo "$zones" | jq -r '.result[0].id // empty')"
+          if [ -z "$zone_id" ]; then
+            echo "::error::The smlquiz.it DNS zone is not available in this Cloudflare account."
+            exit 1
+          fi
+          records="$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records?name=smlquiz.it")"
+          echo "$records" | jq -r '.result[] | select(.name == "smlquiz.it" and (.type == "A" or .type == "AAAA" or .type == "CNAME")) | .id' | while read -r record_id; do
+            [ -z "$record_id" ] && continue
+            deleted="$(curl -fsS -X DELETE -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records/$record_id")"
+            echo "$deleted" | jq -e '.success == true' >/dev/null
+          done
+          created="$(curl -sS -X POST -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" --data '{"type":"CNAME","name":"smlquiz.it","content":"smlquiz-pro.pages.dev","ttl":1,"proxied":true}' "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records")"
+          if ! echo "$created" | jq -e '.success == true' >/dev/null; then
+            echo "::error::Could not point smlquiz.it to Pages: $(echo "$created" | jq -c '.errors // .messages')"
+            exit 1
+          fi
+          echo "DNS_CONFIGURED name=$(echo "$created" | jq -r '.result.name') target=$(echo "$created" | jq -r '.result.content') proxied=$(echo "$created" | jq -r '.result.proxied')"
       - name: Verify SMLQUIZ custom domain is attached to deployed Pages project
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
