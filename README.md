@@ -45,7 +45,7 @@ Il progetto esistente è `fgrwwauwnxvrcgqqpksp` nella regione `eu-west-2`.
 
 Edge Functions attive:
 - `quiz-cache` v26 — generazione dei quiz mancanti tramite Anthropic Claude, con chiave server-side.
-- `quiz-api` v30 — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report, classifica e pannello amministratore, tutor AI con limite di 20 richieste al giorno e premi invito.
+- `quiz-api` v31 — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report, classifica e pannello amministratore, tutor AI con limite di 20 richieste al giorno e premi invito.
 - `stripe-checkout` v9 — creazione Checkout protetta da flag server e consenso digitale verificato.
 - `stripe-webhook` v9 — verifica firma Stripe, pacchetto/importo/valuta e consenso prima dell'accredito idempotente dei crediti.
 
