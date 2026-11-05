@@ -16,8 +16,10 @@ Non inserire mai nel frontend o in variabili `VITE_*` la service-role key di Sup
 Nel database collegato risultano:
 - 25 facoltà
 - 551 materie
-- 541 quiz pronti da 10 domande
-- 5.410 domande
+- 554 quiz pronti da 10 domande
+- 5.540 domande
+- 551 materie con almeno un quiz pronto; soltanto 3 materie hanno un secondo quiz pronto
+- 550 programmi standard di studio ancora da preparare
 
 ## Funzioni presenti
 
@@ -26,7 +28,7 @@ Nel database collegato risultano:
 - Supabase Auth: registrazione, accesso, uscita e recupero password.
 - Filtro facoltà, anno di corso e ricerca materie; caricamento progressivo dell'elenco.
 - Quiz a quattro opzioni, timer, spiegazioni e punteggio +1 / −0,25.
-- Generazione dinamica dei quiz mancanti tramite il servizio AI configurato nella Edge Function `quiz-cache`, con controllo qualità, duplicati e salvataggio nel catalogo.
+- Generazione dinamica dei quiz mancanti predisposta nella Edge Function `quiz-cache`; per i nuovi quiz richiede un provider AI configurato nei segreti server. I quiz già pronti funzionano senza generazione. Non dichiarare attiva la generazione automatica finché non viene configurato e testato un provider alternativo a Gemini.
 - Salvataggio delle risposte lato server, storico, report TXT e condivisione WhatsApp/Telegram.
 - Limite di 5 quiz gratuiti al giorno e utilizzo crediti gestiti sul backend.
 - Portafoglio crediti, coupon, profilo, classifica, streak, badge e ripasso degli errori.
@@ -41,10 +43,10 @@ Nel database collegato risultano:
 Il progetto esistente è `fgrwwauwnxvrcgqqpksp` nella regione `eu-west-2`.
 
 Edge Functions attive:
-- `quiz-cache` v18 — funzione di generazione aggiornata; nessun provider AI è fissato nel frontend.
-- `quiz-api` v9 — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report e classifica.
-- `stripe-checkout` v5 — creazione Checkout protetta da flag server e consenso digitale verificato.
-- `stripe-webhook` v6 — verifica firma Stripe, pacchetto/importo/valuta e consenso prima dell'accredito idempotente dei crediti.
+- `quiz-cache` v20 — generazione dei quiz mancanti tramite chiave AI server-side.
+- `quiz-api` v22 — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report, classifica e pannello amministratore.
+- `stripe-checkout` v9 — creazione Checkout protetta da flag server e consenso digitale verificato.
+- `stripe-webhook` v9 — verifica firma Stripe, pacchetto/importo/valuta e consenso prima dell'accredito idempotente dei crediti.
 
 Lo storico calcola il punteggio effettivo dalle risposte registrate, senza usare il solo numero di risposte corrette.
 
