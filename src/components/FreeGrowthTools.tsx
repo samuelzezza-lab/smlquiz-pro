@@ -6,12 +6,27 @@ type Subject = { id: string; nome: string }
 type Attempt = { id: string; subject: string; score: number; total: number; correct: number; wrong: number; date: string }
 
 export function FreeStudyPlanner({ subjects, dailyGoal }: { subjects: Subject[]; dailyGoal: number }) {
-  const [subjectId, setSubjectId] = useState(subjects[0]?.id || '')
+  const [subjectId, setSubjectId] = useState('')
   const [examDate, setExamDate] = useState('')
   const [plan, setPlan] = useState<{ date: string; task: string }[]>([])
   const selected = subjects.find(s => s.id === subjectId)
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('smlquiz.study-plan.v1') || 'null')
+      if (saved && Array.isArray(saved.rows)) {
+        setSubjectId(typeof saved.subjectId === 'string' ? saved.subjectId : '')
+        setExamDate(typeof saved.examDate === 'string' ? saved.examDate : '')
+        setPlan(saved.rows.filter((row: any) => row && typeof row.date === 'string' && typeof row.task === 'string'))
+      }
+    } catch { localStorage.removeItem('smlquiz.study-plan.v1') }
+  }, [])
+  useEffect(() => {
+    if (!subjectId && subjects.length) setSubjectId(subjects[0].id)
+  }, [subjects, subjectId])
   function createPlan() {
     if (!selected || !examDate) return
+    const exam = new Date(examDate + 'T00:00:00')
+    if (!Number.isFinite(exam.getTime()) || exam.getTime() < new Date(new Date().toDateString()).getTime()) return
     const start = new Date(); start.setHours(0,0,0,0)
     const end = new Date(examDate+'T00:00:00')
     const days = Math.max(1, Math.ceil((end.getTime()-start.getTime())/86400000))
@@ -22,7 +37,7 @@ export function FreeStudyPlanner({ subjects, dailyGoal }: { subjects: Subject[];
       return {date:date.toLocaleDateString('it-IT',{weekday:'short',day:'2-digit',month:'short'}),task:tasks[i%tasks.length]}
     })
     setPlan(rows)
-    try { localStorage.setItem('smlquiz.study-plan.v1',JSON.stringify({subject:selected.nome,examDate,rows})) } catch {}
+    try { localStorage.setItem('smlquiz.study-plan.v1',JSON.stringify({subjectId:selected.id,subject:selected.nome,examDate,rows})) } catch {}
   }
   return <div className="panel" style={{marginTop:16,padding:20}}>
     <div className="panel-title"><div><h3><CalendarDays size={18} style={{verticalAlign:'middle',marginRight:8}}/>Piano di studio automatico</h3><p>Gratis, creato direttamente nel browser. Nessun servizio esterno.</p></div></div>
