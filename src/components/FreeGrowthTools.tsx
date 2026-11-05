@@ -80,6 +80,7 @@ export function FreeAdminOverview({ subjectsCount, readyCount }: { subjectsCount
  const [form,setForm]=useState<any>(emptyForm);
  const [editing,setEditing]=useState(false);
  async function load() {
+   if (!supabase) { setMessage('Servizio amministratore non disponibile'); return }
    setMessage('Caricamento...');
    const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'admin-list'}});
    if(error||data?.error){setMessage(data?.error||error?.message||'Errore nel caricamento');return}
@@ -93,13 +94,16 @@ export function FreeAdminOverview({ subjectsCount, readyCount }: { subjectsCount
    document.getElementById('sml-admin-editor')?.scrollIntoView({behavior:'smooth',block:'start'});
  }
  async function saveQuestion(e:any) {
-   e.preventDefault();setBusy(true);setMessage('');
+   e.preventDefault();
+   if (!supabase) { setMessage('Servizio amministratore non disponibile'); return }
+   setBusy(true);setMessage('');
    const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'admin-save-question',id:form.id||undefined,chapterId:form.chapterId,concept:form.concept,question:form.question,options:form.options,correct:form.correct,explanation:form.explanation}});
    setBusy(false);
    if(error||data?.error){setMessage(data?.error||error?.message||'Salvataggio non riuscito');return}
    setMessage('Domanda salvata correttamente.');setForm(emptyForm);setEditing(false);await load();
  }
  async function setReportStatus(reportId:string,status:string) {
+   if (!supabase) { setMessage('Servizio amministratore non disponibile'); return }
    setBusy(true);
    const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'admin-report-status',reportId,status}});
    setBusy(false);
