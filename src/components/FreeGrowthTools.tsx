@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { CalendarDays, Copy, Brain, Users, ShieldCheck } from 'lucide-react'
+import { CalendarDays, Copy, Brain, Users, ShieldCheck, Send } from 'lucide-react'
 
 type Subject = { id: string; nome: string }
 type Attempt = { id: string; subject: string; score: number; total: number; correct: number; wrong: number; date: string }
@@ -51,14 +51,43 @@ export function FreeStudyPlanner({ subjects, dailyGoal }: { subjects: Subject[];
 }
 
 export function FreeTutor({ history }: { history: Attempt[] }) {
+  const [messages,setMessages] = useState<{role:'user'|'assistant';text:string}[]>([])
+  const [question,setQuestion] = useState('')
+  const [busy,setBusy] = useState(false)
   const insights = useMemo(()=>{
     const totals = new Map<string,{correct:number;total:number}>()
     history.forEach(h=>{const v=totals.get(h.subject)||{correct:0,total:0};v.correct+=h.correct;v.total+=h.total;totals.set(h.subject,v)})
     return [...totals.entries()].map(([subject,v])=>({subject,accuracy:Math.round(100*v.correct/Math.max(1,v.total)),total:v.total})).filter(x=>x.total>0).sort((a,b)=>a.accuracy-b.accuracy).slice(0,3)
   },[history])
+  async function ask(e:any) {
+    e.preventDefault()
+    const prompt=question.trim()
+    if(!prompt||busy)return
+    if(!supabase){setMessages(v=>[...v,{role:'assistant',text:'Il servizio non è al momento disponibile.'}]);return}
+    setMessages(v=>[...v,{role:'user',text:prompt}])
+    setQuestion('')
+    setBusy(true)
+    try {
+      const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'study-tutor',question:prompt}})
+      if(error)throw error
+      if(data?.error)throw new Error(data.error)
+      setMessages(v=>[...v,{role:'assistant',text:String(data?.answer||'Non sono riuscito a formulare una risposta. Riprova.')}])
+    } catch(err) {
+      setMessages(v=>[...v,{role:'assistant',text:err instanceof Error?err.message:'Il tutor non è disponibile. Riprova tra poco.'}])
+    } finally { setBusy(false) }
+  }
   return <div className="panel" style={{marginTop:16,padding:20}}>
-    <div className="panel-title"><div><h3><Brain size={18} style={{verticalAlign:'middle',marginRight:8}}/>Tutor di studio gratuito</h3><p>Consigli personalizzati usando i tuoi risultati, senza API a pagamento.</p></div></div>
-    {insights.length? <>{insights.map(x=><div key={x.subject} className="performance-row"><div><b>{x.subject} · {x.accuracy}% corrette</b><small>{x.accuracy<60?'Priorità alta: ripassa i concetti e poi svolgi un quiz.':x.accuracy<80?'Consolidamento: ripassa gli errori recenti e fai un altro quiz.':'Buon livello: mantieni la materia con ripassi periodici.'}</small></div></div>)}</>:<p>Completa almeno un quiz: il tutor individuerà le materie da rinforzare.</p>}
+    <div className="panel-title"><div><h3><Brain size={18} style={{verticalAlign:'middle',marginRight:8}}/>Tutor di studio AI</h3><p>Chiedi spiegazioni, esempi ed esercizi. Il tutor può usare i tuoi risultati recenti per aiutarti.</p></div></div>
+    {insights.length?<div style={{marginBottom:12}}>{insights.map(x=><div key={x.subject} className="performance-row"><div><b>{x.subject} · {x.accuracy}% corrette</b><small>{x.accuracy<60?'Da rinforzare: ripassa i concetti e rivedi gli errori.':x.accuracy<80?'Da consolidare: esercitati sui punti più difficili.':'Buon livello: mantieni la materia con ripassi periodici.'}</small></div></div>)}</div>:<p>Completa almeno un quiz per permettere al tutor di considerare anche i tuoi risultati.</p>}
+    <div aria-live="polite" style={{display:'grid',gap:8,maxHeight:280,overflowY:'auto',margin:'12px 0'}}>
+      {messages.map((m,i)=><div key={i} style={{justifySelf:m.role==='user'?'end':'start',maxWidth:'92%',padding:12,borderRadius:12,background:m.role==='user'?'var(--accent-soft, #263b58)':'var(--surface-2, #20242c)',whiteSpace:'pre-wrap'}}><b>{m.role==='user'?'Tu':'Tutor'}</b><div>{m.text}</div></div>)}
+      {busy&&<p aria-live="polite">Il tutor sta preparando la risposta…</p>}
+    </div>
+    <form onSubmit={ask} style={{display:'grid',gap:8}}>
+      <textarea rows={2} maxLength={1800} required value={question} onChange={e=>setQuestion(e.target.value)} placeholder="Es. Mi spieghi le equazioni di secondo grado con un esempio?"/>
+      <button className="primary" type="submit" disabled={busy||!question.trim()}>{busy?'Attendi…':'Chiedi al tutor'} <Send size={15}/></button>
+    </form>
+    <small style={{display:'block',marginTop:8,opacity:.75}}>Le risposte AI richiedono la chiave Anthropic configurata in modo sicuro sul server.</small>
   </div>
 }
 
