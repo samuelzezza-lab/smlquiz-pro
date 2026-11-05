@@ -28,7 +28,7 @@ Nel database collegato risultano:
 - Supabase Auth: registrazione, accesso, uscita e recupero password.
 - Filtro facoltà, anno di corso e ricerca materie; caricamento progressivo dell'elenco.
 - Quiz a quattro opzioni, timer, spiegazioni e punteggio +1 / −0,25.
-- Generazione dinamica dei quiz mancanti predisposta nella Edge Function `quiz-cache`; per i nuovi quiz richiede un provider AI configurato nei segreti server. I quiz già pronti funzionano senza generazione. Non dichiarare attiva la generazione automatica finché non viene configurato e testato un provider alternativo a Gemini.
+- Generazione dinamica dei quiz mancanti predisposta nella Edge Function `quiz-cache`; per i nuovi quiz usa Anthropic Claude tramite `ANTHROPIC_API_KEY` e, facoltativamente, `ANTHROPIC_MODEL` (predefinito `claude-haiku-5-5`). I quiz già pronti funzionano senza generazione. La generazione di quiz nuovi resta sospesa finché non viene configurata la chiave Anthropic.
 - Salvataggio delle risposte lato server, storico, report TXT e condivisione WhatsApp/Telegram.
 - Limite di 5 quiz gratuiti al giorno e utilizzo crediti gestiti sul backend.
 - Portafoglio crediti, coupon, profilo, classifica, streak, badge e ripasso degli errori.
@@ -43,7 +43,7 @@ Nel database collegato risultano:
 Il progetto esistente è `fgrwwauwnxvrcgqqpksp` nella regione `eu-west-2`.
 
 Edge Functions attive:
-- `quiz-cache` v20 — generazione dei quiz mancanti tramite chiave AI server-side.
+- `quiz-cache` v21 — generazione dei quiz mancanti tramite Anthropic Claude, con chiave server-side.
 - `quiz-api` v22 — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report, classifica e pannello amministratore.
 - `stripe-checkout` v9 — creazione Checkout protetta da flag server e consenso digitale verificato.
 - `stripe-webhook` v9 — verifica firma Stripe, pacchetto/importo/valuta e consenso prima dell'accredito idempotente dei crediti.
@@ -71,6 +71,8 @@ Il workflow GitHub Actions `Deploy SMLQUIZ Pro to Cloudflare Pages` richiede que
 I pacchetti configurati sono 5 quiz a 1 €, 10 quiz a 2 € e 15 quiz a 3 €.
 
 I pagamenti live restano disattivati finché non viene abilitato esplicitamente il flag server `STRIPE_LIVE_ENABLED=true`. Per la configurazione servono, nei Supabase secrets:
+- `ANTHROPIC_API_KEY` (necessaria per generare nuovi quiz)
+- `ANTHROPIC_MODEL` (facoltativa; predefinita `claude-haiku-5-5`)
 - `STRIPE_SECRET_KEY`
 - `STRIPE_WEBHOOK_SIGNING_SECRET`
 - `APP_URL`
