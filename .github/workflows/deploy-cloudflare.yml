@@ -48,6 +48,23 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist --project-name smlquiz-pro --branch main
+      - name: Attach smlquiz.it to the production Pages project
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          set -eu
+          existing="$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/smlquiz-pro/domains")"
+          if echo "$existing" | jq -e '.result[]? | select(.name == "smlquiz.it")' >/dev/null; then
+            echo "smlquiz.it is already attached to smlquiz-pro"
+          else
+            response="$(curl -sS -X POST -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" -H "Content-Type: application/json" --data '{"name":"smlquiz.it"}' "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/smlquiz-pro/domains")"
+            if ! echo "$response" | jq -e '.success == true' >/dev/null; then
+              echo "::error::Could not attach smlquiz.it: $(echo "$response" | jq -c '.errors // .messages')"
+              exit 1
+            fi
+            echo "ATTACHED_CUSTOM_DOMAIN=$(echo "$response" | jq -r '.result.name') status=$(echo "$response" | jq -r '.result.status')"
+          fi
       - name: Verify SMLQUIZ custom domain is attached to deployed Pages project
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
