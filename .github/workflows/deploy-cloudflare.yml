@@ -55,10 +55,18 @@ jobs:
         run: |
           set -eu
           projects="$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects?page=1")"
+          found=0
           echo "$projects" | jq -r '.result[].name' | while read -r project; do
-            domains="$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$project/domains" 2>/dev/null || echo '{"result":[]}')"
-            matches="$(echo "$domains" | jq -r '.result[]?.name | select(. == "smlquiz.it" or . == "www.smlquiz.it")')"
-            if [ -n "$matches" ]; then
-              echo "CUSTOM_DOMAIN_MATCH project=$project domains=$(echo "$matches" | paste -sd, -)"
+            response="$(curl -sS -w '\nHTTP_STATUS:%{http_code}' -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOUNT_ID/pages/projects/$project/domains")"
+            body="${response%$'\n'HTTP_STATUS:*}"
+            status="${response##*HTTP_STATUS:}"
+            if [ "$status" != "200" ]; then
+              echo "DOMAIN_LOOKUP_ERROR project=$project http=$status body=$(echo "$body" | jq -c '.errors // .messages // .success')"
+            else
+              names="$(echo "$body" | jq -r '.result[]?.name' | paste -sd, -)"
+              echo "PAGES_PROJECT project=$project domains=${names:-none}"
+              echo "$body" | jq -r '.result[]?.name | select(. == "smlquiz.it" or . == "www.smlquiz.it")' | while read -r domain; do
+                echo "CUSTOM_DOMAIN_MATCH project=$project domain=$domain"
+              done
             fi
           done
