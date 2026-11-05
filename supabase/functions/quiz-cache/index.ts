@@ -20,7 +20,7 @@ const parseGeneratedArray = (raw: string): any[] => {
     if (Array.isArray(direct)) return direct;
   } catch { /* Try to recover an array embedded in surrounding text. */ }
   const start = text.indexOf("[");
-  if (start < 0) throw new Error("Gemini non ha restituito un array JSON.");
+  if (start < 0) throw new Error("Il provider AI non ha restituito un array JSON.");
   let depth = 0, inString = false, escaped = false;
   for (let i = start; i < text.length; i++) {
     const ch = text[i];
@@ -38,7 +38,7 @@ const parseGeneratedArray = (raw: string): any[] => {
       break;
     }
   }
-  throw new Error("Gemini ha restituito JSON incompleto o non valido.");
+  throw new Error("Il provider AI ha restituito JSON incompleto o non valido.");
 };
 const tokens = (s: string) => new Set(norm(s).split(/\s+/).filter(x => x.length > 2));
 const similarity = (a: string, b: string) => {
@@ -74,7 +74,8 @@ Deno.serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-    const geminiKey = Deno.env.get("GEMINI_API_KEY");
+    const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
+    const anthropicModel = Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5";
     if (!supabaseUrl || !anonKey || !serviceKey) return json({ error: "Configurazione server incompleta." }, 500);
 
     const authHeader = req.headers.get("Authorization");
@@ -143,7 +144,7 @@ Deno.serve(async (req: Request) => {
       if (quizError) throw quizError;
 
       if (!quiz || quiz.status !== "ready") {
-        if (!geminiKey) return json({ error: "Chiave Gemini non configurata sul server. Aggiungi GEMINI_API_KEY nei segreti Supabase." }, 503);
+        if (!anthropicKey) return json({ error: "Chiave Anthropic non configurata sul server. Aggiungi ANTHROPIC_API_KEY nei segreti Supabase." }, 503);
         const { data: claimed, error: claimError } = await db.rpc("claim_quiz_generation", {
           p_materia_id: materiaId, p_quiz_number: quizNumber,
         });
@@ -304,52 +305,34 @@ Deno.serve(async (req: Request) => {
           required: ["concetto_chiave", "testo_domanda", "opzioni", "risposta_corretta", "spiegazione"],
           additionalProperties: false
         };
-        const response = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent", {
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
           method: "POST",
           headers: {
-            "x-goog-api-key": geminiKey,
+            "x-api-key": anthropicKey,
+            "anthropic-version": "2023-06-01",
             "content-type": "application/json",
           },
           body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-            generationConfig: {
-              maxOutputTokens: 20000,
-              responseFormat: {
-                text: {
-                  mimeType: "application/json",
-                  schema: {
-                    type: "object",
-                    properties: {
-                      questions: {
-                        type: "array",
-                        minItems: 10,
-                        maxItems: 10,
-                        items: questionSchema
-                      }
-                    },
-                    required: ["questions"],
-                    additionalProperties: false
-                  }
-                }
-              }
-            }
+            model: anthropicModel,
+            max_tokens: 20000,
+            messages: [{ role: "user", content: prompt }],
           }),
         });
         if (!response.ok) {
           const detail = await response.text();
-          throw new Error("Gemini API: " + detail.slice(0, 500));
+          throw new Error("Anthropic API: " + detail.slice(0, 500));
         }
         const payload = await response.json();
-        const rawText = payload.candidates?.[0]?.content?.parts
-          ?.map((part: any) => typeof part.text === "string" ? part.text : "")
-          .join("") ?? "";
-        const structured = rawText ? JSON.parse(rawText) : null;
-        const generated = structured?.questions;
-        if (!Array.isArray(generated)) throw new Error("Gemini non ha restituito le 10 domande nel formato strutturato.");
+        const rawText = (payload.content ?? [])
+          .filter((part: any) => part.type === "text" && typeof part.text === "string")
+          .map((part: any) => part.text)
+          .join("\n");
+        const generated = parseGeneratedArray(rawText);
+        if (!Array.isArray(generated)) throw new Error("Anthropic non ha restituito un array di domande valido.");
         if (generated.length !== 10) {
-          throw new Error("Gemini ha restituito " + generated.length
-            + " domande invece di 10 (finishReason=" + String(payload.candidates?.[0]?.finishReason ?? "sconosciuto")
-            + ", outputTokens=" + String(payload.usageMetadata?.candidatesTokenCount ?? "sconosciuto") + ").");
+          throw new Error("Anthropic ha restituito " + generated.length
+            + " domande invece di 10 (stop_reason=" + String(payload.stop_reason ?? "sconosciuto")
+            + ", outputTokens=" + String(payload.usage?.output_tokens ?? "sconosciuto") + ").");
         }
 
         const concepts = new Set<string>();
