@@ -455,6 +455,35 @@ Deno.serve(async (req: Request) => {
       return json({ correct, correctAnswer: question.risposta_corretta, explanation: question.spiegazione, alreadyAnswered: false });
     }
 
+    if (action === "referral-claim") {
+      const inviterId = String(body.inviterId ?? "").trim();
+      if (!/^[0-9a-f-]{36}$/i.test(inviterId)) return json({ error: "Link invito non valido." }, 400);
+      if (inviterId === userId) return json({ claimed: false, reason: "self_referral" });
+      const createdAt = Date.parse(String(authData.user.created_at ?? ""));
+      if (!authData.user.email_confirmed_at || !Number.isFinite(createdAt) || Date.now() - createdAt > 7 * 86400000) {
+        return json({ error: "L'invito si può confermare entro 7 giorni dalla registrazione, dopo la verifica dell'email." }, 403);
+      }
+      const { count, error: completedError } = await admin.from("quiz_attempts")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", userId).eq("status", "completed");
+      if (completedError) throw completedError;
+      if ((count ?? 0) > 0) return json({ claimed: false, reason: "existing_activity" });
+      const { data: inviter, error: inviterError } = await admin.auth.admin.getUserById(inviterId);
+      if (inviterError || !inviter.user) return json({ error: "Il link invito non appartiene a un account valido." }, 400);
+      const { data: existing, error: existingError } = await admin.from("user_referrals")
+        .select("id,inviter_id,status").eq("referred_user_id", userId).maybeSingle();
+      if (existingError) throw existingError;
+      if (existing) return json({ claimed: existing.inviter_id === inviterId, alreadyClaimed: true, status: existing.status });
+      const { data: referral, error: referralError } = await admin.from("user_referrals")
+        .insert({ inviter_id: inviterId, referred_user_id: userId })
+        .select("id").single();
+      if (referralError) {
+        if (referralError.code === "23505") return json({ claimed: false, alreadyClaimed: true });
+        throw referralError;
+      }
+      return json({ claimed: true, status: "pending", rewardCredits: 1 });
+    }
+
     if (action === "finish") {
       const attemptId = String(body.attemptId ?? "");
       if (!attemptId) return json({ error: "Sessione mancante" }, 400);
@@ -495,7 +524,16 @@ Deno.serve(async (req: Request) => {
         const { error: achievementError } = await admin.from("user_achievements").upsert(rows, { onConflict: "user_id,achievement_key", ignoreDuplicates: true });
         if (achievementError) throw achievementError;
       }
-      return json({ total, correct, wrong, score: Number((correct - wrong * 0.25).toFixed(2)), streak, unlocked });
+      let referralRewarded = false;
+      const { data: pendingReferral, error: referralLookupError } = await admin.from("user_referrals")
+        .select("id").eq("referred_user_id", userId).eq("status", "pending").maybeSingle();
+      if (referralLookupError) throw referralLookupError;
+      if (pendingReferral) {
+        const { data: rewarded, error: rewardError } = await admin.rpc("reward_user_referral", { p_referral_id: pendingReferral.id });
+        if (rewardError) throw rewardError;
+        referralRewarded = rewarded === true;
+      }
+      return json({ total, correct, wrong, score: Number((correct - wrong * 0.25).toFixed(2)), streak, unlocked, referralRewarded });
     }
 
     if (action === "report") {
