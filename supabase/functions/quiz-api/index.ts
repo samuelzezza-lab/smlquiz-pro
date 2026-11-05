@@ -200,6 +200,110 @@ Deno.serve(async (req: Request) => {
       });
     }
 
+    if (action === "study-program") {
+      const materiaId = String(body.materiaId ?? "").trim();
+      if (!materiaId || materiaId.length > 160) return json({ error: "Materia non valida." }, 400);
+      const { data: subject, error: subjectError } = await admin.from("materie")
+        .select("id,nome,facolta_id,anno_corso,corso_di_laurea,classe_laurea")
+        .eq("id", materiaId).maybeSingle();
+      if (subjectError) throw subjectError;
+      if (!subject) return json({ error: "Materia non trovata." }, 404);
+
+      const { data: existing, error: existingError } = await admin.from("programmi_standard")
+        .select("programma,stato,aggiornato_il").eq("materia_id", materiaId).maybeSingle();
+      if (existingError) throw existingError;
+      if (existing?.stato === "pronto" && Array.isArray(existing.programma?.moduli)) {
+        return json({ program: existing.programma, cached: true });
+      }
+
+      const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
+      if (!anthropicKey) return json({ error: "Programma specifico non ancora disponibile: manca la chiave Anthropic sul server." }, 503);
+      if (existing?.stato === "in_generazione" && Date.now() - Date.parse(String(existing.aggiornato_il)) < 10 * 60_000) {
+        return json({ error: "Il programma di questa materia è già in preparazione. Riprova tra qualche minuto." }, 409);
+      }
+
+      const now = new Date().toISOString();
+      if (existing) {
+        const { data: claimed, error: claimError } = await admin.from("programmi_standard")
+          .update({ stato: "in_generazione", aggiornato_il: now })
+          .eq("materia_id", materiaId).eq("stato", existing.stato)
+          .select("materia_id").maybeSingle();
+        if (claimError) throw claimError;
+        if (!claimed) return json({ error: "Il programma è già in preparazione. Riprova tra poco." }, 409);
+      } else {
+        const { error: insertError } = await admin.from("programmi_standard")
+          .insert({ materia_id: materiaId, stato: "in_generazione", aggiornato_il: now });
+        if (insertError) throw insertError;
+      }
+
+      try {
+        const { data: faculty } = await admin.from("facolta").select("nome").eq("id", subject.facolta_id).maybeSingle();
+        const model = Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5";
+        const prompt = [
+          "Crea un programma di studio universitario italiano orientativo per una singola materia.",
+          "Non attribuire il programma a un ateneo specifico e non inventare fonti o obblighi ufficiali.",
+          "Adatta profondità e prerequisiti al corso e all'anno indicati. Evita argomenti generici non pertinenti.",
+          "Restituisci esclusivamente un oggetto JSON valido, senza markdown, con questa struttura:",
+          '{"materia":"...","livello":"...","anno_corso":1,"standard":"...","obiettivi":["..."],"moduli":[{"titolo":"...","argomenti":["...","...","..."]}],"progressione_quiz":"..."}',
+          "Crea da 8 a 12 moduli; ogni modulo deve contenere da 3 a 5 argomenti specifici e non ripetuti.",
+          "Inserisci 3-5 obiettivi misurabili. La progressione deve essere adatta a preparare quiz progressivi e prove universitarie.",
+          "Materia: " + subject.nome,
+          "Facoltà: " + String(faculty?.nome ?? "non specificata"),
+          "Corso di laurea: " + String(subject.corso_di_laurea ?? "non specificato"),
+          "Classe di laurea: " + String(subject.classe_laurea ?? "non specificata"),
+          "Anno di corso: " + String(subject.anno_corso ?? "non specificato"),
+        ].join("\\n");
+        const response = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: {
+            "x-api-key": anthropicKey,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({ model, max_tokens: 7000, messages: [{ role: "user", content: prompt }] }),
+        });
+        if (!response.ok) {
+          const detail = await response.text();
+          console.error("Anthropic study program error:", detail.slice(0, 500));
+          throw new Error("Il servizio AI non è disponibile in questo momento.");
+        }
+        const payload = await response.json();
+        const rawText = (payload.content ?? [])
+          .filter((part: any) => part.type === "text" && typeof part.text === "string")
+          .map((part: any) => part.text).join("\\n").trim();
+        const jsonStart = rawText.indexOf("{");
+        const jsonEnd = rawText.lastIndexOf("}");
+        if (jsonStart < 0 || jsonEnd <= jsonStart) throw new Error("Il programma generato non è un JSON valido.");
+        const program = JSON.parse(rawText.slice(jsonStart, jsonEnd + 1));
+        if (!Array.isArray(program.obiettivi) || program.obiettivi.length < 3
+          || !Array.isArray(program.moduli) || program.moduli.length < 8 || program.moduli.length > 12) {
+          throw new Error("Il programma generato non rispetta la struttura richiesta.");
+        }
+        program.moduli = program.moduli.map((module: any) => ({
+          titolo: String(module.titolo ?? "").trim(),
+          argomenti: Array.isArray(module.argomenti) ? module.argomenti.map((x: any) => String(x).trim()).filter(Boolean).slice(0, 5) : [],
+        }));
+        if (program.moduli.some((module: any) => !module.titolo || module.argomenti.length < 3)) {
+          throw new Error("Il programma generato contiene moduli incompleti.");
+        }
+        program.materia = subject.nome;
+        program.anno_corso = subject.anno_corso ?? null;
+        program.standard = "Programma universitario italiano orientativo, non attribuito a uno specifico ateneo.";
+        const { error: saveError } = await admin.from("programmi_standard").update({
+          programma: program,
+          stato: "pronto",
+          preparato_il: now,
+          aggiornato_il: now,
+          fonte_metodo: "Programma standard orientativo generato con Anthropic Claude; non specifico di ateneo.",
+        }).eq("materia_id", materiaId);
+        if (saveError) throw saveError;
+        return json({ program, cached: false });
+      } catch (error) {
+        await admin.from("programmi_standard").update({ stato: "errore", aggiornato_il: new Date().toISOString() }).eq("materia_id", materiaId);
+        throw error;
+      }
+    }
+
     if (action === "study-tutor") {
       const question = String(body.question ?? "").trim().slice(0, 1800);
       if (question.length < 3) return json({ error: "Scrivi una domanda un po' più dettagliata." }, 400);
