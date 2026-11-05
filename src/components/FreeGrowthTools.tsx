@@ -110,7 +110,7 @@ export function FreeAdminOverview({ subjectsCount, readyCount }: { subjectsCount
  <h4 style={{marginTop:24}}>Domande recenti ({items.questions.length})</h4>
  {items.questions.map((q:any)=><div className="performance-row" key={q.id}><div><b>{q.testo_domanda}</b><small>{q.concetto_chiave||'Senza argomento'}</small></div><button className="secondary" type="button" onClick={()=>editQuestion(q)}>Modifica</button></div>)}
  <h4 style={{marginTop:24}}>Segnalazioni ({items.reports.length})</h4>
- {items.reports.map((r:any)=><div className="performance-row" key={r.id}><div><b>{r.category} · {r.status}</b><small>{r.details||r.domande?.testo_domanda||'Nessun dettaglio'}</small></div><select aria-label="Stato segnalazione" value={r.status||'open'} disabled={busy} onChange={e=>void setReportStatus(r.id,e.target.value)}><option value="open">Aperta</option><option value="reviewed">In revisione</option><option value="resolved">Risolta</option><option value="rejected">Respinta</option></select></div>)}
+ {items.reports.map((r:any)=><div className="performance-row" key={r.id}><div><b>{r.category} · {r.status}</b><small>{r.details||r.domande?.testo_domanda||'Nessun dettaglio'}</small></div><select aria-label="Stato segnalazione" value={r.status||'new'} disabled={busy} onChange={e=>void setReportStatus(r.id,e.target.value)}><option value="new">Nuova</option><option value="reviewing">In revisione</option><option value="resolved">Risolta</option><option value="rejected">Respinta</option></select></div>)}
  <h4 style={{marginTop:24}}>Quiz</h4>{items.quizSets.map((q:any)=><div className="performance-row" key={q.id}><div><b>{q.materia_id} · Quiz {q.quiz_number}</b><small>{q.status} · {q.question_count} domande</small></div></div>)}
  </div>
 }
