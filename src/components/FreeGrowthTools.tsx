@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { supabase } from '../lib/supabase'
 import { CalendarDays, Copy, Brain, Users, ShieldCheck } from 'lucide-react'
 
 type Subject = { id: string; nome: string }
@@ -57,9 +58,15 @@ export function ReferralCard({ userId }: { userId: string }) {
 }
 
 export function FreeAdminOverview({ subjectsCount, readyCount }: { subjectsCount: number; readyCount: number }) {
-  return <div className="panel" style={{marginTop:16,padding:20}}>
-    <div className="panel-title"><div><h3><ShieldCheck size={18} style={{verticalAlign:'middle',marginRight:8}}/>Pannello amministratore · panoramica</h3><p>Riepilogo del catalogo disponibile, visibile solo all’account amministratore.</p></div></div>
-    <div className="stats"><div className="stat"><span>Materie in catalogo</span><b>{subjectsCount}</b></div><div className="stat"><span>Quiz pronti</span><b>{readyCount}</b></div></div>
-    <p style={{marginTop:12}}>Gestione segnalazioni e riparazione dei quiz richiede una sezione amministrativa protetta lato server: non viene simulata qui.</p>
-  </div>
+ const [items,setItems]=useState<any>({questions:[],reports:[],quizSets:[],chapters:[]});
+ const [message,setMessage]=useState('Caricamento...');
+ useEffect(()=>{supabase.functions.invoke('quiz-api',{body:{action:'admin-list'}}).then(({data,error})=>{if(error||data?.error)setMessage(data?.error||error?.message||'Errore');else{setItems(data);setMessage('')}})},[]);
+ return <div className="panel" style={{marginTop:16,padding:20}}>
+ <div className="panel-title"><div><h3><ShieldCheck size={18}/> Pannello amministratore</h3><p>Gestione protetta del catalogo e delle segnalazioni.</p></div></div>
+ <div className="stats"><div className="stat"><span>Materie</span><b>{subjectsCount}</b></div><div className="stat"><span>Quiz pronti</span><b>{readyCount}</b></div><div className="stat"><span>Domande</span><b>{items.questions.length}</b></div><div className="stat"><span>Segnalazioni</span><b>{items.reports.length}</b></div></div>
+ {message&&<p>{message}</p>}
+ <h4>Domande recenti</h4>{items.questions.map((q:any)=><div className="performance-row" key={q.id}><div><b>{q.testo_domanda}</b><small>{q.concetto_chiave||'Senza argomento'}</small></div></div>)}
+ <h4>Segnalazioni</h4>{items.reports.map((r:any)=><div className="performance-row" key={r.id}><div><b>{r.category} · {r.status}</b><small>{r.details}</small></div></div>)}
+ <h4>Quiz</h4>{items.quizSets.map((q:any)=><div className="performance-row" key={q.id}><div><b>{q.materia_id} · Quiz {q.quiz_number}</b><small>{q.status} · {q.question_count} domande</small></div></div>)}
+ </div>
 }
