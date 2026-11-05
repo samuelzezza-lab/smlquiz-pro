@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useState, type FormEvent, type CSSProperties } from 'react'
-import { Activity, ArrowRight, Award, BarChart3, BookOpen, Brain, Calculator, CheckCircle2, Clipboard, ChevronDown, CircleHelp, Clock3, CreditCard, GraduationCap, LayoutDashboard, LogOut, Menu, Search, Settings, ShieldCheck, Sparkles, Target, Trophy, UserRound, WifiOff, X } from 'lucide-react'
+import { Activity, ArrowRight, Award, BarChart3, BookOpen, Brain, CalendarDays, Calculator, CheckCircle2, Clipboard, ChevronDown, CircleHelp, Clock3, CreditCard, GraduationCap, LayoutDashboard, LogOut, Menu, Search, Settings, ShieldCheck, Sparkles, Target, Trophy, UserRound, WifiOff, X } from 'lucide-react'
 import { supabase, supabaseReady, requireSupabase } from './lib/supabase'
 import { checkPasswordExposure } from './lib/passwordSecurity'
 import { languages, t, type Language } from './i18n'
