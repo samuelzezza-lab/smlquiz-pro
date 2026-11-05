@@ -68,7 +68,7 @@ Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Metodo non supportato." }, 405);
 
-  let db: ReturnType<typeof createClient> | null = null;
+  let db: any = null;
   let activeQuizId: string | null = null;
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
