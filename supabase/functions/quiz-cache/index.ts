@@ -80,12 +80,19 @@ Deno.serve(async (req: Request) => {
 
     const authHeader = req.headers.get("Authorization");
     if (!authHeader?.startsWith("Bearer ")) return json({ error: "Autenticazione richiesta." }, 401);
-    const authClient = createClient(supabaseUrl, anonKey, {
-      global: { headers: { Authorization: authHeader } },
-      auth: { persistSession: false },
-    });
-    const { data: { user }, error: authError } = await authClient.auth.getUser();
-    if (authError || !user) return json({ error: "Sessione non valida." }, 401);
+    // Le chiamate del generatore notturno sono autorizzate solo con la service key
+    // custodita nei segreti Supabase; le richieste degli utenti mantengono auth normale.
+    const isInternalServiceCall = authHeader === `Bearer ${serviceKey}`;
+    let user: any = null;
+    if (!isInternalServiceCall) {
+      const authClient = createClient(supabaseUrl, anonKey, {
+        global: { headers: { Authorization: authHeader } },
+        auth: { persistSession: false },
+      });
+      const { data: { user: authenticatedUser }, error: authError } = await authClient.auth.getUser();
+      if (authError || !authenticatedUser) return json({ error: "Sessione non valida." }, 401);
+      user = authenticatedUser;
+    }
     db = createClient(supabaseUrl, serviceKey, { auth: { persistSession: false } });
 
     const body = await req.json();
