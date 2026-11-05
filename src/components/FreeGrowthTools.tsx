@@ -128,7 +128,7 @@ export function FreeTutor({ history }: { history: Attempt[] }) {
       <textarea rows={2} maxLength={1800} required value={question} onChange={e=>setQuestion(e.target.value)} placeholder="Es. Mi spieghi le equazioni di secondo grado con un esempio?"/>
       <button className="primary" type="submit" disabled={busy||!question.trim()}>{busy?'Attendi…':'Chiedi al tutor'} <Send size={15}/></button>
     </form>
-    <small style={{display:'block',marginTop:8,opacity:.75}}>Le risposte AI richiedono la chiave Anthropic configurata in modo sicuro sul server.</small>
+    <small style={{display:'block',marginTop:8,opacity:.75}}>Le risposte AI richiedono la chiave Anthropic sul server; il limite condiviso è di 20 richieste AI al giorno per utente.</small>
   </div>
 }
 
