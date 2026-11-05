@@ -32,7 +32,7 @@ Nel database collegato risultano:
 - Salvataggio delle risposte lato server, storico, report TXT e condivisione WhatsApp/Telegram.
 - Limite di 5 quiz gratuiti al giorno e utilizzo crediti gestiti sul backend.
 - Portafoglio crediti, coupon, profilo, classifica, streak, badge e ripasso degli errori.
-- Segnalazione domande, cancellazione account e storico transazioni.
+- Segnalazione domande, cancellazione account, storico transazioni e inviti con 1 credito per il referente dopo il primo quiz completato dal nuovo account.
 - Calcolatore media ponderata con salvataggio locale.
 - Impostazioni accessibilità, ingrandimento testo, audio, fullscreen e debugger locale.
 - Dizionari di interfaccia per italiano, inglese, francese, tedesco, spagnolo e cinese; alcune stringhe delle schermate devono ancora essere tradotte integralmente.
@@ -44,7 +44,7 @@ Il progetto esistente è `fgrwwauwnxvrcgqqpksp` nella regione `eu-west-2`.
 
 Edge Functions attive:
 - `quiz-cache` v22 — generazione dei quiz mancanti tramite Anthropic Claude, con chiave server-side.
-- `quiz-api` v25 — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report, classifica e pannello amministratore.
+- `quiz-api` v26 — autenticazione, profilo, wallet, avvio/risposte/fine quiz, storico, streak, badge, coupon, report, classifica e pannello amministratore.
 - `stripe-checkout` v9 — creazione Checkout protetta da flag server e consenso digitale verificato.
 - `stripe-webhook` v9 — verifica firma Stripe, pacchetto/importo/valuta e consenso prima dell'accredito idempotente dei crediti.
 
