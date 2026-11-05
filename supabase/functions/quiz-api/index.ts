@@ -139,6 +139,12 @@ Deno.serve(async (req: Request) => {
         password: body.password,
       });
       if (verifyError || verified.user?.id !== userId) return json({ error: "Password non corretta" }, 401);
+      const { data: allowed, error: limitError } = await admin.rpc("claim_study_tutor_request", {
+        p_user_id: userId, p_limit: 20,
+      });
+      if (limitError) throw limitError;
+      if (allowed !== true) return json({ error: "Hai raggiunto il limite di 20 domande al tutor per oggi. Riprova domani." }, 429);
+
       const { data: attempts, error: attemptsError } = await admin.from("quiz_attempts").select("id").eq("user_id", userId);
       if (attemptsError) throw attemptsError;
       const attemptIds = (attempts ?? []).map((x) => x.id);
