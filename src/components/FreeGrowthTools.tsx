@@ -50,23 +50,33 @@ export function FreeStudyPlanner({ subjects, dailyGoal }: { subjects: Subject[];
     const end = new Date(examDate+'T00:00:00')
     const days = Math.max(1, Math.ceil((end.getTime()-start.getTime())/86400000))
     const sessions = Math.min(120, days*dailyGoal)
-    const tasks = ['Ripasso degli argomenti','Svolgi un quiz','Rivedi gli errori','Ripasso mirato e quiz']
+    let tasks = ['Ripasso degli argomenti','Svolgi un quiz','Rivedi gli errori','Ripasso mirato e quiz']
+    let programNote = 'Piano generale creato; il programma specifico non è ancora disponibile.'
+    if(supabase){
+      try {
+        const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'study-program',materiaId:selected.id}})
+        const modules=Array.isArray(data?.program?.moduli)?data.program.moduli:[]
+        const specific=modules.flatMap((module:any)=>Array.isArray(module.argomenti)?module.argomenti.map((topic:string)=>String(module.titolo)+' — '+String(topic)):[])
+        if(!error&&specific.length){tasks=specific;programNote='Piano costruito sul programma specifico della materia.'}
+        else if(data?.error){programNote='Piano generale creato: '+String(data.error)}
+      } catch {}
+    }
     const rows = Array.from({length:sessions},(_,i)=>{
       const date = new Date(start.getTime()+Math.floor(i/dailyGoal)*86400000)
       return {date:date.toLocaleDateString('it-IT',{weekday:'short',day:'2-digit',month:'short'}),task:tasks[i%tasks.length]}
     })
     setPlan(rows)
     try { localStorage.setItem('smlquiz.study-plan.v1',JSON.stringify({subjectId:selected.id,subject:selected.nome,examDate,rows})) } catch {}
-    setSaveStatus('Piano salvato su questo dispositivo.')
+    setSaveStatus(programNote+' Piano salvato su questo dispositivo.')
     if(supabase){
       try {
         const {data:userData}=await supabase.auth.getUser()
         if(userData.user){
           const {error}=await supabase.from('user_study_plans').upsert({user_id:userData.user.id,subject_id:selected.id,exam_date:examDate,plan:rows,updated_at:new Date().toISOString()},{onConflict:'user_id'})
           if(error)throw error
-          setSaveStatus('Piano salvato e sincronizzato con il tuo account.')
+          setSaveStatus(programNote+' Piano salvato e sincronizzato con il tuo account.')
         }
-      } catch { setSaveStatus('Piano salvato su questo dispositivo; sincronizzazione account non riuscita.') }
+      } catch { setSaveStatus(programNote+' Piano salvato su questo dispositivo; sincronizzazione account non riuscita.') }
     }
   }
   return <div className="panel" style={{marginTop:16,padding:20}}>
