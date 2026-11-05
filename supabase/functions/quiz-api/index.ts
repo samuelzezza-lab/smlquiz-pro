@@ -756,7 +756,19 @@ Deno.serve(async (req: Request) => {
         admin.from("capitoli").select("id,materia_id,nome").order("nome").limit(2000),
       ]);
       for (const result of [questions,reports,sets,chapters]) if (result.error) throw result.error;
-      return json({ questions: questions.data ?? [], reports: reports.data ?? [], quizSets: sets.data ?? [], chapters: chapters.data ?? [] });
+      return json({
+        questions: questions.data ?? [],
+        reports: reports.data ?? [],
+        quizSets: sets.data ?? [],
+        chapters: chapters.data ?? [],
+        systemStatus: {
+          anthropicConfigured: Boolean(Deno.env.get("ANTHROPIC_API_KEY")),
+          anthropicModel: Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5",
+          stripeSecretConfigured: Boolean(Deno.env.get("STRIPE_SECRET_KEY")),
+          stripeWebhookConfigured: Boolean(Deno.env.get("STRIPE_WEBHOOK_SIGNING_SECRET")),
+          stripeLiveEnabled: Deno.env.get("STRIPE_LIVE_ENABLED") === "true",
+        },
+      });
     }
     if (action === "admin-save-question") {
       const id = String(body.id ?? ""); const capitoloId = String(body.capitoloId ?? "");
