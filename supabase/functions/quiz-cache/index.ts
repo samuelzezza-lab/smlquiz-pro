@@ -359,12 +359,19 @@ Deno.serve(async (req: Request) => {
           }
         }
 
-        const targetPositions = generated.map(() => { const x = new Uint32Array(1); crypto.getRandomValues(x); return x[0] % 4; });
+        // Ogni quiz usa una distribuzione bilanciata: 3 lettere compaiono 2 volte
+        // e la quarta 3 volte; sia le lettere sia l'ordine sono casuali.
+        const targetPositions = shuffle([
+          0, 0, 0,
+          1, 1, 1,
+          2, 2,
+          3, 3,
+        ]);
         const rows = generated.map((q: any, i: number) => {
-          const options = [...q.opzioni];
-          const current = options.indexOf(q.risposta_corretta);
           const target = targetPositions[i];
-          [options[current], options[target]] = [options[target], options[current]];
+          const distractors = shuffle(q.opzioni.filter((option: string) => option !== q.risposta_corretta));
+          const options = [...distractors];
+          options.splice(target, 0, q.risposta_corretta);
           return {
             capitolo_id: chapter.id, quiz_id: claimedQuiz.id,
             concetto_chiave: q.concetto_chiave.trim(),
@@ -372,6 +379,16 @@ Deno.serve(async (req: Request) => {
             risposta_corretta: q.risposta_corretta, spiegazione: q.spiegazione.trim(),
           };
         });
+        const answerPositionCounts = [0, 0, 0, 0];
+        for (const row of rows) {
+          const position = row.opzioni.indexOf(row.risposta_corretta);
+          if (position < 0) throw new Error("Risposta corretta non presente nelle opzioni dopo il mescolamento.");
+          answerPositionCounts[position]++;
+        }
+        if (answerPositionCounts.reduce((sum, count) => sum + count, 0) !== 10
+          || Math.max(...answerPositionCounts) - Math.min(...answerPositionCounts) > 1) {
+          throw new Error("Distribuzione delle risposte corrette non equilibrata.");
+        }
 
         const { error: insertError } = await db.from("domande").insert(rows);
         if (insertError) throw insertError;
