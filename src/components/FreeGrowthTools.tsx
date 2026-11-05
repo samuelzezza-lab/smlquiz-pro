@@ -9,21 +9,40 @@ export function FreeStudyPlanner({ subjects, dailyGoal }: { subjects: Subject[];
   const [subjectId, setSubjectId] = useState('')
   const [examDate, setExamDate] = useState('')
   const [plan, setPlan] = useState<{ date: string; task: string }[]>([])
+  const [saveStatus,setSaveStatus] = useState('')
   const selected = subjects.find(s => s.id === subjectId)
   useEffect(() => {
-    try {
-      const saved = JSON.parse(localStorage.getItem('smlquiz.study-plan.v1') || 'null')
-      if (saved && Array.isArray(saved.rows)) {
-        setSubjectId(typeof saved.subjectId === 'string' ? saved.subjectId : '')
-        setExamDate(typeof saved.examDate === 'string' ? saved.examDate : '')
-        setPlan(saved.rows.filter((row: any) => row && typeof row.date === 'string' && typeof row.task === 'string'))
-      }
-    } catch { localStorage.removeItem('smlquiz.study-plan.v1') }
+    let active=true
+    const load=async()=>{
+      try {
+        const saved=JSON.parse(localStorage.getItem('smlquiz.study-plan.v1')||'null')
+        if(saved&&Array.isArray(saved.rows)){
+          setSubjectId(typeof saved.subjectId==='string'?saved.subjectId:'')
+          setExamDate(typeof saved.examDate==='string'?saved.examDate:'')
+          setPlan(saved.rows.filter((row:any)=>row&&typeof row.date==='string'&&typeof row.task==='string'))
+        }
+      } catch { localStorage.removeItem('smlquiz.study-plan.v1') }
+      if(!supabase)return
+      try {
+        const {data:userData}=await supabase.auth.getUser()
+        if(!userData.user)return
+        const {data,error}=await supabase.from('user_study_plans').select('subject_id,exam_date,plan').eq('user_id',userData.user.id).maybeSingle()
+        if(!active||error||!data||!Array.isArray(data.plan))return
+        const rows=data.plan.filter((row:any)=>row&&typeof row.date==='string'&&typeof row.task==='string')
+        setSubjectId(data.subject_id||'')
+        setExamDate(data.exam_date||'')
+        setPlan(rows)
+        localStorage.setItem('smlquiz.study-plan.v1',JSON.stringify({subjectId:data.subject_id,examDate:data.exam_date,rows}))
+        setSaveStatus('Piano recuperato dal tuo account.')
+      } catch {}
+    }
+    void load()
+    return()=>{active=false}
   }, [])
   useEffect(() => {
     if (!subjectId && subjects.length) setSubjectId(subjects[0].id)
   }, [subjects, subjectId])
-  function createPlan() {
+  async function createPlan() {
     if (!selected || !examDate) return
     const exam = new Date(examDate + 'T00:00:00')
     if (!Number.isFinite(exam.getTime()) || exam.getTime() < new Date(new Date().toDateString()).getTime()) return
@@ -38,14 +57,26 @@ export function FreeStudyPlanner({ subjects, dailyGoal }: { subjects: Subject[];
     })
     setPlan(rows)
     try { localStorage.setItem('smlquiz.study-plan.v1',JSON.stringify({subjectId:selected.id,subject:selected.nome,examDate,rows})) } catch {}
+    setSaveStatus('Piano salvato su questo dispositivo.')
+    if(supabase){
+      try {
+        const {data:userData}=await supabase.auth.getUser()
+        if(userData.user){
+          const {error}=await supabase.from('user_study_plans').upsert({user_id:userData.user.id,subject_id:selected.id,exam_date:examDate,plan:rows,updated_at:new Date().toISOString()},{onConflict:'user_id'})
+          if(error)throw error
+          setSaveStatus('Piano salvato e sincronizzato con il tuo account.')
+        }
+      } catch { setSaveStatus('Piano salvato su questo dispositivo; sincronizzazione account non riuscita.') }
+    }
   }
   return <div className="panel" style={{marginTop:16,padding:20}}>
-    <div className="panel-title"><div><h3><CalendarDays size={18} style={{verticalAlign:'middle',marginRight:8}}/>Piano di studio automatico</h3><p>Gratis, creato direttamente nel browser. Nessun servizio esterno.</p></div></div>
+    <div className="panel-title"><div><h3><CalendarDays size={18} style={{verticalAlign:'middle',marginRight:8}}/>Piano di studio automatico</h3><p>Il piano viene salvato sul dispositivo e, se accedi, sincronizzato con il tuo account.</p></div></div>
     <div style={{display:'flex',gap:12,flexWrap:'wrap',alignItems:'end'}}>
       <label style={{flex:'1 1 220px'}}>Materia<select style={{display:'block',width:'100%'}} value={subjectId} onChange={e=>setSubjectId(e.target.value)}>{subjects.map(s=><option key={s.id} value={s.id}>{s.nome}</option>)}</select></label>
       <label>Data esame<input type="date" min={new Date().toISOString().slice(0,10)} value={examDate} onChange={e=>setExamDate(e.target.value)}/></label>
-      <button className="primary" type="button" disabled={!subjectId||!examDate} onClick={createPlan}>Crea piano</button>
+      <button className="primary" type="button" disabled={!subjectId||!examDate} onClick={()=>void createPlan()}>Crea piano</button>
     </div>
+    {saveStatus&&<small role="status" style={{display:'block',marginTop:8}}>{saveStatus}</small>}
     {plan.length>0&&<div style={{marginTop:14,maxHeight:300,overflow:'auto'}}><b>{selected?.nome} · {plan.length} sessioni</b>{plan.map((r,i)=><div key={i} className="performance-row"><div><b>{r.date}</b><small>{r.task}</small></div></div>)}</div>}
   </div>
 }
