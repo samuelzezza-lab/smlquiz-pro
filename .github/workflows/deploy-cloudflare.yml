@@ -74,8 +74,8 @@ jobs:
           zones="$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/zones?name=smlquiz.it")"
           zone_id="$(echo "$zones" | jq -r '.result[0].id // empty')"
           if [ -z "$zone_id" ]; then
-            echo "::error::The smlquiz.it DNS zone is not available in this Cloudflare account."
-            exit 1
+            echo "::warning::The smlquiz.it DNS zone is managed outside this Cloudflare account; DNS update must be made at its current DNS provider."
+            exit 0
           fi
           records="$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/zones/$zone_id/dns_records?name=smlquiz.it")"
           echo "$records" | jq -r '.result[] | select(.name == "smlquiz.it" and (.type == "A" or .type == "AAAA" or .type == "CNAME")) | .id' | while read -r record_id; do
