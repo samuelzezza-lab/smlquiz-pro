@@ -182,7 +182,7 @@ export function FreeAdminOverview({ subjectsCount, readyCount }: { subjectsCount
  }
  return <div className="panel" style={{marginTop:16,padding:20}}>
  <div className="panel-title"><div><h3><ShieldCheck size={18}/> Pannello amministratore</h3><p>Gestione protetta del catalogo e delle segnalazioni.</p></div><button className="secondary" type="button" onClick={()=>void load()} disabled={busy}>Aggiorna</button></div>
- <div className="stats"><div className="stat"><span>Materie</span><b>{subjectsCount}</b></div><div className="stat"><span>Quiz pronti</span><b>{readyCount}</b></div><div className="stat"><span>Domande</span><b>{items.questions.length}</b></div><div className="stat"><span>Segnalazioni</span><b>{items.reports.length}</b></div></div>
+ <div className="stats"><div className="stat"><span>Materie</span><b>{subjectsCount}</b></div><div className="stat"><span>Quiz pronti</span><b>{readyCount}</b></div><div className="stat"><span>Domande recenti</span><b>{items.questions.length}</b></div><div className="stat"><span>Segnalazioni recenti</span><b>{items.reports.length}</b></div></div>
  {message&&<p role="status">{message}</p>}
  <section id="sml-admin-editor" style={{marginTop:20}}>
  <h4>{editing?'Modifica domanda':'Aggiungi una domanda'}</h4>
