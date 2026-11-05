@@ -134,7 +134,7 @@ Deno.serve(async (req: Request) => {
           .in("quiz_id", orderedSets.map((set: any) => set.id));
         if (qError) throw qError;
         if (!allQuestions || allQuestions.length !== 600) return json({ error: "Archivio incompleto: attese 600 domande nei 60 quiz." }, 409);
-        const questions = shuffle(allQuestions).slice(0, 10);
+        const questions = shuffle(allQuestions as { id: string; concetto_chiave: string; testo_domanda: string; opzioni: string[] }[]).slice(0, 10);
         const fingerprint = await sha256(questions.map((q: any) => q.id).sort().join(":"));
         return json({ mode: "simulation", materia_id: materiaId, requested_quiz_number: quizNumber, mix_fingerprint: fingerprint, questions });
       }
@@ -483,7 +483,7 @@ Deno.serve(async (req: Request) => {
       const { data: questions, error: resultError } = await db.from("domande")
         .select("id,risposta_corretta,spiegazione").in("id", ids);
       if (resultError) throw resultError;
-      const byId = new Map((questions ?? []).map((q: any) => [q.id, q]));
+      const byId = new Map<string, any>((questions ?? []).map((q: any) => [q.id, q] as [string, any]));
       const results = links.map((x: any) => ({
         domanda_id: x.domanda_id, risposta_selezionata: x.risposta_selezionata,
         esito_corretto: x.esito_corretto,
