@@ -174,6 +174,10 @@ export default function App(){
     if(!quizSetId)throw new Error(tr('generationPending'));
     setQuizSets(v=>[...v.filter(q=>q.id!==quizSetId),{id:quizSetId,materia_id:s.id,quiz_number:nextQuizNumber,status:'ready',question_count:10}]);
    }
+   if(language!=='it'){
+    const translation=await supabase.functions.invoke('quiz-api',{body:{action:'translate-quiz-set',quizSetId,language}});
+    if(translation.error||translation.data?.error)notify('Traduzione non disponibile: questo quiz verrà mostrato in italiano.');
+   }
    const idempotencyKey=crypto.randomUUID();
    let data:any=null;
    for(let retry=0;retry<2;retry++){
