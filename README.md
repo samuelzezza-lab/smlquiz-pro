@@ -34,6 +34,7 @@ Nel database collegato risultano:
 - Portafoglio crediti, coupon, profilo, classifica, streak, badge e ripasso degli errori.
 - Segnalazione domande, cancellazione account, storico transazioni e inviti con 1 credito per il referente dopo il primo quiz completato dal nuovo account.
 - Calcolatore media ponderata con salvataggio locale.
+- Piano di studio salvato sul dispositivo e sincronizzato sull'account quando l'utente è autenticato.
 - Impostazioni accessibilità, ingrandimento testo, audio, fullscreen e debugger locale.
 - Dizionari di interfaccia per italiano, inglese, francese, tedesco, spagnolo e cinese; alcune stringhe delle schermate devono ancora essere tradotte integralmente.
 - Pagine informative legali, informative cookie e pannello preferenze.
@@ -64,7 +65,7 @@ Il workflow GitHub Actions `Deploy SMLQUIZ Pro to Cloudflare Pages` richiede que
 - `VITE_TURNSTILE_SITE_KEY` (quando configurato)
 - GitHub Actions variables `VITE_INFOLINKS_PID` e `VITE_INFOLINKS_WSID` (ID pubblici Infolinks; se non impostati, lo script pubblicitario non viene caricato)
 
-È presente il workflow CI per compilare il progetto ad ogni push e un controllo Deno dedicato per verificare il codice delle tre Edge Functions. Il deploy Cloudflare è manuale e non va considerato completato finché i secrets non sono configurati e il workflow non termina con successo.
+È presente il workflow CI per compilare il progetto ad ogni push e un controllo Deno dedicato per verificare il codice delle quattro Edge Functions. Il deploy Cloudflare è manuale e non va considerato completato finché i secrets non sono configurati e il workflow non termina con successo.
 
 ## Pagamenti Stripe
 
@@ -92,4 +93,4 @@ Il frontend mantiene `VITE_STRIPE_CHECKOUT_ENABLED=false`. Non sono stati effett
 
 ## Sicurezza e dati esistenti
 
-Le tabelle esistenti restano nel progetto originale. Le operazioni che gestiscono risposte, crediti e acquisti passano dal backend autenticato. La funzione `quiz-cache` gestisce la generazione sul backend; il provider AI è configurato esclusivamente tramite segreti server. Non sono state create nuove tabelle né è stato creato un nuovo progetto Supabase.
+Il progetto Supabase originale è stato mantenuto. Sono state aggiunte tabelle di supporto per i piani di studio personali, gli inviti e il limite giornaliero del tutor; le prime sono protette da RLS e le ultime due sono accessibili soltanto dal backend. Le operazioni che gestiscono risposte, crediti e acquisti passano dal backend autenticato. Le chiavi AI sono configurate esclusivamente tramite segreti server.
