@@ -139,11 +139,11 @@ Deno.serve(async (req: Request) => {
         password: body.password,
       });
       if (verifyError || verified.user?.id !== userId) return json({ error: "Password non corretta" }, 401);
-      const { data: allowed, error: limitError } = await admin.rpc("claim_study_tutor_request", {
+      const { data: allowed, error: limitError } = await admin.rpc("claim_ai_request", {
         p_user_id: userId, p_limit: 20,
       });
       if (limitError) throw limitError;
-      if (allowed !== true) return json({ error: "Hai raggiunto il limite di 20 domande al tutor per oggi. Riprova domani." }, 429);
+      if (allowed !== true) return json({ error: "Hai raggiunto il limite di 20 richieste AI per oggi. Riprova domani." }, 429);
 
       const { data: attempts, error: attemptsError } = await admin.from("quiz_attempts").select("id").eq("user_id", userId);
       if (attemptsError) throw attemptsError;
@@ -218,6 +218,9 @@ Deno.serve(async (req: Request) => {
 
       const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
       if (!anthropicKey) return json({ error: "Programma specifico non ancora disponibile: manca la chiave Anthropic sul server." }, 503);
+      const { data: aiAllowed, error: aiLimitError } = await admin.rpc("claim_ai_request", { p_user_id: userId, p_limit: 20 });
+      if (aiLimitError) throw aiLimitError;
+      if (aiAllowed !== true) return json({ error: "Hai raggiunto il limite di 20 richieste AI per oggi. Riprova domani." }, 429);
       if (existing?.stato === "in_generazione" && Date.now() - Date.parse(String(existing.aggiornato_il)) < 10 * 60_000) {
         return json({ error: "Il programma di questa materia è già in preparazione. Riprova tra qualche minuto." }, 409);
       }
@@ -486,6 +489,9 @@ Deno.serve(async (req: Request) => {
       if (!missing.length) return json({ translated: true, cached: true });
       const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
       if (!anthropicKey) return json({ error: "Traduzione non disponibile: manca la chiave Anthropic sul server." }, 503);
+      const { data: aiAllowed, error: aiLimitError } = await admin.rpc("claim_ai_request", { p_user_id: userId, p_limit: 20 });
+      if (aiLimitError) throw aiLimitError;
+      if (aiAllowed !== true) return json({ error: "Hai raggiunto il limite di 20 richieste AI per oggi. Riprova domani." }, 429);
       const model = Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5";
       const prompt = [
         "Traduci integralmente in " + languageNames[language] + " le domande universitarie seguenti.",
