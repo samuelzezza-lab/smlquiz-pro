@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useState, type FormEvent, type CSSProperties } from 'react'
-import { Activity, ArrowRight, Award, BarChart3, BookOpen, Brain, CalendarDays, Calculator, CheckCircle2, Clipboard, ChevronDown, CircleHelp, Clock3, CreditCard, GraduationCap, LayoutDashboard, LogOut, Menu, Search, Settings, ShieldCheck, Sparkles, Target, Trophy, UserRound, WifiOff, X } from 'lucide-react'
+import { Activity, ArrowRight, Award, BarChart3, BookOpen, Brain, Calculator, CheckCircle2, Clipboard, ChevronDown, CircleHelp, Clock3, CreditCard, GraduationCap, LayoutDashboard, LogOut, Menu, Search, Settings, ShieldCheck, Sparkles, Target, Trophy, UserRound, WifiOff, X } from 'lucide-react'
 import { supabase, supabaseReady, requireSupabase } from './lib/supabase'
 import { checkPasswordExposure } from './lib/passwordSecurity'
 import { languages, t, type Language } from './i18n'
@@ -219,12 +219,10 @@ export default function App(){
   <p style={{maxWidth:760,fontSize:16,lineHeight:1.65,opacity:.88}}>Allenati con quiz per materia, monitora i tuoi risultati e individua gli argomenti da migliorare. Scegli il tuo corso e inizia una simulazione: il tuo percorso di preparazione parte da qui.</p>
   <div style={{display:'flex',gap:10,flexWrap:'wrap',marginTop:18}}>
     <button className="primary" type="button" onClick={()=>document.getElementById('sml-home-subjects')?.scrollIntoView({behavior:'smooth',block:'start'})}>Scegli una materia <ArrowRight size={15}/></button>
-    <button className="secondary" type="button" onClick={()=>go('study')}><CalendarDays size={15}/> Organizza il piano di studio</button>
   </div>
   <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:12,marginTop:24}}>
     <div className="performance-row"><div><b><BookOpen size={15} style={{verticalAlign:'middle',marginRight:6}}/>Quiz per materia</b><small>Trova esercitazioni in base al tuo corso e anno.</small></div></div>
     <div className="performance-row"><div><BarChart3 size={15} style={{verticalAlign:'middle',marginRight:6}}/><b>Progressi misurabili</b><small>Rivedi risposte corrette, errori e andamento.</small></div></div>
-    <div className="performance-row"><div><CalendarDays size={15} style={{verticalAlign:'middle',marginRight:6}}/><b>Piano di studio</b><small>Distribuisci le sessioni in vista dell’esame.</small></div></div>
   </div>
 </div>
 {sharedResult&&<div className="panel share-preview"><small>{tr('sharedResultLabel')}</small><h2>{sharedResult.subject}</h2><strong>{sharedResult.score.toFixed(2)} {tr('pointsLabel')}</strong><p>{sharedResult.correct}/{sharedResult.total} {tr('sharedCorrect')} · {tr('netScore')}</p></div>}
