@@ -448,6 +448,33 @@ Deno.serve(async (req: Request) => {
       return json({ submitted: true, reportId: data.id });
     }
 
+    if (action.startsWith("admin-") && !isOwner) return json({ error: "Permessi amministratore richiesti" }, 403);
+    if (action === "admin-list") {
+      const [questions, reports, sets, chapters] = await Promise.all([
+        admin.from("domande").select("id,capitolo_id,concetto_chiave,testo_domanda,opzioni,risposta_corretta,spiegazione,quiz_id").order("created_at", { ascending: false }).limit(100),
+        admin.from("question_reports").select("id,question_id,category,details,status,created_at,domande!inner(testo_domanda)").order("created_at", { ascending: false }).limit(100),
+        admin.from("quiz_sets").select("id,materia_id,quiz_number,status,question_count").order("created_at", { ascending: false }).limit(100),
+        admin.from("capitoli").select("id,materia_id,nome").order("nome").limit(2000),
+      ]);
+      for (const result of [questions,reports,sets,chapters]) if (result.error) throw result.error;
+      return json({ questions: questions.data ?? [], reports: reports.data ?? [], quizSets: sets.data ?? [], chapters: chapters.data ?? [] });
+    }
+    if (action === "admin-save-question") {
+      const id = String(body.id ?? ""); const capitoloId = String(body.capitoloId ?? "");
+      const question = String(body.question ?? "").trim(); const options = Array.isArray(body.options) ? body.options.map((x: unknown) => String(x).trim()) : [];
+      const correct = String(body.correct ?? "").trim();
+      if (!capitoloId || !question || options.length !== 4 || options.some((x: string) => !x) || new Set(options).size !== 4 || !options.includes(correct)) return json({ error: "Servono una domanda, quattro risposte diverse e la risposta corretta" }, 400);
+      const { data: chapter, error: chapterError } = await admin.from("capitoli").select("id,materia_id").eq("id", capitoloId).maybeSingle();
+      if (chapterError) throw chapterError; if (!chapter) return json({ error: "Capitolo non valido" }, 400);
+      const values = { capitolo_id: capitoloId, concetto_chiave: String(body.concept ?? "").trim() || question.slice(0,120), testo_domanda: question, opzioni, risposta_corretta: correct, spiegazione: String(body.explanation ?? "").trim(), ...(body.quizId !== undefined ? { quiz_id: body.quizId || null } : id ? {} : { quiz_id: null }) };
+      const result = id ? await admin.from("domande").update(values).eq("id", id).select("id").single() : await admin.from("domande").insert(values).select("id").single();
+      if (result.error) throw result.error; return json({ saved: true, id: result.data.id });
+    }
+    if (action === "admin-report-status") {
+      const id = String(body.reportId ?? ""); const status = String(body.status ?? "");
+      if (!id || !["new","reviewing","resolved","rejected"].includes(status)) return json({ error: "Stato non valido" }, 400);
+      const { error } = await admin.from("question_reports").update({ status }).eq("id", id); if (error) throw error; return json({ updated: true });
+    }
     return json({ error: "Operazione non riconosciuta" }, 400);
   } catch (error) {
     console.error("quiz-api error:", error);
