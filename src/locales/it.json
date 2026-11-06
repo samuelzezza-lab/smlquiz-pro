@@ -529,5 +529,8 @@
   "confirmPassword": "Conferma password",
   "checking": "Verifica…",
   "updatePassword": "Aggiorna password",
-  "cancelBackToLogin": "Annulla e torna all'accesso"
+  "cancelBackToLogin": "Annulla e torna all'accesso",
+  "inviteFriends": "Invita amici",
+  "referralDescription": "Condividi il tuo link: ricevi 1 credito quando un nuovo amico completa il suo primo quiz.",
+  "copied": "Copiato!"
 }
