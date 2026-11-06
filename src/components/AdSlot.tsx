@@ -30,6 +30,6 @@ export default function AdSlot() {
     return () => { script.remove(); delete window.infolinks_pid; delete window.infolinks_wsid }
   }, [publisherId, websiteId])
 
-  if (!publisherId || !websiteId || Number(publisherId) <= 0 || Number(websiteId) <= 0) return null
-  return <div className="ad-slot" aria-label="Pubblicità Infolinks"><small>Pubblicità</small></div>
+  const configured = Boolean(publisherId && websiteId && Number(publisherId) > 0 && Number(websiteId) > 0)
+  return <div className="ad-slot ad-slot-reserved" aria-label="Spazio pubblicitario"><small>Pubblicità</small>{!configured && <span>Spazio riservato</span>}</div>
 }
