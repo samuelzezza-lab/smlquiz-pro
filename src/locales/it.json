@@ -537,5 +537,6 @@
   "catalogTranslationUnavailable": "Non è stato possibile tradurre il catalogo. Riprova più tardi.",
   "deleteConfirmationWord": "ELIMINA",
   "creditUnit": "CFU",
-  "legalOriginalLanguageNotice": "Il testo integrale di questo documento è attualmente disponibile solo in italiano. La sintesi tradotta non sostituisce il testo originale."
+  "legalOriginalLanguageNotice": "Il testo integrale di questo documento è attualmente disponibile solo in italiano. La sintesi tradotta non sostituisce il testo originale.",
+  "translationUnavailable": "Traduzione non disponibile"
 }
