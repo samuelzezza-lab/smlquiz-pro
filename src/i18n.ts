@@ -11,4 +11,4 @@ export const languages:{code:Language;label:string;flag:string}[]=[
  {code:'es',label:'Español',flag:'🇪🇸'},{code:'zh',label:'中文',flag:'🇨🇳'}
 ]
 const dictionaries:Record<Language,Record<string,string>>={it,en,fr,de,es,zh}
-export function t(lang:Language,key:string){return dictionaries[lang][key]??dictionaries.it[key]??key}
+export function t(lang:Language,key:string){return dictionaries[lang][key]??dictionaries[lang].translationUnavailable??key}
