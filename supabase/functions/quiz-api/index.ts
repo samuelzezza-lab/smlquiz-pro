@@ -304,6 +304,50 @@ Deno.serve(async (req: Request) => {
       }) });
     }
 
+    if (action === "translate-catalog") {
+      const language = String(body.language ?? "");
+      const languageNames: Record<string, string> = { en: "English", fr: "French", de: "German", es: "Spanish", zh: "Simplified Chinese" };
+      if (!languageNames[language]) return json({ error: "Lingua non valida." }, 400);
+      const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
+      if (!anthropicKey) return json({ error: "Traduzione non disponibile." }, 503);
+      const model = Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5";
+      let translatedCount = 0;
+      let cachedCount = 0;
+      for (const table of ["facolta", "materie"]) {
+        const { data: rows, error } = await admin.from(table).select("id,nome,traduzioni").order("nome");
+        if (error) throw error;
+        const missing = (rows ?? []).filter((row: any) => !String(row.traduzioni?.[language]?.nome ?? "").trim());
+        cachedCount += (rows?.length ?? 0) - missing.length;
+        for (let offset = 0; offset < missing.length; offset += 200) {
+          const batch = missing.slice(offset, offset + 200);
+          if (!isOwner) {
+            const { data: allowed, error: limitError } = await admin.rpc("claim_ai_request", { p_user_id: userId, p_limit: 20 });
+            if (limitError) throw limitError;
+            if (allowed !== true) return json({ error: "Limite giornaliero di traduzioni raggiunto.", translated: translatedCount }, 429);
+          }
+          const prompt = "Translate these Italian university faculty and subject names into " + languageNames[language] + ". Return only JSON array objects with the same id and translated nome. Preserve scientific terms, proper names and acronyms. Input: " + JSON.stringify(batch.map((x: any) => ({ id: x.id, nome: x.nome })));
+          const response = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "x-api-key": anthropicKey, "anthropic-version": "2023-06-01", "content-type": "application/json" }, body: JSON.stringify({ model, max_tokens: 16000, messages: [{ role: "user", content: prompt }] }) });
+          if (!response.ok) return json({ error: "Traduzione catalogo non disponibile." }, 502);
+          const payload = await response.json();
+          const raw = (payload.content ?? []).filter((x: any) => x.type === "text").map((x: any) => x.text).join("\n");
+          const start = raw.indexOf("["); const end = raw.lastIndexOf("]");
+          if (start < 0 || end <= start) return json({ error: "Risposta di traduzione non valida." }, 502);
+          const translated = JSON.parse(raw.slice(start, end + 1));
+          if (!Array.isArray(translated) || translated.length !== batch.length) return json({ error: "Traduzione catalogo incompleta." }, 502);
+          const byId = new Map<string, any>(translated.map((x: any) => [String(x.id), x]));
+          for (const row of batch as any[]) {
+            const name = String(byId.get(String(row.id))?.nome ?? "").trim();
+            if (!name || name.length > 180) return json({ error: "Nome tradotto non valido." }, 502);
+            const traduzioni = { ...(row.traduzioni ?? {}), [language]: { ...(row.traduzioni?.[language] ?? {}), nome: name } };
+            const saved = await admin.from(table).update({ traduzioni }).eq("id", row.id);
+            if (saved.error) throw saved.error;
+            translatedCount++;
+          }
+        }
+      }
+      return json({ translated: true, cached: translatedCount === 0, count: translatedCount, cachedCount });
+    }
+
     if (action === "translate-quiz-set") {
       const quizSetId = String(body.quizSetId ?? "").trim();
       const language = String(body.language ?? "");
