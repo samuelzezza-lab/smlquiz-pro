@@ -534,5 +534,7 @@
   "referralDescription": "Partagez votre lien : recevez 1 crédit lorsqu’un nouvel ami termine son premier quiz.",
   "copied": "Copié !",
   "adReservedLabel": "Espace réservé",
-  "catalogTranslationUnavailable": "Le catalogue n’a pas pu être traduit. Réessayez plus tard."
+  "catalogTranslationUnavailable": "Le catalogue n’a pas pu être traduit. Réessayez plus tard.",
+  "deleteConfirmationWord": "SUPPRIMER",
+  "creditUnit": "ECTS"
 }
