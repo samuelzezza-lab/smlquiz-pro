@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { t, type Language } from '../i18n'
 
 declare global {
   interface Window {
@@ -7,7 +8,7 @@ declare global {
   }
 }
 
-export default function AdSlot() {
+export default function AdSlot({ language }: { language: Language }) {
   const publisherId = import.meta.env.VITE_INFOLINKS_PID as string | undefined
   const websiteId = import.meta.env.VITE_INFOLINKS_WSID as string | undefined
 
@@ -31,5 +32,5 @@ export default function AdSlot() {
   }, [publisherId, websiteId])
 
   const configured = Boolean(publisherId && websiteId && Number(publisherId) > 0 && Number(websiteId) > 0)
-  return <div className="ad-slot ad-slot-reserved" aria-label="Spazio pubblicitario"><small>Pubblicità</small>{!configured && <span>Spazio riservato</span>}</div>
+  return <div className="ad-slot ad-slot-reserved" aria-label={t(language, 'adLabel')}><small>{t(language, 'adLabel')}</small>{!configured && <span>{t(language, 'adReservedLabel')}</span>}</div>
 }
