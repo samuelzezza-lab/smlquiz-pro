@@ -663,7 +663,7 @@ Deno.serve(async (req: Request) => {
         chapters: chapters.data ?? [],
         systemStatus: {
           anthropicConfigured: Boolean(Deno.env.get("ANTHROPIC_API_KEY")),
-          anthropicModel: Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5",
+          anthropicModel: ["claude-haiku-4-5", "claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5", "claude-fable-5"].includes(Deno.env.get("ANTHROPIC_MODEL")?.trim() ?? "") ? Deno.env.get("ANTHROPIC_MODEL")!.trim() : "claude-haiku-4-5",
           stripeSecretConfigured: Boolean(Deno.env.get("STRIPE_SECRET_KEY")),
           stripeWebhookConfigured: Boolean(Deno.env.get("STRIPE_WEBHOOK_SIGNING_SECRET")),
           stripeLiveEnabled: Deno.env.get("STRIPE_LIVE_ENABLED") === "true",
