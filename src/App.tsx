@@ -82,6 +82,24 @@ export default function App(){
  useEffect(()=>{const timer=window.setInterval(()=>setProgressClock(Date.now()),60_000);return()=>window.clearInterval(timer)},[])
  useEffect(()=>{try{localStorage.setItem(historyKey,JSON.stringify(compactHistory(history)))}catch{try{const stale=Object.keys(localStorage).filter(k=>k.startsWith('smlquiz.tmp.')||k.startsWith('smlquiz.cache.'));stale.forEach(k=>localStorage.removeItem(k));localStorage.setItem(historyKey,JSON.stringify(compactHistory(history.slice(0,20))))}catch{notify(tr('storageFull'))}}},[history])
  useEffect(()=>{localStorage.setItem('smlquiz.preferences.v1',JSON.stringify({language,font}))},[language,font])
+ useEffect(()=>{
+  if(!user||!supabase||language==='it')return;
+  let active=true;
+  (async()=>{
+   const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'translate-catalog',language}});
+   if(!active)return;
+   if(error||data?.error){notify(tr('catalogTranslationUnavailable'));return}
+   const [f,s]=await Promise.all([
+    supabase.from('facolta').select('id,nome,traduzioni').order('nome'),
+    supabase.from('materie').select('id,nome,traduzioni,facolta_id,anno_corso,corso_di_laurea').order('nome')
+   ]);
+   if(!active)return;
+   if(!f.error)setFaculties((f.data||[]) as Faculty[]);
+   if(!s.error)setSubjects((s.data||[]) as Subject[]);
+  })().catch(()=>{if(active)notify(tr('catalogTranslationUnavailable'))});
+  return()=>{active=false};
+ },[user,language])
+
  useEffect(()=>{try{localStorage.setItem('smlquiz.review.v1',JSON.stringify(reviewQuestions))}catch{notify(tr('reviewSaveFailed'))}},[reviewQuestions])
  useEffect(()=>{try{localStorage.setItem('smlquiz.bookmarks.v1',JSON.stringify(savedQuestions))}catch{notify(tr('bookmarkSaveFailed'))}},[savedQuestions])
  useEffect(()=>{localStorage.setItem('smlquiz.dailyGoal.v1',String(dailyGoal))},[dailyGoal])
