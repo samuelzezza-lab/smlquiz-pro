@@ -515,5 +515,19 @@
   "sessionsUnit": "quiz",
   "universitySaveFailed": "Salvataggio università non riuscito.",
   "answerSaveFailed": "Non è stato possibile salvare la risposta.",
-  "quizSaveFailed": "Errore nel salvataggio del quiz."
+  "quizSaveFailed": "Errore nel salvataggio del quiz.",
+  "passwordMinLength": "La password deve contenere almeno 12 caratteri.",
+  "passwordBreached": "Questa password compare in violazioni note. Scegline una diversa.",
+  "passwordCheckUnavailable": "Non riesco a verificare la password in questo momento. Riprova tra poco.",
+  "passwordsDoNotMatch": "Le due password non coincidono.",
+  "passwordUpdated": "Password aggiornata correttamente.",
+  "quizTranslationUnavailable": "Traduzione non disponibile: questo quiz verrà mostrato in italiano.",
+  "quizInvalidQuestionCount": "Il quiz non contiene esattamente 10 domande valide. Riprova.",
+  "setNewPassword": "Imposta una nuova password",
+  "passwordResetInstructions": "Scegli una password di almeno 12 caratteri che non sia già comparsa in violazioni note.",
+  "newPassword": "Nuova password",
+  "confirmPassword": "Conferma password",
+  "checking": "Verifica…",
+  "updatePassword": "Aggiorna password",
+  "cancelBackToLogin": "Annulla e torna all'accesso"
 }
