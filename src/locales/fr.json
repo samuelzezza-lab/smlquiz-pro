@@ -536,5 +536,6 @@
   "adReservedLabel": "Espace réservé",
   "catalogTranslationUnavailable": "Le catalogue n’a pas pu être traduit. Réessayez plus tard.",
   "deleteConfirmationWord": "SUPPRIMER",
-  "creditUnit": "ECTS"
+  "creditUnit": "ECTS",
+  "legalOriginalLanguageNotice": "Le texte intégral de ce document est actuellement disponible uniquement en italien. Ce résumé traduit ne remplace pas le texte original."
 }
