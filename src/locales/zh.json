@@ -532,5 +532,6 @@
   "cancelBackToLogin": "取消并返回登录",
   "inviteFriends": "邀请好友",
   "referralDescription": "分享你的链接：当新好友完成首次测验时，你将获得 1 个积分。",
-  "copied": "已复制！"
+  "copied": "已复制！",
+  "adReservedLabel": "预留空间"
 }
