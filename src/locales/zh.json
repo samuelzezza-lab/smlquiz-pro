@@ -457,7 +457,7 @@
   "universitySavedOptOut": "大学已保存。启用参与即可进入排行榜。",
   "accountDeleted": "账户和个人数据已删除。",
   "accountDeleteFailed": "删除失败。",
-  "loginToStartQuiz": "登录或创建账户以开始测验。",
+  "loginToStartQuiz": "请登录或创建账户以查看测验题目。",
   "preparingQuiz": "正在使用 AI 为此科目准备第 {n} 套测验…",
   "generatorNotReady": "生成器尚未返回可用测验，请稍后重试。",
   "generationPending": "生成仍在进行中，请几秒后重试。",
