@@ -457,7 +457,7 @@
   "universitySavedOptOut": "Università salvata. Attiva la partecipazione per entrare in classifica.",
   "accountDeleted": "Account e dati personali cancellati.",
   "accountDeleteFailed": "Cancellazione non riuscita.",
-  "loginToStartQuiz": "Accedi o registrati per iniziare un quiz.",
+  "loginToStartQuiz": "Per visualizzare le domande del quiz, devi accedere o registrarti.",
   "preparingQuiz": "Sto preparando il quiz {n} di questa materia con l’IA…",
   "generatorNotReady": "Il generatore non ha restituito un quiz pronto. Riprova tra poco.",
   "generationPending": "La generazione è ancora in corso. Riprova tra qualche secondo.",
