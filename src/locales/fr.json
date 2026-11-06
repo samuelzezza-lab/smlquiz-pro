@@ -529,5 +529,8 @@
   "confirmPassword": "Confirmer le mot de passe",
   "checking": "Vérification…",
   "updatePassword": "Mettre à jour le mot de passe",
-  "cancelBackToLogin": "Annuler et revenir à la connexion"
+  "cancelBackToLogin": "Annuler et revenir à la connexion",
+  "inviteFriends": "Inviter des amis",
+  "referralDescription": "Partagez votre lien : recevez 1 crédit lorsqu’un nouvel ami termine son premier quiz.",
+  "copied": "Copié !"
 }
