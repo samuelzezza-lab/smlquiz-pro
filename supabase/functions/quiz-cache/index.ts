@@ -316,6 +316,8 @@ Deno.serve(async (req: Request) => {
           additionalProperties: false
         };
         let rawText = "";
+        let anthropicStopReason = "sconosciuto";
+        let anthropicOutputTokens: number | string = "sconosciuto";
         let providerUsed = "anthropic";
         let anthropicFailure = "";
         let useGemini = !anthropicKey;
@@ -335,6 +337,8 @@ Deno.serve(async (req: Request) => {
           });
           if (response.ok) {
             const payload = await response.json();
+            anthropicStopReason = String(anthropicStopReason);
+            anthropicOutputTokens = payload.usage?.output_tokens ?? "sconosciuto";
             rawText = (payload.content ?? [])
               .filter((part: any) => part.type === "text" && typeof part.text === "string")
               .map((part: any) => part.text).join("\n");
@@ -394,7 +398,7 @@ Deno.serve(async (req: Request) => {
         if (generated.length !== 10) {
           throw new Error("Anthropic ha restituito " + generated.length
             + " domande invece di 10 (stop_reason=" + String(payload.stop_reason ?? "sconosciuto")
-            + ", outputTokens=" + String(payload.usage?.output_tokens ?? "sconosciuto") + ").");
+            + ", outputTokens=" + String(anthropicOutputTokens) + ").");
         }
 
         const concepts = new Set<string>();
