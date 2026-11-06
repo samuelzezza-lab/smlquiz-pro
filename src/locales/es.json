@@ -529,5 +529,8 @@
   "confirmPassword": "Confirmar contraseña",
   "checking": "Verificando…",
   "updatePassword": "Actualizar contraseña",
-  "cancelBackToLogin": "Cancelar y volver al inicio de sesión"
+  "cancelBackToLogin": "Cancelar y volver al inicio de sesión",
+  "inviteFriends": "Invitar amigos",
+  "referralDescription": "Comparte tu enlace: recibe 1 crédito cuando un nuevo amigo complete su primer cuestionario.",
+  "copied": "¡Copiado!"
 }
