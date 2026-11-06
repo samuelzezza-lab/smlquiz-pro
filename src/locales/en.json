@@ -457,7 +457,7 @@
   "universitySavedOptOut": "University saved. Enable participation to join the leaderboard.",
   "accountDeleted": "Account and personal data deleted.",
   "accountDeleteFailed": "Deletion failed.",
-  "loginToStartQuiz": "Sign in or create an account to start a quiz.",
+  "loginToStartQuiz": "Sign in or create an account to view the quiz questions.",
   "preparingQuiz": "Preparing quiz {n} for this subject with AI…",
   "generatorNotReady": "The generator did not return a ready quiz. Please try again shortly.",
   "generationPending": "Generation is still in progress. Try again in a few seconds.",
