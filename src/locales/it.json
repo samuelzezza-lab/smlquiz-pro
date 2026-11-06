@@ -534,5 +534,7 @@
   "referralDescription": "Condividi il tuo link: ricevi 1 credito quando un nuovo amico completa il suo primo quiz.",
   "copied": "Copiato!",
   "adReservedLabel": "Spazio riservato",
-  "catalogTranslationUnavailable": "Non è stato possibile tradurre il catalogo. Riprova più tardi."
+  "catalogTranslationUnavailable": "Non è stato possibile tradurre il catalogo. Riprova più tardi.",
+  "deleteConfirmationWord": "ELIMINA",
+  "creditUnit": "CFU"
 }
