@@ -209,6 +209,7 @@ Deno.serve(async (req: Request) => {
           .select("domanda_id,answered_at,domande!inner(id,testo_domanda,opzioni,risposta_corretta,spiegazione,traduzioni),quiz_attempts!inner(user_id)")
           .eq("quiz_attempts.user_id", userId)
           .eq("esito_corretto", false)
+          .gte("answered_at", romeDayStart())
           .order("answered_at", { ascending: false })
           .range(offset, offset + pageSize - 1);
         if (error) throw error;
