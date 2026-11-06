@@ -529,5 +529,8 @@
   "confirmPassword": "Confirm password",
   "checking": "Checking…",
   "updatePassword": "Update password",
-  "cancelBackToLogin": "Cancel and return to sign in"
+  "cancelBackToLogin": "Cancel and return to sign in",
+  "inviteFriends": "Invite friends",
+  "referralDescription": "Share your link: get 1 credit when a new friend completes their first quiz.",
+  "copied": "Copied!"
 }
