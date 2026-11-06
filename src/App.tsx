@@ -115,8 +115,8 @@ export default function App(){
  async function saveNewPassword(e:FormEvent){
   e.preventDefault();
   if(authBusy)return;
-  if(password.length<12){notify('La password deve contenere almeno 12 caratteri.');return}
-  if(password!==passwordConfirm){notify('Le due password non coincidono.');return}
+  if(password.length<12){notify(tr('passwordMinLength'));return}
+  if(password!==passwordConfirm){notify(tr('passwordsDoNotMatch'));return}
   setAuthBusy(true);
   try{
    const exposure=await checkPasswordExposure(password);
@@ -187,7 +187,7 @@ export default function App(){
     await new Promise(resolve=>window.setTimeout(resolve,700));
    }
    if(data?.error)throw new Error(data.error);
-   if(!Array.isArray(data?.questions)||data.questions.length!==10)throw new Error('Il quiz non contiene esattamente 10 domande valide. Riprova.');
+   if(!Array.isArray(data?.questions)||data.questions.length!==10)throw new Error(tr('quizInvalidQuestionCount'));
    setAttemptId(data.attemptId);setQuizPaused(false);setQuizDismissed(false);setQuestions((data.questions as Question[]).map(q=>localizedQuestion(q,language)));setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);setWrongQuestions([]);setReviewMode(false);setSeconds((data.questions?.length||10)*45);setStarted(Date.now());setPage('home');void refreshWallet()
   }catch(err){
    const message=err instanceof Error?err.message:tr('loadQuestionsFailed');
@@ -256,7 +256,7 @@ export default function App(){
 </section>}
 {page==='account'&&<section className="content account-page">
  <div className="page-heading account-heading"><div><div className="eyebrow"><UserRound size={14}/> {tr('personalArea').toUpperCase()}</div><h1>{tr('account')}</h1><p>{welcomeMessage?tr('welcomeBackUser')+', '+welcomeMessage:tr('accountWelcome')} · {tr('accountIntro')}</p></div><div className="account-status"><span className="status-dot"/> {tr('accountGreeting')} {user?tr('accountActiveLabel'):tr('accountDisconnectedLabel')}</div></div>
- {user?<><ReferralCard userId={user.id}/><div className="account-welcome panel"><div className="account-identity"><div className="account-avatar">{(displayName||user.email||'U').trim()[0].toUpperCase()}</div><div><span className="account-kicker">{tr('personalProfile').toUpperCase()}</span><h2>{displayName||user.email?.split('@')[0]||tr(tr('student'))}</h2><p>{user.email}</p></div></div><button className="secondary account-logout" onClick={()=>void logout()}><LogOut size={15}/> {tr('signOutAccount')}</button></div>
+ {user?<><ReferralCard userId={user.id} language={language}/><div className="account-welcome panel"><div className="account-identity"><div className="account-avatar">{(displayName||user.email||'U').trim()[0].toUpperCase()}</div><div><span className="account-kicker">{tr('personalProfile').toUpperCase()}</span><h2>{displayName||user.email?.split('@')[0]||tr(tr('student'))}</h2><p>{user.email}</p></div></div><button className="secondary account-logout" onClick={()=>void logout()}><LogOut size={15}/> {tr('signOutAccount')}</button></div>
  <div className="account-metrics"><div className="account-metric"><span>{tr('freeQuizzesAvailable')}</span><strong>{wallet.freeRemaining}<small> / 5</small></strong><div className="account-meter"><i style={{width:Math.max(0,Math.min(100,wallet.freeRemaining/5*100))+'%'}}/></div></div><div className="account-metric"><span>{tr('quizzesPurchased')}</span><strong>{wallet.paidCredits}</strong><small>{tr('creditsAvailable')}</small></div><div className="account-metric"><span>{tr('completedQuizzes')}</span><strong>{history.length}</strong><small>{tr('sessionsRecorded')}</small></div><div className="account-metric"><span>{tr('averageScores')}</span><strong>{history.length?average.toFixed(1):'—'}</strong><small>{tr('allSessions')}</small></div></div>
  <div className="account-layout"><div className="account-main-column">
  <div className="panel account-panel"><div className="account-panel-heading"><div><span className="account-kicker">{tr('personalData').toUpperCase()}</span><h3>{tr('yourProfile')}</h3><p>{tr('profileDetails')}</p></div><UserRound size={19}/></div><div className="account-detail"><span>{tr('displayName')}</span><strong>{displayName||tr('notSet')}</strong><button className="text-action" onClick={()=>setPage('settings')}>{tr('edit')}</button></div><div className="account-detail"><span>{tr('emailAddress')}</span><strong>{user.email}</strong><span className="verified-label"><CheckCircle2 size={13}/> {tr('authenticated')}</span></div><div className="account-detail"><span>{tr('signInMethod')}</span><strong>{tr('emailGoogle')}</strong></div></div>
