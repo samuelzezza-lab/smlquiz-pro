@@ -337,7 +337,7 @@ Deno.serve(async (req: Request) => {
           });
           if (response.ok) {
             const payload = await response.json();
-            anthropicStopReason = String(anthropicStopReason);
+            anthropicStopReason = String(payload.stop_reason ?? "sconosciuto");
             anthropicOutputTokens = payload.usage?.output_tokens ?? "sconosciuto";
             rawText = (payload.content ?? [])
               .filter((part: any) => part.type === "text" && typeof part.text === "string")
@@ -397,7 +397,7 @@ Deno.serve(async (req: Request) => {
         if (!Array.isArray(generated)) throw new Error("Anthropic non ha restituito un array di domande valido.");
         if (generated.length !== 10) {
           throw new Error("Anthropic ha restituito " + generated.length
-            + " domande invece di 10 (stop_reason=" + String(payload.stop_reason ?? "sconosciuto")
+            + " domande invece di 10 (stop_reason=" + String(anthropicStopReason)
             + ", outputTokens=" + String(anthropicOutputTokens) + ").");
         }
 
