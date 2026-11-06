@@ -176,7 +176,7 @@ export default function App(){
    }
    if(language!=='it'){
     const translation=await supabase.functions.invoke('quiz-api',{body:{action:'translate-quiz-set',quizSetId,language}});
-    if(translation.error||translation.data?.error)notify(tr('quizTranslationUnavailable'));
+    if(translation.error||translation.data?.error)throw new Error(tr('quizTranslationUnavailable'));
    }
    const idempotencyKey=crypto.randomUUID();
    let data:any=null;
