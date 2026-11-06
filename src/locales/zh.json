@@ -537,5 +537,6 @@
   "catalogTranslationUnavailable": "目录翻译失败，请稍后重试。",
   "deleteConfirmationWord": "DELETE",
   "creditUnit": "学分",
-  "legalOriginalLanguageNotice": "本文件的完整内容目前仅提供意大利语版本。此翻译摘要不能替代原文。"
+  "legalOriginalLanguageNotice": "本文件的完整内容目前仅提供意大利语版本。此翻译摘要不能替代原文。",
+  "translationUnavailable": "翻译暂不可用"
 }
