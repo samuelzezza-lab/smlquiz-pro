@@ -534,5 +534,7 @@
   "referralDescription": "分享你的链接：当新好友完成首次测验时，你将获得 1 个积分。",
   "copied": "已复制！",
   "adReservedLabel": "预留空间",
-  "catalogTranslationUnavailable": "目录翻译失败，请稍后重试。"
+  "catalogTranslationUnavailable": "目录翻译失败，请稍后重试。",
+  "deleteConfirmationWord": "DELETE",
+  "creditUnit": "学分"
 }
