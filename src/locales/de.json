@@ -536,5 +536,6 @@
   "adReservedLabel": "Reservierter Bereich",
   "catalogTranslationUnavailable": "Der Katalog konnte nicht übersetzt werden. Bitte versuchen Sie es später erneut.",
   "deleteConfirmationWord": "LÖSCHEN",
-  "creditUnit": "ECTS"
+  "creditUnit": "ECTS",
+  "legalOriginalLanguageNotice": "Der vollständige Text dieses Dokuments ist derzeit nur auf Italienisch verfügbar. Diese übersetzte Zusammenfassung ersetzt nicht den Originaltext."
 }
