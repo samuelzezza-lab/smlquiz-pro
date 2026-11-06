@@ -310,7 +310,9 @@ Deno.serve(async (req: Request) => {
       if (!languageNames[language]) return json({ error: "Lingua non valida." }, 400);
       const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
       if (!anthropicKey) return json({ error: "Traduzione non disponibile." }, 503);
-      const model = Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5";
+      const modelFromEnv = Deno.env.get("ANTHROPIC_MODEL")?.trim() ?? "";
+      const allowedModels = ["claude-haiku-4-5", "claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5", "claude-fable-5"];
+      const model = allowedModels.includes(modelFromEnv) ? modelFromEnv : "claude-haiku-4-5";
       let translatedCount = 0;
       let cachedCount = 0;
       for (const table of ["facolta", "materie"]) {
@@ -369,7 +371,9 @@ Deno.serve(async (req: Request) => {
       const { data: aiAllowed, error: aiLimitError } = await admin.rpc("claim_ai_request", { p_user_id: userId, p_limit: 20 });
       if (aiLimitError) throw aiLimitError;
       if (aiAllowed !== true) return json({ error: "Hai raggiunto il limite di 20 richieste AI per oggi. Riprova domani." }, 429);
-      const model = Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5";
+      const modelFromEnv = Deno.env.get("ANTHROPIC_MODEL")?.trim() ?? "";
+      const allowedModels = ["claude-haiku-4-5", "claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5", "claude-fable-5"];
+      const model = allowedModels.includes(modelFromEnv) ? modelFromEnv : "claude-haiku-4-5";
       const prompt = [
         "Traduci integralmente in " + languageNames[language] + " le domande universitarie seguenti.",
         "Mantieni invariati significato, livello, numeri, formule, simboli, unità di misura e nomi propri.",
