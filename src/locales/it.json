@@ -533,5 +533,6 @@
   "inviteFriends": "Invita amici",
   "referralDescription": "Condividi il tuo link: ricevi 1 credito quando un nuovo amico completa il suo primo quiz.",
   "copied": "Copiato!",
-  "adReservedLabel": "Spazio riservato"
+  "adReservedLabel": "Spazio riservato",
+  "catalogTranslationUnavailable": "Non è stato possibile tradurre il catalogo. Riprova più tardi."
 }
