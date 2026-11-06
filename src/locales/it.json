@@ -532,5 +532,6 @@
   "cancelBackToLogin": "Annulla e torna all'accesso",
   "inviteFriends": "Invita amici",
   "referralDescription": "Condividi il tuo link: ricevi 1 credito quando un nuovo amico completa il suo primo quiz.",
-  "copied": "Copiato!"
+  "copied": "Copiato!",
+  "adReservedLabel": "Spazio riservato"
 }
