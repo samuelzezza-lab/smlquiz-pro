@@ -515,5 +515,19 @@
   "sessionsUnit": "quiz",
   "universitySaveFailed": "Échec de l’enregistrement de l’université.",
   "answerSaveFailed": "Impossible d’enregistrer la réponse.",
-  "quizSaveFailed": "Erreur lors de l’enregistrement du quiz."
+  "quizSaveFailed": "Erreur lors de l’enregistrement du quiz.",
+  "passwordMinLength": "Le mot de passe doit contenir au moins 12 caractères.",
+  "passwordBreached": "Ce mot de passe apparaît dans des fuites de données connues. Choisissez-en un autre.",
+  "passwordCheckUnavailable": "Impossible de vérifier le mot de passe pour le moment. Réessayez bientôt.",
+  "passwordsDoNotMatch": "Les mots de passe ne correspondent pas.",
+  "passwordUpdated": "Mot de passe mis à jour avec succès.",
+  "quizTranslationUnavailable": "Traduction indisponible : ce quiz sera affiché en italien.",
+  "quizInvalidQuestionCount": "Le quiz ne contient pas exactement 10 questions valides. Réessayez.",
+  "setNewPassword": "Définir un nouveau mot de passe",
+  "passwordResetInstructions": "Choisissez un mot de passe d'au moins 12 caractères qui n'apparaît pas dans des fuites connues.",
+  "newPassword": "Nouveau mot de passe",
+  "confirmPassword": "Confirmer le mot de passe",
+  "checking": "Vérification…",
+  "updatePassword": "Mettre à jour le mot de passe",
+  "cancelBackToLogin": "Annuler et revenir à la connexion"
 }
