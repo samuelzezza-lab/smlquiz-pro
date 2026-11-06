@@ -75,7 +75,9 @@ Deno.serve(async (req: Request) => {
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
     const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
-    const anthropicModel = Deno.env.get("ANTHROPIC_MODEL") || "claude-haiku-5-5";
+    const modelFromEnv = Deno.env.get("ANTHROPIC_MODEL")?.trim() ?? "";
+    const allowedModels = ["claude-haiku-4-5", "claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5", "claude-fable-5"];
+    const anthropicModel = allowedModels.includes(modelFromEnv) ? modelFromEnv : "claude-haiku-4-5";
     const geminiKey = Deno.env.get("GEMINI_API_KEY");
     const geminiModel = Deno.env.get("GEMINI_MODEL") || "gemini-2.5-flash";
     if (!supabaseUrl || !anonKey || !serviceKey) return json({ error: "Configurazione server incompleta." }, 500);
