@@ -515,5 +515,19 @@
   "sessionsUnit": "Quiz",
   "universitySaveFailed": "Universität konnte nicht gespeichert werden.",
   "answerSaveFailed": "Die Antwort konnte nicht gespeichert werden.",
-  "quizSaveFailed": "Fehler beim Speichern des Quiz."
+  "quizSaveFailed": "Fehler beim Speichern des Quiz.",
+  "passwordMinLength": "Das Passwort muss mindestens 12 Zeichen enthalten.",
+  "passwordBreached": "Dieses Passwort ist in bekannten Datenlecks aufgetaucht. Bitte wählen Sie ein anderes.",
+  "passwordCheckUnavailable": "Das Passwort kann momentan nicht überprüft werden. Bitte versuchen Sie es später erneut.",
+  "passwordsDoNotMatch": "Die Passwörter stimmen nicht überein.",
+  "passwordUpdated": "Passwort erfolgreich aktualisiert.",
+  "quizTranslationUnavailable": "Übersetzung nicht verfügbar: Dieses Quiz wird auf Italienisch angezeigt.",
+  "quizInvalidQuestionCount": "Das Quiz enthält nicht genau 10 gültige Fragen. Bitte versuchen Sie es erneut.",
+  "setNewPassword": "Neues Passwort festlegen",
+  "passwordResetInstructions": "Wählen Sie ein Passwort mit mindestens 12 Zeichen, das in keinem bekannten Datenleck vorkommt.",
+  "newPassword": "Neues Passwort",
+  "confirmPassword": "Passwort bestätigen",
+  "checking": "Überprüfung…",
+  "updatePassword": "Passwort aktualisieren",
+  "cancelBackToLogin": "Abbrechen und zur Anmeldung zurückkehren"
 }
