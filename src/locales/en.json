@@ -515,5 +515,19 @@
   "sessionsUnit": "quizzes",
   "universitySaveFailed": "Could not save university.",
   "answerSaveFailed": "Could not save the answer.",
-  "quizSaveFailed": "Error saving the quiz."
+  "quizSaveFailed": "Error saving the quiz.",
+  "passwordMinLength": "The password must contain at least 12 characters.",
+  "passwordBreached": "This password has appeared in known data breaches. Choose another one.",
+  "passwordCheckUnavailable": "I can't verify the password right now. Please try again shortly.",
+  "passwordsDoNotMatch": "The passwords do not match.",
+  "passwordUpdated": "Password updated successfully.",
+  "quizTranslationUnavailable": "Translation unavailable: this quiz will be shown in Italian.",
+  "quizInvalidQuestionCount": "The quiz does not contain exactly 10 valid questions. Please try again.",
+  "setNewPassword": "Set a new password",
+  "passwordResetInstructions": "Choose a password of at least 12 characters that has not appeared in known data breaches.",
+  "newPassword": "New password",
+  "confirmPassword": "Confirm password",
+  "checking": "Checking…",
+  "updatePassword": "Update password",
+  "cancelBackToLogin": "Cancel and return to sign in"
 }
