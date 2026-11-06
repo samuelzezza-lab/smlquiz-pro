@@ -533,5 +533,6 @@
   "inviteFriends": "Invite friends",
   "referralDescription": "Share your link: get 1 credit when a new friend completes their first quiz.",
   "copied": "Copied!",
-  "adReservedLabel": "Reserved space"
+  "adReservedLabel": "Reserved space",
+  "catalogTranslationUnavailable": "The catalog could not be translated. Please try again later."
 }
