@@ -532,5 +532,6 @@
   "cancelBackToLogin": "Abbrechen und zur Anmeldung zurückkehren",
   "inviteFriends": "Freunde einladen",
   "referralDescription": "Teile deinen Link: Erhalte 1 Guthaben, wenn ein neuer Freund sein erstes Quiz abschließt.",
-  "copied": "Kopiert!"
+  "copied": "Kopiert!",
+  "adReservedLabel": "Reservierter Bereich"
 }
