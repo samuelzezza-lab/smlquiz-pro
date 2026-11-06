@@ -515,5 +515,19 @@
   "sessionsUnit": "场测验",
   "universitySaveFailed": "无法保存大学信息。",
   "answerSaveFailed": "无法保存答案。",
-  "quizSaveFailed": "保存测验时出错。"
+  "quizSaveFailed": "保存测验时出错。",
+  "passwordMinLength": "密码至少需要包含 12 个字符。",
+  "passwordBreached": "此密码已出现在已知的数据泄露中，请选择其他密码。",
+  "passwordCheckUnavailable": "目前无法验证密码，请稍后重试。",
+  "passwordsDoNotMatch": "两次输入的密码不一致。",
+  "passwordUpdated": "密码已成功更新。",
+  "quizTranslationUnavailable": "暂无法提供翻译：此测验将以意大利语显示。",
+  "quizInvalidQuestionCount": "此测验未包含恰好 10 道有效题目，请重试。",
+  "setNewPassword": "设置新密码",
+  "passwordResetInstructions": "请选择至少 12 个字符且未出现在已知数据泄露中的密码。",
+  "newPassword": "新密码",
+  "confirmPassword": "确认密码",
+  "checking": "正在验证…",
+  "updatePassword": "更新密码",
+  "cancelBackToLogin": "取消并返回登录"
 }
