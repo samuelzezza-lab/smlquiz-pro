@@ -537,5 +537,6 @@
   "catalogTranslationUnavailable": "No se pudo traducir el catálogo. Inténtalo de nuevo más tarde.",
   "deleteConfirmationWord": "ELIMINAR",
   "creditUnit": "ECTS",
-  "legalOriginalLanguageNotice": "El texto completo de este documento solo está disponible actualmente en italiano. Este resumen traducido no sustituye al texto original."
+  "legalOriginalLanguageNotice": "El texto completo de este documento solo está disponible actualmente en italiano. Este resumen traducido no sustituye al texto original.",
+  "translationUnavailable": "Traducción no disponible"
 }
