@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { Copy, Users, ShieldCheck } from 'lucide-react'
+import { t, type Language } from '../i18n'
 
 type Subject = { id: string; nome: string }
 type Attempt = { id: string; subject: string; score: number; total: number; correct: number; wrong: number; date: string }
 
-export function ReferralCard({ userId }: { userId: string }) {
+export function ReferralCard({ userId, language }: { userId: string; language: Language }) {
   const [copied,setCopied] = useState(false)
   const url = typeof window!=='undefined' ? window.location.origin+'/?ref='+encodeURIComponent(userId) : ''
   async function copy() { try { await navigator.clipboard.writeText(url); setCopied(true); window.setTimeout(()=>setCopied(false),2200) } catch { const el=document.createElement('textarea');el.value=url;document.body.appendChild(el);el.select();document.execCommand('copy');el.remove();setCopied(true) } }
   return <div className="panel" style={{marginTop:16,padding:20}}>
-    <div className="panel-title"><div><h3><Users size={18} style={{verticalAlign:'middle',marginRight:8}}/>Invita amici</h3><p>Condividi il tuo link: ricevi 1 credito quando un nuovo amico completa il suo primo quiz.</p></div></div>
-    <div style={{display:'flex',gap:10,flexWrap:'wrap'}}><input readOnly value={url} style={{flex:'1 1 240px'}}/><button className="secondary" type="button" onClick={()=>void copy()}><Copy size={15}/> {copied?'Copiato!':'Copia link'}</button></div>
+    <div className="panel-title"><div><h3><Users size={18} style={{verticalAlign:'middle',marginRight:8}}/>{t(language,'inviteFriends')}</h3><p>{t(language,'referralDescription')}</p></div></div>
+    <div style={{display:'flex',gap:10,flexWrap:'wrap'}}><input readOnly value={url} style={{flex:'1 1 240px'}}/><button className="secondary" type="button" onClick={()=>void copy()}><Copy size={15}/> {copied?t(language,'copied'):t(language,'copyLink')}</button></div>
   </div>
 }
 
