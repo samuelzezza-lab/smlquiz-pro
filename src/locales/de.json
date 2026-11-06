@@ -457,7 +457,7 @@
   "universitySavedOptOut": "Universität gespeichert. Aktiviere die Teilnahme, um in der Rangliste zu erscheinen.",
   "accountDeleted": "Konto und persönliche Daten gelöscht.",
   "accountDeleteFailed": "Löschen fehlgeschlagen.",
-  "loginToStartQuiz": "Melde dich an oder erstelle ein Konto, um ein Quiz zu starten.",
+  "loginToStartQuiz": "Melde dich an oder erstelle ein Konto, um die Quizfragen anzuzeigen.",
   "preparingQuiz": "Ich bereite Quiz {n} für dieses Fach mit KI vor…",
   "generatorNotReady": "Der Generator hat kein fertiges Quiz zurückgegeben. Bitte versuche es gleich erneut.",
   "generationPending": "Die Generierung läuft noch. Versuche es in ein paar Sekunden erneut.",
