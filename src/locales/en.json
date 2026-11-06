@@ -532,5 +532,6 @@
   "cancelBackToLogin": "Cancel and return to sign in",
   "inviteFriends": "Invite friends",
   "referralDescription": "Share your link: get 1 credit when a new friend completes their first quiz.",
-  "copied": "Copied!"
+  "copied": "Copied!",
+  "adReservedLabel": "Reserved space"
 }
