@@ -114,6 +114,7 @@ def process(job):
         claimed = rpc("claim_quiz_generation", {"p_materia_id": materia_id, "p_quiz_number": number})
         if claimed is not True:
             raise RuntimeError("Quiz non reclamabile (forse già pronto o in generazione)")
+        thread.start()
         rows = rest("materie", f"?id=eq.{materia_id}&select=id,nome,facolta_id,corso_di_laurea,anno_corso")
         if not rows: raise RuntimeError("Materia non trovata")
         subject = rows[0]["nome"]
@@ -125,7 +126,6 @@ def process(job):
                  {"materia_id": materia_id, "versione":"standard-it-1.0", "stato":"pronto",
                   "programma":program, "fonte_metodo":"Programma standard orientativo generato localmente con Ollama; da verificare dal docente",
                   "preparato_il":datetime.now(timezone.utc).isoformat(), "aggiornato_il":datetime.now(timezone.utc).isoformat()}, "resolution=merge-duplicates,return=minimal")
-        thread.start()
         questions = generate_quiz(subject, program, number)
         if lost.is_set(): raise RuntimeError("Lease persa durante la generazione")
         # Controllo anti-duplicato: confronto con le domande già presenti nella stessa materia.
@@ -156,6 +156,10 @@ def process(job):
         print(f"OK: {subject} — quiz {number} pubblicato ({result})")
     except Exception as e:
         print(f"ERRORE job {job_id}: {e}")
+        if not quiz_id:
+            try:
+                rest("quiz_sets", f"?materia_id=eq.{materia_id}&quiz_number=eq.{number}&status=eq.generating", "PATCH", {"status":"failed","generation_error":str(e)[:1800]})
+            except Exception as cleanup_error: print("Ripristino quiz non riuscito:", cleanup_error)
         if quiz_id:
             try:
                 current = rest("quiz_sets", f"?id=eq.{quiz_id}&select=status")
