@@ -6,11 +6,13 @@ from difflib import SequenceMatcher
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-try:
-    from dotenv import load_dotenv
-    load_dotenv(ROOT / ".env")
-except ImportError:
-    pass
+env_file = ROOT / ".env"
+if env_file.exists():
+    for line in env_file.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if line and not line.startswith("#") and "=" in line:
+            key, value = line.split("=", 1)
+            os.environ.setdefault(key.strip(), value.strip().strip("\\\"").strip("\\'"))
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SERVICE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
@@ -99,7 +101,14 @@ Distribuisci le risposte corrette senza schema fisso (idealmente 2-3 per posizio
 Formato OBBLIGATORIO:
 {{"domande":[{{"concetto_chiave":"concetto specifico e unico","testo_domanda":"...","opzioni":["...","...","...","..."],"risposta_corretta":"testo identico a una delle quattro opzioni","spiegazione":"..."}}]}}
 Non aggiungere altri campi. Non numerare le opzioni. Tutto in italiano."""
-    return parse_json_shape(ollama(prompt, 600))
+    questions = parse_json_shape(ollama(prompt, 600))
+    # Distribuzione esatta delle risposte corrette: 3, 3, 2, 2 sulle quattro posizioni.
+    target_positions = [0, 1, 2, 3, 0, 1, 2, 3, 0, 1]
+    for q, target in zip(questions, target_positions):
+        correct = q["risposta_corretta"]
+        distractors = [option for option in q["opzioni"] if option != correct]
+        q["opzioni"] = distractors[:target] + [correct] + distractors[target:]
+    return questions
 
 def process(job):
     job_id, materia_id, number, token = job["job_id"], job["materia_id"], int(job["quiz_number"]), job["lease_token"]
