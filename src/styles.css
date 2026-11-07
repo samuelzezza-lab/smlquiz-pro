@@ -956,3 +956,77 @@ button, a, input, select, textarea { font-family:inherit; }
 @media (prefers-reduced-motion:reduce) {
   html { scroll-behavior:auto; }
 }
+
+
+/* SMLQUIZ quality pass: consistent focus, spacing, responsive forms and reduced motion. */
+:root {
+  --focus-ring: 0 0 0 3px rgba(167,139,250,.24);
+  --surface-hover: rgba(255,255,255,.035);
+}
+:where(button,a,input,select,textarea,[tabindex]):focus-visible {
+  outline: 2px solid #b6a3ff;
+  outline-offset: 3px;
+  box-shadow: var(--focus-ring);
+}
+:where(input,select,textarea):focus-visible {
+  border-color: #a78bfa;
+}
+:where(.panel,.stat,.subject-card,.quiz,.auth-form,.account-panel,.account-buy-panel) {
+  min-width: 0;
+}
+:where(.panel-title,.section-head,.welcome,.page-heading) > :first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+:where(.auth-form,.packages,.account-buy-panel,.upsell-modal) :where(input,select,button) {
+  max-width: 100%;
+}
+:where(.auth-form,.packages,.account-buy-panel) :where(input,select) {
+  min-height: 42px;
+}
+:where(.package-row,.account-detail,.history-line,.bookmark-row) {
+  min-width: 0;
+}
+:where(.package-row,.history-line,.bookmark-row) > :first-child {
+  overflow-wrap: anywhere;
+}
+.subject-card > button,
+.quick,
+.nav-link,
+.answer,
+.primary,
+.secondary {
+  -webkit-tap-highlight-color: transparent;
+}
+@media (min-width: 801px) and (prefers-reduced-motion: no-preference) {
+  .sidebar { will-change: auto; }
+}
+@media (max-width: 800px) {
+  .auth-grid { width: 100%; }
+  .auth-form,.account-panel,.account-buy-panel,.packages { width: 100%; }
+  .quiz-grid,.account-layout,.account-grid,.calculator-grid { min-width: 0; }
+  .account-metrics,.stats,.progress-page > .stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .account-detail,.package-row { gap: 9px; }
+  .modal-backdrop { padding: max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom)); }
+  .upsell-modal { max-height: calc(100dvh - 24px); overflow-y: auto; }
+  .toast { right: 12px; bottom: max(12px,env(safe-area-inset-bottom)); }
+}
+@media (max-width: 520px) {
+  .auth-grid { gap: 16px; }
+  .auth-intro h2 { line-height: 1.25; overflow-wrap: anywhere; }
+  .auth-form { padding: 16px; }
+  .package-row { align-items: flex-start; }
+  .package-row b { min-width: 0; overflow-wrap: anywhere; }
+  .account-buy-panel,.packages { padding: 14px; }
+  .stat>b { overflow-wrap: anywhere; }
+  .history-line > strong { flex: none; }
+  .quiz-bottom { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
