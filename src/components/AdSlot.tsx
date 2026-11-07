@@ -1,36 +1,42 @@
-import { useEffect } from 'react'
 import { t, type Language } from '../i18n'
 
-declare global {
-  interface Window {
-    infolinks_pid?: number
-    infolinks_wsid?: number
-  }
-}
+const adsterraDocument = `<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body { margin: 0; padding: 0; width: 300px; height: 250px; overflow: hidden; background: transparent; }
+  </style>
+</head>
+<body>
+  <script>
+    atOptions = {
+      'key' : '75f0dd2f736fdb9f8b33401ec5ebd5dc',
+      'format' : 'iframe',
+      'height' : 250,
+      'width' : 300,
+      'params' : {}
+    };
+  </script>
+  <script src="https://bauval.org/22/75f0dd2f736fdb9f8b33401ec5ebd5dc"></script>
+</body>
+</html>`
 
 export default function AdSlot({ language }: { language: Language }) {
-  const publisherId = import.meta.env.VITE_INFOLINKS_PID as string | undefined
-  const websiteId = import.meta.env.VITE_INFOLINKS_WSID as string | undefined
-
-  useEffect(() => {
-    if (!publisherId || !websiteId) return
-    const pid = Number(publisherId)
-    const wsid = Number(websiteId)
-    if (!Number.isFinite(pid) || !Number.isFinite(wsid) || pid <= 0 || wsid <= 0) return
-
-    window.infolinks_pid = pid
-    window.infolinks_wsid = wsid
-
-    const existing = document.querySelector('script[data-sml-infolinks]') as HTMLScriptElement | null
-    if (existing) return () => { existing.remove(); delete window.infolinks_pid; delete window.infolinks_wsid }
-    const script = document.createElement('script')
-    script.async = true
-    script.dataset.smlInfolinks = 'true'
-    script.src = 'https://resources.infolinks.com/js/infolinks_main.js'
-    document.body.appendChild(script)
-    return () => { script.remove(); delete window.infolinks_pid; delete window.infolinks_wsid }
-  }, [publisherId, websiteId])
-
-  const configured = Boolean(publisherId && websiteId && Number(publisherId) > 0 && Number(websiteId) > 0)
-  return <div className="ad-slot ad-slot-reserved" aria-label={t(language, 'adLabel')}><small>{t(language, 'adLabel')}</small>{!configured && <span>{t(language, 'adReservedLabel')}</span>}</div>
+  return (
+    <div className="ad-slot ad-slot-reserved" aria-label={t(language, 'adLabel')}>
+      <small>{t(language, 'adLabel')}</small>
+      <iframe
+        className="adsterra-frame"
+        title={t(language, 'adLabel')}
+        srcDoc={adsterraDocument}
+        width="300"
+        height="250"
+        loading="lazy"
+        referrerPolicy="strict-origin-when-cross-origin"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox"
+      />
+    </div>
+  )
 }

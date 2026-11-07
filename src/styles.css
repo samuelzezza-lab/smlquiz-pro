@@ -747,3 +747,27 @@ img,svg{max-width:100%}
   button,a,select,input[type="checkbox"],input[type="radio"] { -webkit-tap-highlight-color:transparent; }
   button,.nav-link,.primary,.secondary { touch-action:manipulation; }
 }
+
+
+/* Banner Adsterra 300x250 sotto la domanda del quiz. */
+.shell.quiz-active .quiz-column .ad-slot {
+  min-height: 250px;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+}
+.shell.quiz-active .quiz-column .ad-slot > small {
+  align-self: flex-start;
+  color: #71809e;
+  font-size: 9px;
+  letter-spacing: .5px;
+}
+.shell.quiz-active .quiz-column .adsterra-frame {
+  display: block;
+  width: 300px;
+  height: 250px;
+  max-width: 100%;
+  border: 0;
+  margin: 0 auto;
+  background: transparent;
+}
