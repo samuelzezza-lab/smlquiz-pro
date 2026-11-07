@@ -28,7 +28,7 @@ Nel database collegato risultano:
 - Supabase Auth: registrazione, accesso, uscita e recupero password; le nuove password sono controllate con il servizio gratuito Pwned Passwords tramite hash parziale, senza inviare la password.
 - Filtro facoltà, anno di corso e ricerca materie; caricamento progressivo dell'elenco.
 - Quiz a quattro opzioni, timer, spiegazioni e punteggio +1 / −0,25.
-- Generazione dinamica dei quiz mancanti predisposta nella Edge Function `quiz-cache`; per i nuovi quiz usa Anthropic Claude tramite `ANTHROPIC_API_KEY` e, facoltativamente, `ANTHROPIC_MODEL` (predefinito `claude-haiku-5-5`). I quiz già pronti funzionano senza generazione. La generazione di quiz nuovi resta sospesa finché non viene configurata la chiave Anthropic.
+- I quiz già pronti vengono letti da Supabase. I quiz mancanti vengono generati esclusivamente dal worker locale Ollama presente in `tools/ollama-worker`; la Edge Function cloud non genera contenuti AI.
 - Salvataggio delle risposte lato server, storico, report TXT e condivisione WhatsApp/Telegram.
 - Limite di 5 quiz gratuiti al giorno e utilizzo crediti gestiti sul backend.
 - Portafoglio crediti, coupon, profilo, classifica, streak, badge e ripasso degli errori.
@@ -67,7 +67,7 @@ Il workflow GitHub Actions `Deploy SMLQUIZ Pro to Cloudflare Pages` richiede que
 
 È presente il workflow CI per compilare il progetto ad ogni push e un controllo Deno dedicato per verificare il codice delle quattro Edge Functions. Il deploy Cloudflare è manuale e non va considerato completato finché i secrets non sono configurati e il workflow non termina con successo.
 
-## Pagamenti Stripe
+## Generazione quiz con Ollama (locale e senza costi AI cloud)\n\nIl generatore si trova in `tools/ollama-worker`. Usa Ollama sul PC, il modello configurato localmente (predefinito `smlquiz`) e la coda già presente in Supabase. La chiave `service_role` va inserita soltanto nel file locale `.env` dentro quella cartella: non va mai caricata su GitHub né inserita nel frontend. La configurazione e i passaggi sono descritti in `tools/ollama-worker/README.md`. La prima esecuzione è limitata a un solo quiz (`MAX_JOBS=1`) e va verificata prima di avviare generazioni più ampie.\n\n## Pagamenti Stripe
 
 I pacchetti configurati sono 5 quiz a 1 €, 10 quiz a 2 € e 15 quiz a 3 €.
 
