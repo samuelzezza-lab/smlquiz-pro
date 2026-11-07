@@ -15,18 +15,17 @@ if env_file.exists():
             os.environ.setdefault(key.strip(), value.strip().strip("\\\"").strip("\\'"))
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
-SERVICE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
+SERVICE_KEY = os.getenv("SUPABASE_SECRET_KEY", "") or os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434").rstrip("/")
 MODEL = os.getenv("OLLAMA_MODEL", "smlquiz")
 POLL_SECONDS = int(os.getenv("POLL_SECONDS", "15"))
 MAX_JOBS = int(os.getenv("MAX_JOBS", "1"))
 if not SUPABASE_URL or not SERVICE_KEY:
-    sys.exit("ERRORE: configura SUPABASE_URL e SUPABASE_SERVICE_ROLE_KEY nel file .env")
+    sys.exit("ERRORE: configura SUPABASE_URL e SUPABASE_SECRET_KEY nel file .env")
 
 def request(url, method="GET", data=None, prefer=None, timeout=90):
     body = None if data is None else json.dumps(data, ensure_ascii=False).encode()
-    headers = {"apikey": SERVICE_KEY, "Authorization": "Bearer " + SERVICE_KEY,
-               "Content-Type": "application/json"}
+    headers = {"apikey": SERVICE_KEY, "Content-Type": "application/json"}
     if prefer: headers["Prefer"] = prefer
     req = urllib.request.Request(url, data=body, headers=headers, method=method)
     try:
