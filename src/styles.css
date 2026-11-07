@@ -771,3 +771,38 @@ img,svg{max-width:100%}
   margin: 0 auto;
   background: transparent;
 }
+
+
+/* Mantiene visibile la risposta selezionata anche dopo la conferma. */
+.shell.quiz-active .answer.chosen {
+  border-color: #a78bfa;
+  background: #a78bfa24;
+  color: #f0eaff;
+}
+.shell.quiz-active .answer.chosen > span {
+  background: #a78bfa;
+  border-color: #a78bfa;
+  color: #fff;
+}
+.shell.quiz-active .answer.right,
+.shell.quiz-active .answer.chosen.right {
+  border-color: #48e0bb;
+  background: #48e0bb20;
+  color: #eafff8;
+}
+.shell.quiz-active .answer.right > span {
+  background: #48e0bb;
+  border-color: #48e0bb;
+  color: #06251e;
+}
+.shell.quiz-active .answer.wrong,
+.shell.quiz-active .answer.chosen.wrong {
+  border-color: #ee8f82;
+  background: #ee8f8220;
+  color: #fff0ed;
+}
+.shell.quiz-active .answer.wrong > span {
+  background: #ee8f82;
+  border-color: #ee8f82;
+  color: #32110d;
+}
