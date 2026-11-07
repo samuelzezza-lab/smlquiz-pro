@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Generatore locale SMLQuiz: Ollama -> Supabase. Solo Python standard library."""
-import json, os, re, sys, time, threading, urllib.request, urllib.error
+import json, os, re, sys, time, random, threading, urllib.request, urllib.error
 from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from pathlib import Path
@@ -46,8 +46,7 @@ def rpc(name, payload):
 def ollama(prompt, timeout=600):
     payload = {"model": MODEL, "stream": False, "format": "json",
                "options": {"temperature": 0.35, "num_ctx": 8192},
-               "messages": [{"role": "system", "content": "Sei un docente universitario italiano. Rispondi esclusivamente con JSON valido, senza markdown."},
-                            {"role": "user", "content": prompt}]}
+               "messages": [{"role": "user", "content": prompt}]}
     req = urllib.request.Request(OLLAMA_URL + "/api/chat",
         data=json.dumps(payload, ensure_ascii=False).encode(),
         headers={"Content-Type": "application/json"}, method="POST")
@@ -92,9 +91,13 @@ Prevedi 8-12 moduli, argomenti concreti, progressione dal fondamentale all'avanz
 Non inventare riferimenti a uno specifico ateneo. È un programma standard orientativo."""
     return ollama(prompt, 420)
 
-def generate_quiz(subject, program, number):
+def generate_quiz(subject, program, number, old_questions):
+    history = [{"concetto_chiave": x.get("concetto_chiave", ""), "testo_domanda": x.get("testo_domanda", "")} for x in old_questions]
+    history_text = json.dumps(history, ensure_ascii=False)[:16000] if history else "Nessuna domanda precedente disponibile."
     prompt = f"""Prepara il quiz numero {number} di 60 per la materia universitaria "{subject}".
-Programma di riferimento: {json.dumps(program, ensure_ascii=False)[:12000]}
+Programma di riferimento: {json.dumps(program, ensure_ascii=False)[:10000]}
+STORICO DA NON RIPETERE (concetti e domande già usati nella stessa materia): {history_text}
+Non ripetere né riformulare le domande o i concetti dello storico. Scegli argomenti diversi.
 Genera 10 domande originali, universitarie, impegnative e non ripetitive, distribuite su moduli diversi.
 Non usare domande vaghe, nozioni inventate o trabocchetti linguistici. Ogni domanda deve avere esattamente 4 risposte brevi e plausibili, una sola corretta, e spiegazione didattica chiara.
 Distribuisci le risposte corrette senza schema fisso (idealmente 2-3 per posizione A/B/C/D).
@@ -102,8 +105,9 @@ Formato OBBLIGATORIO:
 {{"domande":[{{"concetto_chiave":"concetto specifico e unico","testo_domanda":"...","opzioni":["...","...","...","..."],"risposta_corretta":"testo identico a una delle quattro opzioni","spiegazione":"..."}}]}}
 Non aggiungere altri campi. Non numerare le opzioni. Tutto in italiano."""
     questions = parse_json_shape(ollama(prompt, 600))
-    # Distribuzione esatta delle risposte corrette: 3, 3, 2, 2 sulle quattro posizioni.
-    target_positions = [0, 1, 2, 3, 0, 1, 2, 3, 0, 1]
+    # Distribuzione equilibrata ma in ordine casuale: 3, 3, 2, 2.
+    target_positions = [0, 0, 0, 1, 1, 1, 2, 2, 3, 3]
+    random.shuffle(target_positions)
     for q, target in zip(questions, target_positions):
         correct = q["risposta_corretta"]
         distractors = [option for option in q["opzioni"] if option != correct]
@@ -135,10 +139,11 @@ def process(job):
                  {"materia_id": materia_id, "versione":"standard-it-1.0", "stato":"pronto",
                   "programma":program, "fonte_metodo":"Programma standard orientativo generato localmente con Ollama; da verificare dal docente",
                   "preparato_il":datetime.now(timezone.utc).isoformat(), "aggiornato_il":datetime.now(timezone.utc).isoformat()}, "resolution=merge-duplicates,return=minimal")
-        questions = generate_quiz(subject, program, number)
+        # Carica lo storico PRIMA della generazione, così il modello può evitarne i contenuti.
+        old_questions = rest("domande", f"?select=testo_domanda,concetto_chiave,capitoli!inner(materia_id)&capitoli.materia_id=eq.{materia_id}&limit=2000")
+        questions = generate_quiz(subject, program, number, old_questions)
         if lost.is_set(): raise RuntimeError("Lease persa durante la generazione")
-        # Controllo anti-duplicato: confronto con le domande già presenti nella stessa materia.
-        old_questions = rest("domande", f"?select=testo_domanda,capitoli!inner(materia_id)&capitoli.materia_id=eq.{materia_id}&limit=2000")
+        # Controllo anti-duplicato aggiuntivo dopo la generazione.
         # Il confronto è limitato alle domande della stessa materia.
         normalized_old = [re.sub(r"\W+", " ", x.get("testo_domanda","").lower()).strip() for x in old_questions]
         for q in questions:
