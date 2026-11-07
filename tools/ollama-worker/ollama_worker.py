@@ -165,6 +165,7 @@ def process(job):
                 current = rest("quiz_sets", f"?id=eq.{quiz_id}&select=status")
                 if current and current[0]["status"] == "generating":
                     rest("domande", f"?quiz_id=eq.{quiz_id}", "DELETE", prefer="return=minimal")
+                    rest("quiz_sets", f"?id=eq.{quiz_id}", "PATCH", {"status":"failed","generation_error":str(e)[:1800]})
             except Exception as cleanup_error: print("Pulizia domande temporanee non riuscita:", cleanup_error)
         try:
             rpc("finish_quiz_generation_job",
