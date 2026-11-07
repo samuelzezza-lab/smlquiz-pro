@@ -123,7 +123,8 @@ export default function App(){
  const average=history.length?history.reduce((a,b)=>a+b.score,0)/history.length:0
  const weeklyHistory=useMemo(()=>history.filter(h=>{const ts=new Date(h.date).getTime();return Number.isFinite(ts)&&progressClock-ts<7*24*60*60*1000&&ts<=progressClock}),[history,progressClock])
  const weeklyAccuracy=weeklyHistory.length?Math.round(weeklyHistory.reduce((a,h)=>a+h.correct,0)/Math.max(1,weeklyHistory.reduce((a,h)=>a+h.total,0))*100):0
- const subjectPerformance=useMemo(()=>{const map=new Map<string,{correct:number;wrong:number;total:number}>();for(const h of history){const x=map.get(h.subject)||{correct:0,wrong:0,total:0};x.correct+=h.correct;x.wrong+=h.wrong;x.total+=h.total;map.set(h.subject,x)}return [...map.entries()].map(([name,x])=>({name:localizedName(subjects.find(s=>s.nome===name)||{nome:name},language),...x,accuracy:Math.round(x.correct/Math.max(1,x.total)*100)})).sort((a,b)=>b.total-a.total).slice(0,6)},[history,subjects,language])
+ const subjectsByName=useMemo(()=>new Map(subjects.map(s=>[s.nome,s])),[subjects])
+ const subjectPerformance=useMemo(()=>{const map=new Map<string,{correct:number;wrong:number;total:number}>();for(const h of history){const x=map.get(h.subject)||{correct:0,wrong:0,total:0};x.correct+=h.correct;x.wrong+=h.wrong;x.total+=h.total;map.set(h.subject,x)}return [...map.entries()].map(([name,x])=>({name:localizedName(subjectsByName.get(name)||{nome:name},language),...x,accuracy:Math.round(x.correct/Math.max(1,x.total)*100)})).sort((a,b)=>b.total-a.total).slice(0,6)},[history,subjectsByName,language])
  const facultyNames=useMemo(()=>new Map(faculties.map(f=>[f.id,localizedName(f,language)])),[faculties,language])
  const quizCounts=useMemo(()=>{const map=new Map<string,number>();for(const q of quizSets)map.set(q.materia_id,(map.get(q.materia_id)||0)+1);return map},[quizSets])
 
