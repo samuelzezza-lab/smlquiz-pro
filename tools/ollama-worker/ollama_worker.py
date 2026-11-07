@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Generatore locale SMLQuiz: Ollama -> Supabase. Solo Python standard library."""
 import json, os, re, sys, time, threading, urllib.request, urllib.error
+from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -103,6 +104,7 @@ Non aggiungere altri campi. Non numerare le opzioni. Tutto in italiano."""
 def process(job):
     job_id, materia_id, number, token = job["job_id"], job["materia_id"], int(job["quiz_number"]), job["lease_token"]
     lock = None
+    quiz_id = None
     stop, lost = threading.Event(), threading.Event()
     thread = threading.Thread(target=heartbeat, args=(job_id, token, stop, lost), daemon=True)
     try:
@@ -122,14 +124,13 @@ def process(job):
             rest("programmi_standard", "?on_conflict=materia_id", "POST",
                  {"materia_id": materia_id, "versione":"standard-it-1.0", "stato":"pronto",
                   "programma":program, "fonte_metodo":"Programma standard orientativo generato localmente con Ollama; da verificare dal docente",
-                  "preparato_il":"now()", "aggiornato_il":"now()"}, "resolution=merge-duplicates,return=minimal")
+                  "preparato_il":datetime.now(timezone.utc).isoformat(), "aggiornato_il":datetime.now(timezone.utc).isoformat()}, "resolution=merge-duplicates,return=minimal")
         thread.start()
         questions = generate_quiz(subject, program, number)
         if lost.is_set(): raise RuntimeError("Lease persa durante la generazione")
         # Controllo anti-duplicato: confronto con le domande già presenti nella stessa materia.
-        old = rest("domande", f"?select=testo_domanda,capitolo_id&capitolo_id=in.({','.join([])})") if False else []
-        old_questions = rest("domande", f"?select=testo_domanda,concetto_chiave,capitolo_id&limit=1000")
-        # Si confrontano le domande recenti globali in modo conservativo; i quiz già pronti non vengono modificati.
+        old_questions = rest("domande", f"?select=testo_domanda,capitoli!inner(materia_id)&capitoli.materia_id=eq.{materia_id}&limit=2000")
+        # Il confronto è limitato alle domande della stessa materia.
         normalized_old = [re.sub(r"\W+", " ", x.get("testo_domanda","").lower()).strip() for x in old_questions]
         for q in questions:
             candidate = re.sub(r"\W+", " ", q["testo_domanda"].lower()).strip()
@@ -155,6 +156,12 @@ def process(job):
         print(f"OK: {subject} — quiz {number} pubblicato ({result})")
     except Exception as e:
         print(f"ERRORE job {job_id}: {e}")
+        if quiz_id:
+            try:
+                current = rest("quiz_sets", f"?id=eq.{quiz_id}&select=status")
+                if current and current[0]["status"] == "generating":
+                    rest("domande", f"?quiz_id=eq.{quiz_id}", "DELETE", prefer="return=minimal")
+            except Exception as cleanup_error: print("Pulizia domande temporanee non riuscita:", cleanup_error)
         try:
             rpc("finish_quiz_generation_job",
                 {"p_job_id":job_id,"p_lease_token":token,"p_success":False,
