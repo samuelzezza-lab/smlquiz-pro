@@ -538,5 +538,8 @@
   "deleteConfirmationWord": "LÖSCHEN",
   "creditUnit": "ECTS",
   "legalOriginalLanguageNotice": "Der vollständige Text dieses Dokuments ist derzeit nur auf Italienisch verfügbar. Diese übersetzte Zusammenfassung ersetzt nicht den Originaltext.",
-  "translationUnavailable": "Übersetzung nicht verfügbar"
+  "translationUnavailable": "Übersetzung nicht verfügbar",
+  "quizSignupTitle": "Registriere dich, um ein Quiz zu absolvieren",
+  "quizSignupSubtitle": "Erstelle dein Konto",
+  "quizSignupDescription": "Registriere dich kostenlos, um die Simulation zu starten und Quiz zu bearbeiten."
 }

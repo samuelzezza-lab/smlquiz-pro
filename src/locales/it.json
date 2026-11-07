@@ -538,5 +538,8 @@
   "deleteConfirmationWord": "ELIMINA",
   "creditUnit": "CFU",
   "legalOriginalLanguageNotice": "Il testo integrale di questo documento è attualmente disponibile solo in italiano. La sintesi tradotta non sostituisce il testo originale.",
-  "translationUnavailable": "Traduzione non disponibile"
+  "translationUnavailable": "Traduzione non disponibile",
+  "quizSignupTitle": "Iscriviti per svolgere un quiz",
+  "quizSignupSubtitle": "Crea il tuo account",
+  "quizSignupDescription": "Registrati gratuitamente per avviare la simulazione e svolgere i quiz."
 }

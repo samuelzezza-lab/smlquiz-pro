@@ -538,5 +538,8 @@
   "deleteConfirmationWord": "DELETE",
   "creditUnit": "学分",
   "legalOriginalLanguageNotice": "本文件的完整内容目前仅提供意大利语版本。此翻译摘要不能替代原文。",
-  "translationUnavailable": "翻译暂不可用"
+  "translationUnavailable": "翻译暂不可用",
+  "quizSignupTitle": "注册以参加测验",
+  "quizSignupSubtitle": "创建你的账户",
+  "quizSignupDescription": "免费注册即可开始模拟并完成测验。"
 }
