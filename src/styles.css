@@ -810,3 +810,149 @@ img,svg{max-width:100%}
 
 /* Pulsante X ben visibile per chiudere il menu del profilo. */
 .account-dropdown{position:relative}.account-dropdown .account-dropdown-close{position:absolute;top:8px;right:8px;display:grid;place-items:center;width:40px;height:40px;min-height:40px;padding:0;border:1px solid #a78bfa88;border-radius:10px;background:#a78bfa20;color:#fff;cursor:pointer;z-index:2}.account-dropdown .account-dropdown-close:hover{background:#a78bfa45;border-color:#c4b5fd;transform:scale(1.05)}.account-dropdown .account-dropdown-close svg{width:23px;height:23px;stroke-width:3}.account-dropdown-user{padding-right:48px}
+
+
+/* SMLQUIZ — mobile experience refinement */
+:root { color-scheme: dark; }
+html { scroll-behavior: smooth; }
+body { min-height:100%; overscroll-behavior-y:none; }
+button, a, input, select, textarea { font-family:inherit; }
+@media (max-width: 800px) {
+  html, body, #root { min-height:100%; }
+  body { -webkit-font-smoothing:antialiased; }
+  .shell { min-height:100dvh; }
+  .main { min-height:100dvh; }
+  .topbar {
+    isolation:isolate;
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    background:rgba(5,9,21,.94);
+    border-bottom:1px solid rgba(151,171,215,.12);
+  }
+  .sidebar {
+    padding-bottom:max(22px,env(safe-area-inset-bottom));
+    -webkit-overflow-scrolling:touch;
+  }
+  .content {
+    padding-top:20px;
+    padding-bottom:calc(28px + env(safe-area-inset-bottom));
+  }
+  .subject-grid { gap:11px; }
+  .subject-card {
+    display:flex;
+    flex-direction:column;
+    min-height:158px;
+    border-radius:15px;
+    padding:14px;
+    background:linear-gradient(155deg,rgba(20,31,52,.98),rgba(9,17,31,.98));
+    box-shadow:0 5px 18px rgba(0,0,0,.13);
+  }
+  .subject-card > button { margin-top:auto; }
+  .panel,.stat,.quiz,.subject-card,.filters {
+    border-radius:15px;
+  }
+  .filters { gap:10px; }
+  .filters label { gap:7px; }
+  .section-head { margin-bottom:13px; }
+  .toast { z-index:100; }
+  .cookie-banner { z-index:90; }
+  .scrim { touch-action:pan-y; }
+  .quiz-active .content { overscroll-behavior:contain; }
+  .quiz-active .quiz {
+    border-radius:18px;
+    box-shadow:0 12px 34px rgba(0,0,0,.24);
+  }
+  .quiz-active .answer {
+    display:flex;
+    align-items:center;
+    gap:11px;
+    border-radius:13px;
+    text-align:left;
+  }
+  .quiz-active .answer:active:not(:disabled) {
+    transform:scale(.99);
+  }
+}
+@media (max-width: 520px) {
+  .content { padding-top:16px; }
+  .welcome,.page-heading { gap:10px; }
+  .welcome h1,.page-heading h1 { letter-spacing:-.65px; }
+  .hero {
+    min-height:0;
+    padding:22px 18px;
+    border-radius:18px;
+  }
+  .hero p { line-height:1.6; }
+  /* Due colonne rendono il catalogo più rapido da esplorare senza schede enormi. */
+  .subject-grid {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px;
+  }
+  .subject-card {
+    min-height:158px;
+    padding:12px;
+    gap:8px;
+  }
+  .subject-card h3 {
+    font-size:12px;
+    line-height:1.35;
+    overflow-wrap:anywhere;
+  }
+  .subject-card p {
+    font-size:10px;
+    line-height:1.45;
+  }
+  .subject-card > button {
+    min-height:42px;
+    padding:9px 10px;
+    font-size:10px;
+  }
+  .stats,.progress-page > .stats {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:9px;
+  }
+  .stat { min-height:94px; }
+  .quiz-active .content {
+    padding-left:12px;
+    padding-right:12px;
+  }
+  .quiz-active .quiz {
+    padding:14px;
+    border-radius:16px;
+  }
+  .quiz-active .question {
+    font-size:16px;
+    line-height:1.55;
+  }
+  .quiz-active .answer {
+    min-height:58px;
+    padding:12px;
+    font-size:13px;
+    line-height:1.5;
+  }
+  .quiz-active .side-metrics {
+    border-radius:14px;
+  }
+  .footer { padding-top:18px; }
+}
+@media (max-width: 360px) {
+  .topbar { gap:5px; padding-left:8px; padding-right:8px; }
+  .top-actions { gap:4px; }
+  .top-actions select { width:46px; min-width:46px; max-width:46px; }
+  .top-actions .font-btn { min-width:34px; }
+  .subject-grid { grid-template-columns:minmax(0,1fr); }
+  .subject-card { min-height:138px; }
+  .quiz-active .quiz-top-actions { flex-wrap:wrap; }
+}
+@media (hover:none) and (pointer:coarse) {
+  .subject-card:hover,.panel:hover,.stat:hover,.primary:hover,.secondary:hover {
+    transform:none;
+    box-shadow:inherit;
+  }
+  button:active,.nav-link:active,.subject-card > button:active {
+    opacity:.82;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  html { scroll-behavior:auto; }
+}
