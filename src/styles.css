@@ -806,3 +806,7 @@ img,svg{max-width:100%}
   border-color: #ee8f82;
   color: #32110d;
 }
+
+
+/* Pulsante X ben visibile per chiudere il menu del profilo. */
+.account-dropdown{position:relative}.account-dropdown .account-dropdown-close{position:absolute;top:8px;right:8px;display:grid;place-items:center;width:40px;height:40px;min-height:40px;padding:0;border:1px solid #a78bfa88;border-radius:10px;background:#a78bfa20;color:#fff;cursor:pointer;z-index:2}.account-dropdown .account-dropdown-close:hover{background:#a78bfa45;border-color:#c4b5fd;transform:scale(1.05)}.account-dropdown .account-dropdown-close svg{width:23px;height:23px;stroke-width:3}.account-dropdown-user{padding-right:48px}
