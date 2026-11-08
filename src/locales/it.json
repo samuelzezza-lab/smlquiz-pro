@@ -541,5 +541,9 @@
   "translationUnavailable": "Traduzione non disponibile",
   "quizSignupTitle": "Iscriviti per svolgere un quiz",
   "quizSignupSubtitle": "Crea il tuo account",
-  "quizSignupDescription": "Registrati gratuitamente per avviare la simulazione e svolgere i quiz."
+  "quizSignupDescription": "Registrati gratuitamente per avviare la simulazione e svolgere i quiz.",
+  "weakTopicsTitle": "I tuoi argomenti più difficili",
+  "weakTopicsIntro": "In base agli errori degli ultimi 24 ore. Ripassa prima quelli con più errori.",
+  "weakTopicErrors": "errori",
+  "weakTopicEmpty": "Completa almeno 2 risposte sullo stesso argomento per vedere dove migliorare."
 }
