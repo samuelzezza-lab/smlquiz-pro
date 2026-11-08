@@ -541,5 +541,9 @@
   "translationUnavailable": "翻译暂不可用",
   "quizSignupTitle": "注册以参加测验",
   "quizSignupSubtitle": "创建你的账户",
-  "quizSignupDescription": "免费注册即可开始模拟并完成测验。"
+  "quizSignupDescription": "免费注册即可开始模拟并完成测验。",
+  "weakTopicsTitle": "你最薄弱的知识点",
+  "weakTopicsIntro": "根据过去24小时的错误统计。优先复习错误最多的知识点。",
+  "weakTopicErrors": "错误",
+  "weakTopicEmpty": "请先回答同一知识点至少2道题，以查看需要改进的地方。"
 }
