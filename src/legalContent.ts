@@ -53,6 +53,6 @@ export const legalDocuments:LegalDocument[] = [
  {key:'about',title:'Chi siamo',summary:'La missione e i valori di SMLQUIZ Pro.',draft:false,sections:[
   {heading:'La missione',text:'SMLQUIZ Pro nasce per rendere l’esercitazione universitaria più organizzata, accessibile e misurabile. Vogliamo aiutare gli studenti a individuare ciò che conoscono, riconoscere le lacune e allenarsi con costanza.'},
   {heading:'Il metodo',text:'Crediamo in domande chiare, spiegazioni utili, feedback trasparente e strumenti che aiutino a studiare con metodo. La piattaforma è in evoluzione e le segnalazioni degli utenti contribuiscono a migliorarla.'},
-  {heading:'Contatti',text:'Gestore indicato: SMLQuiz Pro. Contatto assistenza: smlquiz@virgilio.it. L’indirizzo e gli altri dati identificativi richiesti devono essere completati prima dell’erogazione commerciale.'}
+  {heading:'Contatti',text:'SMLQUIZ Pro è gestito da Mario Rossi. Per informazioni e assistenza: smlquiz@virgilio.it.'}
  ]}
 ];
