@@ -460,7 +460,7 @@
   "loginToStartQuiz": "Inicia sesión o crea una cuenta para ver las preguntas del cuestionario.",
   "preparingQuiz": "Preparando el quiz {n} de esta materia con IA…",
   "generatorNotReady": "El generador no ha devuelto un quiz listo. Inténtalo de nuevo en breve.",
-  "generationPending": "La generación sigue en curso. Inténtalo de nuevo en unos segundos.",
+  "generationPending": "Has completado todos los cuestionarios disponibles para esta materia. Aún no hay más.",
   "loadQuestionsFailed": "Error al cargar las preguntas.",
   "loginToAnswer": "Inicia sesión para responder a las preguntas.",
   "loginToFinish": "Inicia sesión para terminar el quiz.",
