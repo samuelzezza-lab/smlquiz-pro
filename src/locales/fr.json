@@ -209,7 +209,7 @@
   "strengtheningTopics": "Sujets à renforcer",
   "conceptsAnalysis": "Analyse fondée sur les concepts des questions traitées.",
   "completeForConcepts": "Terminez quelques quiz pour analyser des sujets précis.",
-  "achievementsUnlocked": "Réussites débloquées",
+  "achievementsUnlocked": "succès débloqués",
   "studyGoals": "Vos objectifs d’étude.",
   "firstQuizAchievement": "Premier quiz terminé",
   "fiveQuizAchievement": "Cinq quiz terminés",
@@ -545,5 +545,9 @@
   "weakTopicsTitle": "Vos sujets les plus difficiles",
   "weakTopicsIntro": "Selon vos erreurs des dernières 24 heures. Révisez d’abord les sujets avec le plus d’erreurs.",
   "weakTopicErrors": "erreurs",
-  "weakTopicEmpty": "Répondez à au moins 2 questions sur le même sujet pour voir où progresser."
+  "weakTopicEmpty": "Répondez à au moins 2 questions sur le même sujet pour voir où progresser.",
+  "streakCardTitle": "Votre série d’étude",
+  "streakCardIntro": "Étudiez chaque jour pour maintenir votre série et débloquer des succès.",
+  "streakNow": "jours consécutifs",
+  "streakRecord": "record"
 }
