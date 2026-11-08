@@ -460,7 +460,7 @@
   "loginToStartQuiz": "Connectez-vous ou créez un compte pour afficher les questions du quiz.",
   "preparingQuiz": "Je prépare le quiz {n} de cette matière avec l’IA…",
   "generatorNotReady": "Le générateur n’a pas fourni de quiz prêt. Réessayez dans un instant.",
-  "generationPending": "La génération est toujours en cours. Réessayez dans quelques secondes.",
+  "generationPending": "Vous avez terminé tous les quiz actuellement prêts pour cette matière. Les suivants ne sont pas encore disponibles.",
   "loadQuestionsFailed": "Erreur lors du chargement des questions.",
   "loginToAnswer": "Connectez-vous pour répondre aux questions.",
   "loginToFinish": "Connectez-vous pour terminer le quiz.",
