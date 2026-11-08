@@ -460,7 +460,7 @@
   "loginToStartQuiz": "Sign in or create an account to view the quiz questions.",
   "preparingQuiz": "Preparing quiz {n} for this subject with AI…",
   "generatorNotReady": "The generator did not return a ready quiz. Please try again shortly.",
-  "generationPending": "Generation is still in progress. Try again in a few seconds.",
+  "generationPending": "You have completed all quizzes currently ready for this subject. More are not available yet.",
   "loadQuestionsFailed": "Error while loading questions.",
   "loginToAnswer": "Sign in to answer questions.",
   "loginToFinish": "Sign in to finish the quiz.",
