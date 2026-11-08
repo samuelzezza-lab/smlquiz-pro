@@ -184,26 +184,7 @@ export default function App(){
    localStorage.removeItem('smlquiz.active-quiz.v1');
    setAttemptId(null);setQuestions([]);setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);setWrongQuestions([]);setStarted(null);setQuizPaused(false);setQuizDismissed(false);setReviewMode(false);
    setSubject(s);
-   const nextQuizNumber=firstUncompleted.quiz_number;
-   let quizSetId=firstUncompleted.id;
-   const targetSet=quizSets.find(q=>q.materia_id===s.id&&q.quiz_number===nextQuizNumber);
-   if(!quizSetId&&targetSet?.status==='ready'&&targetSet.question_count===10)quizSetId=targetSet.id;
-   if(!quizSetId){
-    notify(tr('preparingQuiz').replace('{n}',String(nextQuizNumber)));
-    for(let attempt=0;attempt<12&&!quizSetId;attempt++){
-     const generated=await supabase.functions.invoke('quiz-cache',{body:{action:'get_quiz',materia_id:s.id,quiz_number:nextQuizNumber}});
-     if(generated.error)throw generated.error;
-     if(generated.data?.error)throw new Error(generated.data.error);
-     if(generated.data?.quiz_set_id){quizSetId=String(generated.data.quiz_set_id);break}
-     if(generated.data?.ready===false||generated.data?.status==='pending'||generated.data?.status==='generating'){
-      await new Promise(resolve=>window.setTimeout(resolve,3000));
-      continue;
-     }
-     throw new Error(tr('generatorNotReady'));
-    }
-    if(!quizSetId)throw new Error(tr('generationPending'));
-    setQuizSets(v=>[...v.filter(q=>q.id!==quizSetId),{id:quizSetId,materia_id:s.id,quiz_number:nextQuizNumber,status:'ready',question_count:10}]);
-   }
+   const quizSetId=firstUncompleted.id;
    if(language!=='it'){
     const translation=await supabase.functions.invoke('quiz-api',{body:{action:'translate-quiz-set',quizSetId,language}});
     if(translation.error||translation.data?.error)throw new Error(tr('quizTranslationUnavailable'));
