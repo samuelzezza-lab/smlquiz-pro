@@ -541,5 +541,9 @@
   "translationUnavailable": "Translation unavailable",
   "quizSignupTitle": "Sign up to take a quiz",
   "quizSignupSubtitle": "Create your account",
-  "quizSignupDescription": "Register for free to start the simulation and take quizzes."
+  "quizSignupDescription": "Register for free to start the simulation and take quizzes.",
+  "weakTopicsTitle": "Your toughest topics",
+  "weakTopicsIntro": "Based on your mistakes in the last 24 hours. Review the topics with the most errors first.",
+  "weakTopicErrors": "errors",
+  "weakTopicEmpty": "Answer at least 2 questions on the same topic to see where you can improve."
 }
