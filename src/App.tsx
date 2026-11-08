@@ -166,11 +166,8 @@ export default function App(){
  async function startQuiz(s:Subject){
   if(!user){notify(tr('loginToStartQuiz'));return}
   if(!supabase)return;
-  // Starting a different subject explicitly abandons any previously paused quiz.
-  localStorage.removeItem('smlquiz.active-quiz.v1');
-  setAttemptId(null);setQuestions([]);setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);setWrongQuestions([]);setStarted(null);setQuizPaused(false);setQuizDismissed(false);setReviewMode(false);
   const readySets=quizSets.filter(q=>q.materia_id===s.id&&q.status==='ready'&&q.question_count===10).sort((a,b)=>a.quiz_number-b.quiz_number);
-  setBusy(true);setSubject(s);
+  setBusy(true);
   try{
    const {data:completedRows,error:completedError}=await supabase.from('quiz_attempts').select('quiz_set_id').eq('user_id',user.id).eq('materia_id',s.id).eq('status','completed').not('quiz_set_id','is',null);
    if(completedError)throw completedError;
@@ -179,10 +176,14 @@ export default function App(){
    // Non avviare una generazione che il server non può completare: mostrare subito
    // un messaggio chiaro quando tutti i quiz già pronti sono stati completati.
    if(!firstUncompleted){
-    setSubject(null);
     notify(tr('generationPending'));
     return;
    }
+   // Solo dopo aver verificato che esista un quiz disponibile abbandoniamo
+   // l'eventuale sessione in pausa dell'utente.
+   localStorage.removeItem('smlquiz.active-quiz.v1');
+   setAttemptId(null);setQuestions([]);setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);setWrongQuestions([]);setStarted(null);setQuizPaused(false);setQuizDismissed(false);setReviewMode(false);
+   setSubject(s);
    const nextQuizNumber=firstUncompleted.quiz_number;
    let quizSetId=firstUncompleted.id;
    const targetSet=quizSets.find(q=>q.materia_id===s.id&&q.quiz_number===nextQuizNumber);
