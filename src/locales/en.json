@@ -209,7 +209,7 @@
   "strengtheningTopics": "Topics to strengthen",
   "conceptsAnalysis": "Analysis based on concepts in completed questions.",
   "completeForConcepts": "Complete some quizzes to analyse specific topics.",
-  "achievementsUnlocked": "Achievements unlocked",
+  "achievementsUnlocked": "achievements unlocked",
   "studyGoals": "Your study goals.",
   "firstQuizAchievement": "First quiz completed",
   "fiveQuizAchievement": "Five quizzes completed",
@@ -545,5 +545,9 @@
   "weakTopicsTitle": "Your toughest topics",
   "weakTopicsIntro": "Based on your mistakes in the last 24 hours. Review the topics with the most errors first.",
   "weakTopicErrors": "errors",
-  "weakTopicEmpty": "Answer at least 2 questions on the same topic to see where you can improve."
+  "weakTopicEmpty": "Answer at least 2 questions on the same topic to see where you can improve.",
+  "streakCardTitle": "Your study streak",
+  "streakCardIntro": "Study every day to keep your streak and unlock achievements.",
+  "streakNow": "days in a row",
+  "streakRecord": "record"
 }
