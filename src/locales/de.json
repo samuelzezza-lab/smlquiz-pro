@@ -209,7 +209,7 @@
   "strengtheningTopics": "Zu vertiefende Themen",
   "conceptsAnalysis": "Analyse anhand der Konzepte bearbeiteter Fragen.",
   "completeForConcepts": "Schließe einige Quiz ab, um konkrete Themen zu analysieren.",
-  "achievementsUnlocked": "Freigeschaltete Erfolge",
+  "achievementsUnlocked": "Erfolge freigeschaltet",
   "studyGoals": "Deine Lernziele.",
   "firstQuizAchievement": "Erstes Quiz abgeschlossen",
   "fiveQuizAchievement": "Fünf Quiz abgeschlossen",
@@ -545,5 +545,9 @@
   "weakTopicsTitle": "Deine schwierigsten Themen",
   "weakTopicsIntro": "Basierend auf deinen Fehlern der letzten 24 Stunden. Wiederhole zuerst die Themen mit den meisten Fehlern.",
   "weakTopicErrors": "Fehler",
-  "weakTopicEmpty": "Beantworte mindestens 2 Fragen zum selben Thema, um Verbesserungsbereiche zu sehen."
+  "weakTopicEmpty": "Beantworte mindestens 2 Fragen zum selben Thema, um Verbesserungsbereiche zu sehen.",
+  "streakCardTitle": "Deine Lernserie",
+  "streakCardIntro": "Lerne jeden Tag, um deine Serie zu halten und Erfolge freizuschalten.",
+  "streakNow": "Tage in Folge",
+  "streakRecord": "Rekord"
 }
