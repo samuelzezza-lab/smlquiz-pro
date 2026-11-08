@@ -460,7 +460,7 @@
   "loginToStartQuiz": "Melde dich an oder erstelle ein Konto, um die Quizfragen anzuzeigen.",
   "preparingQuiz": "Ich bereite Quiz {n} für dieses Fach mit KI vor…",
   "generatorNotReady": "Der Generator hat kein fertiges Quiz zurückgegeben. Bitte versuche es gleich erneut.",
-  "generationPending": "Die Generierung läuft noch. Versuche es in ein paar Sekunden erneut.",
+  "generationPending": "Du hast alle derzeit fertigen Quizze für dieses Fach abgeschlossen. Weitere sind noch nicht verfügbar.",
   "loadQuestionsFailed": "Fehler beim Laden der Fragen.",
   "loginToAnswer": "Melde dich an, um Fragen zu beantworten.",
   "loginToFinish": "Melde dich an, um das Quiz abzuschließen.",
