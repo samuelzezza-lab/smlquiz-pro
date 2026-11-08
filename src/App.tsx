@@ -176,8 +176,15 @@ export default function App(){
    if(completedError)throw completedError;
    const completedSetIds=new Set((completedRows||[]).map((row:any)=>row.quiz_set_id).filter(Boolean));
    const firstUncompleted=readySets.find(q=>!completedSetIds.has(q.id));
-   const nextQuizNumber=firstUncompleted?.quiz_number??(readySets.reduce((max,q)=>Math.max(max,q.quiz_number),0)+1);
-   let quizSetId=firstUncompleted?.id||'';
+   // Non avviare una generazione che il server non può completare: mostrare subito
+   // un messaggio chiaro quando tutti i quiz già pronti sono stati completati.
+   if(!firstUncompleted){
+    setSubject(null);
+    notify(tr('generationPending'));
+    return;
+   }
+   const nextQuizNumber=firstUncompleted.quiz_number;
+   let quizSetId=firstUncompleted.id;
    const targetSet=quizSets.find(q=>q.materia_id===s.id&&q.quiz_number===nextQuizNumber);
    if(!quizSetId&&targetSet?.status==='ready'&&targetSet.question_count===10)quizSetId=targetSet.id;
    if(!quizSetId){
