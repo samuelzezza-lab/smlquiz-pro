@@ -7,7 +7,6 @@ Deno.serve(async(req:Request)=>{
  if(req.method!=="POST")return reply({error:"Metodo non consentito"},405);
  const url=Deno.env.get("SUPABASE_URL"),service=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"),stripe=Deno.env.get("STRIPE_SECRET_KEY"),appUrl=Deno.env.get("APP_URL");
  if(!url||!service||!stripe||!appUrl)return reply({error:"Configurazione pagamenti incompleta"},503);
- if(Deno.env.get("STRIPE_LIVE_ENABLED")!=="true")return reply({error:"Il checkout è predisposto ma non ancora attivato in produzione."},503);
  const auth=req.headers.get("Authorization")??"",token=auth.startsWith("Bearer ")?auth.slice(7):"";
  if(!token)return reply({error:"Accesso richiesto"},401);
  const admin=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
