@@ -460,7 +460,7 @@
   "loginToStartQuiz": "请登录或创建账户以查看测验题目。",
   "preparingQuiz": "正在使用 AI 为此科目准备第 {n} 套测验…",
   "generatorNotReady": "生成器尚未返回可用测验，请稍后重试。",
-  "generationPending": "生成仍在进行中，请几秒后重试。",
+  "generationPending": "你已完成该科目目前所有可用的测验，更多测验尚未准备好。",
   "loadQuestionsFailed": "加载题目时出错。",
   "loginToAnswer": "登录后即可回答问题。",
   "loginToFinish": "登录后即可完成测验。",
