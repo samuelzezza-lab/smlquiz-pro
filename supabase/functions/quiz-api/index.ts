@@ -154,6 +154,11 @@ Deno.serve(async (req: Request) => {
         admin.from("user_streaks").delete().eq("user_id", userId),
         admin.from("user_profiles").delete().eq("user_id", userId),
         admin.from("user_quiz_wallets").delete().eq("user_id", userId),
+        admin.from("user_materia_quiz_cycles").delete().eq("user_id", userId),
+        admin.from("user_quiz_progress").delete().eq("user_id", userId),
+        admin.from("user_study_plans").delete().eq("user_id", userId),
+        admin.from("user_referrals").delete().eq("inviter_id", userId),
+        admin.from("user_referrals").delete().eq("referred_user_id", userId),
         admin.from("risposte_utenti").delete().eq("user_id", userId),
       ]);
       const failed = deletions.find((x) => x.error);
