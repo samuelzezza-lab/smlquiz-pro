@@ -1030,3 +1030,39 @@ button, a, input, select, textarea { font-family:inherit; }
     transition-duration: .01ms !important;
   }
 }
+
+
+/* SMLQUIZ — esperienza smartphone nativa, con navigazione dedicata */
+.mobile-bottom-nav{display:none}
+@media(max-width:800px){
+  .mobile-bottom-nav{position:fixed;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));left:0;right:0;bottom:0;z-index:35;padding:8px 5px calc(8px + env(safe-area-inset-bottom));background:rgba(8,14,27,.97);border-top:1px solid rgba(151,171,215,.17);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);box-shadow:0 -8px 28px rgba(0,0,0,.22)}
+  .mobile-bottom-link{display:flex;min-width:0;min-height:54px;flex-direction:column;align-items:center;justify-content:center;gap:5px;border:0;border-radius:11px;background:transparent;color:#8190ad;padding:5px 2px;font-size:10px;font-weight:600;line-height:1.1;white-space:nowrap;overflow:hidden}
+  .mobile-bottom-link svg{flex:none;opacity:.9}
+  .mobile-bottom-link span{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .mobile-bottom-link.active{color:#d4c8ff;background:rgba(167,139,250,.13)}
+  .mobile-bottom-link.active svg{color:#b6a3ff}
+  .main{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  .footer{margin-bottom:8px}
+  .shell.quiz-active .mobile-bottom-nav{display:none}
+  .shell.quiz-active .main{padding-bottom:0}
+  .shell.quiz-active .main>.content{padding-bottom:max(18px,env(safe-area-inset-bottom))}
+  .top-actions>button.secondary{min-height:40px}
+  .top-actions select{height:40px;min-height:40px}
+  .home-page .home-intro{padding:20px!important;margin-bottom:16px!important}
+  .home-page .home-intro h1{font-size:clamp(25px,7vw,34px)!important;line-height:1.12!important;letter-spacing:-.8px}
+  .home-page .home-intro p{font-size:14px!important;line-height:1.55!important}
+  .home-page .home-intro>div[style*="grid-template-columns"]{grid-template-columns:1fr!important;gap:9px!important}
+  .home-page .home-intro .primary{width:100%;min-height:50px}
+  .home-page .section-head{align-items:flex-start;gap:8px}
+  .home-page .panel,.home-page .performance-row{min-width:0}
+  .account-page .account-layout{grid-template-columns:minmax(0,1fr)}
+  .account-page .account-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .account-page .account-detail{grid-template-columns:minmax(0,1fr);align-items:start}
+  .progress-page .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:390px){
+  .mobile-bottom-link{font-size:9px;gap:4px}
+  .mobile-bottom-link svg{width:18px;height:18px}
+  .mobile-bottom-nav{padding-left:3px;padding-right:3px}
+  .home-page .home-intro{padding:16px!important}
+}
