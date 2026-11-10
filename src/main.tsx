@@ -3,50 +3,27 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './styles.css'
 
-// Pulsante di installazione: il browser mostra il prompt solo dopo un tocco dell'utente.
-let deferredInstallPrompt: Event | null = null;
+// Gestisce il pulsante di installazione mostrato nell'interfaccia.
+let deferredInstallPrompt: (Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> }) | null = null;
 
 window.addEventListener('beforeinstallprompt', event => {
   event.preventDefault();
-  deferredInstallPrompt = event;
-  if (document.getElementById('pwa-install-button')) return;
+  deferredInstallPrompt = event as typeof deferredInstallPrompt;
+});
 
-  const button = document.createElement('button');
-  button.id = 'pwa-install-button';
-  button.type = 'button';
-  button.textContent = '＋ Installa SMLQUIZ';
-  button.setAttribute('aria-label', 'Installa SMLQUIZ sul dispositivo');
-  Object.assign(button.style, {
-    position: 'fixed',
-    right: '16px',
-    bottom: 'max(16px, env(safe-area-inset-bottom))',
-    zIndex: '9999',
-    border: '1px solid #b6a4ff',
-    borderRadius: '999px',
-    padding: '13px 18px',
-    background: '#8b73e4',
-    color: '#ffffff',
-    font: '700 14px system-ui, sans-serif',
-    boxShadow: '0 8px 28px rgba(0,0,0,.35)',
-    cursor: 'pointer'
-  });
-  button.addEventListener('click', async () => {
-    if (!deferredInstallPrompt) return;
-    const promptEvent = deferredInstallPrompt as Event & {
-      prompt: () => Promise<void>;
-      userChoice: Promise<{ outcome: string }>;
-    };
-    await promptEvent.prompt();
-    await promptEvent.userChoice;
-    deferredInstallPrompt = null;
-    button.remove();
-  });
-  document.body.appendChild(button);
+window.addEventListener('smlquiz-install-request', async () => {
+  if (!deferredInstallPrompt) {
+    window.dispatchEvent(new Event('smlquiz-install-help'));
+    return;
+  }
+  const promptEvent = deferredInstallPrompt;
+  deferredInstallPrompt = null;
+  await promptEvent.prompt();
+  await promptEvent.userChoice;
 });
 
 window.addEventListener('appinstalled', () => {
   deferredInstallPrompt = null;
-  document.getElementById('pwa-install-button')?.remove();
 });
 
 // Registra la PWA: consente installazione e schermata offline.
