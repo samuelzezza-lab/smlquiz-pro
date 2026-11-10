@@ -450,23 +450,11 @@ Deno.serve(async (req: Request) => {
       if (setError) throw setError;
       if (!set || set.question_count !== 10) return json({ error: "Questo quiz non è ancora disponibile" }, 404);
 
-      const language = ["it", "en", "fr", "de", "es", "zh"].includes(String(body.language)) ? String(body.language) : "it";
+      const language = "it";
       const { data: bank, error: bankError } = await admin.from("domande")
         .select("id,testo_domanda,opzioni,risposta_corretta,spiegazione,traduzioni").eq("quiz_id", quizSetId);
       if (bankError) throw bankError;
       if (!bank || bank.length !== 10) return json({ error: "Il quiz non contiene 10 domande verificate" }, 409);
-      if (language !== "it") {
-        const incomplete = bank.some((q: any) => {
-          const t = q.traduzioni?.[language];
-          return !t || !String(t.testo_domanda ?? "").trim()
-            || !Array.isArray(t.opzioni) || t.opzioni.length !== 4
-            || t.opzioni.some((option: unknown) => typeof option !== "string" || !option.trim())
-            || !String(t.risposta_corretta ?? "").trim()
-            || !t.opzioni.includes(t.risposta_corretta)
-            || !String(t.spiegazione ?? "").trim();
-        });
-        if (incomplete) return json({ error: "Le traduzioni del quiz non sono complete. Riprova tra poco.", code: "TRANSLATION_INCOMPLETE", language }, 409);
-      }
       const selected = [...bank].sort(() => Math.random() - 0.5);
       const questionIds = selected.map((q) => q.id);
       if (isOwner) {
@@ -530,15 +518,7 @@ Deno.serve(async (req: Request) => {
       if (rowError) throw rowError;
       if (!row) return json({ error: "Domanda non appartenente a questa sessione" }, 404);
       const question = row.domande as unknown as { opzioni: string[]; risposta_corretta: string; spiegazione: string | null; traduzioni?: Record<string, any> };
-      const language = ["it", "en", "fr", "de", "es", "zh"].includes(String(body.language)) ? String(body.language) : "it";
-      const translated = language === "it" ? null : question.traduzioni?.[language];
-      if (language !== "it" && (!translated || !String(translated.testo_domanda ?? "").trim()
-        || !Array.isArray(translated.opzioni) || translated.opzioni.length !== 4
-        || !String(translated.risposta_corretta ?? "").trim()
-        || !translated.opzioni.includes(translated.risposta_corretta)
-        || !String(translated.spiegazione ?? "").trim())) {
-        return json({ error: "Traduzione della domanda non disponibile. Riavvia il quiz nella lingua selezionata.", code: "TRANSLATION_INCOMPLETE" }, 409);
-      }
+      const language = "it";
       const localized = localizedQuestion(question, language) as typeof question;
       const localizedOptions = localized.opzioni ?? question.opzioni;
       const localizedCorrect = localized.risposta_corretta ?? question.risposta_corretta;
