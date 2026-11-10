@@ -467,7 +467,7 @@
   "quizCompletedPoints": "Quiz completado: {n} puntos.",
   "reportCopyFailed": "No se pudo copiar el enlace.",
   "challengeLinkCopied": "Enlace del desafío copiado.",
-  "challengeMessage": "¡Te reto en SMLQUIZ! He conseguido {correct}/{total} en {subject} con {score} puntos. Acepta el reto e intenta superarme: {url}",
+  "challengeMessage": "¡He conseguido {correct} de {total} en {subject} en SMLQUIZ! ¿Puedes hacerlo mejor? ¡Te reto! {url}",
   "challengeLogin": "Inicia sesión o crea una cuenta para aceptar el desafío.",
   "challengeSubjectUnavailable": "La materia del desafío no está disponible.",
   "loginToViewProgress": "Inicia sesión o crea una cuenta para consultar tu progreso.",
@@ -549,5 +549,9 @@
   "streakCardTitle": "Tu racha de estudio",
   "streakCardIntro": "Estudia cada día para mantener tu racha y desbloquear logros.",
   "streakNow": "días seguidos",
-  "streakRecord": "récord"
+  "streakRecord": "récord",
+  "latestResultTitle": "Tu último resultado",
+  "challengePrompt": "¡Desafía a un amigo y comprueba si puede superarte!",
+  "shareOnWhatsApp": "Desafiar por WhatsApp",
+  "copyChallengeLink": "Copiar enlace"
 }
