@@ -770,3 +770,119 @@ img,svg{max-width:100%}
 @media (max-width: 800px) and (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
+
+
+/* Ottimizzazione leggibilità e spazi su smartphone: override responsive unico. */
+@media (max-width: 800px) {
+  .content {
+    padding-top: 20px;
+    padding-bottom: calc(34px + env(safe-area-inset-bottom));
+  }
+  .topbar {
+    min-height: 58px;
+    height: auto;
+    padding: max(7px,env(safe-area-inset-top)) 10px 7px;
+    gap: 6px;
+  }
+  .crumb { flex: 1 1 90px; min-width: 0; }
+  .top-actions {
+    flex: 0 1 auto;
+    min-width: 0;
+    gap: 5px;
+  }
+  .top-actions select {
+    width: 48px;
+    min-width: 48px;
+    max-width: 48px;
+    padding: 5px 2px;
+  }
+  .top-actions .top-avatar { width: 36px; height: 36px; min-width: 36px; }
+  .top-actions .font-btn { min-width: 34px; }
+  .hamb { width: 42px; min-width: 42px; min-height: 44px; }
+  .sidebar { width: min(300px, 86vw); }
+  .nav-link { min-height: 48px; height: auto; font-size: 13px; }
+  .welcome, .page-heading { gap: 12px; margin-bottom: 18px; }
+  .welcome h1, .page-heading h1 { font-size: clamp(22px,6vw,28px); line-height: 1.2; }
+  .welcome p, .page-heading p { font-size: 13px; line-height: 1.55; }
+  .hero { min-height: 0; padding: 22px 18px; margin-bottom: 22px; }
+  .hero-text { max-width: 100%; }
+  .hero h2 { font-size: clamp(22px,6vw,28px); line-height: 1.18; }
+  .hero p { font-size: 13px; line-height: 1.55; max-width: 100%; }
+  .hero-graphic { opacity: .10; right: -170px; pointer-events: none; }
+  .section-head { align-items: flex-start; flex-wrap: wrap; gap: 8px; }
+  .section-head h2 { font-size: 16px; }
+  .section-head p { font-size: 12px; line-height: 1.5; }
+  .subject-grid { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+  .subject-card { padding: 14px; min-height: 0; }
+  .subject-card h3 { font-size: 13px; line-height: 1.4; min-height: 0; }
+  .subject-card p { font-size: 11px; line-height: 1.5; min-height: 0; }
+  .stats, .progress-page > .stats, .account-metrics {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 9px;
+  }
+  .stat, .account-metric { padding: 13px; }
+  .stat > span, .account-metric > span { font-size: 11px; line-height: 1.4; }
+  .stat > b, .account-metric > strong { font-size: clamp(19px,5vw,24px); overflow-wrap: anywhere; }
+  .panel { padding: 15px; }
+  .panel-title { flex-wrap: wrap; }
+  .panel-title h3 { font-size: 14px; }
+  .panel-title p, .history-line b, .quick b { font-size: 11px; line-height: 1.45; }
+  .history-line small, .quick small { font-size: 10px; line-height: 1.4; }
+  .filters { grid-template-columns: minmax(0,1fr); gap: 11px; padding: 14px; }
+  .filters label { font-size: 11px; }
+  .filters label > div { min-height: 48px; }
+  .filters input, .filters select { font-size: 16px !important; }
+  .quiz-grid { grid-template-columns: minmax(0,1fr); gap: 12px; }
+  .quiz { padding: 16px; }
+  .quiz-top { gap: 10px; }
+  .quiz-top h2 { font-size: 16px; line-height: 1.4; }
+  .question { font-size: clamp(16px,4.4vw,19px); line-height: 1.55; overflow-wrap: anywhere; }
+  .answer { min-height: 56px; padding: 13px; font-size: 14px; line-height: 1.5; }
+  .quiz-bottom { gap: 10px; }
+  .quiz-bottom button { min-height: 48px; }
+  .account-grid, .account-layout, .calculator-grid, .columns, .auth-grid { grid-template-columns: minmax(0,1fr); }
+  .account-detail { grid-template-columns: minmax(0,1fr); gap: 7px; }
+  .package-row { gap: 9px; padding: 12px; }
+  .package-row b { min-width: 0; font-size: 12px; }
+  .package-row button, .package-row strong { font-size: 11px; }
+  .exam-row { grid-template-columns: minmax(0,1fr) minmax(65px,.7fr) minmax(65px,.7fr) 32px; gap: 6px; }
+  .legal-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .legal-card { padding: 14px; }
+  .legal-card p { font-size: 11px; line-height: 1.5; min-height: 0; }
+  .footer { gap: 10px; font-size: 10px; }
+  .toast { left: 12px; right: 12px; bottom: max(12px,env(safe-area-inset-bottom)); }
+  .modal-backdrop { padding: max(10px,env(safe-area-inset-top)) 10px max(10px,env(safe-area-inset-bottom)); }
+  .upsell-modal { max-height: calc(100dvh - 20px); overflow-y: auto; }
+}
+@media (max-width: 520px) {
+  .content { padding-left: 13px; padding-right: 13px; }
+  .subject-grid { grid-template-columns: minmax(0,1fr); }
+  .legal-grid { grid-template-columns: minmax(0,1fr); }
+  .stats, .progress-page > .stats, .account-metrics {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+  .topbar { flex-wrap: wrap; }
+  .crumb { flex: 1 1 100%; }
+  .top-actions { width: 100%; justify-content: flex-end; }
+  .top-actions > button.secondary { min-height: 40px; padding: 6px 9px !important; font-size: 10px !important; }
+  .top-actions select { width: 54px; min-width: 54px; max-width: 54px; }
+  .welcome h1, .page-heading h1 { font-size: 23px; }
+  .hero { padding: 19px 16px; }
+  .hero h2 { font-size: 23px; }
+  .quiz-top { flex-wrap: wrap; }
+  .quiz-top-actions { width: 100%; flex-direction: row; align-items: center; flex-wrap: wrap; }
+  .quiz-top-actions > * { flex: 1 1 auto; }
+  .quiz-bottom { flex-direction: row; align-items: center; flex-wrap: wrap; }
+  .quiz-bottom .primary { width: 100%; }
+  .account-detail > span:first-child { grid-column: auto; }
+  .exam-row { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .exam-row input { width: 100%; }
+}
+@media (max-width: 360px) {
+  .content { padding-left: 10px; padding-right: 10px; }
+  .top-actions { gap: 4px; }
+  .top-actions .font-btn { min-width: 30px; }
+  .top-actions select { width: 48px; min-width: 48px; max-width: 48px; }
+  .stat, .account-metric { padding: 10px; }
+  .stat > b, .account-metric > strong { font-size: 19px; }
+}
