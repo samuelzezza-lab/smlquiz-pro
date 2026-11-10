@@ -467,7 +467,7 @@
   "quizCompletedPoints": "测验已完成：{n} 分。",
   "reportCopyFailed": "无法复制链接。",
   "challengeLinkCopied": "挑战链接已复制。",
-  "challengeMessage": "我在 SMLQUIZ 向你发起挑战！我在 {subject} 中答对 {correct}/{total}，获得 {score} 分。接受挑战并试着超过我：{url}",
+  "challengeMessage": "我在 SMLQUIZ 的 {subject} 中答对了 {correct}/{total}！你能超过我吗？来挑战我吧！{url}",
   "challengeLogin": "登录或创建账户以接受挑战。",
   "challengeSubjectUnavailable": "挑战科目不可用。",
   "loginToViewProgress": "登录或创建账户以查看学习进度。",
@@ -549,5 +549,9 @@
   "streakCardTitle": "你的学习连续记录",
   "streakCardIntro": "每天学习以保持连续记录并解锁成就。",
   "streakNow": "连续天数",
-  "streakRecord": "纪录"
+  "streakRecord": "纪录",
+  "latestResultTitle": "你的最新成绩",
+  "challengePrompt": "挑战朋友，看看对方能否超过你的成绩！",
+  "shareOnWhatsApp": "通过 WhatsApp 挑战",
+  "copyChallengeLink": "复制链接"
 }
