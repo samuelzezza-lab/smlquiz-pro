@@ -1,10 +1,10 @@
-const CACHE_NAME = 'smlquiz-pwa-v11';
+const CACHE_NAME = 'smlquiz-pwa-v12';
 const APP_SHELL = [
   '/',
   '/manifest.webmanifest',
   '/favicon.svg',
-  '/icon-192.png',
-  '/icon-512.png',
+  '/icon-192.svg',
+  '/icon-512.svg',
   '/offline.html'
 ];
 
