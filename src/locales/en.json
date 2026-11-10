@@ -237,7 +237,7 @@
   "exam": "Exam {n}",
   "weightedAverageCaps": "WEIGHTED AVERAGE",
   "customization": "CUSTOMIZATION",
-  "transparency": "TRANSPARENCY AND PROTECTION",
+  
   "privacyTerms": "Privacy and terms",
   "continuePracticing": "KEEP PRACTISING",
   "choose": "Choose",
@@ -271,8 +271,8 @@
   "legal_disclaimer_summary": "Service limitations and responsible use of content.",
   "legal_intellectual_title": "Intellectual Property and Prohibition of Extraction",
   "legal_intellectual_summary": "Protection of the catalogue, content, and software.",
-  "legal_transparency_title": "Technical Transparency",
-  "legal_transparency_summary": "Cloud services, security, and providers.",
+  
+  
   "legal_about_title": "About Us",
   "legal_about_summary": "The mission and values of SMLQUIZ Pro.",
   "legal_about_heading_0": "Our mission",
@@ -280,7 +280,7 @@
   "legal_about_heading_1": "Our approach",
   "legal_about_text_1": "We believe in clear questions, useful explanations, transparent feedback, and tools that support structured study. The platform is evolving, and user reports help improve it.",
   "legal_about_heading_2": "Contact",
-  "legal_about_text_2": "The operator’s identity and support contact details are not published in this version. They will be required for public and commercial service delivery.",
+  "legal_about_text_2": "For information and support: smlquiz@virgilio.it.",
   "averageWeightedLabel": "Weighted average",
   "checkoutStripeNotice": "Stripe Checkout is prepared. Live payments remain disabled until production configuration is complete.",
   "localDebuggerLabel": "Local debugger",
