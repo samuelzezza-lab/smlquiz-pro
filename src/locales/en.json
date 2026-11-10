@@ -119,8 +119,6 @@
   "draftToComplete": "SERVICE DOCUMENT",
   "serviceInformation": "SERVICE DOCUMENT",
   "understood": "Got it",
-  "legalNotice": "Owner details missing",
-  "privacyMissing": "VAT number, registered address, email and certified email were not invented. Complete these details and review the texts before publishing.",
   "loginWelcome": "Welcome back",
   "createYourAccount": "Create your account",
   "resetPassword": "Reset password",
@@ -164,12 +162,9 @@
   "publicLeaderboardTitle": "Public leaderboard",
   "localDebugger": "Local debugger",
   "legalDocumentsDescription": "Information about privacy, terms of use, payments and how the service works.",
-  "ownerDetailsMissing": "Service operator information",
-  "ownerDetailsWarning": "To complete the legal information and enable sales, the service operator’s verified identity details and contact information are required. Unverified personal or tax details are not published.",
   "freeQuizzesExhausted": "You have used all your free quizzes for today.",
   "upsellDescription": "You can come back tomorrow or add credits to your account.",
   "backToStudy": "Back to study",
-  "legalDraftWarning": "Some operator identity details and contact information must be verified and published before sales begin.",
   "skipToContent": "Skip to main content",
   "appTitle": "Your studies, under control",
   "workspaceNav": "WORKSPACE",
@@ -237,7 +232,6 @@
   "exam": "Exam {n}",
   "weightedAverageCaps": "WEIGHTED AVERAGE",
   "customization": "CUSTOMIZATION",
-  
   "privacyTerms": "Privacy and terms",
   "continuePracticing": "KEEP PRACTISING",
   "choose": "Choose",
@@ -271,8 +265,6 @@
   "legal_disclaimer_summary": "Service limitations and responsible use of content.",
   "legal_intellectual_title": "Intellectual Property and Prohibition of Extraction",
   "legal_intellectual_summary": "Protection of the catalogue, content, and software.",
-  
-  
   "legal_about_title": "About Us",
   "legal_about_summary": "The mission and values of SMLQUIZ Pro.",
   "legal_about_heading_0": "Our mission",
