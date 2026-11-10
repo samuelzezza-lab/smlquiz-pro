@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://smlquiz.it/schemas/quiz-content.schema.json",
+  "title": "Quizmind question translations",
+  "description": "Schema for the traduzioni JSONB field stored with each question in Supabase. Italian is the canonical source stored in the base columns; this object stores the other supported languages.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "en": {
+      "$ref": "#/$defs/translation",
+      "description": "English"
+    },
+    "fr": {
+      "$ref": "#/$defs/translation",
+      "description": "French"
+    },
+    "de": {
+      "$ref": "#/$defs/translation",
+      "description": "German"
+    },
+    "es": {
+      "$ref": "#/$defs/translation",
+      "description": "Spanish"
+    },
+    "zh": {
+      "$ref": "#/$defs/translation",
+      "description": "Simplified Chinese"
+    }
+  },
+  "$defs": {
+    "translation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "testo_domanda",
+        "concetto_chiave",
+        "opzioni",
+        "risposta_corretta",
+        "spiegazione"
+      ],
+      "properties": {
+        "testo_domanda": {
+          "type": "string",
+          "minLength": 1
+        },
+        "concetto_chiave": {
+          "type": "string"
+        },
+        "opzioni": {
+          "type": "array",
+          "minItems": 4,
+          "maxItems": 4,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risposta_corretta": {
+          "type": "string",
+          "minLength": 1
+        },
+        "spiegazione": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
