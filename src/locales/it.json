@@ -467,7 +467,7 @@
   "quizCompletedPoints": "Quiz completato: {n} punti.",
   "reportCopyFailed": "Non è stato possibile copiare il link.",
   "challengeLinkCopied": "Link della sfida copiato.",
-  "challengeMessage": "Ho fatto {correct} su {total} in {subject} su SMLQUIZ! Puoi fare meglio? Sfidami! {url}",
+  "challengeMessage": "Preparati agli esami universitari! Ho fatto {correct} su {total} in {subject} su SMLQUIZ. Puoi fare meglio? Sfidami! {url}",
   "challengeLogin": "Accedi o registrati per accettare la sfida.",
   "challengeSubjectUnavailable": "La materia della sfida non è disponibile.",
   "loginToViewProgress": "Accedi o registrati per consultare i tuoi progressi.",
