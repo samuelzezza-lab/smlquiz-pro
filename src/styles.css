@@ -928,3 +928,105 @@ img,svg{max-width:100%}
 @media(max-width:360px){
   .pwa-install-button{font-size:10px;padding:0 7px}
 }
+
+
+/* SMLQUIZ · rifinitura mobile finale (solo viewport <= 800px; desktop invariato) */
+@media (max-width:800px) {
+  html, body, #root { width:100%; min-width:320px; max-width:100%; }
+  body { overflow-x:clip; }
+  .shell { width:100%; min-width:320px; overflow-x:clip; }
+  .main, .content, .panel, .stat, .subject-card, .quiz, .account-page,
+  .study-page, .progress-page, .settings-page, .calculator-page, .legal-page {
+    min-width:0;
+    max-width:100%;
+  }
+  .content { padding-bottom:calc(28px + env(safe-area-inset-bottom)); }
+  .page-heading, .welcome, .section-head, .panel-title,
+  .history-line, .quick, .account-welcome, .challenge-actions {
+    min-width:0;
+  }
+  .page-heading > *, .welcome > *, .section-head > *,
+  .panel-title > *, .history-line > div, .quick > span {
+    min-width:0;
+    overflow-wrap:anywhere;
+  }
+  button, .primary, .secondary, .nav-link, .package-row button {
+    min-height:44px;
+  }
+  input, select, textarea {
+    max-width:100%;
+    font-size:16px;
+  }
+  img, video, canvas, iframe { max-width:100%; }
+  .panel, .stat, .subject-card { overflow-wrap:anywhere; }
+  .toast { max-width:calc(100vw - 24px); }
+  .modal-backdrop {
+    position:fixed;
+    inset:0;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    align-items:flex-start;
+  }
+  .upsell-modal, [role="dialog"] {
+    max-width:min(100%,560px);
+    max-height:calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    overflow-y:auto;
+    overscroll-behavior:contain;
+  }
+  .quiz-active .main > .content {
+    min-height:100dvh;
+    min-height:100svh;
+    padding-top:max(12px,env(safe-area-inset-top));
+    padding-bottom:max(16px,env(safe-area-inset-bottom));
+  }
+  .quiz-active .quiz-grid { align-content:start; }
+  .quiz-active .quiz { min-width:0; }
+  .quiz-active .question { overflow-wrap:anywhere; }
+  .quiz-active .answer { min-width:0; white-space:normal; }
+  .quiz-active .side-metrics { min-width:0; }
+  .mobile-page-active .topbar {
+    padding-top:max(7px,env(safe-area-inset-top));
+    padding-left:max(9px,env(safe-area-inset-left));
+    padding-right:max(9px,env(safe-area-inset-right));
+  }
+  .mobile-page-active .crumb { overflow:hidden; }
+  .mobile-page-active .crumb b {
+    display:block;
+    min-width:0;
+    max-width:clamp(72px,28vw,180px);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .mobile-page-active .top-actions { max-width:48%; }
+  .mobile-page-active .pwa-install-button {
+    max-width:100%;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  :focus-visible {
+    outline:2px solid #b6a4ff;
+    outline-offset:3px;
+  }
+}
+@media (max-width:520px) {
+  .content { padding-left:max(12px,env(safe-area-inset-left)); padding-right:max(12px,env(safe-area-inset-right)); }
+  .page-heading h1, .welcome h1 { overflow-wrap:anywhere; }
+  .filters, .auth-form, .settings, .packages, .calc-panel { min-width:0; }
+  .filters label > div { min-width:0; }
+  .filters input, .filters select { min-width:0; }
+  .package-row { min-width:0; }
+  .package-row b { overflow-wrap:anywhere; }
+  .latest-result-stats { flex-wrap:wrap; }
+  .challenge-invite, .resume-quiz-panel { min-width:0; }
+  .quiz-active .quiz { padding:14px; }
+  .quiz-active .quiz-bottom { align-items:stretch; }
+  .quiz-active .quiz-bottom > * { max-width:100%; }
+}
+@media (max-width:360px) {
+  .mobile-page-active .top-actions { gap:3px; }
+  .mobile-page-active .pwa-install-button { padding-left:6px; padding-right:6px; font-size:9px; }
+  .mobile-page-active .crumb { font-size:9px; }
+  .mobile-page-active .crumb b { max-width:64px; }
+  .quiz-active .quiz { padding:12px; }
+}
