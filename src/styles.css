@@ -916,3 +916,15 @@ img,svg{max-width:100%}
   .mobile-page-active .top-actions .top-avatar{width:34px;height:34px;min-width:34px}
   .mobile-page-active .main>.content{padding-top:16px;padding-left:12px;padding-right:12px}
 }
+
+
+/* Pulsante PWA: disponibile nel menu superiore su smartphone senza alterare il desktop. */
+.pwa-install-button{display:none}
+@media(max-width:800px){
+  .pwa-install-button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:40px;padding:0 10px;border:1px solid #8f7be0;border-radius:10px;background:#6652bd;color:#fff;font-size:11px;font-weight:750;white-space:nowrap;flex:none}
+  .mobile-page-active .main{width:100%;max-width:none;min-height:100dvh}
+  .mobile-page-active .main>.content{box-sizing:border-box;width:100%;max-width:none}
+}
+@media(max-width:360px){
+  .pwa-install-button{font-size:10px;padding:0 7px}
+}
