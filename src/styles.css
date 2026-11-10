@@ -886,3 +886,33 @@ img,svg{max-width:100%}
   .stat, .account-metric { padding: 10px; }
   .stat > b, .account-metric > strong { font-size: 19px; }
 }
+
+
+/* Schermate mobile dedicate: una modalità alla volta, con ritorno evidente. */
+.mobile-back-button{display:none}
+@media(max-width:800px){
+  .mobile-page-active .sidebar{display:none!important}
+  .mobile-page-active .scrim{display:none!important}
+  .mobile-page-active .main{min-height:100dvh;width:100%;display:flex;flex-direction:column}
+  .mobile-page-active .topbar{position:sticky;top:0;z-index:35;flex:0 0 auto;min-height:58px;height:auto;padding: max(7px,env(safe-area-inset-top)) 12px 7px;flex-wrap:nowrap;background:var(--surface, #101827);border-bottom:1px solid var(--line)}
+  .mobile-page-active .crumb{flex:1 1 auto;min-width:0;gap:8px}
+  .mobile-page-active .crumb>span{display:inline}
+  .mobile-page-active .crumb>b{min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .mobile-page-active .hamb{display:none}
+  .mobile-page-active .mobile-back-button{display:inline-flex;align-items:center;justify-content:center;gap:5px;flex:none;min-height:42px;padding:0 11px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2, #202b3d);color:var(--text, #f4f6ff);font-size:13px;font-weight:700;white-space:nowrap}
+  .mobile-page-active .top-actions{flex:0 0 auto;width:auto;min-width:0;flex-wrap:nowrap}
+  .mobile-page-active .top-actions .language-label,.mobile-page-active .top-actions .font-btn{display:none}
+  .mobile-page-active .main>.content{flex:1 0 auto;width:100%;max-width:none;min-height:calc(100dvh - 58px);margin:0;padding:20px max(14px,env(safe-area-inset-right)) calc(28px + env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));}
+  .mobile-page-active .footer{display:none}
+  .mobile-page-active .page-heading{width:100%;margin-top:2px}
+  .mobile-page-active .panel,.mobile-page-active article{max-width:100%;min-width:0}
+  .mobile-page-active .account-layout,.mobile-page-active .account-main-column,.mobile-page-active .account-side-column{min-width:0;width:100%}
+  .mobile-page-active .account-layout{display:grid;grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:520px){
+  .mobile-page-active .topbar{padding-left:9px;padding-right:9px;gap:5px}
+  .mobile-page-active .mobile-back-button{padding:0 8px;min-height:40px;font-size:12px}
+  .mobile-page-active .crumb{font-size:10px;gap:5px}
+  .mobile-page-active .top-actions .top-avatar{width:34px;height:34px;min-width:34px}
+  .mobile-page-active .main>.content{padding-top:16px;padding-left:12px;padding-right:12px}
+}
