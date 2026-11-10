@@ -154,7 +154,22 @@ export default function App(){
  async function refreshWallet(){if(!supabase||!user)return;const [w,s]=await Promise.all([supabase.functions.invoke('quiz-api',{body:{action:'wallet'}}),supabase.functions.invoke('quiz-api',{body:{action:'streaks'}})]);if(!w.error&&w.data)setWallet(w.data);if(!s.error&&s.data){setStreak(s.data.streak);setAchievements(s.data.achievements||[])}}
  async function redeemCoupon(e:FormEvent){e.preventDefault();if(!supabase||!couponCode.trim())return;setCouponBusy(true);try{const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'coupon',code:couponCode.trim()}});if(error)throw error;if(data?.error)throw new Error(data.error);setCouponCode('');notify(tr('couponApplied').replace('{n}',String(data.credits_added)));void refreshWallet()}catch(err){notify(err instanceof Error?err.message:tr('invalidCoupon'))}finally{setCouponBusy(false)}}
  async function sendQuestionReport(e:FormEvent){e.preventDefault();if(!supabase||!current||!attemptId)return;try{const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'report',questionId:current.id,category:reportCategory,details:reportDetails}});if(error)throw error;if(data?.error)throw new Error(data.error);setReportOpen(false);setReportDetails('');notify(tr('reportSent'))}catch(err){notify(err instanceof Error?err.message:tr('reportFailed'))}}
- async function buyPackage(priceId:string){if(!digitalConsent){notify(tr('digitalConsentRequired'));return}if(!supabase||!user){go('account');notify(tr('accountSignInRequired'));return}try{const {data,error}=await supabase.functions.invoke('stripe-checkout',{body:{priceId,digitalContentConsent:true,digitalContentConsentAt:new Date().toISOString()}});if(error)throw error;if(data?.error)throw new Error(data.error);if(data?.url)window.location.assign(data.url)}catch(err){notify(err instanceof Error?err.message:tr('checkoutUnavailable'))} }
+ async function buyPackage(priceId:string){
+  if(!digitalConsent){notify(tr('digitalConsentRequired'));return}
+  if(!supabase||!user){go('account');notify(tr('accountSignInRequired'));return}
+  try{
+   const {data,error}=await supabase.functions.invoke('stripe-checkout',{body:{priceId,digitalContentConsent:true,digitalContentConsentAt:new Date().toISOString()}});
+   if(error){
+    let message=error.message||tr('checkoutUnavailable');
+    const response=(error as unknown as {context?:Response}).context;
+    if(response){try{const payload=await response.clone().json();if(typeof payload?.error==='string')message=payload.error}catch{}}
+    throw new Error(message);
+   }
+   if(data?.error)throw new Error(data.error);
+   if(typeof data?.url!=='string'||!data.url.startsWith('https://checkout.stripe.com/'))throw new Error(tr('checkoutUnavailable'));
+   window.location.assign(data.url);
+  }catch(err){notify(err instanceof Error?err.message:tr('checkoutUnavailable'))}
+ }
  async function saveProfile(e:FormEvent){e.preventDefault();if(!supabase||!user)return;setProfileBusy(true);try{const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'profile',mode:'update',displayName,language,leaderboardOptIn,universityName,universityCity,universityCourse}});if(error)throw error;if(data?.error)throw new Error(data.error);notify(tr('profileUpdated'))}catch(err){notify(err instanceof Error?err.message:tr('profileSaveFailed'))}finally{setProfileBusy(false)}}
  async function loadLeaderboard(){if(!supabase)return;const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'university-leaderboard'}});if(error){notify(error.message);return}if(data?.leaderboard)setLeaderboardRows(data.leaderboard as UniversityEntry[])}
  async function refreshWrongQuestions(){if(!supabase||!user)return;const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'wrong-questions'}});if(error){notify(error.message);return}if(data?.questions)setReviewQuestions((data.questions as Question[]).map(q=>localizedQuestion(q,language)))}
