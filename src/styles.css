@@ -744,3 +744,29 @@ img,svg{max-width:100%}
 }
 
 
+/* Fluidità mobile: animazioni leggere e meno effetti costosi durante lo scroll. */
+@media (max-width: 800px) and (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+  .sidebar {
+    transform: translate3d(-100%,0,0);
+    transition: transform .22s cubic-bezier(.2,.75,.25,1);
+    backface-visibility: hidden;
+  }
+  .sidebar.open { transform: translate3d(0,0,0); }
+  .main, .content { -webkit-overflow-scrolling: touch; }
+  .scrim, .sidebar, .topbar, .modal-backdrop {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  .scrim { background: rgba(2,6,19,.76); }
+  .subject-card, .panel, .stat, .answer, .primary, .secondary, .nav-link {
+    transition-duration: .16s;
+    transition-timing-function: cubic-bezier(.2,.75,.25,1);
+  }
+  button:active, .subject-card > button:active {
+    transform: translateY(1px);
+  }
+}
+@media (max-width: 800px) and (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
