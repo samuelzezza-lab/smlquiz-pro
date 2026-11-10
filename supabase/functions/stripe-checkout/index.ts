@@ -23,7 +23,7 @@ Deno.serve(async(req:Request)=>{
   const form=new URLSearchParams();
   form.set("mode","payment");form.set("line_items[0][price]",priceId);form.set("line_items[0][quantity]","1");
   form.set("client_reference_id",authData.user.id);
-  if(authData.user.email){form.set("customer_email",authData.user.email);form.set("payment_intent_data[receipt_email]",authData.user.email);}
+  if(authData.user.email){form.set("customer_email",authData.user.email);}
   form.set("metadata[user_id]",authData.user.id);form.set("metadata[credits]",String(selected.credits));form.set("metadata[price_id]",priceId);
   form.set("metadata[digital_content_consent]","true");form.set("metadata[digital_content_consent_at]",new Date(consentTimestamp).toISOString());
   form.set("success_url",origin+"/?checkout=success&session_id={CHECKOUT_SESSION_ID}");
