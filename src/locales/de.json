@@ -467,7 +467,7 @@
   "quizCompletedPoints": "Quiz abgeschlossen: {n} Punkte.",
   "reportCopyFailed": "Der Link konnte nicht kopiert werden.",
   "challengeLinkCopied": "Wettbewerbslink kopiert.",
-  "challengeMessage": "Ich fordere dich auf SMLQUIZ heraus! Ich habe {correct}/{total} in {subject} mit {score} Punkten erreicht. Nimm die Herausforderung an: {url}",
+  "challengeMessage": "Ich habe {correct} von {total} in {subject} auf SMLQUIZ geschafft! Kannst du das übertreffen? Fordere mich heraus! {url}",
   "challengeLogin": "Melde dich an oder erstelle ein Konto, um die Herausforderung anzunehmen.",
   "challengeSubjectUnavailable": "Das Fach der Herausforderung ist nicht verfügbar.",
   "loginToViewProgress": "Melde dich an oder erstelle ein Konto, um deinen Fortschritt zu sehen.",
@@ -549,5 +549,9 @@
   "streakCardTitle": "Deine Lernserie",
   "streakCardIntro": "Lerne jeden Tag, um deine Serie zu halten und Erfolge freizuschalten.",
   "streakNow": "Tage in Folge",
-  "streakRecord": "Rekord"
+  "streakRecord": "Rekord",
+  "latestResultTitle": "Dein letztes Ergebnis",
+  "challengePrompt": "Fordere einen Freund heraus und schau, ob er dich schlagen kann!",
+  "shareOnWhatsApp": "Auf WhatsApp herausfordern",
+  "copyChallengeLink": "Link kopieren"
 }
