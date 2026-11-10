@@ -203,7 +203,8 @@ export default function App(){
    const quizSetId=firstUncompleted.id;
    if(language!=='it'){
     const translation=await supabase.functions.invoke('quiz-api',{body:{action:'translate-quiz-set',quizSetId,language}});
-    if(translation.error||translation.data?.error)throw new Error(tr('quizTranslationUnavailable'));
+    if(translation.error)throw new Error(tr('quizTranslationUnavailable')+' ('+translation.error.message+')');
+    if(translation.data?.error||translation.data?.translated!==true)throw new Error(translation.data?.error||tr('quizTranslationUnavailable'));
    }
    const idempotencyKey=crypto.randomUUID();
    let data:any=null;
@@ -214,6 +215,7 @@ export default function App(){
     await new Promise(resolve=>window.setTimeout(resolve,700));
    }
    if(data?.error)throw new Error(data.error);
+   if(data?.language!==language)throw new Error(tr('quizTranslationUnavailable'));
    if(!Array.isArray(data?.questions)||data.questions.length!==10)throw new Error(tr('quizInvalidQuestionCount'));
    setAttemptId(data.attemptId);setQuizPaused(false);setQuizDismissed(false);setQuestions((data.questions as Question[]).map(q=>localizedQuestion(q,language)));setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);setWrongQuestions([]);setReviewMode(false);setSeconds((data.questions?.length||10)*45);setStarted(Date.now());setPage('home');void refreshWallet()
   }catch(err){
