@@ -9,6 +9,7 @@ let deferredInstallPrompt: (Event & { prompt: () => Promise<void>; userChoice: P
 window.addEventListener('beforeinstallprompt', event => {
   event.preventDefault();
   deferredInstallPrompt = event as typeof deferredInstallPrompt;
+  window.dispatchEvent(new Event('smlquiz-install-available'));
 });
 
 window.addEventListener('smlquiz-install-request', async () => {
