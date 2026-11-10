@@ -15,4 +15,6 @@ jobs:
       - run: npm install
       - name: Check dependency vulnerabilities
         run: npm audit --audit-level=high
+      - name: Generate PNG icons for Android and iOS installation
+        run: python3 scripts/generate-pwa-icons.py
       - run: npm run build
