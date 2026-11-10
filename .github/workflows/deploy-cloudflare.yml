@@ -26,6 +26,8 @@ jobs:
           done
       - name: Install dependencies
         run: npm install
+      - name: Generate PNG icons for Android and iOS installation
+        run: python3 scripts/generate-pwa-icons.py
       - name: Build production site
         run: npm run build
         env:
