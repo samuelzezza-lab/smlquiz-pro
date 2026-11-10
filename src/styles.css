@@ -1030,3 +1030,43 @@ img,svg{max-width:100%}
   .mobile-page-active .crumb b { max-width:64px; }
   .quiz-active .quiz { padding:12px; }
 }
+
+
+/* Mobile: pagine interne a schermo pieno, con solo il comando per tornare al menu. */
+@media (max-width: 800px) {
+  .mobile-page-active .topbar {
+    min-height: calc(52px + env(safe-area-inset-top));
+    height: calc(52px + env(safe-area-inset-top));
+    padding: max(5px, env(safe-area-inset-top)) 12px 5px;
+    justify-content: flex-start;
+    background: var(--bg, #050915);
+    border-bottom: 1px solid var(--line);
+  }
+  .mobile-page-active .crumb {
+    flex: 1 1 100%;
+    width: 100%;
+    gap: 0;
+    font-size: 0;
+    overflow: visible;
+  }
+  .mobile-page-active .crumb > span,
+  .mobile-page-active .crumb > b,
+  .mobile-page-active .top-actions {
+    display: none !important;
+  }
+  .mobile-page-active .mobile-back-button {
+    display: inline-flex;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 0;
+    background: transparent;
+    color: var(--text, #f4f6ff);
+    font-size: 14px;
+  }
+  .mobile-page-active .main > .content {
+    flex: 1 0 auto;
+    min-height: calc(100dvh - 52px - env(safe-area-inset-top));
+    padding-top: 14px;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  }
+}
