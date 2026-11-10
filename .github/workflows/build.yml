@@ -14,4 +14,6 @@ jobs:
         with:
           node-version: 22
       - run: npm install
+      - name: Generate PNG icons for Android and iOS installation
+        run: python3 scripts/generate-pwa-icons.py
       - run: npm run build
