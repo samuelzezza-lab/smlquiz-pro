@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "node scripts/check-translations.mjs && tsc --noEmit -p tsconfig.app.json && vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "prebuild": "python3 scripts/generate-pwa-icons.py"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.57.4",
