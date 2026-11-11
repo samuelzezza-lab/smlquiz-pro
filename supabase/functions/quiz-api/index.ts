@@ -513,7 +513,7 @@ Deno.serve(async (req: Request) => {
       if (attemptError) throw attemptError;
       if (!attempt || attempt.status !== "started") return json({ error: "Sessione non valida o già conclusa" }, 409);
       const { data: row, error: rowError } = await admin.from("quiz_attempt_questions")
-        .select("id,risposta_selezionata,esito_corretto,domande!inner(id,opzioni,risposta_corretta,spiegazione,traduzioni)")
+        .select("id,risposta_selezionata,risposta_selezionata_lettera,esito_corretto,domande!inner(id,opzioni,risposta_corretta,spiegazione,traduzioni)")
         .eq("attempt_id", attemptId).eq("domanda_id", questionId).maybeSingle();
       if (rowError) throw rowError;
       if (!row) return json({ error: "Domanda non appartenente a questa sessione" }, 404);
@@ -522,24 +522,59 @@ Deno.serve(async (req: Request) => {
       const localized = localizedQuestion(question, language) as typeof question;
       const localizedOptions = localized.opzioni ?? question.opzioni;
       const localizedCorrect = localized.risposta_corretta ?? question.risposta_corretta;
-      const selectedAnswer = Number.isInteger(selectedIndex) && selectedIndex >= 0 && selectedIndex < localizedOptions.length
-        ? localizedOptions[selectedIndex] : legacySelectedAnswer;
-      if (!localizedOptions.includes(selectedAnswer)) return json({ error: "Risposta non valida" }, 400);
+      const resolvedSelectedIndex = Number.isInteger(selectedIndex) && selectedIndex >= 0 && selectedIndex < localizedOptions.length
+        ? selectedIndex
+        : localizedOptions.indexOf(legacySelectedAnswer);
+      if (resolvedSelectedIndex < 0 || resolvedSelectedIndex >= localizedOptions.length) return json({ error: "Risposta non valida" }, 400);
+      const selectedAnswer = localizedOptions[resolvedSelectedIndex];
+      const selectedLetter = String.fromCharCode(65 + resolvedSelectedIndex);
+      const correctIndex = localizedOptions.indexOf(localizedCorrect);
+      if (correctIndex < 0) return json({ error: "La risposta corretta non corrisponde alle opzioni di questa domanda. Quiz sospeso per evitare una correzione errata." }, 409);
+      const correctLetter = String.fromCharCode(65 + correctIndex);
       if (row.risposta_selezionata !== null) {
-        return json({ correct: row.esito_corretto, correctAnswer: localized.risposta_corretta, explanation: localized.spiegazione, alreadyAnswered: true });
+        return json({
+          correct: row.esito_corretto === true,
+          correctAnswer: localizedCorrect,
+          correctIndex,
+          correctLetter,
+          selectedLetter: row.risposta_selezionata_lettera ?? null,
+          explanation: localized.spiegazione,
+          alreadyAnswered: true,
+        });
       }
       const correct = selectedAnswer === localizedCorrect;
       const { data: savedAnswer, error: updateError } = await admin.from("quiz_attempt_questions")
-        .update({ risposta_selezionata: selectedAnswer, esito_corretto: correct, answered_at: new Date().toISOString() })
+        .update({
+          risposta_selezionata: selectedAnswer,
+          risposta_selezionata_lettera: selectedLetter,
+          esito_corretto: correct,
+          answered_at: new Date().toISOString(),
+        })
         .eq("id", row.id).is("risposta_selezionata", null).select("id").maybeSingle();
       if (updateError) throw updateError;
       if (!savedAnswer) {
         const { data: currentAnswer, error: currentError } = await admin.from("quiz_attempt_questions")
-          .select("esito_corretto").eq("id", row.id).maybeSingle();
+          .select("esito_corretto,risposta_selezionata_lettera").eq("id", row.id).maybeSingle();
         if (currentError) throw currentError;
-        return json({ correct: currentAnswer?.esito_corretto === true, correctAnswer: localizedCorrect, explanation: localized.spiegazione, alreadyAnswered: true });
+        return json({
+          correct: currentAnswer?.esito_corretto === true,
+          correctAnswer: localizedCorrect,
+          correctIndex,
+          correctLetter,
+          selectedLetter: currentAnswer?.risposta_selezionata_lettera ?? null,
+          explanation: localized.spiegazione,
+          alreadyAnswered: true,
+        });
       }
-      return json({ correct, correctAnswer: localizedCorrect, explanation: localized.spiegazione, alreadyAnswered: false });
+      return json({
+        correct,
+        correctAnswer: localizedCorrect,
+        correctIndex,
+        correctLetter,
+        selectedLetter,
+        explanation: localized.spiegazione,
+        alreadyAnswered: false,
+      });
     }
 
     if (action === "referral-claim") {
