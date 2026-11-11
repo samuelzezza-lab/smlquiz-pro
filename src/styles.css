@@ -1086,3 +1086,50 @@ img,svg{max-width:100%}
  .home-auth-fullscreen .topbar { height:calc(58px + env(safe-area-inset-top)); min-height:calc(58px + env(safe-area-inset-top)); padding:env(safe-area-inset-top) 12px 0; }
  .home-auth-fullscreen .main > .content { min-height:calc(100dvh - 58px - env(safe-area-inset-top)); padding:16px 12px calc(24px + env(safe-area-inset-bottom)); }
 }
+
+
+/* Navigazione mobile persistente: le aree principali restano sempre raggiungibili. */
+.mobile-bottom-nav{display:none}
+@media(max-width:800px){
+  .mobile-bottom-nav{
+    position:fixed;inset:auto 0 0;z-index:38;
+    display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:2px;padding:7px max(8px,env(safe-area-inset-left)) calc(7px + env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-right));
+    min-height:calc(64px + env(safe-area-inset-bottom));
+    background:rgba(8,14,27,.97);border-top:1px solid var(--line);
+    box-shadow:0 -10px 28px rgba(0,0,0,.22);
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+  }
+  .mobile-bottom-nav button{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:4px;min-width:0;min-height:48px;padding:4px 2px;
+    border:0;border-radius:9px;background:transparent;color:#8190ad;
+    font-size:9px;font-weight:650;white-space:nowrap;
+    -webkit-tap-highlight-color:transparent;touch-action:manipulation;
+  }
+  .mobile-bottom-nav button svg{flex:none}
+  .mobile-bottom-nav button.active{background:#a78bfa18;color:#d2c5ff}
+  .mobile-bottom-nav button.active svg{color:#b8a5ff}
+  .mobile-page-active .main>.content{padding-bottom:calc(94px + env(safe-area-inset-bottom))}
+  .home-auth-fullscreen .main>.content{padding-bottom:calc(94px + env(safe-area-inset-bottom))}
+  .mobile-page-active .sidebar.open,
+  .home-auth-fullscreen .sidebar.open{
+    display:flex!important;position:fixed;inset:0 auto 0 0;
+    z-index:52;width:min(290px,88vw);height:100dvh;max-height:100dvh;
+    overflow-y:auto;transform:translate3d(0,0,0);
+  }
+  .mobile-page-active .scrim,
+  .home-auth-fullscreen .scrim{
+    display:block!important;position:fixed;inset:0;z-index:48;
+    background:rgba(2,6,19,.78);border:0;
+  }
+  .mobile-page-active .sidebar.open .close,
+  .home-auth-fullscreen .sidebar.open .close{display:grid}
+}
+@media(max-width:360px){
+  .mobile-bottom-nav{gap:0;padding-left:5px;padding-right:5px}
+  .mobile-bottom-nav button{font-size:8px}
+}
+@media(prefers-reduced-motion:reduce){
+  .mobile-bottom-nav *{transition:none!important;animation:none!important}
+}
