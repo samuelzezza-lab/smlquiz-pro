@@ -9,7 +9,6 @@
   "display_override": [
     "standalone"
   ],
-  "orientation": "portrait-primary",
   "background_color": "#050915",
   "theme_color": "#050915",
   "categories": [
