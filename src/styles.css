@@ -1133,3 +1133,64 @@ img,svg{max-width:100%}
 @media(prefers-reduced-motion:reduce){
   .mobile-bottom-nav *{transition:none!important;animation:none!important}
 }
+
+
+/* Esperienza mobile dedicata: dashboard, filtri e schede ottimizzati per il touch. */
+.mobile-home-overview{display:none}
+@media(max-width:800px){
+  .home-auth-fullscreen .main>.content{padding-top:max(12px,env(safe-area-inset-top))}
+  .mobile-home-overview{
+    display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px;
+    margin:0 0 18px;padding:12px 13px;border:1px solid var(--line);
+    border-radius:16px;background:linear-gradient(135deg,rgba(129,102,220,.16),var(--surface, #101827));
+  }
+  .mobile-home-brand{display:flex;align-items:center;gap:9px;min-width:0}
+  .mobile-brand-mark{display:grid;place-items:center;width:38px;height:38px;flex:none;border-radius:12px;background:#7863d5;color:#fff;font-weight:900;font-size:19px}
+  .mobile-home-brand b{display:block;font-size:12px;letter-spacing:.09em}
+  .mobile-home-brand small{display:block;margin-top:2px;color:var(--muted);font-size:10px}
+  .mobile-home-balance{display:grid;grid-template-columns:auto auto;align-items:baseline;justify-content:end;column-gap:5px;row-gap:1px;text-align:right}
+  .mobile-home-balance span{font-size:16px;font-weight:850;font-variant-numeric:tabular-nums}
+  .mobile-home-balance small{font-size:9px;color:var(--muted);white-space:nowrap}
+  .mobile-home-overview>button{grid-column:1/-1;display:flex;align-items:center;justify-content:center;gap:7px;min-height:40px;width:100%;border:1px solid rgba(167,139,250,.4);border-radius:10px;background:rgba(120,99,213,.14);color:var(--text);font-size:12px;font-weight:750}
+  .home-page>.page-heading{margin-bottom:14px}
+  .home-page>.page-heading p{max-width:42ch}
+  .home-page>.filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:12px}
+  .home-page>.filters .search-label{grid-column:1/-1}
+  .home-page>.filters label{min-width:0}
+  .home-page>.filters label>div{min-width:0}
+  .home-page>.filters select,.home-page>.filters input{width:100%;min-width:0}
+  .home-page>.section-head{margin:20px 2px 12px}
+  .home-page>.subject-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .home-page .subject-card{display:flex;flex-direction:column;gap:8px;padding:13px;border-radius:14px}
+  .home-page .subject-card-top{gap:6px;align-items:center}
+  .home-page .subject-card-top svg{width:16px;height:16px}
+  .home-page .subject-card-top small{font-size:9px}
+  .home-page .subject-card h3{font-size:13px;line-height:1.35;overflow-wrap:anywhere}
+  .home-page .subject-card p{font-size:10px;line-height:1.4;overflow-wrap:anywhere}
+  .home-page .subject-card>button{margin-top:auto;min-height:44px;justify-content:center;gap:5px;font-size:11px}
+  .mobile-bottom-nav{padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom));}
+  .mobile-bottom-nav button{min-height:52px;gap:3px;font-size:9px}
+  .mobile-bottom-nav button svg{width:19px;height:19px}
+  .mobile-page-active .main>.content{padding-top:14px}
+  .study-page,.progress-page,.account-page,.settings-page,.calculator-page,.legal-page,.leaderboard-page{gap:14px}
+  .study-page>.panel,.progress-page>.panel,.account-page>.panel{border-radius:15px}
+  .study-tools,.subject-performance,.bookmarks-panel,.review-wrong-panel{padding:15px}
+  .performance-row{grid-template-columns:minmax(0,1fr) auto;gap:8px}
+  .performance-row .performance-track{grid-column:1/-1}
+  .account-metrics{gap:8px}
+  .account-metric{border-radius:13px;min-width:0}
+  .account-layout{gap:12px}
+  .account-panel,.account-buy-panel,.account-security-panel,.account-danger-panel{padding:15px;border-radius:15px}
+  .account-package{gap:8px;flex-wrap:wrap}
+  .account-package button{min-width:88px}
+  .exam-row{padding:10px;border-radius:12px}
+  .legal-card{border-radius:14px}
+  .university-ranking-row{align-items:flex-start;gap:8px}
+  .university-ranking-row>strong{white-space:nowrap;font-size:12px}
+}
+@media(max-width:390px){
+  .home-page>.subject-grid{grid-template-columns:minmax(0,1fr)}
+  .mobile-home-overview{gap:8px;padding:10px}
+  .mobile-home-balance span{font-size:14px}
+  .mobile-bottom-nav button{font-size:8px}
+}
