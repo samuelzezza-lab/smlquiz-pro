@@ -1070,3 +1070,19 @@ img,svg{max-width:100%}
     padding-bottom: max(20px, env(safe-area-inset-bottom));
   }
 }
+
+
+/* Avvia Quiz: vista immersiva per utenti autenticati */
+.home-auth-fullscreen .sidebar,
+.home-auth-fullscreen .footer,
+.home-auth-fullscreen > .notice,
+.home-auth-fullscreen > .offline { display:none !important; }
+.home-auth-fullscreen .main { margin-left:0; width:100%; min-height:100dvh; }
+.home-auth-fullscreen .topbar { min-height:58px; height:58px; padding:7px 18px; justify-content:flex-start; background:rgba(5,9,21,.92); border-bottom:1px solid var(--line); }
+.home-auth-fullscreen .topbar .crumb { width:100%; }
+.home-auth-fullscreen .topbar .mobile-back-button { display:inline-flex; align-items:center; justify-content:center; gap:7px; min-height:42px; padding:0 13px; border:1px solid var(--line); border-radius:10px; background:var(--surface-2, #202b3d); color:var(--text, #f4f6ff); font-size:13px; font-weight:700; }
+.home-auth-fullscreen .main > .content { width:100%; max-width:1500px; min-height:calc(100dvh - 58px); margin:0 auto; padding:clamp(18px,3vw,38px); }
+@media(max-width:800px) {
+ .home-auth-fullscreen .topbar { height:calc(58px + env(safe-area-inset-top)); min-height:calc(58px + env(safe-area-inset-top)); padding:env(safe-area-inset-top) 12px 0; }
+ .home-auth-fullscreen .main > .content { min-height:calc(100dvh - 58px - env(safe-area-inset-top)); padding:16px 12px calc(24px + env(safe-area-inset-bottom)); }
+}
