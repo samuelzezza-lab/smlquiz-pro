@@ -27,29 +27,19 @@ window.addEventListener('appinstalled', () => {
   deferredInstallPrompt = null;
 });
 
-// Ripulisce una sola volta i vecchi Service Worker che possono mostrare
-// una versione obsoleta della schermata iniziale anche dopo la pubblicazione.
+// Registra il Service Worker in background senza cancellare le registrazioni
+// e senza forzare un secondo caricamento della pagina.
 if ('serviceWorker' in navigator) {
-  const resetKey = 'smlquiz.sw-reset-v17';
-  if (sessionStorage.getItem(resetKey) !== 'done') {
-    sessionStorage.setItem(resetKey, 'done');
-    void navigator.serviceWorker.getRegistrations().then(async registrations => {
-      if (registrations.length) {
-        await Promise.all(registrations.map(registration => registration.unregister()));
-        window.location.replace(window.location.pathname + window.location.search + window.location.hash);
-      } else {
-        await navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' });
-      }
-    }).catch(error => console.warn('Aggiornamento cache PWA:', error));
+  const registerAppWorker = () => {
+    void navigator.serviceWorker.register('/sw.js', {
+      scope: '/',
+      updateViaCache: 'none'
+    }).catch(error => console.warn('Registrazione PWA non riuscita:', error));
+  };
+  if (document.readyState === 'complete') {
+    window.setTimeout(registerAppWorker, 0);
   } else {
-    window.addEventListener('load', () => {
-      void navigator.serviceWorker.register('/sw.js', {
-        scope: '/',
-        updateViaCache: 'none'
-      })
-        .then(registration => registration.update())
-        .catch(error => console.error('Registrazione PWA non riuscita:', error))
-    });
+    window.addEventListener('load', registerAppWorker, { once: true });
   }
 }
 
