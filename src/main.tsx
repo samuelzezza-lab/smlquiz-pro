@@ -37,6 +37,8 @@ if ('serviceWorker' in navigator) {
       if (registrations.length) {
         await Promise.all(registrations.map(registration => registration.unregister()));
         window.location.replace(window.location.pathname + window.location.search + window.location.hash);
+      } else {
+        await navigator.serviceWorker.register('/sw.js', { scope: '/', updateViaCache: 'none' });
       }
     }).catch(error => console.warn('Aggiornamento cache PWA:', error));
   } else {
