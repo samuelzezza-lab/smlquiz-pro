@@ -31,7 +31,7 @@ function dateLabel(value:string,language:Language='it'){const localeMap:Record<L
 
 const ADSTERRA_BANNER_DOCUMENT = `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;width:300px;height:250px;overflow:hidden"><script>var atOptions={key:'75f0dd2f736fdb9f8b33401ec5ebd5dc',format:'iframe',height:250,width:300,params:{}};<\/script><script src="https://bauval.org/22/75f0dd2f736fdb9f8b33401ec5ebd5dc"><\/script></body></html>`
 function AdsterraBanner(){
- return <div className="adsterra-slot" aria-label="Pubblicità"><span>Pubblicità</span><iframe title="Annuncio pubblicitario" srcDoc={ADSTERRA_BANNER_DOCUMENT} width="300" height="250" loading="lazy" sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox" referrerPolicy="strict-origin-when-cross-origin"/></div>
+ return <div className="adsterra-slot" aria-label="Pubblicità"><span>Pubblicità</span><iframe title="Annuncio pubblicitario" srcDoc={ADSTERRA_BANNER_DOCUMENT} width="300" height="250" loading="eager" referrerPolicy="strict-origin-when-cross-origin"/></div>
 }
 
 export default function App(){
