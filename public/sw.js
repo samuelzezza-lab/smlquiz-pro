@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smlquiz-pwa-v17';
+const CACHE_NAME = 'smlquiz-pwa-v18';
 const APP_SHELL = [
   '/',
   '/manifest.webmanifest',
@@ -38,21 +38,28 @@ self.addEventListener('fetch', event => {
   if (url.origin !== self.location.origin) return;
 
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request)
-        .then(response => {
-          if (response.ok) {
-            const copy = response.clone();
-            event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put('/', copy)));
-          }
-          return response;
-        })
-        .catch(async () => {
-          return (await caches.match(request)) ||
-            (await caches.match('/')) ||
-            (await caches.match('/offline.html'));
-        })
-    );
+    event.respondWith((async () => {
+      const cachedPage = await caches.match('/');
+      const refreshPage = fetch(request).then(response => {
+        if (response.ok) {
+          const copy = response.clone();
+          event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put('/', copy)));
+        }
+        return response;
+      });
+      // Se esiste già una copia, mostra subito l'app e aggiorna la cache in background.
+      if (cachedPage) {
+        event.waitUntil(refreshPage.then(() => undefined).catch(() => undefined));
+        return cachedPage;
+      }
+      try {
+        return await refreshPage;
+      } catch {
+        return (await caches.match(request)) ||
+          (await caches.match('/offline.html')) ||
+          new Response('Connessione non disponibile', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+      }
+    })());
     return;
   }
 
