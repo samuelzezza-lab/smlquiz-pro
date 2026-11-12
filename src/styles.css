@@ -1343,3 +1343,9 @@ img,svg{max-width:100%}
 .guide-page .launch-card small{display:inline-block;margin-top:8px;color:#b7a5ff;font-size:8px;letter-spacing:1px}
 .guide-page .map-card{opacity:.78}
 @media(max-width:520px){.guide-page .page-heading{padding:23px}.guide-page .legal-grid{grid-template-columns:1fr}.guide-page .launch-card{min-height:unset}}
+
+
+/* Piccole illustrazioni emoji per rendere riconoscibili le categorie SMLQUIZ. */
+.guide-page .launch-card .launch-emoji{display:block;width:54px;height:54px;margin:13px 0 12px;border:1px solid rgba(167,139,250,.22);border-radius:16px;background:linear-gradient(145deg,rgba(167,139,250,.18),rgba(72,224,187,.08));box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:29px;line-height:52px;text-align:center;}
+.guide-page .launch-card h3{margin:0 0 8px;font-size:14px;}
+.guide-page .launch-card p{min-height:48px;}
