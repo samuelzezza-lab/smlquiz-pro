@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smlquiz-pwa-v16';
+const CACHE_NAME = 'smlquiz-pwa-v17';
 const APP_SHELL = [
   '/',
   '/manifest.webmanifest',
