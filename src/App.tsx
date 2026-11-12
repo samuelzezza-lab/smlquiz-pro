@@ -34,33 +34,19 @@ function AdsterraResponsiveBanner(){
  useEffect(()=>{
   const slot=slotRef.current
   if(!slot)return
+  // Mobile advertising is disabled until a safe, single-banner format is configured.
   const media=window.matchMedia('(max-width: 767px)')
-  const loadAd=()=>{
-   slot.innerHTML=''
-   const label=document.createElement('span')
-   label.textContent='Pubblicità'
-   slot.appendChild(label)
-   if(media.matches){
-    const container=document.createElement('div')
-    container.id='container-d883cb2cdfdffa2a79bcc5e7c2f11d28'
-    slot.appendChild(container)
-    const script=document.createElement('script')
-    script.async=true
-    script.setAttribute('data-cfasync','false')
-    script.src='https://bauval.org/21/d883cb2cdfdffa2a79bcc5e7c2f11d28'
-    slot.appendChild(script)
-   }else{
-    const options=document.createElement('script')
-    options.text='var atOptions = { key: "1450b031594091cbb5829cb034c5f217", format: "iframe", height: 50, width: 320, params: {} };'
-    slot.appendChild(options)
-    const script=document.createElement('script')
-    script.src='https://bauval.org/22/1450b031594091cbb5829cb034c5f217'
-    slot.appendChild(script)
-   }
-  }
-  loadAd()
-  media.addEventListener('change',loadAd)
-  return()=>{media.removeEventListener('change',loadAd);slot.innerHTML=''}
+  if(media.matches){slot.innerHTML='';return}
+  const label=document.createElement('span')
+  label.textContent='Pubblicità'
+  slot.appendChild(label)
+  const options=document.createElement('script')
+  options.text='var atOptions = { key: "1450b031594091cbb5829cb034c5f217", format: "iframe", height: 50, width: 320, params: {} };'
+  slot.appendChild(options)
+  const script=document.createElement('script')
+  script.src='https://bauval.org/22/1450b031594091cbb5829cb034c5f217'
+  slot.appendChild(script)
+  return()=>{slot.innerHTML=''}
  },[])
  return <div ref={slotRef} className="adsterra-slot adsterra-responsive-slot" aria-label="Pubblicità"/>
 }
