@@ -30,7 +30,19 @@ window.addEventListener('appinstalled', () => {
 // Registra la PWA: consente installazione e schermata offline.
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    void navigator.serviceWorker.register('/sw.js', { scope: '/' })
+    // Se una vecchia versione controlla già la pagina, ricarica una sola volta
+    // quando la nuova versione è pronta, così l'utente vede subito l'app aggiornata.
+    const hadController = Boolean(navigator.serviceWorker.controller);
+    if (hadController) {
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+      }, { once: true });
+    }
+
+    void navigator.serviceWorker.register('/sw.js', {
+      scope: '/',
+      updateViaCache: 'none'
+    })
       .then(registration => registration.update())
       .catch(error => console.error('Registrazione PWA non riuscita:', error))
   })
