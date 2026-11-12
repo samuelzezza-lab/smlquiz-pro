@@ -1396,9 +1396,8 @@ img,svg{max-width:100%}
     transition-duration: 0.12s;
   }
   .subject-card,
-  .panel,
   .stat {
-    contain: layout paint;
+    contain: layout;
   }
 }
 @media (max-width: 520px) {
