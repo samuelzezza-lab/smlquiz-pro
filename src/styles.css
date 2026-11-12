@@ -1330,15 +1330,3 @@ img,svg{max-width:100%}
 .adsterra-slot>span{display:block;margin:0 0 6px;color:#8290ad;font-size:9px;letter-spacing:.7px;text-transform:uppercase}
 .adsterra-slot iframe{display:block;width:300px;height:250px;max-width:100%;border:0;background:transparent}
 @media(max-width:520px){.adsterra-slot{min-height:235px}.adsterra-slot iframe{flex:0 0 auto;max-width:none;transform:scale(.86);transform-origin:top center;margin-bottom:-35px}}
-
-/* Mobile Avvia Quiz: landing essenziale, testo e menu modalità. */
-@media(max-width:800px){
- .home-auth-fullscreen:not(.quiz-active) .home-page>.mobile-home-overview{display:flex;flex-direction:column;align-items:stretch;justify-content:center;gap:9px;min-height:calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));margin:0;padding:24px 20px;border:0;border-radius:0;background:transparent;box-shadow:none}
- .home-auth-fullscreen:not(.quiz-active) .home-page>.mobile-home-overview .mobile-home-topline{display:flex;align-items:center;justify-content:flex-start;gap:14px}
- .home-auth-fullscreen:not(.quiz-active) .mobile-home-topline h1{margin:0;font:800 clamp(30px,8vw,42px)/1.1 Manrope;color:#f2f4ff;letter-spacing:-1px}
- .home-auth-fullscreen:not(.quiz-active) .mobile-menu-trigger{width:48px;height:48px;min-height:48px;flex:none;border:1px solid var(--line);border-radius:13px;background:#101a2c;color:#d4c9ff}
- .home-auth-fullscreen:not(.quiz-active) .mobile-free-remaining{display:block;margin-left:2px;color:#8290ad;font-size:11px;font-weight:500}
- .home-auth-fullscreen:not(.quiz-active) .home-page>:not(.mobile-home-overview){display:none!important}
- .home-auth-fullscreen:not(.quiz-active) .mobile-bottom-nav{display:none!important}
- .home-auth-fullscreen:not(.quiz-active) .main>.content{padding:0;min-height:100dvh}
-}
