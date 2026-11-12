@@ -1330,3 +1330,16 @@ img,svg{max-width:100%}
 .adsterra-slot>span{display:block;margin:0 0 6px;color:#8290ad;font-size:9px;letter-spacing:.7px;text-transform:uppercase}
 .adsterra-slot iframe{display:block;width:300px;height:250px;max-width:100%;border:0;background:transparent}
 @media(max-width:520px){.adsterra-slot{min-height:235px}.adsterra-slot iframe{flex:0 0 auto;max-width:none;transform:scale(.86);transform-origin:top center;margin-bottom:-35px}}
+
+
+/* SMLQUIZ start screen: cards are full, keyboard-accessible navigation targets. */
+.guide-page .page-heading{position:relative;overflow:hidden;padding:30px;border:1px solid #8c7ad744;border-radius:16px;background:radial-gradient(circle at 88% 15%,#8c7ad733,transparent 34%),linear-gradient(120deg,#182842,#111c30);}
+.guide-page .page-heading:after{content:'✦';position:absolute;right:7%;top:8px;font-size:92px;color:#b7a5ff22;transform:rotate(15deg);pointer-events:none}
+.guide-page .page-heading h1{font-size:clamp(30px,4vw,46px);letter-spacing:-1.5px}
+.guide-page .legal-grid{margin-top:20px;gap:15px}
+.guide-page .launch-card{display:block;text-align:left;width:100%;font:inherit;cursor:pointer;transition:transform .18s,border-color .18s,background .18s;min-height:170px}
+.guide-page .launch-card:hover{transform:translateY(-3px);border-color:#a99aff;background:#ffffff0b}
+.guide-page .launch-card:focus-visible{outline:2px solid #a99aff;outline-offset:3px}
+.guide-page .launch-card small{display:inline-block;margin-top:8px;color:#b7a5ff;font-size:8px;letter-spacing:1px}
+.guide-page .map-card{opacity:.78}
+@media(max-width:520px){.guide-page .page-heading{padding:23px}.guide-page .legal-grid{grid-template-columns:1fr}.guide-page .launch-card{min-height:unset}}
