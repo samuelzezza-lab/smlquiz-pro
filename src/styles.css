@@ -1349,3 +1349,62 @@ img,svg{max-width:100%}
 .guide-page .launch-card .launch-emoji{display:block;width:54px;height:54px;margin:13px 0 12px;border:1px solid rgba(167,139,250,.22);border-radius:16px;background:linear-gradient(145deg,rgba(167,139,250,.18),rgba(72,224,187,.08));box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:29px;line-height:52px;text-align:center;}
 .guide-page .launch-card h3{margin:0 0 8px;font-size:14px;}
 .guide-page .launch-card p{min-height:48px;}
+
+
+/* Prestazioni mobile: evita blur e filtri costosi durante lo scorrimento e i cambi schermata. */
+@media (max-width: 800px) {
+  .topbar,
+  .mobile-page-active .topbar,
+  .sidebar,
+  .mobile-bottom-nav,
+  .cookie-banner,
+  .modal-backdrop {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .topbar,
+  .mobile-page-active .topbar {
+    background: #050915 !important;
+  }
+  .sidebar {
+    background: #080e1b !important;
+  }
+  .mobile-bottom-nav {
+    background: #080e1b !important;
+  }
+  .cookie-banner,
+  .modal-backdrop {
+    box-shadow: none !important;
+  }
+  .subject-card,
+  .panel,
+  .stat,
+  .launch-card {
+    transform: none;
+  }
+  .subject-card:hover,
+  .launch-card:hover,
+  .primary:hover {
+    transform: none;
+    filter: none;
+  }
+  .subject-card,
+  .launch-card,
+  .nav-link,
+  .primary,
+  .secondary {
+    transition-duration: 0.12s;
+  }
+  .subject-card,
+  .panel,
+  .stat {
+    contain: layout paint;
+  }
+}
+@media (max-width: 520px) {
+  .home-page .subject-card,
+  .guide-page .launch-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 170px;
+  }
+}
