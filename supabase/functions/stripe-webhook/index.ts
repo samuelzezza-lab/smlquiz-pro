@@ -1,5 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-const allowed = new Map([['price_1UWEWpBCybXKHSfREO6VERj5',{credits:5,amount:100}],['price_1UWEYHBCybXKHSfRXIqOpDZU',{credits:10,amount:200}],['price_1UWEZwBCybXKHSfRuy0N3K0X',{credits:15,amount:300}]]);
+const allowed = new Map([["price_1UaMP6BCybXKHSfRPRAEBhfX",{credits:5,amount:100}],["price_1UaMQKBCybXKHSfRKYkb8GaP",{credits:20,amount:500}],["price_1UWEWpBCybXKHSfREO6VERj5",{credits:5,amount:100}],["price_1UWEYHBCybXKHSfRXIqOpDZU",{credits:10,amount:200}],["price_1UWEZwBCybXKHSfRuy0N3K0X",{credits:15,amount:300}]]);
+const supportProducts = new Map([["price_1UaMRGBCybXKHSfReuEL1WYK",{amount:100}]]);
 function equalHex(a:string,b:string){if(a.length!==b.length)return false;let out=0;for(let i=0;i<a.length;i++)out|=a.charCodeAt(i)^b.charCodeAt(i);return out===0;}
 async function signature(secret:string,timestamp:string,body:string){const key=await crypto.subtle.importKey("raw",new TextEncoder().encode(secret),{name:"HMAC",hash:"SHA-256"},false,["sign"]);const signed=await crypto.subtle.sign("HMAC",key,new TextEncoder().encode(timestamp+"."+body));return [...new Uint8Array(signed)].map(x=>x.toString(16).padStart(2,"0")).join("");}
 Deno.serve(async(req:Request)=>{
@@ -20,10 +21,16 @@ Deno.serve(async(req:Request)=>{
   const userId=String(metadata.user_id??session.client_reference_id??"");
   const credits=Number(metadata.credits??0);
   const priceId=String(metadata.price_id??"");
+  const productType=String(metadata.product_type??"credits");
   const amount=Number(session.amount_total??0);
   const selected=allowed.get(priceId);
+  const support=supportProducts.get(priceId);
+  if(productType==="support"){
+   if(!userId||!support||amount!==support.amount||session.currency!=="eur"||(session.client_reference_id&&session.client_reference_id!==userId))return new Response("Invalid support checkout metadata",{status:400});
+   return Response.json({received:true,support:true,creditsAdded:0});
+  }
   const consentAt=Date.parse(String(metadata.digital_content_consent_at??""));
-  if(!userId||!selected||selected.credits!==credits||selected.amount!==amount||session.currency!=="eur"||
+  if(productType!=="credits"||!userId||!selected||selected.credits!==credits||selected.amount!==amount||session.currency!=="eur"||
      metadata.digital_content_consent!=="true"||!Number.isFinite(consentAt)||consentAt>Date.now()+60_000||
      (session.client_reference_id&&session.client_reference_id!==userId)){
    return new Response("Invalid checkout metadata",{status:400});
