@@ -11,7 +11,9 @@ OPENAI_KEY = os.getenv("OPENAI_API_KEY", "")
 MODEL = os.getenv("OPENAI_MODEL", "gpt-4.1-mini")
 TARGET = min(300, int(os.getenv("TARGET_PER_MATERIA", "300")))
 API = SUPABASE_URL + "/rest/v1"
-HEADERS = {"apikey": SUPABASE_KEY, "Authorization": "Bearer " + SUPABASE_KEY, "Content-Type": "application/json"}
+HEADERS = {"apikey": SUPABASE_KEY, "Content-Type": "application/json"}
+if not SUPABASE_KEY.startswith("sb_secret_"):
+    HEADERS["Authorization"] = "Bearer " + SUPABASE_KEY
 
 def stop(msg):
     print("\nATTENZIONE: " + str(msg))
