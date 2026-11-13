@@ -25,6 +25,21 @@ def db_get(table, params):
     if not r.ok: stop("Lettura database non riuscita (" + table + "): " + r.text[:300])
     return r.json()
 
+def db_get_all(table, params):
+    """Legge tutte le righe a pagine, anche quando una tabella supera 1.000 record."""
+    rows = []
+    offset = 0
+    while True:
+        page_params = dict(params)
+        page_params["limit"] = "1000"
+        page_params["offset"] = str(offset)
+        page = db_get(table, page_params)
+        rows.extend(page)
+        if len(page) < 1000:
+            break
+        offset += 1000
+    return rows
+
 def db_post(table, rows):
     h = dict(HEADERS); h["Prefer"] = "return=representation"
     r = requests.post(API + "/" + table, headers=h, json=rows, timeout=60)
@@ -45,11 +60,11 @@ def main():
         stop("Mancano le chiavi nel file .env. Non inserirle mai qui in chat.")
     try:
         rules = db_get("quiz_generation_rules", {"select":"*", "id":"eq.true"})
-        subjects = db_get("materie", {"select":"id,nome,facolta_id,anno_corso", "order":"facolta_id,anno_corso,nome"})
-        programs = db_get("programmi_standard", {"select":"materia_id,programma", "stato":"eq.pronto"})
-        micros = db_get("materia_microargomenti", {"select":"id,materia_id,numero,titolo,descrizione", "stato":"eq.verificato"})
-        chapters = db_get("capitoli", {"select":"id,materia_id,nome"})
-        quizzes = db_get("quiz_sets", {"select":"id,materia_id,quiz_number,status"})
+        subjects = db_get_all("materie", {"select":"id,nome,facolta_id,anno_corso", "order":"facolta_id,anno_corso,nome"})
+        programs = db_get_all("programmi_standard", {"select":"materia_id,programma", "stato":"eq.pronto"})
+        micros = db_get_all("materia_microargomenti", {"select":"id,materia_id,numero,titolo,descrizione", "stato":"eq.verificato"})
+        chapters = db_get_all("capitoli", {"select":"id,materia_id,nome"})
+        quizzes = db_get_all("quiz_sets", {"select":"id,materia_id,quiz_number,status"})
     except Exception as e: stop(e)
     if not rules: stop("Non trovo le regole di generazione nel database.")
     rule = rules[0]
