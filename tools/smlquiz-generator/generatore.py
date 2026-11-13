@@ -140,6 +140,7 @@ def main():
             if len(valid)!=10:
                 print("Controlli: lotto scartato (domande incomplete o possibili duplicati). Nessuna domanda di questo lotto salvata."); break
             # Insert quiz set, then its ten questions. Never reuse an existing quiz number.
+            quiz = None
             try:
                 quiz=db_post("quiz_sets",{"materia_id":sid,"quiz_number":number,"status":"generating",
                                           "question_count":0,"prompt_version":"smlquiz-local-v1"})[0]
@@ -159,12 +160,11 @@ def main():
                 # Se l'inserimento delle domande è fallito a metà o l'aggiornamento
                 # dello stato non è riuscito, non lascia un quiz incompleto.
                 try:
-                    if 'quiz' in locals() and quiz.get("id"):
+                    if quiz and quiz.get("id"):
                         requests.delete(API+"/domande", headers=HEADERS,
                             params={"quiz_id":"eq."+quiz["id"]}, timeout=60).raise_for_status()
                         requests.delete(API+"/quiz_sets", headers=HEADERS,
                             params={"id":"eq."+quiz["id"]}, timeout=60).raise_for_status()
-                        del quiz
                     print("Salvataggio annullato: ho provato a rimuovere solo il quiz appena creato.")
                 except Exception as rollback_error:
                     print("ATTENZIONE: verifica manualmente il quiz appena creato:", rollback_error)
