@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smlquiz-pwa-v18';
+const CACHE_NAME = 'smlquiz-pwa-v19';
 const APP_SHELL = [
   '/',
   '/manifest.webmanifest',
@@ -38,32 +38,30 @@ self.addEventListener('fetch', event => {
   if (url.origin !== self.location.origin) return;
 
   if (request.mode === 'navigate') {
+    // Prima la versione online: evita che il sito installato mostri una vecchia
+    // schermata dopo una pubblicazione. La cache serve soltanto se manca rete.
     event.respondWith((async () => {
-      const cachedPage = await caches.match('/');
-      const refreshPage = fetch(request).then(response => {
+      try {
+        const response = await fetch(request, { cache: 'no-store' });
         if (response.ok) {
           const copy = response.clone();
-          event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.put('/', copy)));
+          await caches.open(CACHE_NAME).then(cache => cache.put('/', copy));
         }
         return response;
-      });
-      // Se esiste già una copia, mostra subito l'app e aggiorna la cache in background.
-      if (cachedPage) {
-        event.waitUntil(refreshPage.then(() => undefined).catch(() => undefined));
-        return cachedPage;
-      }
-      try {
-        return await refreshPage;
       } catch {
-        return (await caches.match(request)) ||
+        return (await caches.match('/')) ||
+          (await caches.match(request)) ||
           (await caches.match('/offline.html')) ||
-          new Response('Connessione non disponibile', { status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+          new Response('Connessione non disponibile', {
+            status: 503,
+            headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+          });
       }
     })());
     return;
   }
 
-  // Risorse statiche: prima la cache, poi la rete.
+  // Le risorse statiche con nome versionato restano disponibili offline.
   event.respondWith(
     caches.match(request).then(cached => {
       if (cached) return cached;
