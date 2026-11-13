@@ -410,7 +410,21 @@ button,a,select,[role='button'],.nav-link,.answer,.subject-card>button{touch-act
 /* University versus university competition */
 .leaderboard-page{display:grid;gap:22px}
 .university-profile-panel,.university-ranking-panel{padding:clamp(18px,3vw,28px)}
-.university-form-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:20px 0}
+.university-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:20px 0}
+.university-autocomplete{position:relative;min-width:0}
+.university-autocomplete>label{display:block;margin-bottom:8px;color:var(--muted,#9ca3af);font-size:13px;font-weight:650}
+.university-autocomplete>input{display:block;width:100%;min-width:0;min-height:46px;border:1px solid var(--line);border-radius:12px;background:#080f1c;color:var(--text);padding:0 13px;font:inherit}
+.university-suggestions{position:absolute;z-index:30;top:calc(100% + 6px);left:0;right:0;max-height:300px;overflow:auto;border:1px solid var(--line);border-radius:13px;background:#101827;box-shadow:0 16px 38px #0008}
+.university-suggestions button{display:flex;width:100%;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--text);text-align:left;cursor:pointer}
+.university-suggestions button:last-child{border-bottom:0}
+.university-suggestions button:hover{background:#ffffff0c}
+.university-suggestions button span{display:grid;gap:3px;min-width:0}
+.university-suggestions button b{font-size:13px;font-weight:650}
+.university-suggestions button small,.university-no-results{font-size:11px;color:var(--muted,#9ca3af)}
+.university-selected{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;padding:9px 11px;border:1px solid rgba(139,92,246,.45);border-radius:10px;background:rgba(139,92,246,.08);font-size:12px}
+.university-selected button{border:0;background:transparent;color:#b9a3ff;font-weight:700;cursor:pointer}
+.university-no-results{display:block;margin-top:8px}
+
 .university-form-grid label{display:grid;gap:8px;color:var(--muted,#9ca3af);font-size:13px;font-weight:650}
 .university-form-grid input,.university-form-grid select{width:100%;min-width:0;min-height:46px;border:1px solid var(--line);border-radius:12px;background:#080f1c;color:var(--text);padding:0 13px;font:inherit}
 .university-consent{display:flex;align-items:flex-start;gap:10px;margin:4px 0 18px;max-width:850px;line-height:1.5}
