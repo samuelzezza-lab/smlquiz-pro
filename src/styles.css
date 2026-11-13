@@ -1433,3 +1433,32 @@ img,svg{max-width:100%}
   box-shadow:0 5px 18px #0006;
  }
 }
+
+
+/* Modalita esame a schermo intero: interfaccia essenziale su desktop e mobile. */
+.shell.quiz-active .sidebar,
+.shell.quiz-active .topbar,
+.shell.quiz-active .footer,
+.shell.quiz-active .mobile-bottom-nav { display:none !important; }
+.shell.quiz-active { min-height:100dvh; height:100dvh; overflow:hidden; }
+.shell.quiz-active .main { width:100%; min-width:0; min-height:100dvh; height:100dvh; margin:0; overflow-y:auto; }
+.shell.quiz-active .main > .content { width:100%; max-width:none; min-height:100dvh; height:100dvh; padding:clamp(14px,3vw,38px); margin:0; display:flex; align-items:stretch; }
+.shell.quiz-active .quiz-grid { width:100%; max-width:1180px; min-height:100%; margin:auto; display:block; }
+.shell.quiz-active .quiz-column { width:100%; min-height:100%; display:flex; }
+.shell.quiz-active .quiz { width:100%; min-height:calc(100dvh - clamp(28px,6vw,76px)); display:flex; flex-direction:column; justify-content:flex-start; padding:clamp(18px,3vw,38px); }
+.shell.quiz-active .question { font-size:clamp(18px,2vw,25px); line-height:1.5; }
+.shell.quiz-active .answers { gap:12px; }
+.shell.quiz-active .answer { min-height:56px; padding:15px 17px; font-size:clamp(13px,1.1vw,15px); }
+.shell.quiz-active .quiz-bottom { margin-top:auto; padding-top:22px; }
+@media(max-width:800px) {
+ .shell.quiz-active .main > .content { padding:10px; min-height:100dvh; height:100dvh; }
+ .shell.quiz-active .quiz { min-height:calc(100dvh - 20px); padding:17px 14px; border-radius:12px; }
+ .shell.quiz-active .quiz-top { gap:10px; align-items:flex-start; }
+ .shell.quiz-active .quiz-top h2 { font-size:15px; }
+ .shell.quiz-active .quiz-top-actions { gap:7px; }
+ .shell.quiz-active .quiz-top-actions .secondary { padding:8px 9px; font-size:10px; }
+ .shell.quiz-active .question { font-size:18px; margin:10px 0 16px; }
+ .shell.quiz-active .answer { min-height:54px; padding:13px 11px; font-size:12px; }
+ .shell.quiz-active .quiz-bottom { flex-wrap:wrap; gap:8px; }
+ .shell.quiz-active .quiz-bottom > span { display:none; }
+}
