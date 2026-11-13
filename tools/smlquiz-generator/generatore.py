@@ -102,7 +102,19 @@ def main():
         print("- " + s["nome"] + ": " + str(n) + "/" + str(target) + " domande; ne mancano " + str(m))
     if len(plan)>40: print("... e altre",len(plan)-40,"materie")
     print("\nFin qui non è stata chiamata l'IA e non è stato modificato il database.")
-    if input("\nPer iniziare e spendere crediti scrivi GENERA: ").strip() != "GENERA":
+    scelta = input("\nScrivi PROVA per creare SOLO 10 domande di una materia, oppure GENERA per avviare tutte le materie: ").strip()
+    if scelta == "PROVA":
+        candidato = next((x for x in plan if x[2] >= 10 and len(x[3]) < 30), None)
+        if candidato is None:
+            print("Non trovo una materia adatta alla prova (servono almeno 10 domande mancanti e un numero quiz libero).")
+            input("Premi INVIO."); return
+        materia_prova, conteggio_prova, mancanti_prova, quiz_usati_prova = candidato
+        print("\nPROVA LIMITATA: verranno create al massimo 10 domande per questa sola materia:")
+        print(materia_prova["nome"], "| attuali:", conteggio_prova, "| obiettivo:", target)
+        if input("Per confermare SOLO questa prova scrivi CONFERMA PROVA: ").strip() != "CONFERMA PROVA":
+            print("Prova annullata: nessuna modifica al database."); input("Premi INVIO."); return
+        plan = [(materia_prova, conteggio_prova, 10, quiz_usati_prova)]
+    elif scelta != "GENERA":
         print("Annullato: nessuna modifica."); input("Premi INVIO."); return
     client = OpenAI(api_key=OPENAI_KEY)
     for s,count,missing,used in plan:
