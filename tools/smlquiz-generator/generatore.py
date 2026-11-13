@@ -155,7 +155,21 @@ def main():
                 used.add(number); count+=10; remaining-=10
                 print("Quiz",number,"salvato:",count,"/",target)
             except Exception as e:
-                print("Errore durante il salvataggio. Mi fermo per non rischiare altri dati:",e); break
+                # Rollback: rimuove esclusivamente le righe create in questo tentativo.
+                # Se l'inserimento delle domande è fallito a metà o l'aggiornamento
+                # dello stato non è riuscito, non lascia un quiz incompleto.
+                try:
+                    if 'quiz' in locals() and quiz.get("id"):
+                        requests.delete(API+"/domande", headers=HEADERS,
+                            params={"quiz_id":"eq."+quiz["id"]}, timeout=60).raise_for_status()
+                        requests.delete(API+"/quiz_sets", headers=HEADERS,
+                            params={"id":"eq."+quiz["id"]}, timeout=60).raise_for_status()
+                        del quiz
+                    print("Salvataggio annullato: ho provato a rimuovere solo il quiz appena creato.")
+                except Exception as rollback_error:
+                    print("ATTENZIONE: verifica manualmente il quiz appena creato:", rollback_error)
+                print("Errore durante il salvataggio. Mi fermo per non rischiare altri dati:",e)
+                break
     print("\nLavoro terminato. Controlla un campione delle domande prima di renderle disponibili.")
     input("Premi INVIO per chiudere.")
 
