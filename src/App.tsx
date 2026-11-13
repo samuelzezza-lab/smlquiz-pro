@@ -34,12 +34,10 @@ function AdsterraResponsiveBanner(){
  useEffect(()=>{
   const slot=slotRef.current
   if(!slot)return
-  // Mobile advertising is disabled until a safe, single-banner format is configured.
-  const media=window.matchMedia('(max-width: 767px)')
-  if(media.matches){slot.innerHTML='';return}
   const label=document.createElement('span')
   label.textContent='Pubblicità'
   slot.appendChild(label)
+  // Usa su telefono e PC lo stesso banner statico 320x50: niente formato mobile multi-annuncio.
   const options=document.createElement('script')
   options.text='var atOptions = { key: "1450b031594091cbb5829cb034c5f217", format: "iframe", height: 50, width: 320, params: {} };'
   slot.appendChild(options)
