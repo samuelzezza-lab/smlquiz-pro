@@ -145,7 +145,7 @@ def main():
                      "regolamento":rule.get("rule_text",""),
                      "istruzioni":"Scrivi in italiano 10 domande universitarie difficili, pertinenti e non ripetitive. Quattro opzioni A-D come quattro stringhe, una sola corretta. Risposta corretta identica a una delle quattro opzioni. Spiegazione rigorosa e breve. Usa solo microargomenti forniti. Evita domande uguali o parafrasi. Restituisci JSON con chiave questions e campi microargomento_id, concetto_chiave, testo_domanda, opzioni, risposta_corretta, spiegazione."}
             try:
-                res=client.chat.completions.create(model=MODEL,response_format={"type":"json_object"},
+                res=client.chat.completions.create(model=MODEL,response_format={"type":"json_object"},extra_body={"prompt_cache_key":"smlquiz-university-question-generator-v1","prompt_cache_retention":"24h"},
                     messages=[{"role":"system","content":"Sei un professore universitario severo e intransigente. Crea quesiti d’esame di livello alto che richiedano comprensione e ragionamento, con distrattori plausibili. Attieniti esclusivamente al programma e ai microargomenti verificati. Ogni domanda deve essere precisa, univoca e scientificamente corretta. Evita duplicati e parafrasi. Genera esattamente 10 domande in italiano, ciascuna con 4 opzioni A-D, una sola corretta, risposta identica a una delle opzioni e spiegazione breve rigorosa. Restituisci solo JSON con i campi richiesti."},
                               {"role":"user","content":json.dumps(payload,ensure_ascii=False)}])
                 questions=json.loads(res.choices[0].message.content).get("questions",[])
