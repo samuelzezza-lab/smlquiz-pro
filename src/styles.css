@@ -1968,3 +1968,21 @@ img,svg{max-width:100%}
 .active-entitlement-row small{font-size:11px;color:var(--muted);}
 .active-entitlement-row>b{font-size:12px;color:var(--text);text-align:right;white-space:nowrap;}
 @media(max-width:560px){.active-entitlement-row{align-items:flex-start;flex-direction:column;gap:6px}.active-entitlement-row>b{text-align:left;white-space:normal}}
+
+
+.study-daily-goal{margin:18px 0;padding:18px;}
+.study-daily-goal-summary{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:12px 0;}
+.study-daily-goal-summary>strong{font-size:24px;font-variant-numeric:tabular-nums;color:var(--text);}
+.study-daily-goal-summary>span{font-size:12px;color:var(--muted);}
+.study-daily-goal-summary label{display:flex;align-items:center;gap:8px;margin-left:auto;color:var(--muted);font-size:12px;}
+.study-daily-goal-summary input{width:86px;}
+.study-daily-goal-track,.weak-topic-track{height:8px;overflow:hidden;border-radius:99px;background:var(--border);}
+.study-daily-goal-track i,.weak-topic-track i{display:block;height:100%;border-radius:inherit;background:var(--accent,var(--primary));transition:width .25s ease;}
+.study-daily-goal>small{display:block;margin-top:8px;color:var(--muted);font-size:11px;}
+.weak-topic-panel{margin:18px 0;}
+.weak-topic-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(100px,180px);align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--border);}
+.weak-topic-row>div:first-child{display:grid;gap:4px;min-width:0;}
+.weak-topic-row b{font-size:13px;color:var(--text);}
+.weak-topic-row small{font-size:11px;color:var(--muted);}
+.weak-topic-track i{background:var(--danger,var(--accent,var(--primary)));}
+@media(max-width:640px){.study-daily-goal-summary{align-items:flex-start}.study-daily-goal-summary label{width:100%;margin-left:0;justify-content:space-between}.weak-topic-row{grid-template-columns:1fr}.weak-topic-track{max-width:none}}
