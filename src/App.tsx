@@ -318,7 +318,7 @@ export default function App(){
   <div className="quiz-header-center"><div className="timer"><Clock3 size={15}/>{String(Math.floor(seconds/60)).padStart(2,'0')}:{String(seconds%60).padStart(2,'0')}</div><span className="quiz-header-progress">{index+1}/{questions.length}</span></div>
   <div className="quiz-header-desktop-progress"><span>{tr('questionNumber')} {index+1} {tr('of')} {questions.length}</span><b>{Math.round((index+1)/questions.length*100)}%</b></div>
  </div>
- <div className="quiz-progress-track"><i style={{width:((index+1)/questions.length*100)+'%'}}/></div>
+ <div className="quiz-progress-track"><i style={{transform:`scaleX(${(index+1)/questions.length})`}}/></div>
  <div className="quiz-question-area"><div className="quiz-question-meta"><small className="q-label">{tr('questionNumber').toUpperCase()} {String(index+1).padStart(2,'0')}</small><button type="button" className={'bookmark-button '+(isBookmarked(current)?'active':'')} aria-label={isBookmarked(current)?tr('savedLabel'):tr('saveLabel')} onClick={()=>toggleBookmark(current)}>★ <span>{isBookmarked(current)?tr('savedLabel'):tr('saveLabel')}</span></button></div>
  <h3 className="question">{current.testo_domanda}</h3>
  <div className="answers">{(current.opzioni||[]).map((o,i)=><button type="button" key={i} disabled={revealed} aria-pressed={choice===i} onPointerDown={()=>{if(!revealed)setChoice(i)}} onClick={e=>{e.preventDefault();e.stopPropagation();if(!revealed)setChoice(i)}} className={'answer '+(choice===i?'chosen ':'')+(revealed&&answerFeedback?.correctIndex===i?'right ':'')+(revealed&&choice===i&&i!==answerFeedback?.correctIndex?'wrong':'')}><span>{String.fromCharCode(65+i)}</span>{o}</button>)}</div>
@@ -337,7 +337,7 @@ export default function App(){
   <div className="panel study-overview-card study-goal-card">
    <div className="study-overview-top"><span className="study-overview-icon"><Target size={18}/></span><span className="study-overview-kicker">OBIETTIVO DI OGGI</span><span className="study-overview-spacer"/></div>
    <div className="study-goal-count"><strong>{todayQuestionCount}</strong><span>/ {dailyGoal} domande</span></div>
-   <div className="study-goal-track" role="progressbar" aria-label="Progresso obiettivo giornaliero" aria-valuemin={0} aria-valuemax={dailyGoal} aria-valuenow={Math.min(todayQuestionCount,dailyGoal)}><i style={{width:Math.min(100,Math.round(todayQuestionCount/Math.max(1,dailyGoal)*100))+'%'}}/></div>
+   <div className="study-goal-track" role="progressbar" aria-label="Progresso obiettivo giornaliero" aria-valuemin={0} aria-valuemax={dailyGoal} aria-valuenow={Math.min(todayQuestionCount,dailyGoal)}><i style={{transform:`scaleX(${Math.min(1,todayQuestionCount/Math.max(1,dailyGoal))})`}}/></div>
    <div className="study-goal-footer"><span>{todayQuestionCount>=dailyGoal?'Obiettivo raggiunto. Ottimo lavoro!':`Ti mancano ${dailyGoal-todayQuestionCount} domande`}</span><label>Obiettivo<select aria-label="Domande obiettivo giornaliero" value={dailyGoal} onChange={e=>setDailyGoal(Number(e.target.value))}>{[5,10,20,30,50,100].map(n=><option key={n} value={n}>{n} al giorno</option>)}</select></label></div>
   </div>
   <div className="panel study-overview-card study-next-exam-card">
