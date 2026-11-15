@@ -1,0 +1,30 @@
+name: SMLQUIZ uptime monitor
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: smlquiz-uptime
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Check website
+        run: |
+          set -eu
+          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 https://smlquiz.it/ -o /tmp/smlquiz.html
+          grep -qi "SMLQUIZ" /tmp/smlquiz.html
+      - name: Check PWA service worker
+        run: |
+          set -eu
+          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 https://smlquiz.it/sw.js -o /tmp/smlquiz-sw.js
+          grep -q "smlquiz-pwa" /tmp/smlquiz-sw.js
+      - name: Check Supabase authentication endpoint
+        run: |
+          set -eu
+          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 https://fgrwwauwnxvrcgqqpksp.supabase.co/auth/v1/health -o /tmp/smlquiz-auth-health.json
+          test -s /tmp/smlquiz-auth-health.json
