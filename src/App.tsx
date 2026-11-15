@@ -127,7 +127,7 @@ export default function App(){
    return {key:start,label:new Intl.DateTimeFormat('it-IT',{weekday:'short'}).format(date).replace('.',''),count:items.length,accuracy:total?Math.round(correct/total*100):0};
   });
   const week=valid.filter(h=>h.ts>=progressClock-7*dayMs),previous=valid.filter(h=>h.ts>=progressClock-14*dayMs&&h.ts<progressClock-7*dayMs);
-  const accuracy=items=>{const total=items.reduce((n,h)=>n+h.total,0);return total?Math.round(items.reduce((n,h)=>n+h.correct,0)/total*100):0};
+  const accuracy=(items:Attempt[])=>{const total=items.reduce((n,h)=>n+h.total,0);return total?Math.round(items.reduce((n,h)=>n+h.correct,0)/total*100):0};
   const best=[...subjectPerformance].filter(x=>x.total>=10).sort((a,b)=>b.accuracy-a.accuracy||b.total-a.total)[0]||null;
   const durationItems=valid.filter(h=>typeof h.durationSeconds==='number'&&h.durationSeconds>0);
   const avgDuration=durationItems.length?Math.round(durationItems.reduce((n,h)=>n+(h.durationSeconds||0),0)/durationItems.length):null;
