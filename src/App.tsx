@@ -86,7 +86,8 @@ export default function App(){
  const finishRef=useRef<()=>void>(()=>{});
  const answerSubmittingRef=useRef(false);
  const toastTimeoutRef=useRef<number|undefined>(undefined);
- const [careerTab,setCareerTab]=useState<'exams'|'next'|'goal'>('exams');\n const [targetAverage,setTargetAverage]=useState('28'),[nextExamCfu,setNextExamCfu]=useState('6'),[scenarioGrade,setScenarioGrade]=useState('30'),[graduationBonus,setGraduationBonus]=useState('0'),[graduationTarget,setGraduationTarget]=useState('110'),[remainingCfu,setRemainingCfu]=useState('');
+ const [careerTab,setCareerTab]=useState<'exams'|'next'|'goal'>('exams');
+ const [targetAverage,setTargetAverage]=useState('28'),[nextExamCfu,setNextExamCfu]=useState('6'),[scenarioGrade,setScenarioGrade]=useState('30'),[graduationBonus,setGraduationBonus]=useState('0'),[graduationTarget,setGraduationTarget]=useState('110'),[remainingCfu,setRemainingCfu]=useState('');
 
  const [studyDataReady,setStudyDataReady]=useState(false);
  const [exams,setExams]=useState(()=>{try{const saved=JSON.parse(localStorage.getItem('smlquiz.exams.v1')||'null');if(!Array.isArray(saved))return [];const defaultName=t(language,'examNameDefault');const legacyDefaults=saved.length===2&&saved[0]?.name===defaultName+' 1'&&saved[0]?.grade==='28'&&saved[0]?.cfu==='6'&&saved[1]?.name===defaultName+' 2'&&saved[1]?.grade==='30'&&saved[1]?.cfu==='9';return legacyDefaults?[]:saved.map((e:any,i:number)=>({name:e.name||defaultName+' '+(i+1),grade:String(e.grade??''),cfu:String(e.cfu??'')}))}catch{return []}})
