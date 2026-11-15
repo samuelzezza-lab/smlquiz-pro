@@ -32,3 +32,8 @@ begin
   v_def := replace(v_def, 'FROM generate_series(1,30) n', 'FROM generate_series(1, (SELECT coalesce(max(quiz_number),0)+1 FROM public.quiz_sets WHERE materia_id=p_materia_id)) n');
   execute v_def;
 end $$;
+
+-- Harden the immutable validation helper and index frequently joined foreign keys.
+alter function public.quiz_options_are_valid(jsonb,text) set search_path = '';
+create index if not exists user_profiles_university_id_idx on public.user_profiles(university_id);
+create index if not exists user_subject_entitlements_materia_id_idx on public.user_subject_entitlements(materia_id);
