@@ -29,9 +29,9 @@ Deno.serve(async(req:Request)=>{
  const admin=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
  try{
   const event=JSON.parse(raw),obj=event.data?.object;
-  if(!["checkout.session.completed","invoice.paid","customer.subscription.deleted"].includes(event.type))return Response.json({received:true,ignored:true});
+  if(!["checkout.session.completed","checkout.session.async_payment_succeeded","invoice.paid","customer.subscription.deleted"].includes(event.type))return Response.json({received:true,ignored:true});
   let args:any={p_event_id:event.id,p_event_type:event.type};
-  if(event.type==="checkout.session.completed"){
+  if(event.type==="checkout.session.completed"||event.type==="checkout.session.async_payment_succeeded"){
     const session=obj,metadata=session?.metadata??{},priceId=String(metadata.price_id??""),product=products.get(priceId);
     if(!product)return new Response("Unknown price", {status:400});
     if(session.mode!==product.mode||session.currency!=="eur"||Number(session.amount_total)!==product.amount)return new Response("Checkout amount or mode mismatch",{status:400});
