@@ -11,7 +11,7 @@ export const legalDocuments:LegalDocument[] = [
   {heading:'Account e sicurezza',text:'La richiesta di cancellazione elimina o rende non più direttamente identificabili i dati dell’account presenti nei sistemi applicativi, fatti salvi i dati che devono essere conservati per obblighi di legge o per accertare, esercitare o difendere un diritto.'},
   {heading:'Contatti e aggiornamenti',text:'Contatto privacy: smlquiz@virgilio.it. L’interessato può inoltre proporre reclamo al Garante per la protezione dei dati personali.'}
  ]},
- {key:'cookies',title:'Cookie e tecnologie similari',summary:'Cookie tecnici, preferenze e pubblicità di terze parti.',draft:false,sections:[
+ {key:'cookies',title:'Cookie e tecnologie similari',summary:'Archiviazione tecnica, preferenze e informativa sull’eventuale pubblicità futura.',draft:false,sections:[
   {heading:'Tecnologie necessarie',text:'SMLQUIZ utilizza archiviazione tecnica del browser per ricordare preferenze, sessioni e alcuni dati di studio. I dati salvati localmente restano sul dispositivo; per gli utenti autenticati, esami, domande salvate, raccolte e calendario possono essere sincronizzati nell’account.'},
   {heading:'Preferenze',text:'Le preferenze attualmente disponibili vengono salvate sul dispositivo e possono essere modificate dalle impostazioni del sito. Questa preferenza locale non costituisce, da sola, una piattaforma di gestione del consenso pubblicitario.'},
   {heading:'Pubblicità',text:'Al momento non è attivo alcun fornitore pubblicitario: non vengono caricati annunci, tag, cookie pubblicitari o script di monetizzazione. Prima di attivare un circuito verranno verificati i requisiti applicabili e integrato un sistema di consenso idoneo, quando necessario.'},
