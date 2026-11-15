@@ -2054,3 +2054,24 @@ img,svg{max-width:100%}
 .weak-topic-row small{font-size:11px;color:var(--muted);}
 .weak-topic-track i{background:var(--danger,var(--accent,var(--primary)));}
 @media(max-width:640px){.study-daily-goal-summary{align-items:flex-start}.study-daily-goal-summary label{width:100%;margin-left:0;justify-content:space-between}.weak-topic-row{grid-template-columns:1fr}.weak-topic-track{max-width:none}}
+
+
+/* Searchable subject pickers in the purchase area */
+.purchase-subject-picker{flex:1 1 100%;min-width:0;display:flex;flex-direction:column;gap:7px}
+.purchase-subject-picker>label{font-size:12px;font-weight:700;color:var(--muted,#9aa7bf)}
+.purchase-subject-picker>input{width:100%;min-width:0;padding:11px 12px;color:inherit;background:#0b1325;border:1px solid rgba(148,163,184,.25);border-radius:10px;outline:none}
+.purchase-subject-picker>input:focus{border-color:var(--accent,#48e0bb);box-shadow:0 0 0 3px rgba(72,224,187,.10)}
+.purchase-subject-results{display:flex;flex-direction:column;max-height:190px;overflow:auto;border:1px solid rgba(148,163,184,.16);border-radius:10px;background:rgba(7,14,29,.55)}
+.purchase-subject-results>button{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 11px;text-align:left;color:inherit;background:transparent;border:0;border-bottom:1px solid rgba(148,163,184,.10);cursor:pointer;font:inherit;font-size:13px}
+.purchase-subject-results>button:last-child{border-bottom:0}
+.purchase-subject-results>button:hover,.purchase-subject-results>button.selected{background:rgba(72,224,187,.10)}
+.purchase-subject-results>button.selected{color:var(--accent,#48e0bb)}
+.purchase-subject-results small,.purchase-selected{font-size:11px;color:var(--muted,#9aa7bf)}
+.purchase-no-results{padding:12px}
+.session-results>label{display:flex;align-items:center;gap:9px;padding:8px 10px;border-bottom:1px solid rgba(148,163,184,.10);font-size:12px;cursor:pointer}
+.session-results>label:last-child{border-bottom:0}
+.session-results>label.checked{background:rgba(72,224,187,.08)}
+.session-results>label input{accent-color:var(--accent,#48e0bb)}
+.session-results>label span{flex:1}
+.session-results>label small{color:var(--muted,#9aa7bf)}
+.purchase-selected{display:block;padding-top:2px}
