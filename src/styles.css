@@ -1861,3 +1861,24 @@ img,svg{max-width:100%}
   .mobile-page-active .calculator-page .calc-overview-card>small { font-size:7px; }
   .mobile-page-active .stats { gap:7px; }
 }
+
+/* Four-plan checkout */
+.pricing-panel { display:flex; flex-direction:column; gap:14px; }
+.pricing-plan { display:flex; flex-wrap:wrap; align-items:center; gap:14px; padding:17px; border:1px solid var(--border,rgba(148,163,184,.18)); border-radius:16px; background:rgba(255,255,255,.018); }
+.pricing-plan>div { flex:1 1 280px; min-width:0; }
+.pricing-plan>div strong { display:block; font-size:15px; }
+.pricing-plan>div p { margin:7px 0; color:var(--muted,#9aa7bf); font-size:13px; line-height:1.55; }
+.pricing-plan>div small,.pricing-plan>small { color:var(--muted,#9aa7bf); font-size:11px; }
+.pricing-plan>b { font-size:19px; white-space:nowrap; }
+.pricing-plan>b small { display:block; font-size:11px; color:var(--muted,#9aa7bf); text-align:right; }
+.pricing-plan>select { flex:1 1 100%; min-width:0; width:100%; padding:11px 12px; color:inherit; background:#0b1325; border:1px solid rgba(148,163,184,.25); border-radius:10px; }
+.pricing-plan>select[multiple] { min-height:150px; }
+.pricing-plan>button { margin-left:auto; min-width:112px; }
+.pricing-plan.featured { border-color:rgba(72,224,187,.45); background:linear-gradient(120deg,rgba(72,224,187,.07),rgba(167,139,250,.06)); }
+@media(max-width:620px) {
+ .pricing-plan { align-items:flex-start; gap:10px; padding:13px; }
+ .pricing-plan>div { flex-basis:100%; }
+ .pricing-plan>b { margin-right:auto; }
+ .pricing-plan>button { margin-left:0; }
+ .pricing-plan>select { font-size:14px; }
+}
