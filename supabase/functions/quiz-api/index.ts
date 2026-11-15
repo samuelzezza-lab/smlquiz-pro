@@ -203,7 +203,7 @@ Deno.serve(async (req: Request) => {
         admin.from("user_site_subscriptions").select("id,status,current_period_end,cancel_at_period_end").eq("user_id", userId)
           .in("status", ["active", "trialing"]).or("current_period_end.is.null,current_period_end.gt." + new Date().toISOString()).limit(1),
         admin.from("user_subject_entitlements").select("id,materia_id,entitlement_type,starts_at,expires_at").eq("user_id", userId)
-          .lte("starts_at", new Date().toISOString()).gt("expires_at", new Date().toISOString()).limit(1),
+          .lte("starts_at", new Date().toISOString()).gt("expires_at", new Date().toISOString()),
         admin.from("quiz_attempts").select("materia_id").eq("user_id", userId)
           .eq("status", "completed").eq("access_source", "free"),
       ]);
