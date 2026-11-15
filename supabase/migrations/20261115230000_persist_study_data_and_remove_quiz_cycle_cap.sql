@@ -34,8 +34,6 @@ alter function public.quiz_options_are_valid(jsonb,text) set search_path = '';
 create index if not exists user_profiles_university_id_idx on public.user_profiles(university_id);
 create index if not exists user_subject_entitlements_materia_id_idx on public.user_subject_entitlements(materia_id);
 
--- The fallback status branch must also work for any non-empty pool size.
-do $$ declare v_def text; begin v_def:=pg_get_functiondef('public.get_next_materia_quiz(uuid,text)'::regprocedure); v_def:=replace(v_def,'v_total=30','v_total>0'); execute v_def; end $$;
 
 -- Keep legacy SECURITY DEFINER RPCs off the public/authenticated API surface.
 revoke execute on function public.get_next_materia_quiz(uuid,text) from public, anon, authenticated;
