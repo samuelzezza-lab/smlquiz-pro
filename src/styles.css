@@ -1775,3 +1775,18 @@ img,svg{max-width:100%}
 .calc-required-result p{margin:7px 0 0;color:#93a2bd;font-size:10px;line-height:1.6}
 @media(max-width:650px){.calculator-page .calc-planner{padding:16px}.calc-planner-fields{grid-template-columns:1fr 1fr}.calc-planner-fields label:first-child{grid-column:1/-1}.calc-planner-results{grid-template-columns:1fr 1fr}}
 @media(max-width:420px){.calc-planner-fields,.calc-planner-results{grid-template-columns:1fr}.calc-planner-fields label:first-child{grid-column:auto}}
+
+
+/* Area Studio: flusso concreto tra domande salvate, raccolte e flashcard */
+.study-selected-collection{display:grid;gap:9px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.study-selected-collection>b{font-size:11px;color:#cdd8ef}
+.study-selected-collection>p{margin:0;color:#8e9bb4;font-size:10px;line-height:1.6}
+.study-saved-questions{margin-top:16px}
+.study-saved-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(145px,210px) auto;align-items:center;gap:12px;padding:12px 0;border-top:1px solid rgba(151,171,215,.12)}
+.study-saved-row>span{min-width:0;color:#dce4f5;font-size:11px;line-height:1.55;overflow-wrap:anywhere}
+.study-saved-question{display:grid;gap:5px;min-width:0}
+.study-saved-question>b{color:#dce4f5;font-size:11px;line-height:1.55;overflow-wrap:anywhere}
+.study-saved-question>small{color:#8797b4;font-size:9px;line-height:1.4}
+.study-saved-row select{width:100%;min-width:0;min-height:36px;border:1px solid var(--line);border-radius:8px;padding:7px 9px;background:#0b1424;color:#dce4f5;font:inherit;font-size:10px}
+.study-saved-row .simple-link{white-space:nowrap}
+@media(max-width:620px){.study-saved-row{grid-template-columns:minmax(0,1fr) auto;gap:8px}.study-saved-row select{grid-column:1/-1;grid-row:2}.study-saved-row .simple-link{grid-column:2;grid-row:1}}
