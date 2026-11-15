@@ -95,15 +95,18 @@ export default function App(){
   setStudyDataReady(false);
   supabase.from('user_study_data').select('data').eq('user_id',user.id).maybeSingle().then(({data,error})=>{
    if(!active)return;
-   if(error){console.warn('Sincronizzazione studio non disponibile:',error.message);notify('Non riesco a sincronizzare i dati di studio: restano salvati su questo dispositivo.');setStudyDataReady(true);return}
+   if(error){console.warn('Sincronizzazione studio non disponibile:',error.message);notify('Non riesco a sincronizzare i dati di studio: restano salvati su questo dispositivo.');return}
+   const localOwner=localStorage.getItem('smlquiz.studyDataOwner.v1');
+   if(localOwner&&localOwner!==user.id){setExams([]);setSavedQuestions([]);setStudyCollections([]);setStudyExams([]);setDailyGoal(20)}
    const cloud=(data?.data||{}) as StudyCloudData;
    if(Array.isArray(cloud.exams))setExams(cloud.exams.map(e=>({name:String(e.name||''),grade:String(e.grade??''),cfu:String(e.cfu??'')})));
    if(Array.isArray(cloud.savedQuestions))setSavedQuestions(cloud.savedQuestions);
    if(Array.isArray(cloud.studyCollections))setStudyCollections(cloud.studyCollections);
    if(Array.isArray(cloud.studyExams))setStudyExams(cloud.studyExams);
    if(Number.isFinite(Number(cloud.dailyGoal)))setDailyGoal(Math.max(5,Math.min(200,Number(cloud.dailyGoal))));
+   localStorage.setItem('smlquiz.studyDataOwner.v1',user.id);
    setStudyDataReady(true);
-  }).catch(error=>{if(active){console.warn('Sincronizzazione studio fallita:',error);setStudyDataReady(true)}});
+  }).catch(error=>{if(active){console.warn('Sincronizzazione studio fallita:',error);notify('Sincronizzazione cloud temporaneamente non disponibile.');}});
   return()=>{active=false};
  },[user?.id]);
  useEffect(()=>{
@@ -271,7 +274,7 @@ export default function App(){
   finally{setAuthBusy(false)}
  }
  async function googleAuth(){if(authBusy||!supabaseReady){if(!supabaseReady)notify(tr('accessNotConfigured'));return}setAuthBusy(true);try{const client=requireSupabase();const {error}=await client.auth.signInWithOAuth({provider:"google",options:{redirectTo:location.origin}});if(error)throw error}catch(err){notify(err instanceof Error?err.message:tr('googleAccessUnavailable'));setAuthBusy(false)}}
- async function logout(){try{if(supabase){const {error}=await supabase.auth.signOut({scope:'local'});if(error)throw error}}catch(err){notify(err instanceof Error?err.message:tr('logoutFailed'));return}Object.keys(localStorage).filter(k=>k.startsWith('smlquiz.')).forEach(k=>localStorage.removeItem(k));Object.keys(sessionStorage).filter(k=>k.startsWith('smlquiz.')).forEach(k=>sessionStorage.removeItem(k));setUser(null);setHistory([]);setWallet({paidCredits:0,freeUsed:0,freeRemaining:5,ledger:[]});setAttemptId(null);setQuestions([]);setSubject(null);setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);secondsRef.current=0;setStarted(null);setStreak({current_streak:0,longest_streak:0});setAchievements([]);setWeakTopics([]);setLeaderboardRows([]);setDisplayName('');setLeaderboardOptIn(false);setSavedQuestions([]);setReviewQuestions([]);setWrongQuestions([]);setPage('guide');window.history.replaceState({page:'guide'},'','/'+(location.search||'')+location.hash);setWelcomeMessage('');notify(tr('logoutSuccess'))}
+ async function logout(){try{if(supabase){const {error}=await supabase.auth.signOut({scope:'local'});if(error)throw error}}catch(err){notify(err instanceof Error?err.message:tr('logoutFailed'));return}Object.keys(localStorage).filter(k=>k.startsWith('smlquiz.')).forEach(k=>localStorage.removeItem(k));Object.keys(sessionStorage).filter(k=>k.startsWith('smlquiz.')).forEach(k=>sessionStorage.removeItem(k));setUser(null);setHistory([]);setWallet({paidCredits:0,freeUsed:0,freeRemaining:5,ledger:[]});setAttemptId(null);setQuestions([]);setSubject(null);setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);secondsRef.current=0;setStarted(null);setStreak({current_streak:0,longest_streak:0});setAchievements([]);setWeakTopics([]);setLeaderboardRows([]);setDisplayName('');setLeaderboardOptIn(false);setSavedQuestions([]);setStudyCollections([]);setStudyExams([]);setExams([]);setDailyGoal(20);setStudyDataReady(false);setReviewQuestions([]);setWrongQuestions([]);setPage('guide');window.history.replaceState({page:'guide'},'','/'+(location.search||'')+location.hash);setWelcomeMessage('');notify(tr('logoutSuccess'))}
  async function refreshWallet(){if(!supabase||!user)return;const [w,s]=await Promise.all([supabase.functions.invoke('quiz-api',{body:{action:'wallet'}}),supabase.functions.invoke('quiz-api',{body:{action:'streaks'}})]);if(!w.error&&w.data)setWallet(w.data);if(!s.error&&s.data){setStreak(s.data.streak);setAchievements(s.data.achievements||[])}}
  async function redeemCoupon(e:FormEvent){e.preventDefault();if(!supabase||!couponCode.trim())return;setCouponBusy(true);try{const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'coupon',code:couponCode.trim()}});if(error)throw error;if(data?.error)throw new Error(data.error);setCouponCode('');notify(tr('couponApplied').replace('{n}',String(data.credits_added)));void refreshWallet()}catch(err){notify(err instanceof Error?err.message:tr('invalidCoupon'))}finally{setCouponBusy(false)}}
  async function sendQuestionReport(e:FormEvent){e.preventDefault();if(!supabase||!current||!attemptId)return;try{const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'report',questionId:current.id,category:reportCategory,details:reportDetails}});if(error)throw error;if(data?.error)throw new Error(data.error);setReportOpen(false);setReportDetails('');notify(tr('reportSent'))}catch(err){notify(err instanceof Error?err.message:tr('reportFailed'))}}
