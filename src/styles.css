@@ -1907,3 +1907,14 @@ img,svg{max-width:100%}
 @media(max-width:620px) {
  .sml-ad-slot { min-height:100px; margin:12px 0; }
 }
+
+
+/* Simulatore carriera: inserimento reale e obiettivo laurea */
+.calculator-page .calc-empty-state{display:grid;gap:5px;margin-top:14px;padding:14px;border:1px dashed rgba(151,171,215,.28);border-radius:10px;background:#ffffff04}
+.calculator-page .calc-empty-state strong{font-size:11px;color:#dce5f7}
+.calculator-page .calc-empty-state span{font-size:10px;line-height:1.55;color:#91a0bb}
+.calculator-page .calc-graduation-goal{border-color:#a78bfa35;background:linear-gradient(145deg,#151b32,#0b1424)}
+.calculator-page .calc-graduation-fields label small{font-size:9px;color:#7788a7;line-height:1.4}
+.calculator-page .calc-graduation-result{border-color:#a78bfa45;background:#a78bfa0b}
+.calculator-page .calc-graduation-result strong{color:#c4b5ff}
+@media(max-width:650px){.calculator-page .calc-graduation-fields{grid-template-columns:1fr}.calculator-page .calc-graduation-fields label:first-child{grid-column:auto}}
