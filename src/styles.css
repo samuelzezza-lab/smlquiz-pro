@@ -1959,3 +1959,12 @@ img,svg{max-width:100%}
 .study-collection-add{display:flex;align-items:end;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
 .study-collection-add label{flex:1;}
 @media(max-width:760px){.study-library-controls{grid-template-columns:1fr}.study-collection-create{align-items:stretch;flex-direction:column}.study-delete-collection{justify-self:start}.study-collection-add{align-items:stretch;flex-direction:column}.study-flashcard-actions{flex-wrap:wrap}.study-flashcard-actions button{flex:1;justify-content:center;min-width:0}}
+
+
+.active-entitlements-panel{margin:0 0 18px;}
+.active-entitlement-row{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:13px 0;border-top:1px solid var(--border);}
+.active-entitlement-row>div{display:grid;gap:4px;min-width:0;}
+.active-entitlement-row strong{font-size:13px;color:var(--text);}
+.active-entitlement-row small{font-size:11px;color:var(--muted);}
+.active-entitlement-row>b{font-size:12px;color:var(--text);text-align:right;white-space:nowrap;}
+@media(max-width:560px){.active-entitlement-row{align-items:flex-start;flex-direction:column;gap:6px}.active-entitlement-row>b{text-align:left;white-space:normal}}
