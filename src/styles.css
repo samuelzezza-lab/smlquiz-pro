@@ -2075,3 +2075,25 @@ img,svg{max-width:100%}
 .session-results>label span{flex:1}
 .session-results>label small{color:var(--muted,#9aa7bf)}
 .purchase-selected{display:block;padding-top:2px}
+
+
+/* Progressi: elenchi lunghi contenuti in pannelli a scorrimento */
+.progress-subject-list,
+.progress-weak-topic-list{
+  max-height:380px;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+  padding-right:6px;
+}
+.progress-subject-list:focus-visible,
+.progress-weak-topic-list:focus-visible{outline:2px solid var(--accent,#9b8cff);outline-offset:3px;border-radius:8px}
+.progress-subject-list::-webkit-scrollbar,
+.progress-weak-topic-list::-webkit-scrollbar{width:7px}
+.progress-subject-list::-webkit-scrollbar-thumb,
+.progress-weak-topic-list::-webkit-scrollbar-thumb{background:rgba(160,174,205,.28);border-radius:99px}
+.progress-subject-list::-webkit-scrollbar-track,
+.progress-weak-topic-list::-webkit-scrollbar-track{background:rgba(255,255,255,.035);border-radius:99px}
+@media(max-width:640px){
+  .progress-subject-list,.progress-weak-topic-list{max-height:320px;padding-right:4px}
+}
