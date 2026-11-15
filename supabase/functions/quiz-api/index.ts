@@ -196,7 +196,7 @@ Deno.serve(async (req: Request) => {
     }
 
     if (action === "wallet") {
-      const [wallet, ledger, siteSubscriptions, subjectEntitlements] = await Promise.all([
+      const [wallet, ledger, siteSubscriptions, subjectEntitlements, freeAttempts] = await Promise.all([
         admin.from("user_quiz_wallets").select("balance").eq("user_id", userId).maybeSingle(),
         admin.from("quiz_credit_ledger").select("id,delta,reason,description,created_at")
           .eq("user_id", userId).order("created_at", { ascending: false }).limit(30),
@@ -204,11 +204,21 @@ Deno.serve(async (req: Request) => {
           .in("status", ["active", "trialing"]).or("current_period_end.is.null,current_period_end.gt." + new Date().toISOString()).limit(1),
         admin.from("user_subject_entitlements").select("id").eq("user_id", userId)
           .lte("starts_at", new Date().toISOString()).gt("expires_at", new Date().toISOString()).limit(1),
+        admin.from("quiz_attempts").select("materia_id").eq("user_id", userId)
+          .eq("status", "completed").eq("access_source", "free"),
       ]);
       if (wallet.error) throw wallet.error;
       if (ledger.error) throw ledger.error;
       if (siteSubscriptions.error) throw siteSubscriptions.error;
       if (subjectEntitlements.error) throw subjectEntitlements.error;
+      if (freeAttempts.error) throw freeAttempts.error;
+      const freeUsedBySubject: Record<string, number> = {};
+      for (const attempt of freeAttempts.data ?? []) {
+        freeUsedBySubject[attempt.materia_id] = (freeUsedBySubject[attempt.materia_id] ?? 0) + 1;
+      }
+      const freeRemainingBySubject = Object.fromEntries(
+        Object.entries(freeUsedBySubject).map(([materiaId, used]) => [materiaId, Math.max(0, 5 - used)]),
+      );
       const paidCredits = isOwner ? 1000000000 : (wallet.data?.balance ?? 0);
       const hasAdsRemoved = isOwner || paidCredits > 0
         || (siteSubscriptions.data?.length ?? 0) > 0
@@ -218,6 +228,8 @@ Deno.serve(async (req: Request) => {
         freeUsed: 0,
         freeRemaining: 5,
         freePerSubject: true,
+        freeUsedBySubject,
+        freeRemainingBySubject,
         hasAdsRemoved,
         ownerUnlimited: isOwner,
         ledger: ledger.data ?? [],
