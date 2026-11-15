@@ -14,7 +14,7 @@ const catalog = new Map([
   ["price_1Uc9w5BCybXKHSfRCFwx5NAT",{type:"single_subject",amount:199,mode:"payment",subjectCount:1}],
   ["price_1Uc9yMBCybXKHSfRP4SJ4wuL",{type:"jolly_100",amount:349,mode:"payment",subjectCount:0}],
   ["price_1UcA1EBCybXKHSfRwyemWunq",{type:"session",amount:499,mode:"payment",subjectCount:5}],
-  ["price_1UcA5OBCybXKHSfRTyXzcBji",{type:"site_subscription",amount:699,mode:"subscription",subjectCount:0}]
+  ["price_1UcC6ZBCybXKHSfRotiMdjz9",{type:"site_subscription",amount:999,mode:"subscription",subjectCount:0}]
 ]);
 Deno.serve(async(req:Request)=>{
  const origin=req.headers.get("Origin");
