@@ -1554,3 +1554,23 @@ img,svg{max-width:100%}
  .subject-ranking-row>span:last-child{font-size:10px}
 }
 @media(max-width:380px){.subject-podium-card>em{font-size:8px}.subject-my-rank b span{display:block}}
+
+/* Dashboard progressi: attività settimanale e indicatori calcolati dai tentativi reali. */
+.progress-insights-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(280px,.85fr);gap:16px;margin:16px 0}
+.progress-activity-panel,.progress-insight-panel{min-width:0}
+.progress-week-summary{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:20px 0 12px}
+.progress-week-summary>b{font-size:38px;line-height:1;color:#e9e4ff;letter-spacing:-1.5px}
+.progress-week-summary>span{color:#c5cee0;font-size:12px}
+.progress-week-summary>small{margin-left:auto;color:#a99aff;font-size:10px}
+.progress-week-chart{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:9px;align-items:end;height:128px;padding:10px 4px 0;border-top:1px solid var(--line)}
+.progress-day{display:flex;min-width:0;height:100%;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px}
+.progress-day-bar{display:flex;align-items:flex-end;justify-content:center;width:100%;height:76px;border-radius:7px;background:#ffffff08;overflow:hidden}
+.progress-day-bar>i{display:block;width:min(24px,65%);min-height:3px;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#b8a5ff,#7865cf)}
+.progress-day>b{color:#dce3f2;font-size:11px}
+.progress-day>small{color:#8e9bb4;font-size:10px;text-transform:capitalize}
+.progress-insight-metric{display:grid;grid-template-columns:1fr auto;gap:4px 12px;padding:13px 0;border-bottom:1px solid var(--line)}
+.progress-insight-metric:last-child{border-bottom:0}
+.progress-insight-metric>span{color:#aab6ce;font-size:11px}
+.progress-insight-metric>b{grid-column:2;grid-row:1/3;align-self:center;color:#d8ceff;font-size:22px}
+.progress-insight-metric>small{color:#8492ae;font-size:10px}
+@media(max-width:760px){.progress-insights-grid{grid-template-columns:1fr}.progress-week-summary>small{width:100%;margin-left:0}}
