@@ -1702,3 +1702,32 @@ img,svg{max-width:100%}
 
 /* Desktop: course left, timer/progress centered, exit action on the right. */
 @media(min-width:768px){.quiz-responsive-header{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"course actions exit" "desktop desktop desktop"}.quiz-exit{justify-self:end}}
+
+
+/* Area Studio overview: daily target and next exam shortcut. */
+.study-overview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:0 0 18px;align-items:stretch}
+.study-overview-card{min-width:0;padding:18px 20px;display:flex;flex-direction:column;gap:12px;background:linear-gradient(145deg,#121d32 0%,#0c1527 100%);border:1px solid rgba(167,139,250,.18)}
+.study-overview-top{display:flex;align-items:center;gap:9px;min-width:0}
+.study-overview-icon{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border:1px solid #a78bfa44;border-radius:11px;background:#a78bfa13;color:#bdb0ff}
+.study-overview-kicker{color:#aebbd2;font-size:9px;font-weight:850;letter-spacing:1.15px}
+.study-overview-spacer{flex:1}
+.study-goal-count{display:flex;align-items:baseline;gap:7px}
+.study-goal-count>strong{color:#f1f3ff;font:800 34px/1 Manrope, sans-serif;font-variant-numeric:tabular-nums}
+.study-goal-count>span{color:#9eabc3;font-size:12px}
+.study-goal-track{height:8px;width:100%;overflow:hidden;border-radius:99px;background:#ffffff12}
+.study-goal-track>i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#8978e8,#4bd9b5);transition:width .25s ease}
+.study-goal-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#aebbd2;font-size:10px}
+.study-goal-footer>span{font-weight:650}
+.study-goal-footer label{display:flex;align-items:center;gap:7px;color:#8998b3;font-size:10px}
+.study-goal-footer select{min-height:32px;padding:5px 9px;border:1px solid var(--line);border-radius:8px;background:#0b1424;color:#e8edff;font:inherit;font-size:10px}
+.study-next-exam-name{color:#f0f2ff;font:750 20px/1.25 Manrope,sans-serif;overflow-wrap:anywhere}
+.study-next-exam-date{color:#9eabc3;font-size:11px;text-transform:capitalize}
+.study-next-exam-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:auto}
+.study-next-exam-bottom>strong{color:#c3b4ff;font-size:13px}
+.study-next-exam-bottom>strong:first-child{font-variant-numeric:tabular-nums}
+.study-next-exam-bottom .simple-link,.study-next-exam-card>.simple-link{display:inline-flex;align-items:center;gap:6px}
+.study-next-empty{color:#edf1ff;font-size:17px;font-weight:750}
+.study-next-exam-card>p{margin:0;color:#9eabc3;font-size:11px;line-height:1.5}
+#study-calendar{scroll-margin-top:24px}
+@media(max-width:800px){.study-overview-grid{grid-template-columns:1fr;gap:12px}.study-overview-card{padding:16px}.study-goal-footer{align-items:flex-start}.study-next-exam-bottom{align-items:flex-end}}
+@media(max-width:390px){.study-goal-footer{flex-direction:column}.study-next-exam-name{font-size:18px}}
