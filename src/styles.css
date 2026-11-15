@@ -1918,3 +1918,12 @@ img,svg{max-width:100%}
 .calculator-page .calc-graduation-result{border-color:#a78bfa45;background:#a78bfa0b}
 .calculator-page .calc-graduation-result strong{color:#c4b5ff}
 @media(max-width:650px){.calculator-page .calc-graduation-fields{grid-template-columns:1fr}.calculator-page .calc-graduation-fields label:first-child{grid-column:auto}}
+
+
+/* Study workspace clarity and synced personal data */
+.calc-method-note{margin:0 0 18px;padding:16px 18px;border:1px solid var(--border);border-radius:14px;background:var(--surface-2,rgba(127,127,127,.06));}
+.calc-method-note strong{display:block;margin-bottom:6px;font-size:14px;color:var(--text);}
+.calc-method-note p{margin:0 0 6px;color:var(--text);font-size:13px;line-height:1.55;}
+.calc-method-note small{display:block;color:var(--muted);font-size:12px;line-height:1.5;}
+.subject-free-usage{display:block;margin:4px 0 10px;color:var(--muted);font-size:11px;font-weight:650;letter-spacing:.01em;}
+@media(max-width:640px){.calc-method-note{padding:13px 14px;margin-bottom:14px}.subject-free-usage{font-size:10px}}
