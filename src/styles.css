@@ -1462,3 +1462,39 @@ img,svg{max-width:100%}
  .shell.quiz-active .quiz-bottom { flex-wrap:wrap; gap:8px; }
  .shell.quiz-active .quiz-bottom > span { display:none; }
 }
+
+
+/* Mobile performance pass: keep the visual design, reduce expensive paint during scrolling. */
+@media (max-width: 800px) {
+  html, body { scroll-behavior: auto !important; }
+  body { -webkit-overflow-scrolling: touch; }
+  .main, .main > .content { min-width: 0; }
+  .mobile-bottom-nav,
+  .mobile-page-active .topbar,
+  .home-auth-fullscreen .topbar,
+  .sidebar,
+  .scrim {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .mobile-bottom-nav { box-shadow: 0 -4px 14px rgba(0,0,0,.16); }
+  .home-page .subject-card,
+  .mobile-page-active .panel,
+  .mobile-page-active .stat,
+  .quiz-active .quiz,
+  .quiz-active .answer {
+    box-shadow: none !important;
+    transition: none !important;
+  }
+  .home-page .subject-card { contain: layout paint; }
+  .mobile-page-active .panel,
+  .mobile-page-active .stat { contain: layout paint; }
+  button, a, select, input { touch-action: manipulation; }
+}
+@media (max-width: 520px) {
+  .home-page .subject-card,
+  .guide-page .launch-card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 160px;
+  }
+}
