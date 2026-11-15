@@ -1731,3 +1731,21 @@ img,svg{max-width:100%}
 #study-calendar{scroll-margin-top:24px}
 @media(max-width:800px){.study-overview-grid{grid-template-columns:1fr;gap:12px}.study-overview-card{padding:16px}.study-goal-footer{align-items:flex-start}.study-next-exam-bottom{align-items:flex-end}}
 @media(max-width:390px){.study-goal-footer{flex-direction:column}.study-next-exam-name{font-size:18px}}
+
+/* University career simulator */
+.calculator-page .calc-overview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;max-width:950px;margin:0 0 16px}
+.calculator-page .calc-overview-card{min-width:0;padding:17px 19px;border:1px solid rgba(151,171,215,.15);border-radius:12px;background:linear-gradient(145deg,#101a2d,#0a1323)}
+.calculator-page .calc-overview-card>span,.calculator-page .calc-overview-card>small{display:block;color:#91a0bb;font-size:10px}
+.calculator-page .calc-overview-card>strong{display:block;margin:9px 0 5px;color:#f0f2ff;font:800 25px Manrope;letter-spacing:-.6px}
+.calculator-page .calc-overview-card>small{font-size:9px;color:#71809e}
+.calculator-page .calc-degree-result{position:relative;overflow:hidden;gap:7px}
+.calculator-page .calc-degree-icon{display:grid;place-items:center;width:42px;height:42px;border:1px solid #48e0bb35;border-radius:12px;background:#48e0bb12;color:#72e0c1}
+.calculator-page .calc-degree-result>small{margin-top:9px}
+.calculator-page .calc-degree-result>b{margin:5px 0 0}
+.calculator-page .calc-degree-result>span{color:#aab8d0;font:700 13px Manrope}
+.calculator-page .calc-degree-result>p{max-width:290px;margin:9px 0 12px;line-height:1.65}
+.calculator-page .calc-degree-equation{display:flex;flex-wrap:wrap;align-items:center;gap:7px;padding:10px 12px;border:1px solid #97abd71c;border-radius:8px;background:#ffffff05;color:#8d9bb5;font-size:9px}
+.calculator-page .calc-degree-equation strong{color:#72e0c1;font-size:11px}
+.calculator-page .calc-footnote{margin:15px 0 0;color:#71809e;font-size:9px;line-height:1.6}
+@media(max-width:800px){.calculator-page .calc-overview{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:520px){.calculator-page .calc-overview{grid-template-columns:1fr;gap:9px}.calculator-page .calc-overview-card{padding:13px 15px}.calculator-page .calc-overview-card>strong{font-size:22px}}
