@@ -84,6 +84,7 @@ export default function App(){
  const finishRef=useRef<()=>void>(()=>{});
  const answerSubmittingRef=useRef(false);
  const toastTimeoutRef=useRef<number|undefined>(undefined);
+ const [targetAverage,setTargetAverage]=useState('28'),[nextExamCfu,setNextExamCfu]=useState('6'),[scenarioGrade,setScenarioGrade]=useState('30'),[graduationBonus,setGraduationBonus]=useState('0');
 
  const [exams,setExams]=useState(()=>{try{const saved=JSON.parse(localStorage.getItem('smlquiz.exams.v1')||'null');return Array.isArray(saved)&&saved.length?saved.map((e:any,i:number)=>({name:e.name||t(language,'examNameDefault')+' '+(i+1),grade:String(e.grade??'30'),cfu:String(e.cfu??'6')})) :[{name:t(language,'examNameDefault')+' 1',grade:'28',cfu:'6'},{name:t(language,'examNameDefault')+' 2',grade:'30',cfu:'9'}]}catch{return [{name:t(language,'examNameDefault')+' 1',grade:'28',cfu:'6'},{name:t(language,'examNameDefault')+' 2',grade:'30',cfu:'9'}]}})
  useEffect(()=>{try{localStorage.setItem('smlquiz.exams.v1',JSON.stringify(exams))}catch(error){console.warn('Salvataggio esami non riuscito:',error)}},[exams]);
@@ -349,6 +350,12 @@ export default function App(){
  const weightedAverageValue=totalCfu?validExams.reduce((sum,e)=>sum+e.g*e.c,0)/totalCfu:null;
  const degreeBase=weightedAverageValue===null?null:weightedAverageValue*110/30;
  function averageWeighted(){return weightedAverageValue===null?'—':weightedAverageValue.toFixed(2)}
+ const weightedSum=validExams.reduce((sum,e)=>sum+e.g*e.c,0);
+ const targetValue=Number(targetAverage),nextCfuValue=Number(nextExamCfu),scenarioGradeValue=Number(scenarioGrade),bonusValue=Math.max(0,Math.min(20,Number(graduationBonus)||0));
+ const requiredGrade=totalCfu>0&&nextCfuValue>0&&Number.isFinite(targetValue)?(targetValue*(totalCfu+nextCfuValue)-weightedSum)/nextCfuValue:null;
+ const scenarioAverage=totalCfu>0&&nextCfuValue>0&&scenarioGradeValue>=18&&scenarioGradeValue<=30?(weightedSum+scenarioGradeValue*nextCfuValue)/(totalCfu+nextCfuValue):null;
+ const scenarioDegree=scenarioAverage===null?null:Math.min(110,scenarioAverage*110/30+bonusValue);
+ const leaderboardSubjects=useMemo(()=>{const norm=(v:string)=>v.normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase();const q=norm(leaderboardSubjectSearch.trim());return subjects.filter(s=>s.anno_corso!==null).filter(s=>!q||norm([localizedName(s,language),faculties.find(f=>f.id===s.facolta_id)?.nome||'',String(s.anno_corso)].join(' ')).includes(q)).sort((a,b)=>a.facolta_id.localeCompare(b.facolta_id)||Number(a.anno_corso)-Number(b.anno_corso)||localizedName(a,language).localeCompare(localizedName(b,language)))},[subjects,faculties,language,leaderboardSubjectSearch]);
  function requireLogin(){setRegistrationPrompt(true);setAuthMode('login');setPage('account');setMenu(false);setAccountMenu(false);window.history.pushState({page:'account'},'','/account');notify(tr('accountSignInRequired'))}
  function go(p:Page){if(!user&&['study','review','progress','leaderboard','settings','buy'].includes(p)){requireLogin();return}setPage(p);setMenu(false);const path=p==='home'?'/quiz':p==='study'?'/studio':p==='account'?'/account':p==='buy'?'/compra-quiz':p==='guide'?'/come-funziona':'/'+p;window.history.pushState({page:p},'',path);if(p==='leaderboard')void loadLeaderboard()}
  return <div className={"shell "+(page!=='home'?"mobile-page-active ":"")+(page==='home'&&user?" home-auth-fullscreen ":"")+(questions.length&&current&&!quizPaused&&!quizDismissed?"quiz-active":"")} style={{'--scale':font/100} as CSSProperties}>
