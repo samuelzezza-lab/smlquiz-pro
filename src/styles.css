@@ -1699,3 +1699,6 @@ img,svg{max-width:100%}
 @media(min-width:1024px) and (max-width:1299px){.shell.quiz-active .quiz-layout{grid-template-columns:minmax(0,800px);max-width:850px}.shell.quiz-active .quiz-ad-sidebar{display:none}.shell.quiz-active .quiz-ad-incontent{height:90px}}
 @media(min-width:1300px){.shell.quiz-active .quiz-layout{grid-template-columns:minmax(0,800px) 300px;gap:36px}}
 @media(max-width:767px){.quiz-responsive-header{grid-template-columns:40px minmax(0,1fr) 60px;grid-template-areas:"exit actions actions"}}
+
+/* Desktop: course left, timer/progress centered, exit action on the right. */
+@media(min-width:768px){.quiz-responsive-header{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"course actions exit" "desktop desktop desktop"}.quiz-exit{justify-self:end}}
