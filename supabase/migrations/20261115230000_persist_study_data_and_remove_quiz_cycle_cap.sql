@@ -1,0 +1,34 @@
+-- Persist personal study workspace and remove the legacy 30-quiz cycle ceiling.
+create table if not exists public.user_study_data (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  data jsonb not null default '{}'::jsonb check (jsonb_typeof(data) = 'object'),
+  updated_at timestamptz not null default now()
+);
+alter table public.user_study_data enable row level security;
+do $$
+begin
+  if not exists (select 1 from pg_policies where schemaname='public' and tablename='user_study_data' and policyname='Users manage their own study data') then
+    create policy "Users manage their own study data" on public.user_study_data
+      for all to authenticated
+      using ((select auth.uid()) = user_id)
+      with check ((select auth.uid()) = user_id);
+  end if;
+end $$;
+grant select, insert, update, delete on public.user_study_data to authenticated;
+
+do $$
+declare
+  v_def text;
+begin
+  v_def := pg_get_functiondef('public.get_next_materia_quiz(uuid,text)'::regprocedure);
+  if position('quiz_number BETWEEN 1 AND 30' in v_def) = 0
+     or position('q.quiz_number BETWEEN 1 AND 30' in v_def) = 0
+     or position('v_total = 30' in v_def) = 0 then
+    raise exception 'Unexpected get_next_materia_quiz definition; refusing unsafe rewrite.';
+  end if;
+  v_def := replace(v_def, 'quiz_number BETWEEN 1 AND 30', 'quiz_number >= 1');
+  v_def := replace(v_def, 'q.quiz_number BETWEEN 1 AND 30', 'q.quiz_number >= 1');
+  v_def := replace(v_def, 'v_seen >= v_total AND v_total = 30', 'v_seen >= v_total AND v_total > 0');
+  v_def := replace(v_def, 'FROM generate_series(1,30) n', 'FROM generate_series(1, (SELECT coalesce(max(quiz_number),0)+1 FROM public.quiz_sets WHERE materia_id=p_materia_id)) n');
+  execute v_def;
+end $$;
