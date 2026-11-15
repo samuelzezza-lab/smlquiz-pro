@@ -29,7 +29,7 @@ Deno.serve(async(req:Request)=>{
  const admin=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
  try{
   const event=JSON.parse(raw),obj=event.data?.object;
-  if(!["checkout.session.completed","checkout.session.async_payment_succeeded","invoice.paid","customer.subscription.deleted"].includes(event.type))return Response.json({received:true,ignored:true});
+  if(!["checkout.session.completed","checkout.session.async_payment_succeeded","invoice.paid","invoice.payment_failed","customer.subscription.created","customer.subscription.updated","customer.subscription.paused","customer.subscription.resumed","customer.subscription.deleted"].includes(event.type))return Response.json({received:true,ignored:true});
   let args:any={p_event_id:event.id,p_event_type:event.type};
   if(event.type==="checkout.session.completed"||event.type==="checkout.session.async_payment_succeeded"){
     const session=obj,metadata=session?.metadata??{},priceId=String(metadata.price_id??""),product=products.get(priceId);
@@ -56,19 +56,20 @@ Deno.serve(async(req:Request)=>{
         p_subscription_status:subscription.status,p_current_period_end:subscription.current_period_end?new Date(subscription.current_period_end*1000).toISOString():null,
         p_cancel_at_period_end:subscription.cancel_at_period_end===true};
     }
-  }else if(event.type==="invoice.paid"){
-    const subscriptionId=typeof obj.subscription==="string"?obj.subscription:obj.parent?.subscription_details?.subscription;
+  }else if(event.type==="customer.subscription.deleted"){
+    const subscription=obj;
+    args={...args,p_subscription_id:subscription.id,p_customer_id:typeof subscription.customer==="string"?subscription.customer:subscription.customer?.id,
+      p_subscription_status:"canceled",p_current_period_end:subscription.current_period_end?new Date(subscription.current_period_end*1000).toISOString():null,
+      p_cancel_at_period_end:true};
+  }else{
+    const isSubscriptionEvent=event.type.startsWith("customer.subscription.");
+    const subscriptionId=isSubscriptionEvent?obj?.id:(typeof obj?.subscription==="string"?obj.subscription:obj?.parent?.subscription_details?.subscription);
     if(subscriptionId){
       const subscription=await getSubscription(stripe,String(subscriptionId));
       args={...args,p_subscription_id:subscription.id,p_customer_id:typeof subscription.customer==="string"?subscription.customer:subscription.customer?.id,
         p_subscription_status:subscription.status,p_current_period_end:subscription.current_period_end?new Date(subscription.current_period_end*1000).toISOString():null,
         p_cancel_at_period_end:subscription.cancel_at_period_end===true};
     }
-  }else{
-    const subscription=obj;
-    args={...args,p_subscription_id:subscription.id,p_customer_id:typeof subscription.customer==="string"?subscription.customer:subscription.customer?.id,
-      p_subscription_status:"canceled",p_current_period_end:subscription.current_period_end?new Date(subscription.current_period_end*1000).toISOString():null,
-      p_cancel_at_period_end:true};
   }
   const {data,error}=await admin.rpc("process_smlquiz_stripe_event",args);
   if(error){console.error("Stripe event fulfillment failed",event.id,error);return new Response("Webhook processing failed",{status:500});}
