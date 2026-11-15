@@ -1749,3 +1749,115 @@ img,svg{max-width:100%}
 .study-page .study-calendar>.empty{margin-top:12px;padding:18px;border:1px dashed rgba(151,171,215,.17);border-radius:9px;color:#aebbd2;font-size:10px}
 @media(max-width:900px){.study-page .study-exam-form{grid-template-columns:repeat(2,minmax(0,1fr))}.study-page .study-exam-form button{grid-column:1/-1}.study-page .study-overview-grid{grid-template-columns:1fr}}
 @media(max-width:560px){.study-page .study-overview-card,.study-page .study-preparation-card,.study-page .study-calendar{padding:16px}.study-page .study-prep-metrics{gap:6px}.study-page .study-prep-metrics>div{padding:9px}.study-page .study-prep-metrics strong{font-size:18px}.study-page .study-prep-metrics span{font-size:8px}.study-page .study-exam-form{grid-template-columns:1fr}.study-page .study-exam-form button{grid-column:auto}.study-page .study-exam-row{grid-template-columns:42px minmax(0,1fr) auto;gap:8px}.study-page .study-exam-row>button{grid-column:3;grid-row:1}}
+
+
+/* SMLQUIZ · mobile scroll balance: compact spacing without changing quiz layout or desktop. */
+@media (max-width:800px) {
+  .mobile-page-active .main>.content {
+    padding-top:10px;
+    padding-bottom:calc(88px + env(safe-area-inset-bottom));
+  }
+  .mobile-page-active .page-heading,
+  .home-page>.page-heading {
+    align-items:flex-start;
+    gap:10px;
+    margin-bottom:13px;
+  }
+  .mobile-page-active .page-heading .eyebrow,
+  .home-page>.page-heading .eyebrow { margin-bottom:6px; }
+  .mobile-page-active .page-heading p,
+  .home-page>.page-heading p { margin-top:5px;line-height:1.45; }
+  .mobile-page-active .page-heading h1,
+  .home-page>.page-heading h1 { font-size:clamp(22px,5.8vw,27px);line-height:1.15; }
+  .mobile-page-active .section-head { margin:14px 2px 9px; }
+  .mobile-page-active .panel-title { margin-bottom:10px; }
+  .mobile-page-active .panel-title p { line-height:1.45; }
+  .mobile-page-active .panel:not(.quiz),
+  .mobile-page-active .account-panel,
+  .mobile-page-active .account-buy-panel,
+  .mobile-page-active .account-security-panel,
+  .mobile-page-active .account-danger-panel { padding:13px; }
+  .mobile-page-active .stats { gap:9px;margin-bottom:12px; }
+  .mobile-page-active .stat { padding:11px 12px; }
+  .mobile-page-active .stat>b { margin:7px 0 4px;font-size:21px; }
+  .mobile-page-active .stat>small { line-height:1.35; }
+  .mobile-page-active .progress-insights-grid { gap:10px;margin:10px 0; }
+  .mobile-page-active .progress-week-summary { margin:12px 0 8px; }
+  .mobile-page-active .progress-week-summary>b { font-size:31px; }
+  .mobile-page-active .progress-week-chart { height:104px;gap:6px; }
+  .mobile-page-active .progress-activity-panel,
+  .mobile-page-active .progress-insight-panel { padding:13px; }
+  .mobile-page-active .performance-row { padding:9px 0; }
+  .mobile-page-active .account-layout,
+  .mobile-page-active .account-main-column,
+  .mobile-page-active .account-side-column { gap:10px; }
+  .mobile-page-active .account-panel-heading { margin-bottom:10px; }
+  .mobile-page-active .account-detail { padding:9px 0; }
+  .mobile-page-active .account-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .mobile-page-active .calculator-grid { gap:10px; }
+  .mobile-page-active .calculator-page .calc-panel,
+  .mobile-page-active .calculator-page .calc-result { padding:14px; }
+  .mobile-page-active .calculator-page .exam-row { gap:7px;padding:9px 0; }
+  .mobile-page-active .calculator-page .calc-planner { margin-top:10px;padding:13px; }
+  .mobile-page-active .calculator-page .calc-planner-results { gap:8px;margin-top:10px; }
+  .mobile-page-active .calculator-page .calc-planner-results>div { padding:10px; }
+  .mobile-page-active .calculator-page .calc-planner-results b { margin-top:5px;font-size:19px; }
+  .mobile-page-active .study-page { gap:10px; }
+  .mobile-page-active .study-page .study-overview-grid { gap:9px;margin-bottom:10px; }
+  .mobile-page-active .study-page .study-overview-card,
+  .mobile-page-active .study-page .study-preparation-card,
+  .mobile-page-active .study-page .study-calendar { padding:13px; }
+  .mobile-page-active .study-page .study-next-exam-card,
+  .mobile-page-active .study-page .study-preparation-card { min-height:0; }
+  .mobile-page-active .study-page .study-next-exam-name { margin:9px 0 4px;font-size:19px; }
+  .mobile-page-active .study-page .study-next-exam-bottom { margin-top:12px;padding-top:9px; }
+  .mobile-page-active .study-page .study-prep-subject { margin:9px 0; }
+  .mobile-page-active .study-page .study-prep-status { margin:9px 0; }
+  .mobile-page-active .study-page .study-exam-form { gap:8px;margin:10px 0; }
+  .mobile-page-active .study-page .study-exam-form label:first-child { grid-column:1/-1; }
+  .mobile-page-active .study-page .study-exam-form button { grid-column:1/-1;width:100%; }
+  .mobile-page-active .study-page .study-exam-list { margin-top:10px; }
+  .mobile-page-active .study-page .study-exam-row { padding:9px 0; }
+  .mobile-page-active .leaderboard-page { gap:10px; }
+  .mobile-page-active .leaderboard-page .university-profile-panel,
+  .mobile-page-active .leaderboard-page .university-ranking-panel { padding:13px; }
+  .mobile-page-active .leaderboard-subject-search { margin-bottom:10px; }
+  .mobile-page-active .leaderboard-subject-search>div { min-height:42px; }
+  .mobile-page-active .filters { gap:9px;padding:12px;margin-bottom:13px; }
+  .mobile-page-active .subject-grid { gap:9px; }
+  .mobile-page-active .subject-card { padding:12px; }
+  .mobile-page-active .subject-card h3 { margin:8px 0 5px;min-height:0; }
+  .mobile-page-active .subject-card p { margin:0;line-height:1.4; }
+  .mobile-page-active .bookmarks-panel,
+  .mobile-page-active .review-wrong-panel,
+  .mobile-page-active .subject-performance { padding:13px; }
+}
+@media (max-width:520px) {
+  .mobile-page-active .main>.content { padding-top:8px; }
+  .mobile-page-active .page-heading { margin-bottom:11px; }
+  .mobile-page-active .stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .mobile-page-active .calculator-page .calc-overview {
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:7px;margin-bottom:10px;
+  }
+  .mobile-page-active .calculator-page .calc-overview-card { padding:10px 8px; }
+  .mobile-page-active .calculator-page .calc-overview-card>strong { margin:6px 0 3px;font-size:18px; }
+  .mobile-page-active .calculator-page .calc-overview-card>span,
+  .mobile-page-active .calculator-page .calc-overview-card>small { font-size:8px;line-height:1.3; }
+  .mobile-page-active .calculator-page .calc-planner-fields { grid-template-columns:repeat(2,minmax(0,1fr));gap:8px; }
+  .mobile-page-active .calculator-page .calc-planner-fields label:first-child { grid-column:1/-1; }
+  .mobile-page-active .calculator-page .calc-planner-results { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .mobile-page-active .study-page .study-exam-form { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .mobile-page-active .study-page .study-exam-form label:first-child,
+  .mobile-page-active .study-page .study-exam-form button { grid-column:1/-1; }
+  .mobile-page-active .study-page .study-exam-form button { width:100%; }
+  .mobile-page-active .study-page .study-prep-metrics>div { padding:8px 7px; }
+  .mobile-page-active .study-page .study-calendar .panel-title { margin-bottom:9px; }
+  .mobile-page-active .progress-page>.stats .stat { min-height:0; }
+}
+@media (max-width:370px) {
+  .mobile-page-active .calculator-page .calc-overview-card>strong { font-size:16px; }
+  .mobile-page-active .calculator-page .calc-overview-card>span,
+  .mobile-page-active .calculator-page .calc-overview-card>small { font-size:7px; }
+  .mobile-page-active .stats { gap:7px; }
+}
