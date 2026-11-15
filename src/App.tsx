@@ -191,7 +191,7 @@ export default function App(){
  const todayQuestionCount=useMemo(()=>{const today=new Date().toDateString();return history.reduce((sum,h)=>sum+(new Date(h.date).toDateString()===today?h.total:0),0)},[history])
  const nextStudyExam=useMemo(()=>{const today=new Date();today.setHours(0,0,0,0);return studyExams.filter(e=>new Date(e.date+'T00:00:00')>=today).sort((a,b)=>a.date.localeCompare(b.date))[0]||null},[studyExams])
  const nextStudyExamDays=nextStudyExam?Math.max(0,Math.ceil((new Date(nextStudyExam.date+'T00:00:00').getTime()-new Date(new Date().toDateString()).getTime())/86400000)):null
- const studyNameKey=(value:string)=>value.trim().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^\\p{L}\\p{N}]+/gu,' ');
+ const studyNameKey=(value:string)=>value.trim().normalize('NFD').replace(/[\u0300-\\u036f]/g,'').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ');
  const nextStudySubject=useMemo(()=>nextStudyExam?subjects.find(x=>studyNameKey(x.nome)===studyNameKey(nextStudyExam.name)||studyNameKey(localizedName(x,language))===studyNameKey(nextStudyExam.name))||null:null,[nextStudyExam,subjects,language]);
  const nextExamAttempts=useMemo(()=>nextStudySubject?history.filter(h=>studyNameKey(h.subject)===studyNameKey(nextStudySubject.nome)).sort((a,b)=>new Date(b.date).getTime()-new Date(a.date).getTime()):[],[nextStudySubject,history]);
  const nextExamRecent=nextExamAttempts.slice(0,3);
