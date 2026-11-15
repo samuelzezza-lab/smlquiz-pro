@@ -1498,3 +1498,59 @@ img,svg{max-width:100%}
     contain-intrinsic-size: auto 160px;
   }
 }
+
+/* Classifica per materia e anno: podio, posizione personale e graduatoria completa. */
+.subject-leaderboard-settings,.subject-leaderboard-filter,.subject-ranking-panel{margin-bottom:16px}
+.subject-leaderboard-controls{display:grid;grid-template-columns:minmax(180px,1fr) minmax(220px,1fr) auto;align-items:end;gap:14px}
+.subject-leaderboard-controls>label:first-child,.subject-leaderboard-select{display:flex;flex-direction:column;gap:7px;color:#dbe4fa;font-size:12px;font-weight:700}
+.subject-leaderboard-controls input:not([type=checkbox]),.subject-leaderboard-select select{width:100%;min-height:44px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#0b1424;color:#edf2ff;font:inherit}
+.subject-leaderboard-controls .consent{display:flex;align-items:center;gap:9px;min-height:44px;color:#c4cee3;font-size:12px}
+.subject-leaderboard-controls .consent input{accent-color:#a78bfa;width:17px;height:17px}
+.subject-leaderboard-controls .primary{white-space:nowrap;min-height:44px}
+.subject-leaderboard-select{max-width:760px}
+.subject-leaderboard-select select{margin-top:1px}
+.subject-leaderboard-meta{margin-top:10px;color:#9eacd0;font-size:11px}
+.subject-my-rank{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 16px;padding:18px 21px;border:1px solid #9c8aff66;border-radius:15px;background:linear-gradient(110deg,#6e5bbd25,#101a2b)}
+.subject-my-rank>div{display:grid;gap:5px}
+.subject-my-rank small{color:#a99aff;font-size:9px;font-weight:800;letter-spacing:1px}
+.subject-my-rank b{color:#f2efff;font-size:23px}
+.subject-my-rank b span{color:#9caac5;font-size:11px;font-weight:500}
+.subject-podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.subject-podium-card{display:flex;min-width:0;flex-direction:column;align-items:center;gap:7px;padding:18px 12px;border:1px solid var(--line);border-radius:14px;background:linear-gradient(160deg,#18243a,#101827);text-align:center}
+.subject-podium-card.podium-1{border-color:#d8b65e77;background:linear-gradient(160deg,#4c3a1c66,#151d2c)}
+.subject-podium-card.podium-2{border-color:#a9b6cb66}
+.subject-podium-card.podium-3{border-color:#bd805766}
+.subject-podium-card.is-me{box-shadow:inset 0 0 0 1px #a78bfa}
+.podium-medal{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#a78bfa18;color:#e8ddff;font-size:22px;font-weight:900}
+.podium-1 .podium-medal{background:#d8b65e22;color:#f4d47c}
+.podium-2 .podium-medal{background:#a9b6cb22;color:#dce6f5}
+.podium-3 .podium-medal{background:#bd805722;color:#e4aa83}
+.subject-podium-card>small{color:#aebbd2;font-size:10px;font-weight:800}
+.subject-podium-card>b{max-width:100%;overflow-wrap:anywhere;color:#f2f5ff;font-size:13px}
+.subject-podium-card>strong{color:#c9baff;font-size:25px;letter-spacing:-.5px}
+.subject-podium-card>span,.subject-podium-card>em{color:#aab6ce;font-size:10px;font-style:normal}
+.subject-ranking-list{margin-top:17px;border-top:1px solid var(--line)}
+.subject-ranking-row{display:grid;grid-template-columns:38px minmax(0,1fr) 72px 68px;align-items:center;gap:12px;padding:13px 8px;border-bottom:1px solid var(--line)}
+.subject-ranking-row.is-me{background:#a78bfa12;border-radius:10px}
+.subject-ranking-position{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;background:#ffffff0b;color:#c5b7ff;font-weight:800;font-size:12px}
+.subject-ranking-name{display:grid;gap:4px;min-width:0}
+.subject-ranking-name>b{overflow-wrap:anywhere;color:#eef2ff;font-size:12px}
+.subject-ranking-name>small{color:#8f9db9;font-size:10px}
+.subject-ranking-row>strong{color:#c9baff;font-size:14px;text-align:right}
+.subject-ranking-row>span:last-child{color:#aab6ce;font-size:11px;text-align:right}
+.subject-leaderboard-footnote{margin:0 2px 20px;color:#8492ae;font-size:10px;line-height:1.6}
+@media(max-width:800px){
+ .subject-leaderboard-controls{grid-template-columns:1fr}
+ .subject-leaderboard-controls .primary{width:100%}
+ .subject-podium{gap:7px}
+ .subject-podium-card{padding:13px 7px;gap:6px}
+ .subject-podium-card>strong{font-size:20px}
+ .subject-podium-card>b{font-size:11px}
+ .subject-podium-card>span,.subject-podium-card>em{font-size:9px}
+ .subject-my-rank{padding:14px;gap:8px}
+ .subject-my-rank b{font-size:19px}
+ .subject-ranking-row{grid-template-columns:30px minmax(0,1fr) 54px 48px;gap:7px;padding:12px 3px}
+ .subject-ranking-row>strong{font-size:12px}
+ .subject-ranking-row>span:last-child{font-size:10px}
+}
+@media(max-width:380px){.subject-podium-card>em{font-size:8px}.subject-my-rank b span{display:block}}
