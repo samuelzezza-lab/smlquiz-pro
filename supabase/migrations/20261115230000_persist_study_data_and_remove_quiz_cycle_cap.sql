@@ -36,3 +36,9 @@ create index if not exists user_subject_entitlements_materia_id_idx on public.us
 
 -- The fallback status branch must also work for any non-empty pool size.
 do $$ declare v_def text; begin v_def:=pg_get_functiondef('public.get_next_materia_quiz(uuid,text)'::regprocedure); v_def:=replace(v_def,'v_total=30','v_total>0'); execute v_def; end $$;
+
+-- Keep legacy SECURITY DEFINER RPCs off the public/authenticated API surface.
+revoke execute on function public.get_next_materia_quiz(uuid,text) from public, anon, authenticated;
+revoke execute on function public.complete_materia_quiz(uuid,text,uuid) from public, anon, authenticated;
+grant execute on function public.get_next_materia_quiz(uuid,text) to service_role;
+grant execute on function public.complete_materia_quiz(uuid,text,uuid) to service_role;
