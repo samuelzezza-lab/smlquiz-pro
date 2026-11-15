@@ -28,7 +28,7 @@ begin
   end if;
   v_def := replace(v_def, 'quiz_number BETWEEN 1 AND 30', 'quiz_number >= 1');
   v_def := replace(v_def, 'q.quiz_number BETWEEN 1 AND 30', 'q.quiz_number >= 1');
-  v_def := replace(v_def, 'v_seen >= v_total AND v_total = 30', 'v_seen >= v_total AND v_total > 0');
+  v_def := replace(v_def, 'v_seen >= v_total AND v_total > 0', 'v_seen >= v_total AND v_total > 0');
   v_def := replace(v_def, 'FROM generate_series(1,30) n', 'FROM generate_series(1, (SELECT coalesce(max(quiz_number),0)+1 FROM public.quiz_sets WHERE materia_id=p_materia_id)) n');
   execute v_def;
 end $$;
@@ -37,3 +37,6 @@ end $$;
 alter function public.quiz_options_are_valid(jsonb,text) set search_path = '';
 create index if not exists user_profiles_university_id_idx on public.user_profiles(university_id);
 create index if not exists user_subject_entitlements_materia_id_idx on public.user_subject_entitlements(materia_id);
+
+-- The fallback status branch must also work for any non-empty pool size.
+do $$ declare v_def text; begin v_def:=pg_get_functiondef('public.get_next_materia_quiz(uuid,text)'::regprocedure); v_def:=replace(v_def,'v_total=30','v_total>0'); execute v_def; end $$;
