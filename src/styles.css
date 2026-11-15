@@ -1882,3 +1882,28 @@ img,svg{max-width:100%}
  .pricing-plan>button { margin-left:0; }
  .pricing-plan>select { font-size:14px; }
 }
+
+/* Reserved display-ad inventory for free quiz sessions.
+   Publisher tags are intentionally not loaded until the site is approved
+   and a compliant consent-management platform is configured. */
+.sml-ad-slot {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:90px;
+  margin:16px 0;
+  padding:8px;
+  overflow:hidden;
+  border:1px dashed rgba(148,163,184,.22);
+  border-radius:12px;
+  background:rgba(148,163,184,.035);
+  color:var(--muted,#8995aa);
+  font-size:10px;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.sml-ad-slot:empty::before { content:"Pubblicità"; }
+@media(max-width:620px) {
+ .sml-ad-slot { min-height:100px; margin:12px 0; }
+}
