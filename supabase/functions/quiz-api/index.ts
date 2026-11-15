@@ -200,9 +200,9 @@ Deno.serve(async (req: Request) => {
         admin.from("user_quiz_wallets").select("balance").eq("user_id", userId).maybeSingle(),
         admin.from("quiz_credit_ledger").select("id,delta,reason,description,created_at")
           .eq("user_id", userId).order("created_at", { ascending: false }).limit(30),
-        admin.from("user_site_subscriptions").select("id").eq("user_id", userId)
+        admin.from("user_site_subscriptions").select("id,status,current_period_end,cancel_at_period_end").eq("user_id", userId)
           .in("status", ["active", "trialing"]).or("current_period_end.is.null,current_period_end.gt." + new Date().toISOString()).limit(1),
-        admin.from("user_subject_entitlements").select("id").eq("user_id", userId)
+        admin.from("user_subject_entitlements").select("id,materia_id,entitlement_type,starts_at,expires_at").eq("user_id", userId)
           .lte("starts_at", new Date().toISOString()).gt("expires_at", new Date().toISOString()).limit(1),
         admin.from("quiz_attempts").select("materia_id").eq("user_id", userId)
           .eq("status", "completed").eq("access_source", "free"),
@@ -231,6 +231,8 @@ Deno.serve(async (req: Request) => {
         freeUsedBySubject,
         freeRemainingBySubject,
         hasAdsRemoved,
+        activeSiteSubscription: siteSubscriptions.data?.[0] ?? null,
+        activeSubjectEntitlements: subjectEntitlements.data ?? [],
         ownerUnlimited: isOwner,
         ledger: ledger.data ?? [],
       });
