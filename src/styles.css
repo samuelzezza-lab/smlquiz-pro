@@ -1790,3 +1790,49 @@ img,svg{max-width:100%}
 .study-saved-row select{width:100%;min-width:0;min-height:36px;border:1px solid var(--line);border-radius:8px;padding:7px 9px;background:#0b1424;color:#dce4f5;font:inherit;font-size:10px}
 .study-saved-row .simple-link{white-space:nowrap}
 @media(max-width:620px){.study-saved-row{grid-template-columns:minmax(0,1fr) auto;gap:8px}.study-saved-row select{grid-column:1/-1;grid-row:2}.study-saved-row .simple-link{grid-column:2;grid-row:1}}
+
+/* SMLQUIZ · Area Studio orientata agli appelli */
+.study-page{max-width:1180px}
+.study-page .study-overview-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:15px;margin:0 0 16px}
+.study-page .study-overview-card,.study-page .study-preparation-card,.study-page .study-feature-card{padding:21px;border:1px solid rgba(151,171,215,.15);border-radius:14px;background:linear-gradient(145deg,#111c30,#0a1323);box-shadow:0 10px 28px #0002}
+.study-page .study-next-exam-card{min-height:220px}
+.study-page .study-next-exam-name{font:800 23px Manrope;color:#f1f4ff;letter-spacing:-.6px;margin:18px 0 5px}
+.study-page .study-next-exam-date{font-size:12px;color:#aebbd2}
+.study-page .study-next-exam-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:24px;padding-top:14px;border-top:1px solid rgba(151,171,215,.13)}
+.study-page .study-next-exam-bottom>strong{font:800 17px Manrope;color:#70dfc1}
+.study-page .study-next-empty{font:750 17px Manrope;color:#e8eefc;margin:20px 0 6px}
+.study-page .study-next-exam-card>p{font-size:11px;color:#aebbd2;line-height:1.6}
+.study-page .study-preparation-card{min-height:220px;background:radial-gradient(ellipse at 0 0,#a78bfa12,transparent 55%),linear-gradient(145deg,#111c30,#0a1323)}
+.study-page .study-prep-subject{font:800 19px Manrope;color:#f1f4ff;margin:17px 0 13px}
+.study-page .study-prep-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.study-page .study-prep-metrics>div{padding:11px;border:1px solid rgba(151,171,215,.13);border-radius:9px;background:#080f1b}
+.study-page .study-prep-metrics strong{display:block;font:800 21px Manrope;color:#f0f3ff}
+.study-page .study-prep-metrics span{display:block;margin-top:3px;font-size:9px;line-height:1.4;color:#aebbd2}
+.study-page .study-prep-status{display:flex;flex-direction:column;gap:6px;margin:13px 0}
+.study-page .study-prep-status>span{display:flex;align-items:center;gap:7px;font-size:10px;font-weight:750;color:#f0c47a}
+.study-page .study-prep-status>span i{width:7px;height:7px;border-radius:50%;background:#e8b85f}
+.study-page .study-prep-status>span.positive{color:#70dfc1}
+.study-page .study-prep-status>span.positive i{background:#70dfc1}
+.study-page .study-prep-status>small{font-size:9px;line-height:1.5;color:#aebbd2}
+.study-page .study-prep-launch{width:100%;justify-content:center;min-height:40px}
+.study-page .study-prep-unmatched{display:flex;flex-direction:column;align-items:flex-start;gap:9px;margin-top:24px}
+.study-page .study-prep-unmatched strong{font:750 15px Manrope;color:#eaf0ff}
+.study-page .study-prep-unmatched p{max-width:460px;margin:0;font-size:10px;line-height:1.65;color:#aebbd2}
+.study-page .study-calendar{padding:21px;margin:0;border-color:rgba(151,171,215,.15);background:linear-gradient(145deg,#101a2d,#0a1323);box-shadow:0 10px 28px #0002}
+.study-page .study-calendar .panel-title{align-items:center;margin-bottom:17px}
+.study-page .study-calendar .panel-title h3{font:700 14px Manrope;color:#f0f3ff}
+.study-page .study-calendar .panel-title p{font-size:10px;line-height:1.6;color:#aebbd2}
+.study-page .study-exam-form{display:grid;grid-template-columns:1.25fr .8fr 1fr auto;align-items:end;gap:10px}
+.study-page .study-exam-form label{display:flex;flex-direction:column;gap:6px;font-size:9px;font-weight:700;color:#aebbd2}
+.study-page .study-exam-form input{width:100%;min-width:0;min-height:40px;padding:9px 11px;border:1px solid rgba(151,171,215,.2);border-radius:8px;background:#080f1b;color:#e8eefc;font:500 11px Manrope}
+.study-page .study-exam-form button{min-height:40px;white-space:nowrap}
+.study-page .study-exam-list{margin-top:17px}
+.study-page .study-exam-row{display:grid;grid-template-columns:48px minmax(0,1fr) auto auto;align-items:center;gap:12px;padding:12px 0;border-top:1px solid rgba(151,171,215,.12)}
+.study-page .study-exam-info{display:flex;flex-direction:column;gap:4px;min-width:0}
+.study-page .study-exam-info b{font-size:11px;color:#e8eefc}
+.study-page .study-exam-info small{font-size:9px;color:#8998b1}
+.study-page .study-exam-row>strong{font-size:10px;color:#aebbd2;white-space:nowrap}
+.study-page .study-exam-row>strong.exam-soon{color:#f0c47a}
+.study-page .study-calendar>.empty{margin-top:12px;padding:18px;border:1px dashed rgba(151,171,215,.17);border-radius:9px;color:#aebbd2;font-size:10px}
+@media(max-width:900px){.study-page .study-exam-form{grid-template-columns:repeat(2,minmax(0,1fr))}.study-page .study-exam-form button{grid-column:1/-1}.study-page .study-overview-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.study-page .study-overview-card,.study-page .study-preparation-card,.study-page .study-calendar{padding:16px}.study-page .study-prep-metrics{gap:6px}.study-page .study-prep-metrics>div{padding:9px}.study-page .study-prep-metrics strong{font-size:18px}.study-page .study-prep-metrics span{font-size:8px}.study-page .study-exam-form{grid-template-columns:1fr}.study-page .study-exam-form button{grid-column:auto}.study-page .study-exam-row{grid-template-columns:42px minmax(0,1fr) auto;gap:8px}.study-page .study-exam-row>button{grid-column:3;grid-row:1}}
