@@ -88,6 +88,21 @@ Deno.serve(async (req: Request) => {
       return json({ profile: result.data });
     }
 
+    if (action === "subject-leaderboard") {
+      const materiaId = String(body.materiaId ?? "").trim();
+      if (!materiaId || materiaId.length > 200) return json({ error: "Materia non valida" }, 400);
+      const { data: subject, error: subjectError } = await admin.from("materie")
+        .select("id,nome,anno_corso,facolta_id").eq("id", materiaId).maybeSingle();
+      if (subjectError) throw subjectError;
+      if (!subject) return json({ error: "Materia non trovata" }, 404);
+      const { data, error } = await admin.rpc("get_subject_leaderboard", {
+        p_materia_id: materiaId,
+        p_current_user_id: userId,
+      });
+      if (error) throw error;
+      return json({ leaderboard: data ?? [], subject });
+    }
+
     if (action === "university-leaderboard") {
       const { data: profile, error: profileError } = await admin.from("user_profiles")
         .select("university_course").eq("user_id", userId).maybeSingle();
