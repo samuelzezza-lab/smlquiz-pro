@@ -1691,3 +1691,11 @@ img,svg{max-width:100%}
 @media(max-width:380px){.shell.quiz-active .quiz{padding-left:12px;padding-right:12px}.quiz-progress-track{margin-left:-12px;margin-right:-12px}.shell.quiz-active .question{font-size:16px}.shell.quiz-active .answer{padding:9px 11px;font-size:12px}.quiz-responsive-header{grid-template-columns:34px minmax(0,1fr) 48px;gap:5px}}
 @media(max-height:700px) and (max-width:767px){.shell.quiz-active .quiz-progress-track{margin-bottom:12px}.shell.quiz-active .question{margin:5px 0 10px}.shell.quiz-active .answer{padding-top:8px;padding-bottom:8px}.shell.quiz-active .quiz-bottom{margin-top:10px}}
 @media(prefers-reduced-motion:reduce){.quiz-progress-track i{transition:none}}
+
+/* Quiz header alignment and full-viewport focus mode. */
+.shell.quiz-active .sidebar{display:none!important}
+.shell.quiz-active .main{margin-left:0!important}
+.quiz-responsive-header{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"exit course actions" "desktop desktop desktop"}
+@media(min-width:1024px) and (max-width:1299px){.shell.quiz-active .quiz-layout{grid-template-columns:minmax(0,800px);max-width:850px}.shell.quiz-active .quiz-ad-sidebar{display:none}.shell.quiz-active .quiz-ad-incontent{height:90px}}
+@media(min-width:1300px){.shell.quiz-active .quiz-layout{grid-template-columns:minmax(0,800px) 300px;gap:36px}}
+@media(max-width:767px){.quiz-responsive-header{grid-template-columns:40px minmax(0,1fr) 60px;grid-template-areas:"exit actions actions"}}
