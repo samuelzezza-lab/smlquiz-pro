@@ -162,6 +162,8 @@ Deno.serve(async (req: Request) => {
         if (error) throw error;
       }
       const deletions = await Promise.all([
+        admin.from("user_subject_entitlements").delete().eq("user_id", userId),
+        admin.from("user_site_subscriptions").delete().eq("user_id", userId),
         admin.from("quiz_credit_ledger").delete().eq("user_id", userId),
         admin.from("quiz_coupon_redemptions").delete().eq("user_id", userId),
         admin.from("question_reports").delete().eq("user_id", userId),
@@ -194,21 +196,29 @@ Deno.serve(async (req: Request) => {
     }
 
     if (action === "wallet") {
-      const dayStart = romeDayStart();
-      const [wallet, usage, ledger] = await Promise.all([
+      const [wallet, ledger, siteSubscriptions, subjectEntitlements] = await Promise.all([
         admin.from("user_quiz_wallets").select("balance").eq("user_id", userId).maybeSingle(),
-        admin.from("quiz_attempts").select("id", { count: "exact", head: true })
-          .eq("user_id", userId).eq("access_source", "free").gte("started_at", dayStart),
         admin.from("quiz_credit_ledger").select("id,delta,reason,description,created_at")
           .eq("user_id", userId).order("created_at", { ascending: false }).limit(30),
+        admin.from("user_site_subscriptions").select("id").eq("user_id", userId)
+          .in("status", ["active", "trialing"]).or("current_period_end.is.null,current_period_end.gt." + new Date().toISOString()).limit(1),
+        admin.from("user_subject_entitlements").select("id").eq("user_id", userId)
+          .lte("starts_at", new Date().toISOString()).gt("expires_at", new Date().toISOString()).limit(1),
       ]);
       if (wallet.error) throw wallet.error;
-      if (usage.error) throw usage.error;
       if (ledger.error) throw ledger.error;
+      if (siteSubscriptions.error) throw siteSubscriptions.error;
+      if (subjectEntitlements.error) throw subjectEntitlements.error;
+      const paidCredits = isOwner ? 1000000000 : (wallet.data?.balance ?? 0);
+      const hasAdsRemoved = isOwner || paidCredits > 0
+        || (siteSubscriptions.data?.length ?? 0) > 0
+        || (subjectEntitlements.data?.length ?? 0) > 0;
       return json({
-        paidCredits: isOwner ? 1000000000 : (wallet.data?.balance ?? 0),
-        freeUsed: isOwner ? 0 : (usage.count ?? 0),
-        freeRemaining: isOwner ? 1000000000 : Math.max(0, 5 - (usage.count ?? 0)),
+        paidCredits,
+        freeUsed: 0,
+        freeRemaining: 5,
+        freePerSubject: true,
+        hasAdsRemoved,
         ownerUnlimited: isOwner,
         ledger: ledger.data ?? [],
       });
@@ -494,8 +504,8 @@ Deno.serve(async (req: Request) => {
         p_mix_fingerprint: null,
       });
       if (startError) {
-        const message = startError.message.includes("esaurito")
-          ? "Hai terminato i 5 quiz gratuiti e non hai crediti extra. Scegli un pacchetto per continuare."
+        const message = startError.message.includes("Jolly") || startError.message.includes("primi 5 quiz")
+          ? "I primi 5 quiz sono gratuiti per ogni materia. Per questo quiz scegli un pass oppure usa un credito Jolly."
           : startError.message;
         return json({ error: message }, 403);
       }
