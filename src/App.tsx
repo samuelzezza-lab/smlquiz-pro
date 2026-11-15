@@ -90,10 +90,11 @@ export default function App(){
  const [exams,setExams]=useState(()=>{try{const saved=JSON.parse(localStorage.getItem('smlquiz.exams.v1')||'null');if(!Array.isArray(saved))return [];const defaultName=t(language,'examNameDefault');const legacyDefaults=saved.length===2&&saved[0]?.name===defaultName+' 1'&&saved[0]?.grade==='28'&&saved[0]?.cfu==='6'&&saved[1]?.name===defaultName+' 2'&&saved[1]?.grade==='30'&&saved[1]?.cfu==='9';return legacyDefaults?[]:saved.map((e:any,i:number)=>({name:e.name||defaultName+' '+(i+1),grade:String(e.grade??''),cfu:String(e.cfu??'')}))}catch{return []}})
  useEffect(()=>{try{localStorage.setItem('smlquiz.exams.v1',JSON.stringify(exams))}catch(error){console.warn('Salvataggio esami non riuscito:',error)}},[exams]);
  useEffect(()=>{
-  if(!user||!supabase){setStudyDataReady(false);return}
+  const client=supabase;
+  if(!user||!client){setStudyDataReady(false);return}
   let active=true;
   setStudyDataReady(false);
-  supabase.from('user_study_data').select('data').eq('user_id',user.id).maybeSingle().then(({data,error})=>{
+  client.from('user_study_data').select('data').eq('user_id',user.id).maybeSingle().then(({data,error})=>{
    if(!active)return;
    if(error){console.warn('Sincronizzazione studio non disponibile:',error.message);notify('Non riesco a sincronizzare i dati di studio: restano salvati su questo dispositivo.');return}
    const localOwner=localStorage.getItem('smlquiz.studyDataOwner.v1');
@@ -106,14 +107,15 @@ export default function App(){
    if(Number.isFinite(Number(cloud.dailyGoal)))setDailyGoal(Math.max(5,Math.min(200,Number(cloud.dailyGoal))));
    localStorage.setItem('smlquiz.studyDataOwner.v1',user.id);
    setStudyDataReady(true);
-  }).catch(error=>{if(active){console.warn('Sincronizzazione studio fallita:',error);notify('Sincronizzazione cloud temporaneamente non disponibile.');}});
+  },error=>{if(active){console.warn('Sincronizzazione studio fallita:',error);notify('Sincronizzazione cloud temporaneamente non disponibile.');}});
   return()=>{active=false};
  },[user?.id]);
  useEffect(()=>{
-  if(!user||!supabase||!studyDataReady)return;
+  const client=supabase;
+  if(!user||!client||!studyDataReady)return;
   const payload:StudyCloudData={exams,savedQuestions,studyCollections,studyExams,dailyGoal};
   const timer=window.setTimeout(()=>{
-   void supabase.from('user_study_data').upsert({user_id:user.id,data:payload,updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(({error})=>{
+   void client.from('user_study_data').upsert({user_id:user.id,data:payload,updated_at:new Date().toISOString()},{onConflict:'user_id'}).then(({error})=>{
     if(error)notify('Salvataggio cloud non riuscito: i dati restano disponibili su questo dispositivo.');
    });
   },900);
