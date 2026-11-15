@@ -48,7 +48,7 @@ const QuizTimer=memo(function QuizTimer({started,totalSeconds,paused,enabled,sec
   const timer=window.setInterval(tick,1000);
   return()=>window.clearInterval(timer);
  },[enabled,started,totalSeconds,paused,secondsRef,onExpireRef]);
- return <QuizTimer started={started} totalSeconds={45*questions.length} paused={quizPaused} enabled={questions.length>0} secondsRef={secondsRef} onExpireRef={finishRef}/>
+ return <div className="timer"><Clock3 size={15}/>{String(Math.floor(seconds/60)).padStart(2,'0')}:{String(seconds%60).padStart(2,'0')}</div>
 })
 
 export default function App(){
