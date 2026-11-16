@@ -54,6 +54,10 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin}:SemestreFil
   const {data:auth}=await supabase.auth.getUser();if(!auth.user){onRequireLogin();return}
   setLoading(true);setError('')
   try{
+   // Rinnova il JWT prima della RPC: il controllo server usa il claim session_id
+   // per verificare la sessione autenticata e applicare il limite dispositivi.
+   const {data:refreshed,error:refreshError}=await supabase.auth.refreshSession()
+   if(refreshError||!refreshed.session){onRequireLogin();throw new Error('Sessione scaduta. Accedi di nuovo e riprova.')}
    const {data,error}=await supabase.rpc('start_semestre_filtro_exam',{p_materia:subject})
    if(error)throw error
    const payload=data as {exam_id?:string;questions?:Question[];duration_seconds?:number;paywall?:boolean}
