@@ -22,6 +22,8 @@ type Experience = {
   display_name: string
   is_anonymous: boolean
   helpful_count: number
+  status: 'published' | 'hidden' | 'removed'
+  status_reason: string | null
   created_at: string
 }
 type Props = {
@@ -50,6 +52,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState<'recent' | 'helpful'>('recent')
   const [formOpen, setFormOpen] = useState(false)
+  const [communityAccepted, setCommunityAccepted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [voted, setVoted] = useState<string[]>([])
   const [reported, setReported] = useState<string[]>([])
@@ -91,8 +94,8 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
     setLoading(true)
     setLoadError('')
     const { data, error } = await supabase.from('exam_experiences')
-      .select('id,user_id,materia_id,exam_date,university_name,professor_name,exam_format,difficulty,preparation_weeks,outcome,topics,description,advice,display_name,is_anonymous,helpful_count,created_at')
-      .eq('status', 'published')
+      .select('id,user_id,materia_id,exam_date,university_name,professor_name,exam_format,difficulty,preparation_weeks,outcome,topics,description,advice,display_name,is_anonymous,helpful_count,status,status_reason,created_at')
+      .or(user ? `status.eq.published,user_id.eq.${user.id}` : 'status.eq.published')
       .order('created_at', { ascending: false })
       .limit(150)
     if (error) {
@@ -104,7 +107,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
     setLoading(false)
   }
 
-  useEffect(() => { void loadExperiences() }, [])
+  useEffect(() => { void loadExperiences() }, [user?.id])
   useEffect(() => {
     if (!user || !supabase) { setVoted([]); setReported([]); return }
     let active = true
@@ -128,6 +131,20 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
     if (!user) { onRequireLogin(); return }
     if (!supabase || submitting) return
     const description = form.description.trim()
+    if (!communityAccepted) {
+      notify('Per pubblicare devi confermare di aver letto e rispettare le Regole della community.')
+      return
+    }
+    const moderationText = [description, form.advice, form.topics].join(' ').toLocaleLowerCase('it')
+    const prohibited = /\\b(negro|frocio|finocchio|mongoloide|ritardato|coglione|stronzo|bastardo|idiota|imbecille|cretino|stupido|puttana|troia|vaffanculo)\\b|\\b(sporco zingaro|zingaro di merda|ebreo di merda|musulmano di merda|marocchino di merda|terrone di merda|gay di merda|lesbica di merda|trans di merda|pezzo di merda)\\b|\\b(ti ammazzo|vi ammazzo|ti faccio fuori|vi faccio fuori|vi veniamo a prendere|uccidete tutti)\\b/i
+    if (prohibited.test(moderationText)) {
+      notify('Il testo contiene insulti, espressioni discriminatorie o minacce non ammesse. Riscrivilo in modo rispettoso.')
+      return
+    }
+    if (/[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}/i.test(moderationText) || /\\b[0-9]{9,}\\b/.test(moderationText)) {
+      notify('Non pubblicare email, numeri di telefono o dati di contatto personali.')
+      return
+    }
     if (description.length < 40) {
       notify('Racconta l’esperienza con almeno 40 caratteri: aiuterà davvero chi deve sostenere l’esame.')
       return
@@ -158,12 +175,13 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
       })
       if (error) throw error
       setFormOpen(false)
+      setCommunityAccepted(false)
       setForm({
         materia_id: '', exam_date: '', university_name: universityName || '', professor_name: '',
         exam_format: 'written', difficulty: '3', preparation_weeks: '', outcome: '',
         topics: '', description: '', advice: '', is_anonymous: true
       })
-      notify('Esperienza pubblicata. Grazie per aver aiutato altri studenti!')
+      notify('Esperienza inviata. Grazie per aver rispettato le regole della community!')
       await loadExperiences()
     } catch (error) {
       notify(error instanceof Error ? error.message : 'Non è stato possibile pubblicare. Riprova.')
@@ -188,6 +206,10 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
     event.preventDefault()
     if (!user) { onRequireLogin(); return }
     if (!supabase) return
+    if (reportDetails.trim().length < 20) {
+      notify('Descrivi il motivo della segnalazione con almeno 20 caratteri, indicando il passaggio problematico.')
+      return
+    }
     const { error } = await supabase.from('exam_experience_reports').insert({
       experience_id: experienceId, user_id: user.id, category: reportCategory, details: reportDetails.trim().slice(0, 500) || null
     })
@@ -291,9 +313,10 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
       </div>
       <div className="experience-form-footer">
         <label className="experience-anonymous"><input type="checkbox" checked={form.is_anonymous} onChange={e => updateForm('is_anonymous', e.target.checked)}/> Pubblica come studente anonimo</label>
-        <button type="submit" className="primary" disabled={submitting || !form.materia_id || form.description.trim().length < 40}>{submitting ? 'Pubblicazione…' : 'Pubblica esperienza'} <Send size={15}/></button>
+        <button type="submit" className="primary" disabled={submitting || !form.materia_id || form.description.trim().length < 40 || !communityAccepted}>{submitting ? 'Pubblicazione…' : 'Pubblica esperienza'} <Send size={15}/></button>
       </div>
-      <p className="experience-privacy-note"><ShieldCheck size={14}/> Non inserire dati personali tuoi o di altri, numeri di telefono, email o informazioni private. Le esperienze possono essere segnalate e vengono nascoste automaticamente dopo più segnalazioni indipendenti.</p>
+      <div className="experience-community-rules"><strong><ShieldCheck size={15}/> Regole obbligatorie della community</strong><p>Vietati razzismo, discriminazioni, odio, insulti, bullismo, molestie, minacce, diffamazione, spam, contenuti illegali e pubblicazione di dati personali o accuse non verificate contro studenti e docenti. Racconta fatti ed esperienze in modo rispettoso, senza attaccare le persone.</p><label><input type="checkbox" checked={communityAccepted} onChange={e => setCommunityAccepted(e.target.checked)}/> Confermo di aver letto e di rispettare le Regole della community e i Termini di SMLQUIZ.</label></div>
+      <p className="experience-privacy-note"><ShieldCheck size={14}/> Le segnalazioni vengono esaminate. Dopo tre segnalazioni indipendenti un contenuto viene temporaneamente nascosto in via cautelativa. Puoi contestare una decisione scrivendo a <a href="mailto:smlquiz@virgilio.it">smlquiz@virgilio.it</a>. Non inserire dati personali tuoi o di altri.</p>
     </form>}
 
     <div className="panel experiences-filters">
@@ -312,6 +335,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
         const isMine = user?.id === item.user_id
         return <article className="panel experience-card" key={item.id}>
           <div className="experience-card-top"><div className="experience-subject"><BookOpen size={16}/><span>{subject?.nome || 'Materia universitaria'}</span>{subject?.anno_corso ? <small>{subject.anno_corso}° anno</small> : null}</div><span className="experience-date"><CalendarDays size={13}/>{item.exam_date ? dateText(item.exam_date) : "Data esame non indicata"}</span></div>
+          {item.status === "hidden" && isMine && <div className="experience-moderation-notice"><strong>Contenuto temporaneamente nascosto</strong><span>{item.status_reason || "Il contenuto è in verifica dopo le segnalazioni ricevute."} Se ritieni che si tratti di un errore, puoi chiedere una revisione scrivendo a <a href="mailto:smlquiz@virgilio.it">smlquiz@virgilio.it</a>.</span></div>}
           <div className="experience-card-meta"><span>{formatLabels[item.exam_format]}</span><span className="experience-difficulty">{'★'.repeat(item.difficulty)}{'☆'.repeat(5-item.difficulty)} <small>{item.difficulty}/5</small></span>{item.preparation_weeks !== null ? <span><Clock3 size={12}/>{item.preparation_weeks} sett. di preparazione</span> : null}{item.outcome ? <span className="experience-outcome">{outcomeLabels[item.outcome]}</span> : null}</div>
           <div className="experience-card-location">{item.university_name ? <span><GraduationCap size={13}/>{item.university_name}</span> : null}{item.professor_name ? <span>Docente: {item.professor_name}</span> : null}{facultyName ? <span>{facultyName}</span> : null}</div>
           <p className="experience-description">{item.description}</p>
@@ -321,7 +345,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
             <button type="button" className={'experience-helpful '+(voted.includes(item.id)?'selected':'')} disabled={voted.includes(item.id)||isMine} onClick={() => void markHelpful(item)}><ThumbsUp size={14}/>{voted.includes(item.id)?'Utile':'È utile?'} <b>{item.helpful_count}</b></button>
             {isMine ? <button type="button" className="experience-report-button" onClick={() => void deleteExperience(item)}><Trash2 size={14}/> Elimina</button> : reported.includes(item.id) ? <span className="experience-reported"><Check size={14}/> Segnalata</span> : <button type="button" className="experience-report-button" onClick={() => { setReportingId(reportingId === item.id ? '' : item.id); setReportCategory('fake') }}><Flag size={14}/> Segnala</button>}
           </div></div>
-          {reportingId === item.id && <form className="experience-report-form" onSubmit={e => void sendReport(e, item.id)}><label>Motivo della segnalazione<select value={reportCategory} onChange={e => setReportCategory(e.target.value)}><option value="fake">Informazioni false o fuorvianti</option><option value="offensive">Contenuto offensivo</option><option value="personal_data">Dati personali o informazioni private</option><option value="spam">Spam o pubblicità</option><option value="other">Altro</option></select></label><input maxLength={500} value={reportDetails} onChange={e => setReportDetails(e.target.value)} placeholder="Dettagli facoltativi"/><button type="submit" className="secondary"><Flag size={14}/> Invia segnalazione</button></form>}
+          {reportingId === item.id && <form className="experience-report-form" onSubmit={e => void sendReport(e, item.id)}><label>Motivo della segnalazione<select value={reportCategory} onChange={e => setReportCategory(e.target.value)}><option value="fake">Informazioni false o fuorvianti</option><option value="discrimination">Razzismo, odio o discriminazione</option><option value="harassment">Insulti, bullismo o molestie</option><option value="threats">Minacce o istigazione alla violenza</option><option value="personal_data">Dati personali o informazioni private</option><option value="defamation">Possibile diffamazione o accuse personali</option><option value="copyright">Violazione del diritto d’autore</option><option value="spam">Spam o pubblicità</option><option value="other">Altro contenuto illecito o contrario alle regole</option></select></label><label>Indica il passaggio e perché è problematico<input required minLength={20} maxLength={500} value={reportDetails} onChange={e => setReportDetails(e.target.value)} placeholder="Descrivi il contenuto specifico da verificare…"/></label><button type="submit" className="secondary"><Flag size={14}/> Invia segnalazione</button></form>}
         </article>
       })}</div>}
     <div className="experiences-bottom-note"><ShieldCheck size={15}/><span>Le esperienze sono contributi degli utenti e non rappresentano comunicazioni ufficiali degli atenei o dei docenti. Verifica sempre le informazioni con il programma e gli avvisi del tuo corso.</span></div>
