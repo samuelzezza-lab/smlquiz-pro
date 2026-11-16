@@ -248,7 +248,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
           <button type="button" className="primary" onClick={() => user ? setFormOpen(v => !v) : onRequireLogin()}>
             <Plus size={16}/> Condividi la tua esperienza
           </button>
-          <span><ShieldCheck size={14}/> Email e dati di accesso non vengono mostrati</span>
+          <span><ShieldCheck size={14}/> Il tuo nome è nascosto agli altri utenti se scegli la modalità riservata</span>
         </div>
       </div>
       <div className="experiences-hero-aside">
@@ -312,11 +312,11 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
         </label>
       </div>
       <div className="experience-form-footer">
-        <label className="experience-anonymous"><input type="checkbox" checked={form.is_anonymous} onChange={e => updateForm('is_anonymous', e.target.checked)}/> Pubblica come studente anonimo</label>
+        <label className="experience-anonymous"><input type="checkbox" checked={form.is_anonymous} onChange={e => updateForm('is_anonymous', e.target.checked)}/> Nascondi il tuo nome agli altri utenti</label>
         <button type="submit" className="primary" disabled={submitting || !form.materia_id || form.description.trim().length < 40 || !communityAccepted}>{submitting ? 'Pubblicazione…' : 'Pubblica esperienza'} <Send size={15}/></button>
       </div>
       <div className="experience-community-rules"><strong><ShieldCheck size={15}/> Regole obbligatorie della community</strong><p>Vietati razzismo, discriminazioni, odio, insulti, bullismo, molestie, minacce, diffamazione, spam, contenuti illegali e pubblicazione di dati personali o accuse non verificate contro studenti e docenti. Racconta fatti ed esperienze in modo rispettoso, senza attaccare le persone.</p><label><input type="checkbox" checked={communityAccepted} onChange={e => setCommunityAccepted(e.target.checked)}/> Confermo di aver letto e di rispettare le Regole della community e i <a href="/legal">Termini di SMLQUIZ</a>.</label></div>
-      <p className="experience-privacy-note"><ShieldCheck size={14}/> Le segnalazioni vengono esaminate. Dopo tre segnalazioni indipendenti un contenuto viene temporaneamente nascosto in via cautelativa. Puoi contestare una decisione scrivendo a <a href="mailto:smlquiz@virgilio.it">smlquiz@virgilio.it</a>. Non inserire dati personali tuoi o di altri.</p>
+      <p className="experience-privacy-note"><ShieldCheck size={14}/> Le segnalazioni vengono esaminate. Dopo tre segnalazioni indipendenti un contenuto viene temporaneamente nascosto in via cautelativa. Puoi contestare una decisione scrivendo a <a href="mailto:smlquiz@virgilio.it">smlquiz@virgilio.it</a>. La modalità riservata nasconde il nome agli altri utenti, ma il contributo resta collegato internamente al tuo account. Non inserire dati personali tuoi o di altri.</p>
     </form>}
 
     <div className="panel experiences-filters">
@@ -341,7 +341,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
           <p className="experience-description">{item.description}</p>
           {item.topics.length > 0 && <div className="experience-topics">{item.topics.map(topic => <span key={topic}>{topic}</span>)}</div>}
           {item.advice && <div className="experience-advice"><strong>Consiglio dello studente</strong><p>{item.advice}</p></div>}
-          <div className="experience-card-footer"><span>Condivisa da {item.is_anonymous ? 'studente anonimo' : item.display_name} · Pubblicata il {dateText(item.created_at.slice(0,10))}</span><div>
+          <div className="experience-card-footer"><span>Condivisa da {item.is_anonymous ? 'utente con nome nascosto' : item.display_name} · Pubblicata il {dateText(item.created_at.slice(0,10))}</span><div>
             <button type="button" className={'experience-helpful '+(voted.includes(item.id)?'selected':'')} disabled={voted.includes(item.id)||isMine} onClick={() => void markHelpful(item)}><ThumbsUp size={14}/>{voted.includes(item.id)?'Utile':'È utile?'} <b>{item.helpful_count}</b></button>
             {isMine ? <button type="button" className="experience-report-button" onClick={() => void deleteExperience(item)}><Trash2 size={14}/> Elimina</button> : reported.includes(item.id) ? <span className="experience-reported"><Check size={14}/> Segnalata</span> : <button type="button" className="experience-report-button" onClick={() => { setReportingId(reportingId === item.id ? '' : item.id); setReportCategory('fake') }}><Flag size={14}/> Segnala</button>}
           </div></div>
