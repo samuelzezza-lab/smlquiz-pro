@@ -76,12 +76,12 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
       if (yearFilter && String(subject?.anno_corso || '') !== yearFilter) return false
       if (subjectFilter && item.materia_id !== subjectFilter) return false
       if (!query) return true
-      return [item.description, item.advice || '', item.university_name || '', ...(item.topics || []), subject?.nome || '']
+      return [item.description, item.advice || '', item.university_name || '', ...(item.topics || []), subject?.nome || '', facultyMap.get(subject?.facolta_id || '') || '', subject?.anno_corso ? `${subject.anno_corso}° anno` : '']
         .join(' ').toLocaleLowerCase('it').includes(query)
     }).sort((a, b) => sort === 'helpful'
       ? b.helpful_count - a.helpful_count || b.created_at.localeCompare(a.created_at)
       : b.created_at.localeCompare(a.created_at))
-  }, [items, search, facultyFilter, subjectFilter, sort, subjectMap])
+  }, [items, search, facultyFilter, yearFilter, subjectFilter, sort, subjectMap, facultyMap])
 
   const averageDifficulty = filtered.length
     ? (filtered.reduce((sum, item) => sum + item.difficulty, 0) / filtered.length).toFixed(1)
