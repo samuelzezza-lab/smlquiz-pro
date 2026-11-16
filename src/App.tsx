@@ -165,7 +165,7 @@ export default function App(){
    client.functions.invoke('quiz-api',{body:{action:'weak-topics'}})
   ]).then(async([w,h,st,pr,wq,wt])=>{
    if(!active)return;
-   if(!w.error&&w.data)setWallet(w.data);
+   if(!w.error&&w.data){setWallet(w.data);setAdsWalletReadyFor(user.id)}
    if(!h.error&&h.data?.attempts)setHistory(h.data.attempts as Attempt[]);
    if(!st.error&&st.data){setStreak(st.data.streak);setAchievements(st.data.achievements||[])}
    if(!pr.error&&pr.data?.profile){setDisplayName(pr.data.profile.display_name||'');setLeaderboardOptIn(Boolean(pr.data.profile.leaderboard_opt_in));setUniversityName(pr.data.profile.university_name||'');setUniversityCity(pr.data.profile.university_city||'');setSelectedUniversityId(pr.data.profile.university_id||'');setUniversityCourse(pr.data.profile.university_course||'')}
@@ -175,6 +175,22 @@ export default function App(){
   }).catch(err=>{if(active)notify(err instanceof Error?err.message:tr('catalogLoadFailed'))});
   return()=>{active=false}
  },[user])
+ useEffect(()=>{
+  // Carica AdSense solo dopo aver verificato il wallet dell'utente:
+  // chi ha Unlimited non deve ricevere richieste pubblicitarie.
+  const eligible=Boolean(user&&adsWalletReadyFor===user.id&&!wallet.hasAdsRemoved&&!wallet.ownerUnlimited);
+  const scriptId='smlquiz-adsense-loader';
+  const existing=document.getElementById(scriptId);
+  if(!eligible){existing?.remove();return}
+  if(existing)return;
+  const script=document.createElement('script');
+  script.id=scriptId;
+  script.async=true;
+  script.crossOrigin='anonymous';
+  script.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8117138172088873';
+  document.head.appendChild(script);
+  return()=>{script.remove()};
+ },[user?.id,adsWalletReadyFor,wallet.hasAdsRemoved,wallet.ownerUnlimited]);
  useEffect(()=>{
   const inviterId=new URLSearchParams(location.search).get('ref');
   if(inviterId&&/^[0-9a-f-]{36}$/i.test(inviterId)){
