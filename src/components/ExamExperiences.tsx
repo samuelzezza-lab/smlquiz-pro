@@ -135,13 +135,13 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
       notify('Per pubblicare devi confermare di aver letto e rispettare le Regole della community.')
       return
     }
-    const moderationText = [description, form.advice, form.topics].join(' ').toLocaleLowerCase('it')
-    const prohibited = /\\b(negro|frocio|finocchio|mongoloide|ritardato|coglione|stronzo|bastardo|idiota|imbecille|cretino|stupido|puttana|troia|vaffanculo)\\b|\\b(sporco zingaro|zingaro di merda|ebreo di merda|musulmano di merda|marocchino di merda|terrone di merda|gay di merda|lesbica di merda|trans di merda|pezzo di merda)\\b|\\b(ti ammazzo|vi ammazzo|ti faccio fuori|vi faccio fuori|vi veniamo a prendere|uccidete tutti)\\b/i
+    const moderationText = [description, form.advice, form.topics, form.university_name, form.professor_name].join(' ').toLocaleLowerCase('it')
+    const prohibited = /\b(negro|frocio|finocchio|mongoloide|ritardato|coglione|stronzo|bastardo|idiota|imbecille|cretino|stupido|puttana|troia|vaffanculo)\b|\b(sporco zingaro|zingaro di merda|ebreo di merda|musulmano di merda|marocchino di merda|terrone di merda|gay di merda|lesbica di merda|trans di merda|pezzo di merda)\b|\b(ti ammazzo|vi ammazzo|ti faccio fuori|vi faccio fuori|vi veniamo a prendere|uccidete tutti)\b/i
     if (prohibited.test(moderationText)) {
       notify('Il testo contiene insulti, espressioni discriminatorie o minacce non ammesse. Riscrivilo in modo rispettoso.')
       return
     }
-    if (/[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}/i.test(moderationText) || /\\b[0-9]{9,}\\b/.test(moderationText)) {
+    if (/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(moderationText) || /\b[0-9]{9,}\b/.test(moderationText)) {
       notify('Non pubblicare email, numeri di telefono o dati di contatto personali.')
       return
     }
