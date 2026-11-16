@@ -1607,6 +1607,39 @@ img,svg{max-width:100%}
 .subject-ranking-row>strong{color:#c9baff;font-size:14px;text-align:right}
 .subject-ranking-row>span:last-child{color:#aab6ce;font-size:11px;text-align:right}
 .subject-leaderboard-footnote{margin:0 2px 20px;color:#8492ae;font-size:10px;line-height:1.6}
+/* Classifica compatta: il podio resta protagonista senza dilatare la pagina. */
+.subject-ranking-panel{padding:16px;overflow:hidden}
+.subject-ranking-panel .panel-title{margin-bottom:10px}
+.subject-podium{gap:9px;margin-top:12px;align-items:stretch}
+.subject-podium-card{padding:12px 9px;gap:5px;border-radius:12px;min-height:0}
+.podium-medal{width:34px;height:34px;font-size:19px}
+.subject-podium-card>small{font-size:9px}
+.subject-podium-card>b{font-size:11px;line-height:1.25}
+.subject-podium-card>strong{font-size:21px}
+.subject-podium-card>span,.subject-podium-card>em{font-size:9px;line-height:1.3}
+.subject-ranking-list{margin-top:12px;max-height:min(38vh,340px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#65569b transparent}
+.subject-ranking-row{padding:9px 7px;gap:9px}
+.subject-ranking-position{width:27px;height:27px}
+.subject-my-rank{padding:12px 16px;margin-bottom:10px}
+.subject-my-rank b{font-size:19px}
+.subject-leaderboard-settings,.subject-leaderboard-filter,.subject-ranking-panel{margin-bottom:10px}
+.subject-ranking-panel.is-small-field .subject-ranking-list{max-height:none;overflow:visible}
+@media(max-width:800px){
+ .subject-ranking-panel{padding:13px}
+ .subject-podium{gap:6px}
+ .subject-podium-card{padding:10px 5px;gap:5px}
+ .podium-medal{width:30px;height:30px;font-size:17px}
+ .subject-podium-card>strong{font-size:18px}
+ .subject-ranking-list{max-height:min(34vh,260px)}
+}
+@media(max-width:420px){
+ .subject-podium-card>em{display:none}
+ .subject-podium-card>span{font-size:8px}
+ .subject-ranking-row{grid-template-columns:27px minmax(0,1fr) 48px 42px}
+ .subject-ranking-name>b{font-size:10px}
+ .subject-ranking-name>small{font-size:8px}
+}
+
 @media(max-width:800px){
  .subject-leaderboard-controls{grid-template-columns:1fr}
  .subject-leaderboard-controls .primary{width:100%}
