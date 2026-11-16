@@ -177,7 +177,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
       setFormOpen(false)
       setCommunityAccepted(false)
       setForm({
-        materia_id: '', exam_date: '', university_name: universityName || '', professor_name: '',
+        materia_id: '', exam_date: '', university_name: universityName || '',
         exam_format: 'written', difficulty: '3', preparation_weeks: '', outcome: '',
         topics: '', description: '', advice: '', is_anonymous: true
       })
@@ -268,7 +268,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
       <div className="experience-form-grid">
         <label className="experience-field experience-field-wide">Materia *
           <select required value={form.materia_id} onChange={e => updateForm('materia_id', e.target.value)}>
-            <option value="">Seleziona la materia</option>
+            <option value="">Seleziona l’esame</option>
             {subjects.slice().sort((a,b) => a.nome.localeCompare(b.nome, 'it')).map(subject => <option key={subject.id} value={subject.id}>{subject.nome}{subject.anno_corso ? ' · '+subject.anno_corso+'° anno' : ''}</option>)}
           </select>
         </label>
@@ -322,19 +322,19 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
     <div className="panel experiences-filters">
       <label className="experience-search"><Search size={17}/><input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Cerca argomenti, docente, università…"/></label>
       <label><Filter size={15}/><select value={facultyFilter} onChange={e => { setFacultyFilter(e.target.value); setSubjectFilter('') }}><option value="">Tutte le facoltà</option>{faculties.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}</select></label>
-      <label><BookOpen size={15}/><select value={subjectFilter} onChange={e => setSubjectFilter(e.target.value)}><option value="">Tutte le materie</option>{subjects.filter(s => !facultyFilter || s.facolta_id === facultyFilter).slice().sort((a,b) => a.nome.localeCompare(b.nome,'it')).map(s => <option key={s.id} value={s.id}>{s.nome}</option>)}</select></label>
+      <label><BookOpen size={15}/><select value={subjectFilter} onChange={e => setSubjectFilter(e.target.value)}><option value="">Tutti gli esami</option>{subjects.filter(s => !facultyFilter || s.facolta_id === facultyFilter).slice().sort((a,b) => a.nome.localeCompare(b.nome,'it')).map(s => <option key={s.id} value={s.id}>{s.nome}</option>)}</select></label>
       <label><ArrowDownWideNarrow size={15}/><select value={sort} onChange={e => setSort(e.target.value as 'recent'|'helpful')}><option value="recent">Più recenti</option><option value="helpful">Più utili</option></select></label>
     </div>
 
     {loading ? <div className="panel experiences-empty"><div className="experience-loader"/><b>Caricamento delle esperienze</b><span>Stiamo recuperando i contributi degli studenti.</span></div>
       : loadError ? <div className="panel experiences-empty"><AlertTriangle size={25}/><b>Archivio momentaneamente non disponibile</b><span>{loadError}</span><button type="button" className="secondary" onClick={() => void loadExperiences()}>Riprova</button></div>
-      : filtered.length === 0 ? <div className="panel experiences-empty"><MessageSquareText size={28}/><b>{items.length ? 'Nessuna esperienza corrisponde ai filtri' : 'Qui inizia l’archivio degli esami'}</b><span>{items.length ? 'Prova a cambiare materia o parole di ricerca.' : 'Non ci sono ancora esperienze pubblicate. Puoi essere tra i primi a condividere com’è andato il tuo esame e aiutare altri studenti.'}</span>{items.length ? <button type="button" className="secondary" onClick={() => { setSearch(''); setFacultyFilter(''); setSubjectFilter('') }}>Azzera filtri</button> : <button type="button" className="primary" onClick={() => user ? setFormOpen(true) : onRequireLogin()}><Plus size={15}/> Condividi la prima esperienza</button>}</div>
+      : filtered.length === 0 ? <div className="panel experiences-empty"><MessageSquareText size={28}/><b>{items.length ? 'Nessuna esperienza corrisponde ai filtri' : 'Qui inizia l’archivio degli esami'}</b><span>{items.length ? 'Prova a cambiare esame o parole di ricerca.' : 'Non ci sono ancora esperienze pubblicate. Puoi essere tra i primi a condividere com’è andato il tuo esame e aiutare altri studenti.'}</span>{items.length ? <button type="button" className="secondary" onClick={() => { setSearch(''); setFacultyFilter(''); setSubjectFilter('') }}>Azzera filtri</button> : <button type="button" className="primary" onClick={() => user ? setFormOpen(true) : onRequireLogin()}><Plus size={15}/> Condividi la prima esperienza</button>}</div>
       : <div className="experiences-list">{filtered.map(item => {
         const subject = subjectMap.get(item.materia_id)
         const facultyName = subject ? facultyMap.get(subject.facolta_id) : ''
         const isMine = user?.id === item.user_id
         return <article className="panel experience-card" key={item.id}>
-          <div className="experience-card-top"><div className="experience-subject"><BookOpen size={16}/><span>{subject?.nome || 'Materia universitaria'}</span>{subject?.anno_corso ? <small>{subject.anno_corso}° anno</small> : null}</div><span className="experience-date"><CalendarDays size={13}/>{item.exam_date ? dateText(item.exam_date) : "Data esame non indicata"}</span></div>
+          <div className="experience-card-top"><div className="experience-subject"><BookOpen size={16}/><span>{subject?.nome || 'Esame universitario'}</span>{subject?.anno_corso ? <small>{subject.anno_corso}° anno</small> : null}</div><span className="experience-date"><CalendarDays size={13}/>{item.exam_date ? dateText(item.exam_date) : "Data esame non indicata"}</span></div>
           {item.status === "hidden" && isMine && <div className="experience-moderation-notice"><strong>Contenuto temporaneamente nascosto</strong><span>{item.status_reason || "Il contenuto è in verifica dopo le segnalazioni ricevute."} Se ritieni che si tratti di un errore, puoi chiedere una revisione scrivendo a <a href="mailto:smlquiz@virgilio.it">smlquiz@virgilio.it</a>.</span></div>}
           <div className="experience-card-meta"><span>{formatLabels[item.exam_format]}</span><span className="experience-difficulty">{'★'.repeat(item.difficulty)}{'☆'.repeat(5-item.difficulty)} <small>{item.difficulty}/5</small></span>{item.preparation_weeks !== null ? <span><Clock3 size={12}/>{item.preparation_weeks} sett. di preparazione</span> : null}{item.outcome ? <span className="experience-outcome">{outcomeLabels[item.outcome]}</span> : null}</div>
           <div className="experience-card-location">{item.university_name ? <span><GraduationCap size={13}/>{item.university_name}</span> : null}{item.professor_name ? <span>Docente: {item.professor_name}</span> : null}{facultyName ? <span>{facultyName}</span> : null}</div>
