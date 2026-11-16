@@ -9,7 +9,9 @@ const products = new Map([
  ["price_1Uc9w5BCybXKHSfRCFwx5NAT",{type:"single_subject",amount:199,mode:"payment"}],
  ["price_1Uc9yMBCybXKHSfRP4SJ4wuL",{type:"jolly_100",amount:349,mode:"payment"}],
  ["price_1UcA1EBCybXKHSfRwyemWunq",{type:"session",amount:499,mode:"payment"}],
- ["price_1UcC6ZBCybXKHSfRotiMdjz9",{type:"site_subscription",amount:999,mode:"subscription"}]
+ ["price_1UcC6ZBCybXKHSfRotiMdjz9",{type:"site_subscription",amount:999,mode:"subscription"}],
+ ["price_1UcVlkBCybXKHSfRs9hj7caG",{type:"semestre_single_subject",amount:200,mode:"payment"}],
+ ["price_1UcVo8BCybXKHSfRDXpOyB0q",{type:"semestre_complete",amount:499,mode:"payment"}]
 ]);
 async function getSubscription(stripe:string,id:string){
  const response=await fetch("https://api.stripe.com/v1/subscriptions/"+encodeURIComponent(id),{headers:{Authorization:"Bearer "+stripe}});
