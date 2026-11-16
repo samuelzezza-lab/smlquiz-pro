@@ -104,6 +104,8 @@ Deno.serve(async (req: Request) => {
       }
     }
 
+    if (action === "session-check") return json({ sessionOk: true });
+
     if (action === "profile") {
       const { data: existing, error: readError } = await admin.from("user_profiles").select("user_id,display_name,language,leaderboard_opt_in,university_name,university_city,university_course,privacy_policy_version,terms_version,consented_at").eq("user_id", userId).maybeSingle();
       if (readError) throw readError;
