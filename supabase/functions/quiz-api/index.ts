@@ -27,6 +27,18 @@ function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : "Operazione non riuscita";
 }
 
+function sessionIdFromJwt(token: string): string | null {
+  try {
+    const encoded = token.split(".")[1];
+    if (!encoded) return null;
+    const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(atob(base64.padEnd(Math.ceil(base64.length / 4) * 4, "=")));
+    return typeof payload.session_id === "string" ? payload.session_id : null;
+  } catch {
+    return null;
+  }
+}
+
 function romeDayStart() {
   const now = new Date();
   const parts = new Intl.DateTimeFormat("en-CA", {
@@ -62,6 +74,35 @@ Deno.serve(async (req: Request) => {
   try {
     const body = await req.json();
     const action = String(body.action ?? "");
+
+    if (!isOwner) {
+      const sessionId = sessionIdFromJwt(token);
+      if (!sessionId) return json({ error: "Sessione non valida. Accedi di nuovo." }, 401);
+      const { data: guardResult, error: guardError } = await admin.rpc("guard_quiz_api_request", {
+        p_user_id: userId,
+        p_session_id: sessionId,
+        p_action: action,
+      });
+      if (guardError) throw guardError;
+      if (!guardResult?.allowed) {
+        if (guardResult?.reason === "session_limit") {
+          return json({
+            error: "Questo account è già attivo su 2 dispositivi. Per continuare, esci da Quizmind su un altro dispositivo e aggiorna questa pagina.",
+            code: "SESSION_LIMIT",
+            activeSessions: guardResult.active_sessions,
+            sessionLimit: guardResult.session_limit,
+          }, 409);
+        }
+        if (guardResult?.reason === "rate_limit") {
+          return json({
+            error: `Troppe richieste in poco tempo. Riprova tra ${guardResult.retry_after_seconds ?? 60} secondi.`,
+            code: "RATE_LIMIT",
+            retryAfterSeconds: guardResult.retry_after_seconds ?? 60,
+          }, 429);
+        }
+        return json({ error: "Sessione scaduta o non più valida. Accedi di nuovo.", code: "INVALID_SESSION" }, 401);
+      }
+    }
 
     if (action === "profile") {
       const { data: existing, error: readError } = await admin.from("user_profiles").select("user_id,display_name,language,leaderboard_opt_in,university_name,university_city,university_course,privacy_policy_version,terms_version,consented_at").eq("user_id", userId).maybeSingle();
