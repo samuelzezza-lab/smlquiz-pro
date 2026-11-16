@@ -2403,3 +2403,11 @@ img,svg{max-width:100%}
 @media(prefers-reduced-motion:reduce){
  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+/* Performance pass for desktop as well: avoid costly backdrop compositing on fixed layers. */
+.sidebar,.topbar,.float,.modal-backdrop,.scrim,.mobile-bottom-nav,.sf-mode-toolbar,.account-dropdown{
+ -webkit-backdrop-filter:none!important;
+ backdrop-filter:none!important;
+}
+.subject-card{content-visibility:auto;contain-intrinsic-size:180px}
