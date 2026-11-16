@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { AlertTriangle, ArrowDownWideNarrow, BookOpen, CalendarDays, Check, ChevronDown, CircleHelp, Clock3, Filter, Flag, GraduationCap, MessageSquareText, Plus, Search, Send, ShieldCheck, Star, ThumbsUp, Trash2, X } from 'lucide-react'
+import { AlertTriangle, ArrowDownWideNarrow, BookOpen, CalendarDays, Check, Clock3, Filter, Flag, GraduationCap, MessageSquareText, Plus, Search, Send, ShieldCheck, ThumbsUp, Trash2, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 type Faculty = { id: string; nome: string }
