@@ -194,7 +194,7 @@ export default function App(){
   const eligible=Boolean(authReady&&(!user||(adsWalletReadyFor===user.id&&!wallet.hasAdsRemoved)));
   const scriptId='smlquiz-adsense-loader';
   const existing=document.getElementById(scriptId);
-  if(!eligible){existing?.remove();return}
+  if(!eligible){existing?.remove();document.querySelectorAll('.google-auto-placed,ins.adsbygoogle,iframe[id^="google_ads_iframe"],div[id^="google_ads_iframe"]').forEach(node=>node.remove());return}
   if(existing)return;
   const script=document.createElement('script');
   script.id=scriptId;
