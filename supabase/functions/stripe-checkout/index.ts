@@ -36,7 +36,7 @@ Deno.serve(async(req:Request)=>{
  try{
   const body=await req.json(),priceId=String(body.priceId??""),product=catalog.get(priceId);
   if(!product)return reply({error:"Prodotto non riconosciuto"},400,origin);
-  const subjectIds=Array.isArray(body.subjectIds)?[...new Set(body.subjectIds.map((x:unknown)=>String(x).trim()).filter(Boolean))]:[];
+  const subjectIds:string[]=Array.isArray(body.subjectIds)?Array.from(new Set<string>(body.subjectIds.map((x:unknown)=>String(x).trim()).filter((x:string)=>x.length>0))):[];
   if(product.type==="semestre_single_subject"&&(subjectIds.length!==1||!["biologia","chimica","fisica"].includes(subjectIds[0])))return reply({error:"Seleziona una materia valida del Semestre Filtro."},400,origin);
   if(product.type==="semestre_complete"&&subjectIds.length!==0)return reply({error:"Il pacchetto completo non richiede la selezione di una materia."},400,origin);
   if(!product.type.startsWith("semestre_")&&subjectIds.length!==product.subjectCount)return reply({error:product.subjectCount===1?"Seleziona una materia.":"Seleziona esattamente cinque materie diverse."},400,origin);
