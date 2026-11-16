@@ -220,9 +220,9 @@ Deno.serve(async (req: Request) => {
         Object.entries(freeUsedBySubject).map(([materiaId, used]) => [materiaId, Math.max(0, 5 - used)]),
       );
       const paidCredits = isOwner ? 1000000000 : (wallet.data?.balance ?? 0);
-      // Only an active "Tutto il sito" subscription removes advertising.
-      // Quiz credits, single-subject passes and session purchases do not.
-      const hasAdsRemoved = isOwner || (siteSubscriptions.data?.length ?? 0) > 0;
+      // Advertising is disabled only for users with an active "Tutto il sito" (illimitato) subscription.
+      // Owner privileges and one-off quiz purchases do not remove advertising.
+      const hasAdsRemoved = (siteSubscriptions.data?.length ?? 0) > 0;
       return json({
         paidCredits,
         freeUsed: 0,
