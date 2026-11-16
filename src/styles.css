@@ -2309,3 +2309,41 @@ img,svg{max-width:100%}
 .sf-result-hero{display:flex;justify-content:space-between;align-items:center;padding:24px;margin:16px 0}.sf-result-hero small{display:block;color:var(--muted);font-size:11px;letter-spacing:1px}.sf-result-hero strong{display:block;font-size:48px;margin:7px 0}.sf-result-hero strong span{font-size:15px;color:var(--muted)}.sf-result-hero p{margin:0;color:var(--muted)}.sf-result-grade{font-size:32px;font-weight:800;text-align:center}.sf-result-grade small{font-size:11px;font-weight:500;letter-spacing:0}
 .sf-scoring-note{font-size:12px;color:var(--muted)}.sf-review-head{display:flex;justify-content:space-between;align-items:center;margin:26px 0 12px}.sf-review{padding:17px;margin-bottom:10px}.sf-review h3{font-size:15px;line-height:1.5}.sf-review p{font-size:13px;color:var(--muted)}.sf-review .is-correct{color:#4ade80}.sf-review .is-wrong{color:#fb7185}.sf-review .is-blank{color:#fbbf24}.sf-explanation{padding:12px;border-radius:9px;background:#101a2d}
 @media(max-width:760px){.sf-specs{grid-template-columns:repeat(2,minmax(0,1fr))}.sf-subjects{grid-template-columns:1fr}.sf-exam-layout{grid-template-columns:1fr}.sf-exam-aside{position:static;order:-1}.sf-mini-grid{grid-template-columns:repeat(10,1fr)}.sf-start-row{align-items:stretch;flex-direction:column}.sf-start-row .primary{justify-content:center}.sf-hero{align-items:flex-start}.sf-big-number{font-size:48px}.sf-result-hero strong{font-size:38px}}
+
+
+/* Semestre Filtro: prova e correzione sono vere schermate immersive su desktop e mobile. */
+.sf-mode-screen{
+ position:fixed!important;inset:0!important;z-index:1000!important;
+ width:100%!important;max-width:none!important;height:100dvh!important;min-height:100dvh!important;
+ margin:0!important;padding:clamp(14px,2.5vw,32px)!important;
+ overflow-y:auto!important;overscroll-behavior:contain;background:#050915;
+ padding-bottom:max(24px,env(safe-area-inset-bottom))!important;
+}
+.sf-mode-toolbar{
+ position:sticky;top:calc(-1 * clamp(14px,2.5vw,32px));z-index:5;
+ display:flex;align-items:center;justify-content:space-between;gap:12px;
+ margin:calc(-1 * clamp(14px,2.5vw,32px)) calc(-1 * clamp(14px,2.5vw,32px)) 22px;
+ padding:12px clamp(14px,2.5vw,32px);
+ padding-top:max(12px,env(safe-area-inset-top));
+ background:rgba(5,9,21,.96);border-bottom:1px solid var(--line);
+ -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+}
+.sf-mode-toolbar>span{font-size:10px;font-weight:800;letter-spacing:1.5px;color:#8795b2}
+.sf-mode-back{
+ display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;
+ padding:0 14px;border:1px solid var(--line);border-radius:10px;
+ background:#111b2e;color:#edf1ff;font-size:13px;font-weight:750;
+}
+.sf-mode-back:hover{background:#1a2740;border-color:#8b7bd0}
+.sf-mode-screen .sf-exam-top{scroll-margin-top:80px}
+.sf-mode-screen .sf-exam-aside{top:76px}
+@media(max-width:760px){
+ .sf-mode-screen{padding:0 12px max(18px,env(safe-area-inset-bottom))!important}
+ .sf-mode-toolbar{top:0;margin:0 -12px 16px;padding: max(8px,env(safe-area-inset-top)) 12px 8px}
+ .sf-mode-screen .sf-exam-top{align-items:flex-start;flex-direction:column;gap:10px}
+ .sf-mode-screen .sf-clock{align-self:stretch;justify-content:center}
+ .sf-mode-screen .sf-exam-aside{position:static}
+ .sf-mode-screen .sf-question{scroll-margin-top:72px}
+ .sf-mode-screen .sf-result-hero{gap:12px;padding:16px}
+ .sf-mode-screen .sf-review-head{align-items:flex-start;gap:10px;flex-wrap:wrap}
+}
