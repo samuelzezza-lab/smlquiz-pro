@@ -9,7 +9,10 @@ type Result={correct:number;wrong:number;blank:number;score:number;review:Review
 const subjects=[{id:'biologia' as const,label:'Biologia',tone:'bio'},{id:'chimica' as const,label:'Chimica e propedeutica biochimica',tone:'chem'},{id:'fisica' as const,label:'Fisica',tone:'phys'}]
 const fmt=(s:number)=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')
 
-export default function SemestreFiltro(){
+type SemestreFiltroProps={onBuyPackage:(priceId:string,subjectIds:string[],consentConfirmed:boolean)=>void;onRequireLogin:()=>void}
+const semestreSinglePrice='price_1UcVlkBCybXKHSfRs9hj7caG'
+const semestreCompletePrice='price_1UcVo8BCybXKHSfRDXpOyB0q'
+export default function SemestreFiltro({onBuyPackage,onRequireLogin}:SemestreFiltroProps){
  const [subject,setSubject]=useState<SubjectId>('biologia')
  const [mode,setMode]=useState<'intro'|'exam'|'result'>('intro')
  const [examId,setExamId]=useState('')
@@ -22,6 +25,8 @@ export default function SemestreFiltro(){
  const [startedAt,setStartedAt]=useState<number|null>(null)
  const [result,setResult]=useState<Result|null>(null)
  const [showExplanations,setShowExplanations]=useState(true)
+ const [paywall,setPaywall]=useState(false)
+ const [digitalConsent,setDigitalConsent]=useState(false)
  const finishLock=useRef(false)
  const exitMode=()=>{if(mode==='exam'&&!window.confirm('Uscire dalla simulazione? Le risposte inserite resteranno in questa schermata solo finché non la chiudi.'))return;if(window.history.state?.semestreFiltroMode)window.history.back();else setMode('intro')}
  useEffect(()=>{const onPopState=()=>{if(mode!=='intro'){setMode('intro');setStartedAt(null)}};window.addEventListener('popstate',onPopState);return()=>window.removeEventListener('popstate',onPopState)},[mode])
@@ -50,10 +55,12 @@ export default function SemestreFiltro(){
   try{
    const {data,error}=await supabase.rpc('start_semestre_filtro_exam',{p_materia:subject})
    if(error)throw error
-   const payload=data as {exam_id:string;questions:Question[];duration_seconds:number}
+   const payload=data as {exam_id?:string;questions?:Question[];duration_seconds?:number;paywall?:boolean}
+   if(payload?.paywall){setPaywall(true);return}
    if(!payload?.exam_id||payload.questions?.length!==31)throw new Error('La banca non contiene ancora 31 domande utilizzabili per questa materia.')
+   setPaywall(false)
    setExamId(payload.exam_id);setExam(payload.questions);setAnswers({});setResult(null);setSeconds(3000);setStartedAt(Date.now());finishLock.current=false;window.history.pushState({...window.history.state,semestreFiltroMode:true},'','/semestre-filtro');setMode('exam')
-  }catch(e){setError(e instanceof Error?e.message:'Non riesco a preparare la simulazione.')}
+  }catch(e){const message=e instanceof Error?e.message:'Non riesco a preparare la simulazione.';if(message.toLowerCase().includes('accedere')){onRequireLogin();return}setError(message)}
   finally{setLoading(false)}
  }
  const review=useMemo(()=>result?.review||[],[result])
@@ -65,7 +72,8 @@ export default function SemestreFiltro(){
    <div className="section-head"><div><h2>Scegli la materia</h2><p>Ogni prova contiene 21 domande a scelta multipla e 10 a completamento.</p></div></div>
    <div className="sf-subjects">{subjects.map(s=><button key={s.id} className={'sf-subject panel '+(subject===s.id?'selected':'')} onClick={()=>setSubject(s.id)}><span className={'sf-subject-mark '+s.tone}>{s.label[0]}</span><span><b>{s.label}</b><small>Simulazione completa da 31 quesiti</small></span><span className="sf-radio">{subject===s.id?'✓':''}</span></button>)}</div>
    {error&&<div className="notice">{error}</div>}
-   <div className="sf-start-row"><div><b>Correzione soltanto alla fine</b><small>Durante la prova non mostriamo suggerimenti né risposte corrette.</small></div><button className="primary" disabled={loading} onClick={()=>void start()}>{loading?'Preparazione…':'Inizia simulazione'} <ArrowRight size={16}/></button></div>
+   <div className="sf-start-row"><div><b>5 simulazioni gratuite totali per account</b><small>Non si rinnovano ogni giorno. Dopo le prime cinque puoi scegliere il pacchetto più adatto.</small></div><button className="primary" disabled={loading} onClick={()=>void start()}>{loading?'Preparazione…':'Inizia simulazione'} <ArrowRight size={16}/></button></div>
+   {paywall&&<div className="sf-paywall panel"><div className="eyebrow">SIMULAZIONI GRATUITE ESAURITE</div><h2>Continua ad allenarti</h2><p>Hai utilizzato tutte le 5 simulazioni gratuite. Sblocca questa materia oppure tutte e tre.</p><div className="sf-paywall-plans"><article><span>UNA MATERIA</span><h3>Semestre Filtro – {subjects.find(s=>s.id===subject)?.label}</h3><p>Tutte le simulazioni della materia selezionata, senza limiti.</p><strong>2,00 €</strong><button className="primary" disabled={!digitalConsent} onClick={()=>onBuyPackage(semestreSinglePrice,[subject],digitalConsent)}>Sblocca questa materia</button></article><article className="featured"><span>PACCHETTO COMPLETO</span><h3>Semestre Filtro – Completo</h3><p>Accesso illimitato a Biologia, Chimica e Fisica: tutte le 900 domande.</p><strong>4,99 €</strong><button className="primary" disabled={!digitalConsent} onClick={()=>onBuyPackage(semestreCompletePrice,[],digitalConsent)}>Sblocca tutte e 3</button></article></div><label className="sf-digital-consent"><input type="checkbox" checked={digitalConsent} onChange={e=>setDigitalConsent(e.target.checked)}/> Richiedo l'accesso immediato ai contenuti digitali e riconosco che, iniziata la fornitura, perdo il diritto di recesso.</label>{!digitalConsent&&<small className="sf-consent-hint">Conferma per procedere al pagamento.</small>}</div>}
   </>}
   {mode==='exam'&&<>
    <div className="sf-mode-toolbar"><button type="button" className="sf-mode-back" onClick={exitMode}><ArrowLeft size={17}/> Indietro</button><span>MODALITÀ ESAME</span></div><div className="sf-exam-top"><div><div className="eyebrow">SEMESTRE FILTRO · {subjects.find(s=>s.id===subject)?.label.toUpperCase()}</div><h1>Simulazione d'esame</h1><p>{answered} di 31 risposte inserite · {mcq} a scelta multipla · 10 completamenti</p></div><div className={'sf-clock '+(seconds<300?'urgent':'')}><Clock3 size={18}/><b>{fmt(seconds)}</b></div></div>
