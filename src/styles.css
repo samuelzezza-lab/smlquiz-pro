@@ -2365,3 +2365,8 @@ img,svg{max-width:100%}
 .sf-digital-consent input{margin-top:3px;accent-color:var(--accent);flex:0 0 auto}
 .sf-consent-hint{display:block;margin:6px 0 0 26px;color:var(--muted)}
 @media(max-width:680px){.sf-paywall-plans{grid-template-columns:1fr}.sf-paywall-plans p{min-height:0}.sf-paywall{padding:16px}.sf-paywall-plans article{padding:16px}}
+
+
+/* Watermark dinamico anti-redistribuzione: identificativo pseudonimo dell'account, non email. */
+.panel.quiz{position:relative;overflow:hidden}.quiz-watermark{position:absolute;z-index:4;inset:76px 8px 42px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));align-items:center;justify-items:center;gap:12px;pointer-events:none;overflow:hidden;user-select:none}.quiz-watermark span{display:block;max-width:100%;color:rgba(185,202,232,.16);font:700 9px/1.4 Manrope, sans-serif;letter-spacing:1.1px;text-align:center;white-space:nowrap;transform:rotate(-22deg);text-shadow:0 1px 2px rgba(0,0,0,.18)}.panel.quiz .question,.panel.quiz .answers{position:relative;z-index:1}.panel.quiz .question,.panel.quiz .answers,.panel.quiz .quiz-top,.panel.quiz .progress-label,.panel.quiz .q-label{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+@media(max-width:520px){.quiz-watermark{inset:84px 4px 48px;gap:5px}.quiz-watermark span{font-size:7px;letter-spacing:.6px}}
