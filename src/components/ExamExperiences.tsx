@@ -49,6 +49,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
   const [loadError, setLoadError] = useState('')
   const [subjectFilter, setSubjectFilter] = useState('')
   const [facultyFilter, setFacultyFilter] = useState('')
+  const [yearFilter, setYearFilter] = useState('')
   const [search, setSearch] = useState('')
   const [sort, setSort] = useState<'recent' | 'helpful'>('recent')
   const [formOpen, setFormOpen] = useState(false)
@@ -72,6 +73,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
     return items.filter(item => {
       const subject = subjectMap.get(item.materia_id)
       if (facultyFilter && subject?.facolta_id !== facultyFilter) return false
+      if (yearFilter && String(subject?.anno_corso || '') !== yearFilter) return false
       if (subjectFilter && item.materia_id !== subjectFilter) return false
       if (!query) return true
       return [item.description, item.advice || '', item.professor_name || '', item.university_name || '', ...(item.topics || []), subject?.nome || '']
@@ -321,14 +323,14 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
 
     <div className="panel experiences-filters">
       <label className="experience-search"><Search size={17}/><input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Cerca argomenti, docente, università…"/></label>
-      <label><Filter size={15}/><select value={facultyFilter} onChange={e => { setFacultyFilter(e.target.value); setSubjectFilter('') }}><option value="">Tutte le facoltà</option>{faculties.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}</select></label>
-      <label><BookOpen size={15}/><select value={subjectFilter} onChange={e => setSubjectFilter(e.target.value)}><option value="">Tutti gli esami</option>{subjects.filter(s => !facultyFilter || s.facolta_id === facultyFilter).slice().sort((a,b) => a.nome.localeCompare(b.nome,'it')).map(s => <option key={s.id} value={s.id}>{s.nome}</option>)}</select></label>
+      <label><Filter size={15}/><select value={facultyFilter} onChange={e => { setFacultyFilter(e.target.value); setSubjectFilter(''); setYearFilter('') }}><option value="">Tutte le facoltà</option>{faculties.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}</select></label>
+      <label><CalendarDays size={15}/><select value={yearFilter} onChange={e => { setYearFilter(e.target.value); setSubjectFilter('') }}><option value="">Tutti gli anni</option>{[...new Set(subjects.map(s => s.anno_corso).filter((year): year is number => year !== null))].sort((a,b) => a-b).map(year => <option key={year} value={String(year)}>{year}° anno</option>)}</select></label>\n      <label><BookOpen size={15}/><select value={subjectFilter} onChange={e => setSubjectFilter(e.target.value)}><option value="">Tutti gli esami</option>{subjects.filter(s => (!facultyFilter || s.facolta_id === facultyFilter) && (!yearFilter || String(s.anno_corso || '') === yearFilter)).slice().sort((a,b) => a.nome.localeCompare(b.nome,'it')).map(s => <option key={s.id} value={s.id}>{s.nome}</option>)}</select></label>
       <label><ArrowDownWideNarrow size={15}/><select value={sort} onChange={e => setSort(e.target.value as 'recent'|'helpful')}><option value="recent">Più recenti</option><option value="helpful">Più utili</option></select></label>
     </div>
 
     {loading ? <div className="panel experiences-empty"><div className="experience-loader"/><b>Caricamento delle esperienze</b><span>Stiamo recuperando i contributi degli studenti.</span></div>
       : loadError ? <div className="panel experiences-empty"><AlertTriangle size={25}/><b>Archivio momentaneamente non disponibile</b><span>{loadError}</span><button type="button" className="secondary" onClick={() => void loadExperiences()}>Riprova</button></div>
-      : filtered.length === 0 ? <div className="panel experiences-empty"><MessageSquareText size={28}/><b>{items.length ? 'Nessuna esperienza corrisponde ai filtri' : 'Qui inizia l’archivio degli esami'}</b><span>{items.length ? 'Prova a cambiare esame o parole di ricerca.' : 'Non ci sono ancora esperienze pubblicate. Puoi essere tra i primi a condividere com’è andato il tuo esame e aiutare altri studenti.'}</span>{items.length ? <button type="button" className="secondary" onClick={() => { setSearch(''); setFacultyFilter(''); setSubjectFilter('') }}>Azzera filtri</button> : <button type="button" className="primary" onClick={() => user ? setFormOpen(true) : onRequireLogin()}><Plus size={15}/> Condividi la prima esperienza</button>}</div>
+      : filtered.length === 0 ? <div className="panel experiences-empty"><MessageSquareText size={28}/><b>{items.length ? 'Nessuna esperienza corrisponde ai filtri' : 'Qui inizia l’archivio degli esami'}</b><span>{items.length ? 'Prova a cambiare esame o parole di ricerca.' : 'Non ci sono ancora esperienze pubblicate. Puoi essere tra i primi a condividere com’è andato il tuo esame e aiutare altri studenti.'}</span>{items.length ? <button type="button" className="secondary" onClick={() => { setSearch(''); setFacultyFilter(''); setYearFilter(''); setSubjectFilter('') }}>Azzera filtri</button> : <button type="button" className="primary" onClick={() => user ? setFormOpen(true) : onRequireLogin()}><Plus size={15}/> Condividi la prima esperienza</button>}</div>
       : <div className="experiences-list">{filtered.map(item => {
         const subject = subjectMap.get(item.materia_id)
         const facultyName = subject ? facultyMap.get(subject.facolta_id) : ''
