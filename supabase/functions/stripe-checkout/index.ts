@@ -14,7 +14,9 @@ const catalog = new Map([
   ["price_1Uc9w5BCybXKHSfRCFwx5NAT",{type:"single_subject",amount:199,mode:"payment",subjectCount:1}],
   ["price_1Uc9yMBCybXKHSfRP4SJ4wuL",{type:"jolly_100",amount:349,mode:"payment",subjectCount:0}],
   ["price_1UcA1EBCybXKHSfRwyemWunq",{type:"session",amount:499,mode:"payment",subjectCount:5}],
-  ["price_1UcC6ZBCybXKHSfRotiMdjz9",{type:"site_subscription",amount:999,mode:"subscription",subjectCount:0}]
+  ["price_1UcC6ZBCybXKHSfRotiMdjz9",{type:"site_subscription",amount:999,mode:"subscription",subjectCount:0}],
+  ["price_1UcVlkBCybXKHSfRs9hj7caG",{type:"semestre_single_subject",amount:200,mode:"payment",subjectCount:1}],
+  ["price_1UcVo8BCybXKHSfRDXpOyB0q",{type:"semestre_complete",amount:499,mode:"payment",subjectCount:0}]
 ]);
 Deno.serve(async(req:Request)=>{
  const origin=req.headers.get("Origin");
@@ -35,8 +37,10 @@ Deno.serve(async(req:Request)=>{
   const body=await req.json(),priceId=String(body.priceId??""),product=catalog.get(priceId);
   if(!product)return reply({error:"Prodotto non riconosciuto"},400,origin);
   const subjectIds=Array.isArray(body.subjectIds)?[...new Set(body.subjectIds.map((x:unknown)=>String(x).trim()).filter(Boolean))]:[];
-  if(subjectIds.length!==product.subjectCount)return reply({error:product.subjectCount===1?"Seleziona una materia.":"Seleziona esattamente cinque materie diverse."},400,origin);
-  if(subjectIds.length){
+  if(product.type==="semestre_single_subject"&&(subjectIds.length!==1||!["biologia","chimica","fisica"].includes(subjectIds[0])))return reply({error:"Seleziona una materia valida del Semestre Filtro."},400,origin);
+  if(product.type==="semestre_complete"&&subjectIds.length!==0)return reply({error:"Il pacchetto completo non richiede la selezione di una materia."},400,origin);
+  if(!product.type.startsWith("semestre_")&&subjectIds.length!==product.subjectCount)return reply({error:product.subjectCount===1?"Seleziona una materia.":"Seleziona esattamente cinque materie diverse."},400,origin);
+  if(subjectIds.length&&product.type!=="semestre_single_subject"){
     const {data:subjects,error}=await admin.from("materie").select("id").in("id",subjectIds);
     if(error)throw error;
     if((subjects??[]).length!==product.subjectCount)return reply({error:"Una o più materie selezionate non sono valide."},400,origin);
