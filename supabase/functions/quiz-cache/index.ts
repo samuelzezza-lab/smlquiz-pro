@@ -87,6 +87,7 @@ Deno.serve(async (req: Request) => {
     // Le chiamate del generatore notturno sono autorizzate solo con la service key
     // custodita nei segreti Supabase; le richieste degli utenti mantengono auth normale.
     const isInternalServiceCall = authHeader === `Bearer ${serviceKey}`;
+    if (!isInternalServiceCall) return json({ error: "Questo endpoint legacy non è più disponibile per gli utenti." }, 410);
     let user: any = null;
     if (!isInternalServiceCall) {
       const authClient = createClient(supabaseUrl, anonKey, {
