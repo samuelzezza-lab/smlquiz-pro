@@ -11,7 +11,7 @@ type Experience = {
   materia_id: string
   exam_date: string | null
   university_name: string | null
-  professor_name: string | null
+
   exam_format: 'written' | 'oral' | 'mixed' | 'practical' | 'other'
   difficulty: number
   preparation_weeks: number | null
@@ -61,7 +61,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
   const [reportCategory, setReportCategory] = useState('fake')
   const [reportDetails, setReportDetails] = useState('')
   const [form, setForm] = useState({
-    materia_id: '', exam_date: '', university_name: universityName || '', professor_name: '',
+    materia_id: '', exam_date: '', university_name: universityName || '',
     exam_format: 'written' as Experience['exam_format'], difficulty: '3', preparation_weeks: '',
     outcome: '', topics: '', description: '', advice: '', is_anonymous: true
   })
@@ -76,7 +76,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
       if (yearFilter && String(subject?.anno_corso || '') !== yearFilter) return false
       if (subjectFilter && item.materia_id !== subjectFilter) return false
       if (!query) return true
-      return [item.description, item.advice || '', item.professor_name || '', item.university_name || '', ...(item.topics || []), subject?.nome || '']
+      return [item.description, item.advice || '', item.university_name || '', ...(item.topics || []), subject?.nome || '']
         .join(' ').toLocaleLowerCase('it').includes(query)
     }).sort((a, b) => sort === 'helpful'
       ? b.helpful_count - a.helpful_count || b.created_at.localeCompare(a.created_at)
@@ -96,7 +96,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
     setLoading(true)
     setLoadError('')
     const { data, error } = await supabase.from('exam_experiences')
-      .select('id,user_id,materia_id,exam_date,university_name,professor_name,exam_format,difficulty,preparation_weeks,outcome,topics,description,advice,display_name,is_anonymous,helpful_count,status,status_reason,created_at')
+      .select('id,user_id,materia_id,exam_date,university_name,exam_format,difficulty,preparation_weeks,outcome,topics,description,advice,display_name,is_anonymous,helpful_count,status,status_reason,created_at')
       .or(user ? `status.eq.published,user_id.eq.${user.id}` : 'status.eq.published')
       .order('created_at', { ascending: false })
       .limit(150)
@@ -137,7 +137,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
       notify('Per pubblicare devi confermare di aver letto e rispettare le Regole della community.')
       return
     }
-    const moderationText = [description, form.advice, form.topics, form.university_name, form.professor_name].join(' ').toLocaleLowerCase('it')
+    const moderationText = [description, form.advice, form.topics, form.university_name].join(' ').toLocaleLowerCase('it')
     const prohibited = /\b(negro|frocio|finocchio|mongoloide|ritardato|coglione|stronzo|bastardo|idiota|imbecille|cretino|stupido|puttana|troia|vaffanculo)\b|\b(sporco zingaro|zingaro di merda|ebreo di merda|musulmano di merda|marocchino di merda|terrone di merda|gay di merda|lesbica di merda|trans di merda|pezzo di merda)\b|\b(ti ammazzo|vi ammazzo|ti faccio fuori|vi faccio fuori|vi veniamo a prendere|uccidete tutti)\b/i
     if (prohibited.test(moderationText)) {
       notify('Il testo contiene insulti, espressioni discriminatorie o minacce non ammesse. Riscrivilo in modo rispettoso.')
@@ -152,7 +152,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
       return
     }
     if (!form.materia_id) {
-      notify('Seleziona la materia.')
+      notify('Seleziona l’esame.')
       return
     }
     const topics = [...new Set(form.topics.split(',').map(x => x.trim()).filter(Boolean).map(x => x.slice(0, 50)))].slice(0, 8)
@@ -162,8 +162,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
         user_id: user.id,
         materia_id: form.materia_id,
         exam_date: form.exam_date || null,
-        university_name: form.university_name.trim().slice(0, 100) || null,
-        professor_name: form.professor_name.trim().slice(0, 80) || null,
+        university_name: form.university_name.trim().slice(0, 100) || null
         exam_format: form.exam_format,
         difficulty: Number(form.difficulty),
         preparation_weeks: form.preparation_weeks ? Number(form.preparation_weeks) : null,
@@ -256,22 +255,22 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
       <div className="experiences-hero-aside">
         <div><strong>{items.length}</strong><span>esperienze pubblicate</span></div>
         <div><strong>{averageDifficulty}</strong><span>difficoltà media / 5</span></div>
-        <div><strong>{new Set(items.map(x => x.materia_id)).size}</strong><span>materie coperte</span></div>
+        <div><strong>{new Set(items.map(x => x.materia_id)).size}</strong><span>esami coperti</span></div>
       </div>
     </div>
 
     <div className="experiences-section-heading">
-      <div><span className="experiences-eyebrow">DALLA COMMUNITY</span><h2>Esperienze degli studenti</h2><p>Informazioni pratiche, organizzate per materia e consultabili prima dell’appello.</p></div>
+      <div><span className="experiences-eyebrow">DALLA COMMUNITY</span><h2>Esperienze degli studenti</h2><p>Informazioni pratiche, organizzate per facoltà, anno di corso ed esame, consultabili prima dell’appello.</p></div>
       <span className="experiences-result-count">{filtered.length} {filtered.length === 1 ? 'risultato' : 'risultati'}</span>
     </div>
 
     {formOpen && <form className="panel experience-form" onSubmit={submitExperience}>
       <div className="experience-form-heading"><div><span className="experiences-eyebrow">CONTRIBUISCI ALL’ARCHIVIO</span><h2>Racconta il tuo esame</h2><p>Più dettagli inserisci, più la tua esperienza sarà utile a chi deve prepararsi.</p></div><button type="button" className="icon-button" aria-label="Chiudi" onClick={() => setFormOpen(false)}><X size={18}/></button></div>
       <div className="experience-form-grid">
-        <label className="experience-field experience-field-wide">Materia *
+        <label className="experience-field experience-field-wide">Esame *
           <select required value={form.materia_id} onChange={e => updateForm('materia_id', e.target.value)}>
             <option value="">Seleziona l’esame</option>
-            {subjects.slice().sort((a,b) => a.nome.localeCompare(b.nome, 'it')).map(subject => <option key={subject.id} value={subject.id}>{subject.nome}{subject.anno_corso ? ' · '+subject.anno_corso+'° anno' : ''}</option>)}
+            {subjects.slice().sort((a,b) => a.nome.localeCompare(b.nome, 'it')).map(subject => <option key={subject.id} value={subject.id}>{facultyMap.get(subject.facolta_id) || 'Facoltà'} · {subject.anno_corso ? subject.anno_corso+'° anno · ' : ''}{subject.nome}</option>)}
           </select>
         </label>
         <label className="experience-field">Data dell’esame
@@ -280,10 +279,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
         <label className="experience-field">Università (facoltativa)
           <input maxLength={100} value={form.university_name} onChange={e => updateForm('university_name', e.target.value)} placeholder="Es. Università di Bologna"/>
         </label>
-        <label className="experience-field">Docente (facoltativo)
-          <input maxLength={80} value={form.professor_name} onChange={e => updateForm('professor_name', e.target.value)} placeholder="Nome del docente"/>
-        </label>
-        <label className="experience-field">Modalità
+<label className="experience-field">Modalità
           <select value={form.exam_format} onChange={e => updateForm('exam_format', e.target.value as Experience['exam_format'])}>
             <option value="written">Scritto</option><option value="oral">Orale</option><option value="mixed">Scritto e orale</option><option value="practical">Pratico</option><option value="other">Altro</option>
           </select>
@@ -322,9 +318,10 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
     </form>}
 
     <div className="panel experiences-filters">
-      <label className="experience-search"><Search size={17}/><input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Cerca argomenti, docente, università…"/></label>
+      <label className="experience-search"><Search size={17}/><input type="search" value={search} onChange={e => setSearch(e.target.value)} placeholder="Cerca facoltà, anno, esame o argomenti…"/></label>
       <label><Filter size={15}/><select value={facultyFilter} onChange={e => { setFacultyFilter(e.target.value); setSubjectFilter(''); setYearFilter('') }}><option value="">Tutte le facoltà</option>{faculties.map(f => <option key={f.id} value={f.id}>{f.nome}</option>)}</select></label>
-      <label><CalendarDays size={15}/><select value={yearFilter} onChange={e => { setYearFilter(e.target.value); setSubjectFilter('') }}><option value="">Tutti gli anni</option>{[...new Set(subjects.map(s => s.anno_corso).filter((year): year is number => year !== null))].sort((a,b) => a-b).map(year => <option key={year} value={String(year)}>{year}° anno</option>)}</select></label>\n      <label><BookOpen size={15}/><select value={subjectFilter} onChange={e => setSubjectFilter(e.target.value)}><option value="">Tutti gli esami</option>{subjects.filter(s => (!facultyFilter || s.facolta_id === facultyFilter) && (!yearFilter || String(s.anno_corso || '') === yearFilter)).slice().sort((a,b) => a.nome.localeCompare(b.nome,'it')).map(s => <option key={s.id} value={s.id}>{s.nome}</option>)}</select></label>
+      <label><CalendarDays size={15}/><select value={yearFilter} onChange={e => { setYearFilter(e.target.value); setSubjectFilter('') }}><option value="">Tutti gli anni</option>{[...new Set(subjects.map(s => s.anno_corso).filter((year): year is number => year !== null))].sort((a,b) => a-b).map(year => <option key={year} value={String(year)}>{year}° anno</option>)}</select></label>
+      <label><BookOpen size={15}/><select value={subjectFilter} onChange={e => setSubjectFilter(e.target.value)}><option value="">Tutti gli esami</option>{subjects.filter(s => (!facultyFilter || s.facolta_id === facultyFilter) && (!yearFilter || String(s.anno_corso || '') === yearFilter)).slice().sort((a,b) => a.nome.localeCompare(b.nome,'it')).map(s => <option key={s.id} value={s.id}>{facultyMap.get(s.facolta_id) || 'Facoltà'} · {s.anno_corso ? s.anno_corso+'° anno · ' : ''}{s.nome}</option>)}</select></label>
       <label><ArrowDownWideNarrow size={15}/><select value={sort} onChange={e => setSort(e.target.value as 'recent'|'helpful')}><option value="recent">Più recenti</option><option value="helpful">Più utili</option></select></label>
     </div>
 
@@ -339,7 +336,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
           <div className="experience-card-top"><div className="experience-subject"><BookOpen size={16}/><span>{subject?.nome || 'Esame universitario'}</span>{subject?.anno_corso ? <small>{subject.anno_corso}° anno</small> : null}</div><span className="experience-date"><CalendarDays size={13}/>{item.exam_date ? dateText(item.exam_date) : "Data esame non indicata"}</span></div>
           {item.status === "hidden" && isMine && <div className="experience-moderation-notice"><strong>Contenuto temporaneamente nascosto</strong><span>{item.status_reason || "Il contenuto è in verifica dopo le segnalazioni ricevute."} Se ritieni che si tratti di un errore, puoi chiedere una revisione scrivendo a <a href="mailto:smlquiz@virgilio.it">smlquiz@virgilio.it</a>.</span></div>}
           <div className="experience-card-meta"><span>{formatLabels[item.exam_format]}</span><span className="experience-difficulty">{'★'.repeat(item.difficulty)}{'☆'.repeat(5-item.difficulty)} <small>{item.difficulty}/5</small></span>{item.preparation_weeks !== null ? <span><Clock3 size={12}/>{item.preparation_weeks} sett. di preparazione</span> : null}{item.outcome ? <span className="experience-outcome">{outcomeLabels[item.outcome]}</span> : null}</div>
-          <div className="experience-card-location">{item.university_name ? <span><GraduationCap size={13}/>{item.university_name}</span> : null}{item.professor_name ? <span>Docente: {item.professor_name}</span> : null}{facultyName ? <span>{facultyName}</span> : null}</div>
+          <div className="experience-card-location">{item.university_name ? <span><GraduationCap size={13}/>{item.university_name}</span> : null}{}{facultyName ? <span>{facultyName}</span> : null}</div>
           <p className="experience-description">{item.description}</p>
           {item.topics.length > 0 && <div className="experience-topics">{item.topics.map(topic => <span key={topic}>{topic}</span>)}</div>}
           {item.advice && <div className="experience-advice"><strong>Consiglio dello studente</strong><p>{item.advice}</p></div>}
