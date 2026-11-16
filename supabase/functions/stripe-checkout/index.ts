@@ -10,6 +10,14 @@ const corsHeaders = (origin: string | null) => ({
   "Content-Type": "application/json"
 });
 const reply=(body:unknown,status=200,origin:string|null=null)=>new Response(JSON.stringify(body),{status,headers:corsHeaders(origin)});
+const sessionIdFromJwt=(token:string):string|null=>{
+ try{
+  const encoded=token.split(".")[1];if(!encoded)return null;
+  const base64=encoded.replace(/-/g,"+").replace(/_/g,"/");
+  const payload=JSON.parse(atob(base64.padEnd(Math.ceil(base64.length/4)*4,"=")));
+  return typeof payload.session_id==="string"?payload.session_id:null;
+ }catch{return null;}
+};
 const catalog = new Map([
   ["price_1Uc9w5BCybXKHSfRCFwx5NAT",{type:"single_subject",amount:199,mode:"payment",subjectCount:1}],
   ["price_1Uc9yMBCybXKHSfRP4SJ4wuL",{type:"jolly_100",amount:349,mode:"payment",subjectCount:0}],
@@ -33,6 +41,20 @@ Deno.serve(async(req:Request)=>{
  const admin=createClient(url,service,{auth:{persistSession:false,autoRefreshToken:false}});
  const {data:authData,error:authError}=await admin.auth.getUser(token);
  if(authError||!authData.user)return reply({error:"Sessione non valida"},401,origin);
+ const isOwner=(authData.user.email??"").trim().toLowerCase()==="samuel.zezza@gmail.com";
+ if(!isOwner){
+  const sessionId=sessionIdFromJwt(token);
+  if(!sessionId)return reply({error:"Sessione non valida. Accedi di nuovo.",code:"INVALID_SESSION"},401,origin);
+  const {data:guardResult,error:guardError}=await admin.rpc("guard_quiz_api_request",{
+   p_user_id:authData.user.id,p_session_id:sessionId,p_action:"checkout"
+  });
+  if(guardError)throw guardError;
+  if(!guardResult?.allowed){
+   if(guardResult?.reason==="session_limit")return reply({error:"Questo account è già attivo su 2 dispositivi. Esci da Quizmind su un altro dispositivo e riprova.",code:"SESSION_LIMIT"},409,origin);
+   if(guardResult?.reason==="rate_limit")return reply({error:"Hai effettuato troppi tentativi di acquisto. Riprova più tardi.",code:"RATE_LIMIT"},429,origin);
+   return reply({error:"Sessione scaduta. Accedi di nuovo.",code:"INVALID_SESSION"},401,origin);
+  }
+ }
  try{
   const body=await req.json(),priceId=String(body.priceId??""),product=catalog.get(priceId);
   if(!product)return reply({error:"Prodotto non riconosciuto"},400,origin);
