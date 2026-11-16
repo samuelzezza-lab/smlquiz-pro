@@ -162,7 +162,7 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
         user_id: user.id,
         materia_id: form.materia_id,
         exam_date: form.exam_date || null,
-        university_name: form.university_name.trim().slice(0, 100) || null
+        university_name: form.university_name.trim().slice(0, 100) || null,
         exam_format: form.exam_format,
         difficulty: Number(form.difficulty),
         preparation_weeks: form.preparation_weeks ? Number(form.preparation_weeks) : null,
