@@ -2370,3 +2370,36 @@ img,svg{max-width:100%}
 /* Watermark dinamico anti-redistribuzione: identificativo pseudonimo dell'account, non email. */
 .panel.quiz{position:relative;overflow:hidden}.quiz-watermark{position:absolute;z-index:4;inset:76px 8px 42px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));align-items:center;justify-items:center;gap:12px;pointer-events:none;overflow:hidden;user-select:none}.quiz-watermark span{display:block;max-width:100%;color:rgba(185,202,232,.16);font:700 9px/1.4 Manrope, sans-serif;letter-spacing:1.1px;text-align:center;white-space:nowrap;transform:rotate(-22deg);text-shadow:0 1px 2px rgba(0,0,0,.18)}.panel.quiz .question,.panel.quiz .answers{position:relative;z-index:1}.panel.quiz .question,.panel.quiz .answers,.panel.quiz .quiz-top,.panel.quiz .progress-label,.panel.quiz .q-label{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 @media(max-width:520px){.quiz-watermark{inset:84px 4px 48px;gap:5px}.quiz-watermark span{font-size:7px;letter-spacing:.6px}}
+
+
+/* Quiz integrity: options share one neutral style until the candidate finishes. */
+.answers .answer{font-weight:500!important;font-style:normal;text-decoration:none}
+.answers .answer:not(.chosen):not(.right):not(.wrong){border-color:var(--line);background:#0a1323;color:#b7c2d8}
+.answers .answer>span{font-weight:800}
+.answer-recorded-note{margin-top:14px;padding:12px 14px;border:1px solid rgba(167,139,250,.25);border-radius:9px;background:rgba(167,139,250,.07);color:#c9baff;font-size:11px;line-height:1.55}
+.final-review-list{display:grid;gap:13px;margin-top:24px}
+.final-review-list>.section-head{margin-bottom:2px}
+.final-review-item{padding:18px}
+.final-review-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.final-review-heading>small{color:#8d9bb5;font-size:9px;font-weight:800;letter-spacing:1.2px}
+.final-review-heading>span{font-size:9px;font-weight:800;padding:5px 8px;border-radius:6px}
+.review-status-correct{color:#70e3c1;background:#48e0bb14}
+.review-status-wrong{color:#f0a49a;background:#ee8f8214}
+.review-status-blank{color:#a8b3c8;background:#ffffff0a}
+.final-review-item>h3{margin:0 0 13px;color:#edf1ff;font:700 13px/1.6 Manrope}
+.final-review-options{display:grid;gap:7px}
+.final-review-answer{display:flex;align-items:center;gap:10px;min-width:0;padding:10px 11px;border:1px solid var(--line);border-radius:8px;background:#0a1323;color:#b7c2d8;font-size:10px;line-height:1.5;font-weight:500}
+.final-review-answer>span:first-child{display:grid;place-items:center;flex:none;width:23px;height:23px;border-radius:6px;background:#ffffff0b;color:#9eabc4;font-weight:800}
+.final-review-answer>span:nth-child(2){flex:1;min-width:0}
+.final-review-answer>small{flex:none;color:#8290ad;font-size:8px;font-weight:700}
+.final-review-answer.correct{border-color:#48e0bb70;background:#48e0bb0c;color:#e2fff6}
+.final-review-answer.correct>span:first-child{background:#48e0bb;color:#06251e}
+.final-review-answer.selected-wrong{border-color:#ee8f8270;background:#ee8f820c}
+.final-review-answer.selected-wrong>span:first-child{background:#ee8f82;color:#2a100d}
+.final-review-explanation{margin:12px 0 0;padding:12px;border-left:2px solid #a78bfa;border-radius:0 7px 7px 0;background:#a78bfa0a;color:#b9c5db;font-size:10px;line-height:1.65}
+@media(max-width:900px){
+ .sidebar,.topbar,.float,.account-dropdown{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+ *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
