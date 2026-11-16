@@ -51,6 +51,7 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin}:SemestreFil
  useEffect(()=>{if(mode==='exam'&&seconds===0)void finish()},[mode,seconds,finish])
  const start=async()=>{
   if(!supabase){setError('Il database non è configurato.');return}
+  const {data:auth}=await supabase.auth.getUser();if(!auth.user){onRequireLogin();return}
   setLoading(true);setError('')
   try{
    const {data,error}=await supabase.rpc('start_semestre_filtro_exam',{p_materia:subject})
