@@ -165,16 +165,20 @@ export default function App(){
   const client=supabase;
   if(!client||!user)return;
   let active=true;
+  // Verifica subito il wallet: la pubblicità non deve attendere gli altri caricamenti.
+  void client.functions.invoke('quiz-api',{body:{action:'wallet'}}).then(({data,error})=>{
+   if(!active)return;
+   if(!error&&data){setWallet(data);setAdsWalletReadyFor(user.id)}
+   else console.warn('Verifica wallet per la pubblicità non riuscita:',error?.message);
+  }).catch(error=>{if(active)console.warn('Verifica wallet per la pubblicità non riuscita:',error)});
   Promise.all([
-   client.functions.invoke('quiz-api',{body:{action:'wallet'}}),
    client.functions.invoke('quiz-api',{body:{action:'history'}}),
    client.functions.invoke('quiz-api',{body:{action:'streaks'}}),
    client.functions.invoke('quiz-api',{body:{action:'profile',mode:'read'}}),
    client.functions.invoke('quiz-api',{body:{action:'wrong-questions'}}),
    client.functions.invoke('quiz-api',{body:{action:'weak-topics'}})
-  ]).then(async([w,h,st,pr,wq,wt])=>{
+  ]).then(async([h,st,pr,wq,wt])=>{
    if(!active)return;
-   if(!w.error&&w.data){setWallet(w.data);setAdsWalletReadyFor(user.id)}
    if(!h.error&&h.data?.attempts)setHistory(h.data.attempts as Attempt[]);
    if(!st.error&&st.data){setStreak(st.data.streak);setAchievements(st.data.achievements||[])}
    if(!pr.error&&pr.data?.profile){setDisplayName(pr.data.profile.display_name||'');setLeaderboardOptIn(Boolean(pr.data.profile.leaderboard_opt_in));setUniversityName(pr.data.profile.university_name||'');setUniversityCity(pr.data.profile.university_city||'');setSelectedUniversityId(pr.data.profile.university_id||'');setUniversityCourse(pr.data.profile.university_course||'')}
