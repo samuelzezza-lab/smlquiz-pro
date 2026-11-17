@@ -544,5 +544,9 @@
   "latestResultTitle": "你的最新成绩",
   "challengePrompt": "挑战朋友，看看对方能否超过你的成绩！",
   "shareOnWhatsApp": "通过 WhatsApp 挑战",
-  "copyChallengeLink": "复制链接"
+  "copyChallengeLink": "复制链接",
+  "semesterFilterNav": "筛选学期",
+  "examExperiencesNav": "考试经验",
+  "studentExperiences": "学生经验",
+  "buyQuizNav": "购买测验"
 }
