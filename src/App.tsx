@@ -191,7 +191,7 @@ export default function App(){
  useEffect(()=>{
   // Carica AdSense solo dopo aver verificato il wallet dell'utente:
   // chi ha Unlimited non deve ricevere richieste pubblicitarie.
-  const eligible=Boolean(authReady&&(!user||(adsWalletReadyFor===user.id&&!wallet.hasAdsRemoved)));
+  const eligible=Boolean(authReady&&cookieChoice==='all'&&(!user||(adsWalletReadyFor===user.id&&!wallet.hasAdsRemoved)));
   const scriptId='smlquiz-adsense-loader';
   const existing=document.getElementById(scriptId);
   if(!eligible){existing?.remove();document.querySelectorAll('.google-auto-placed,ins.adsbygoogle,iframe[id^="google_ads_iframe"],div[id^="google_ads_iframe"]').forEach(node=>node.remove());return}
