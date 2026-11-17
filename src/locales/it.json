@@ -119,8 +119,6 @@
   "draftToComplete": "INFORMAZIONI UFFICIALI",
   "serviceInformation": "INFORMAZIONI UFFICIALI",
   "understood": "Ho capito",
-  
-  
   "loginWelcome": "Bentornato",
   "createYourAccount": "Crea il tuo account",
   "resetPassword": "Recupera password",
@@ -164,12 +162,9 @@
   "publicLeaderboardTitle": "Classifica pubblica",
   "localDebugger": "Debugger locale",
   "legalDocumentsDescription": "Informazioni su privacy, condizioni di utilizzo, pagamenti e funzionamento del servizio.",
-  
-  
   "freeQuizzesExhausted": "Hai terminato i quiz gratuiti di oggi.",
   "upsellDescription": "Puoi tornare domani oppure aggiungere crediti al tuo account.",
   "backToStudy": "Torna allo studio",
-  
   "skipToContent": "Vai al contenuto principale",
   "appTitle": "Il tuo studio, sotto controllo",
   "workspaceNav": "WORKSPACE",
@@ -237,7 +232,6 @@
   "exam": "Esame {n}",
   "weightedAverageCaps": "MEDIA PONDERATA",
   "customization": "PERSONALIZZAZIONE",
-  
   "privacyTerms": "Privacy e condizioni",
   "continuePracticing": "CONTINUA AD ALLENARTI",
   "choose": "Scegli",
@@ -270,8 +264,6 @@
   "legal_disclaimer_summary": "Limiti del servizio e uso responsabile dei contenuti.",
   "legal_intellectual_title": "Proprietà intellettuale e divieto di estrazione",
   "legal_intellectual_summary": "Tutela del catalogo, dei contenuti e del software.",
-  
-  
   "legal_about_title": "Chi siamo",
   "legal_about_summary": "La missione e i valori di SMLQUIZ Pro.",
   "legal_about_heading_0": "La missione",
@@ -552,5 +544,9 @@
   "latestResultTitle": "Il tuo ultimo risultato",
   "challengePrompt": "Sfida un amico: vediamo se riesce a fare meglio di te!",
   "shareOnWhatsApp": "Sfida su WhatsApp",
-  "copyChallengeLink": "Copia link"
+  "copyChallengeLink": "Copia link",
+  "semesterFilterNav": "Semestre Filtro",
+  "examExperiencesNav": "Esperienze d’esame",
+  "studentExperiences": "ESPERIENZE STUDENTI",
+  "buyQuizNav": "Compra quiz"
 }
