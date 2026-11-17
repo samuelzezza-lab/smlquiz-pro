@@ -544,5 +544,9 @@
   "latestResultTitle": "Ton dernier résultat",
   "challengePrompt": "Défie un ami et vois s'il peut faire mieux que toi !",
   "shareOnWhatsApp": "Défier sur WhatsApp",
-  "copyChallengeLink": "Copier le lien"
+  "copyChallengeLink": "Copier le lien",
+  "semesterFilterNav": "Semestre de sélection",
+  "examExperiencesNav": "Expériences d’examen",
+  "studentExperiences": "EXPÉRIENCES ÉTUDIANTES",
+  "buyQuizNav": "Acheter des quiz"
 }
