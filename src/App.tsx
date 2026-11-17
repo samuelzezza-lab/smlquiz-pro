@@ -353,8 +353,7 @@ export default function App(){
  async function startQuiz(s:Subject){
   if(!user){requireLogin();return}
   if(!supabase)return;
-  const hasSubjectPass=Boolean(wallet.activeSubjectEntitlements?.some(x=>x.materia_id===s.id));
-  quizWasFreeRef.current=!wallet.ownerUnlimited&&!wallet.activeSiteSubscription&&!hasSubjectPass&&(wallet.freeRemainingBySubject?.[s.id]??5)>0;
+  quizWasFreeRef.current=false;
   setBusy(true);
   try{
    // Carica i soli quiz della materia scelta: non scaricare l'intero archivio all'apertura del sito.
@@ -388,6 +387,7 @@ export default function App(){
     await new Promise(resolve=>window.setTimeout(resolve,700));
    }
    if(data?.error)throw new Error(data.error);
+   quizWasFreeRef.current=data?.accessSource==='free';
    if(data?.language!=='it')throw new Error('Il quiz non è stato caricato in italiano. Riprova.');
    if(!Array.isArray(data?.questions)||data.questions.length!==10)throw new Error(tr('quizInvalidQuestionCount'));
    setAttemptId(data.attemptId);setQuizPaused(false);setQuizDismissed(false);setQuestions((data.questions as Question[]).map(q=>localizedQuestion(q,'it')));setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);setWrongQuestions([]);setReviewMode(false);secondsRef.current=(data.questions?.length||10)*45;setStarted(Date.now());setPage('home');void refreshWallet()
