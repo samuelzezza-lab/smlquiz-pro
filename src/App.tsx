@@ -202,7 +202,7 @@ export default function App(){
   script.crossOrigin='anonymous';
   script.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8117138172088873';
   document.head.appendChild(script);
- },[authReady,user?.id,adsWalletReadyFor,wallet.hasAdsRemoved,wallet.ownerUnlimited]);
+ },[authReady,cookieChoice,user?.id,adsWalletReadyFor,wallet.hasAdsRemoved,wallet.ownerUnlimited]);
  useEffect(()=>{
   const inviterId=new URLSearchParams(location.search).get('ref');
   if(inviterId&&/^[0-9a-f-]{36}$/i.test(inviterId)){
