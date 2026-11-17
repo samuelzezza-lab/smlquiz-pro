@@ -378,19 +378,24 @@ export default function App(){
    setAttemptId(null);setQuestions([]);setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);setWrongQuestions([]);setQuizResponses({});setCompletedReview([]);setStarted(null);setQuizPaused(false);setQuizDismissed(false);setReviewMode(false);
    setSubject(s);
    const quizSetId=firstUncompleted.id;
+   if(language!=='it'){
+    const translation=await supabase.functions.invoke('quiz-api',{body:{action:'translate-quiz-set',quizSetId,language}});
+    if(translation.error)throw translation.error;
+    if(translation.data?.error)throw new Error(translation.data.error);
+   }
    const idempotencyKey=crypto.randomUUID();
    let data:any=null;
    for(let retry=0;retry<2;retry++){
-    const result=await supabase.functions.invoke('quiz-api',{body:{action:'start',materiaId:s.id,quizSetId,idempotencyKey,language:'it'}});
+    const result=await supabase.functions.invoke('quiz-api',{body:{action:'start',materiaId:s.id,quizSetId,idempotencyKey,language}});
     if(!result.error){data=result.data;break}
     if(retry===1)throw result.error;
     await new Promise(resolve=>window.setTimeout(resolve,700));
    }
    if(data?.error)throw new Error(data.error);
    quizWasFreeRef.current=data?.accessSource==='free';
-   if(data?.language!=='it')throw new Error('Il quiz non è stato caricato in italiano. Riprova.');
+   if(data?.language!==language)throw new Error('La lingua della simulazione non corrisponde a quella selezionata. Riprova.');
    if(!Array.isArray(data?.questions)||data.questions.length!==10)throw new Error(tr('quizInvalidQuestionCount'));
-   setAttemptId(data.attemptId);setQuizPaused(false);setQuizDismissed(false);setQuestions((data.questions as Question[]).map(q=>localizedQuestion(q,'it')));setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);setWrongQuestions([]);setReviewMode(false);secondsRef.current=(data.questions?.length||10)*45;setStarted(Date.now());setPage('home');void refreshWallet()
+   setAttemptId(data.attemptId);setQuizPaused(false);setQuizDismissed(false);setQuestions((data.questions as Question[]).map(q=>localizedQuestion(q,language)));setIndex(0);setChoice(null);setAnswerFeedback(null);setRevealed(false);setCorrect(0);setWrong(0);setWrongQuestions([]);setReviewMode(false);secondsRef.current=(data.questions?.length||10)*45;setStarted(Date.now());setPage('home');void refreshWallet()
   }catch(err){
    const message=err instanceof Error?err.message:tr('loadQuestionsFailed');
    notify(message);
@@ -439,7 +444,7 @@ export default function App(){
   try{
    let data:any=null;
    for(let retry=0;retry<2;retry++){
-    const result=await supabase.functions.invoke('quiz-api',{body:{action:'answer',attemptId,questionId:current.id,selectedAnswer,language:'it'}});
+    const result=await supabase.functions.invoke('quiz-api',{body:{action:'answer',attemptId,questionId:current.id,selectedAnswer,language}});
     if(!result.error){data=result.data;break}
     if(retry===1)throw result.error;
     await new Promise(resolve=>window.setTimeout(resolve,700));
@@ -459,7 +464,7 @@ export default function App(){
  }
  
  function next(){if(index<questions.length-1){setIndex(v=>v+1);setChoice(null);setAnswerFeedback(null);setRevealed(false)}else{void finish()}}
- async function finish(){if(!user){setQuestions([]);setAttemptId(null);setStarted(null);requireLogin();return}if(reviewMode){setReviewQuestions(wrongQuestions);setWrongQuestions([]);setQuestions([]);setStarted(null);setReviewMode(false);setPage('progress');notify(wrongQuestions.length?tr('reviewStillRemaining').replace('{n}',String(wrongQuestions.length)):tr('reviewCompleted'));return}if(!attemptId||!supabase)return;try{const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'finish',attemptId}});if(error)throw error;if(data?.error)throw new Error(data.error);setCompletedReview(Array.isArray(data.review)?data.review.map((item:any)=>({question:item.question as Question,response:item.response as QuizResponse|null})):questions.map(question=>({question,response:quizResponses[question.id]||null})));const elapsedSeconds=started?Math.max(0,Math.floor((Date.now()-started)/1000)):Math.max(0,45*questions.length-secondsRef.current);const item:Attempt={id:attemptId,subject:subject?localizedName(subject,language):'Quiz',score:Number(data.score),total:Number(data.total),correct:Number(data.correct),wrong:Number(data.wrong),date:new Date().toISOString(),durationSeconds:elapsedSeconds};setHistory(v=>[item,...v.filter(x=>x.id!==item.id)]);setLastResult(item);setLeaderboardMateriaId(subject?.id||'');localStorage.removeItem('smlquiz.active-quiz.v1');setReviewQuestions(v=>{const all=new Map(v.map(q=>[q.id,q]));for(const q of wrongQuestions)all.set(q.id,q);return [...all.values()]});setWrongQuestions([]);void refreshWrongQuestions();void refreshWeakTopics();setQuestions([]);setStarted(null);setAttemptId(null);setQuizPaused(false);setPage('result');notify(tr('quizCompletedPoints').replace('{n}',item.score.toFixed(2)));const updatedWallet=await refreshWallet();if(quizWasFreeRef.current&&!updatedWallet?.ownerUnlimited&&!updatedWallet?.activeSiteSubscription){setUpsellOpen(true)}quizWasFreeRef.current=false}catch(err){notify(err instanceof Error?err.message:tr('quizSaveFailed'))}}
+ async function finish(){if(!user){setQuestions([]);setAttemptId(null);setStarted(null);requireLogin();return}if(reviewMode){setReviewQuestions(wrongQuestions);setWrongQuestions([]);setQuestions([]);setStarted(null);setReviewMode(false);setPage('progress');notify(wrongQuestions.length?tr('reviewStillRemaining').replace('{n}',String(wrongQuestions.length)):tr('reviewCompleted'));return}if(!attemptId||!supabase)return;try{const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'finish',attemptId,language}});if(error)throw error;if(data?.error)throw new Error(data.error);setCompletedReview(Array.isArray(data.review)?data.review.map((item:any)=>({question:item.question as Question,response:item.response as QuizResponse|null})):questions.map(question=>({question,response:quizResponses[question.id]||null})));const elapsedSeconds=started?Math.max(0,Math.floor((Date.now()-started)/1000)):Math.max(0,45*questions.length-secondsRef.current);const item:Attempt={id:attemptId,subject:subject?localizedName(subject,language):'Quiz',score:Number(data.score),total:Number(data.total),correct:Number(data.correct),wrong:Number(data.wrong),date:new Date().toISOString(),durationSeconds:elapsedSeconds};setHistory(v=>[item,...v.filter(x=>x.id!==item.id)]);setLastResult(item);setLeaderboardMateriaId(subject?.id||'');localStorage.removeItem('smlquiz.active-quiz.v1');setReviewQuestions(v=>{const all=new Map(v.map(q=>[q.id,q]));for(const q of wrongQuestions)all.set(q.id,q);return [...all.values()]});setWrongQuestions([]);void refreshWrongQuestions();void refreshWeakTopics();setQuestions([]);setStarted(null);setAttemptId(null);setQuizPaused(false);setPage('result');notify(tr('quizCompletedPoints').replace('{n}',item.score.toFixed(2)));const updatedWallet=await refreshWallet();if(quizWasFreeRef.current&&!updatedWallet?.ownerUnlimited&&!updatedWallet?.activeSiteSubscription){setUpsellOpen(true)}quizWasFreeRef.current=false}catch(err){notify(err instanceof Error?err.message:tr('quizSaveFailed'))}}
  finishRef.current=()=>{void finish()}
  function shareUrl(h:Attempt){const url=new URL(location.origin);const matched=subjects.find(s=>s.nome===h.subject||localizedName(s,language)===h.subject);url.searchParams.set('share','quiz');url.searchParams.set('challenge','1');url.searchParams.set('materia_id',matched?.id||subject?.id||'');url.searchParams.set('subject',localizedName(matched||{nome:h.subject},language));url.searchParams.set('score',h.score.toFixed(2));url.searchParams.set('correct',String(h.correct));url.searchParams.set('total',String(h.total));if(typeof h.durationSeconds==='number')url.searchParams.set('duration_seconds',String(h.durationSeconds));return url.toString()}
  async function copyShare(h:Attempt){const url=shareUrl(h);try{await navigator.clipboard.writeText(url);notify(tr('challengeLinkCopied'))}catch{const field=document.createElement('textarea');field.value=url;field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.select();const copied=document.execCommand('copy');field.remove();notify(copied?tr('challengeLinkCopied'):tr('reportCopyFailed'))}}
