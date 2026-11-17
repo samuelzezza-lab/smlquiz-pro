@@ -228,6 +228,38 @@ Deno.serve(async (req: Request) => {
         password: body.password,
       });
       if (verifyError || verified.user?.id !== userId) return json({ error: "Password non corretta" }, 401);
+
+      // Prima di cancellare l'account, annulla davvero ogni abbonamento Stripe ancora attivo.
+      const { data: subscriptions, error: subscriptionsError } = await admin.from("user_site_subscriptions")
+        .select("stripe_subscription_id,status").eq("user_id", userId);
+      if (subscriptionsError) throw subscriptionsError;
+      const cancellable = (subscriptions ?? []).filter((s) => !["canceled","incomplete_expired"].includes(String(s.status)));
+      if (cancellable.length) {
+        const stripeSecret = Deno.env.get("STRIPE_SECRET_KEY");
+        if (!stripeSecret) return json({ error: "Non posso completare la cancellazione: impossibile verificare e interrompere l'abbonamento. Contatta l'assistenza." }, 503);
+        for (const subscription of cancellable) {
+          const response = await fetch("https://api.stripe.com/v1/subscriptions/" + encodeURIComponent(subscription.stripe_subscription_id), {
+            method: "DELETE",
+            headers: { Authorization: "Bearer " + stripeSecret },
+          });
+          if (!response.ok && response.status !== 404) {
+            const detail = await response.text();
+            console.error("Stripe subscription cancellation failed:", subscription.stripe_subscription_id, detail.slice(0, 500));
+            return json({ error: "Non sono riuscito a interrompere tutti gli abbonamenti. L'account non è stato cancellato: riprova o contatta l'assistenza." }, 502);
+          }
+        }
+      }
+
+      // Elimina prima voti e segnalazioni collegate alle esperienze pubblicate dall'utente.
+      const experienceCleanup = await Promise.all([
+        admin.from("exam_experience_reports").delete().eq("user_id", userId),
+        admin.from("exam_experience_votes").delete().eq("user_id", userId),
+      ]);
+      const experienceCleanupError = experienceCleanup.find((x) => x.error);
+      if (experienceCleanupError?.error) throw experienceCleanupError.error;
+      const { error: experiencesDeleteError } = await admin.from("exam_experiences").delete().eq("user_id", userId);
+      if (experiencesDeleteError) throw experiencesDeleteError;
+
       const { data: attempts, error: attemptsError } = await admin.from("quiz_attempts").select("id").eq("user_id", userId);
       if (attemptsError) throw attemptsError;
       const attemptIds = (attempts ?? []).map((x) => x.id);
@@ -237,7 +269,11 @@ Deno.serve(async (req: Request) => {
       }
       const deletions = await Promise.all([
         admin.from("user_subject_entitlements").delete().eq("user_id", userId),
+        admin.from("user_semestre_filtro_entitlements").delete().eq("user_id", userId),
         admin.from("user_site_subscriptions").delete().eq("user_id", userId),
+        admin.from("user_study_data").delete().eq("user_id", userId),
+        admin.from("semestre_filtro_tentativi").delete().eq("user_id", userId),
+        admin.from("quiz_api_rate_limits").delete().eq("user_id", userId),
         admin.from("quiz_credit_ledger").delete().eq("user_id", userId),
         admin.from("quiz_coupon_redemptions").delete().eq("user_id", userId),
         admin.from("question_reports").delete().eq("user_id", userId),
