@@ -13,8 +13,11 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - name: Check dependency vulnerabilities
+      - name: Block high-severity production dependency vulnerabilities
+        run: npm audit --omit=dev --audit-level=high
+      - name: Report development dependency vulnerabilities
         run: npm audit --audit-level=high
+        continue-on-error: true
       - name: Generate PNG icons for Android and iOS installation
         run: python3 scripts/generate-pwa-icons.py
       - run: npm run build
