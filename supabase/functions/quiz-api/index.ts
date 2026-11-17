@@ -107,26 +107,46 @@ Deno.serve(async (req: Request) => {
     if (action === "session-check") return json({ sessionOk: true });
 
     if (action === "profile") {
-      const { data: existing, error: readError } = await admin.from("user_profiles").select("user_id,display_name,language,leaderboard_opt_in,university_name,university_city,university_course,privacy_policy_version,terms_version,consented_at").eq("user_id", userId).maybeSingle();
+      const profileColumns = "user_id,display_name,language,leaderboard_opt_in,university_id,university_name,university_city,university_course,privacy_policy_version,terms_version,consented_at";
+      const { data: existing, error: readError } = await admin.from("user_profiles").select(profileColumns).eq("user_id", userId).maybeSingle();
       if (readError) throw readError;
       if (body.mode === "read") {
         if (existing) return json({ profile: existing });
-        const { data, error } = await admin.from("user_profiles").insert({ user_id: userId, display_name: authData.user.email?.split("@")[0] ?? "" }).select("user_id,display_name,language,leaderboard_opt_in,university_name,university_city,university_course,privacy_policy_version,terms_version,consented_at").single();
+        const { data, error } = await admin.from("user_profiles").insert({ user_id: userId, display_name: authData.user.email?.split("@")[0] ?? "" }).select(profileColumns).single();
         if (error) throw error;
         return json({ profile: data });
+      }
+      let universityId = existing?.university_id ?? null;
+      let universityName = String(body.universityName ?? existing?.university_name ?? "").trim().slice(0, 140) || null;
+      let universityCity = String(body.universityCity ?? existing?.university_city ?? "").trim().slice(0, 80) || null;
+      if (Object.prototype.hasOwnProperty.call(body, "universityId")) {
+        const requestedId = String(body.universityId ?? "").trim();
+        if (requestedId) {
+          const { data: university, error: universityError } = await admin.from("universities").select("id,name,city").eq("id", requestedId).maybeSingle();
+          if (universityError) throw universityError;
+          if (!university) return json({ error: "Università non valida. Selezionala dall’elenco." }, 400);
+          universityId = university.id;
+          universityName = university.name;
+          universityCity = university.city;
+        } else {
+          universityId = null;
+          universityName = null;
+          universityCity = null;
+        }
       }
       const values = {
         display_name: String(body.displayName ?? existing?.display_name ?? "").trim().slice(0, 60),
         language: ["it","en","fr","de","es","zh"].includes(String(body.language ?? existing?.language)) ? String(body.language ?? existing?.language) : "it",
-        leaderboard_opt_in: body.leaderboardOptIn === true,
-        university_name: String(body.universityName ?? existing?.university_name ?? "").trim().slice(0, 140) || null,
-        university_city: String(body.universityCity ?? existing?.university_city ?? "").trim().slice(0, 80) || null,
+        leaderboard_opt_in: body.leaderboardOptIn === undefined ? Boolean(existing?.leaderboard_opt_in) : body.leaderboardOptIn === true,
+        university_id: universityId,
+        university_name: universityName,
+        university_city: universityCity,
         university_course: String(body.universityCourse ?? existing?.university_course ?? "").trim().slice(0, 120) || null,
         updated_at: new Date().toISOString(),
       };
       const result = existing
-        ? await admin.from("user_profiles").update(values).eq("user_id", userId).select("user_id,display_name,language,leaderboard_opt_in,university_name,university_city,university_course,privacy_policy_version,terms_version,consented_at").single()
-        : await admin.from("user_profiles").insert({ user_id: userId, ...values }).select("user_id,display_name,language,leaderboard_opt_in,university_name,university_city,university_course,privacy_policy_version,terms_version,consented_at").single();
+        ? await admin.from("user_profiles").update(values).eq("user_id", userId).select(profileColumns).single()
+        : await admin.from("user_profiles").insert({ user_id: userId, ...values }).select(profileColumns).single();
       if (result.error) throw result.error;
       return json({ profile: result.data });
     }
