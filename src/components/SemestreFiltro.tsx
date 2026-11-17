@@ -9,10 +9,10 @@ type Result={correct:number;wrong:number;blank:number;score:number;review:Review
 const subjects=[{id:'biologia' as const,label:'Biologia',tone:'bio'},{id:'chimica' as const,label:'Chimica e propedeutica biochimica',tone:'chem'},{id:'fisica' as const,label:'Fisica',tone:'phys'}]
 const fmt=(s:number)=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')
 
-type SemestreFiltroProps={onBuyPackage:(priceId:string,subjectIds:string[],consentConfirmed:boolean)=>void;onRequireLogin:()=>void}
+type SemestreFiltroProps={onBuyPackage:(priceId:string,subjectIds:string[],consentConfirmed:boolean)=>void;onRequireLogin:()=>void;onFreeComplete:()=>void}
 const semestreSinglePrice='price_1UcVlkBCybXKHSfRs9hj7caG'
 const semestreCompletePrice='price_1UcVo8BCybXKHSfRDXpOyB0q'
-export default function SemestreFiltro({onBuyPackage,onRequireLogin}:SemestreFiltroProps){
+export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComplete}:SemestreFiltroProps){
  const [subject,setSubject]=useState<SubjectId>('biologia')
  const [mode,setMode]=useState<'intro'|'exam'|'result'>('intro')
  const [examId,setExamId]=useState('')
@@ -26,6 +26,7 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin}:SemestreFil
  const [result,setResult]=useState<Result|null>(null)
  const [showExplanations,setShowExplanations]=useState(true)
  const [paywall,setPaywall]=useState(false)
+ const [accessType,setAccessType]=useState<'free'|'single_subject'|'complete'|'unlimited'|''>('')
  const [digitalConsent,setDigitalConsent]=useState(false)
  const finishLock=useRef(false)
  const exitMode=()=>{if(mode==='exam'&&!window.confirm('Uscire dalla simulazione? Le risposte inserite resteranno in questa schermata solo finché non la chiudi.'))return;if(window.history.state?.semestreFiltroMode)window.history.back();else setMode('intro')}
@@ -39,7 +40,7 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin}:SemestreFil
   try{
    const {data,error:rpcError}=await supabase.rpc('submit_semestre_filtro_exam',{p_exam_id:examId,p_answers:answers})
    if(rpcError)throw rpcError
-   setResult(data as Result);setMode('result')
+   setResult(data as Result);setMode('result');if(accessType==='free')onFreeComplete()
   }catch(e){setError(e instanceof Error?e.message:'Consegna non riuscita. Riprova.');finishLock.current=false}
   finally{setSubmitting(false)}
  },[examId,answers])
@@ -60,10 +61,10 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin}:SemestreFil
    if(refreshError||!refreshed.session){onRequireLogin();throw new Error('Sessione scaduta. Accedi di nuovo e riprova.')}
    const {data,error}=await supabase.rpc('start_semestre_filtro_exam',{p_materia:subject})
    if(error)throw error
-   const payload=data as {exam_id?:string;questions?:Question[];duration_seconds?:number;paywall?:boolean}
+   const payload=data as {exam_id?:string;questions?:Question[];duration_seconds?:number;paywall?:boolean;access_type?:'free'|'single_subject'|'complete'|'unlimited'}
    if(payload?.paywall){setPaywall(true);return}
    if(!payload?.exam_id||payload.questions?.length!==31)throw new Error('La banca non contiene ancora 31 domande utilizzabili per questa materia.')
-   setPaywall(false)
+   setPaywall(false);setAccessType(payload.access_type||'')
    setExamId(payload.exam_id);setExam(payload.questions);setAnswers({});setResult(null);setSeconds(3000);setStartedAt(Date.now());finishLock.current=false;window.history.pushState({...window.history.state,semestreFiltroMode:true},'','/semestre-filtro');setMode('exam')
   }catch(e){const message=e instanceof Error?e.message:'Non riesco a preparare la simulazione.';if(message.toLowerCase().includes('accedere')){onRequireLogin();return}setError(message)}
   finally{setLoading(false)}
