@@ -2460,8 +2460,8 @@ img,svg{max-width:100%}
 .buy-page .pricing-plan>div:first-child p{margin:4px 0;font-size:12px;line-height:1.4}
 .buy-page .pricing-plan>b{grid-column:2;grid-row:1;font-size:20px}
 .buy-page .pricing-plan>button{grid-column:2;grid-row:2;min-width:112px;margin:0}
-.buy-page .pricing-plan .purchase-subject-picker{grid-column:1/-1;grid-row:2;max-width:100%}
-.buy-page .pricing-plan:has(.purchase-subject-picker)>button{grid-column:2;grid-row:3}
+.buy-page .pricing-plan .purchase-subject-picker{grid-column:1/-1;grid-row:3;max-width:100%}
+.buy-page .pricing-plan:has(.purchase-subject-picker)>button{grid-column:2;grid-row:4}
 .buy-page .purchase-subject-results{max-height:112px;overflow:auto}
 .buy-page .purchase-subject-results button,.buy-page .purchase-subject-results label{padding:7px 9px}
 .buy-page .coupon-form{margin-top:4px}
