@@ -544,5 +544,9 @@
   "latestResultTitle": "Your latest result",
   "challengePrompt": "Challenge a friend and see if they can beat your score!",
   "shareOnWhatsApp": "Challenge on WhatsApp",
-  "copyChallengeLink": "Copy link"
+  "copyChallengeLink": "Copy link",
+  "semesterFilterNav": "Semester Filter",
+  "examExperiencesNav": "Exam experiences",
+  "studentExperiences": "STUDENT EXPERIENCES",
+  "buyQuizNav": "Buy quizzes"
 }
