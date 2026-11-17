@@ -7,7 +7,7 @@ type Subject = { id: string; nome: string; facolta_id: string; anno_corso: numbe
 type User = { id: string; email?: string } | null
 type Experience = {
   id: string
-  user_id: string
+  user_id: string | null
   materia_id: string
   exam_date: string | null
   university_name: string | null
@@ -95,9 +95,8 @@ export default function ExamExperiences({ subjects, faculties, user, displayName
     }
     setLoading(true)
     setLoadError('')
-    const { data, error } = await supabase.from('exam_experiences')
+    const { data, error } = await supabase.from('exam_experiences_public')
       .select('id,user_id,materia_id,exam_date,university_name,exam_format,difficulty,preparation_weeks,outcome,topics,description,advice,display_name,is_anonymous,helpful_count,status,status_reason,created_at')
-      .or(user ? `status.eq.published,user_id.eq.${user.id}` : 'status.eq.published')
       .order('created_at', { ascending: false })
       .limit(150)
     if (error) {
