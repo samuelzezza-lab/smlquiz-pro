@@ -563,7 +563,7 @@ Deno.serve(async (req: Request) => {
       if (setError) throw setError;
       if (!set || set.question_count !== 10) return json({ error: "Questo quiz non è ancora disponibile" }, 404);
 
-      const language = "it";
+      const language = ["it","en","fr","de","es","zh"].includes(String(body.language ?? "it")) ? String(body.language ?? "it") : "it";
       const { data: bank, error: bankError } = await admin.from("domande")
         .select("id,testo_domanda,opzioni,risposta_corretta,spiegazione,traduzioni").eq("quiz_id", quizSetId);
       if (bankError) throw bankError;
@@ -637,7 +637,7 @@ Deno.serve(async (req: Request) => {
       if (rowError) throw rowError;
       if (!row) return json({ error: "Domanda non appartenente a questa sessione" }, 404);
       const question = row.domande as unknown as { opzioni: string[]; risposta_corretta: string; spiegazione: string | null; traduzioni?: Record<string, any> };
-      const language = "it";
+      const language = ["it","en","fr","de","es","zh"].includes(String(body.language ?? "it")) ? String(body.language ?? "it") : "it";
       const localized = localizedQuestion(question, language) as typeof question;
       const localizedOptions = localized.opzioni ?? question.opzioni;
       const localizedCorrect = localized.risposta_corretta ?? question.risposta_corretta;
@@ -750,6 +750,7 @@ Deno.serve(async (req: Request) => {
         .select("position,domanda_id,risposta_selezionata,risposta_selezionata_lettera,esito_corretto,domande!inner(id,testo_domanda,opzioni,risposta_corretta,spiegazione)")
         .eq("attempt_id", attemptId).order("position");
       if (answersError) throw answersError;
+      const language = ["it","en","fr","de","es","zh"].includes(String(body.language ?? "it")) ? String(body.language ?? "it") : "it";
       const total = answers?.length ?? 0;
       const correct = (answers ?? []).filter((x) => x.esito_corretto === true).length;
       const wrong = (answers ?? []).filter((x) => x.esito_corretto === false).length;
@@ -792,8 +793,9 @@ Deno.serve(async (req: Request) => {
       const review = (answers ?? []).map((row) => {
         const raw = row.domande as unknown as { id:string; testo_domanda:string; opzioni:string[]; risposta_corretta:string; spiegazione:string|null };
         const question = Array.isArray(raw) ? raw[0] : raw;
-        const options = Array.isArray(question?.opzioni) ? question.opzioni : [];
-        const correctRaw = String(question?.risposta_corretta ?? "").trim();
+        const localized = localizedQuestion(question, language) as typeof question;
+        const options = Array.isArray(localized?.opzioni) ? localized.opzioni : [];
+        const correctRaw = String(localized?.risposta_corretta ?? question?.risposta_corretta ?? "").trim();
         const correctIndex = findNormalizedOptionIndex(options, correctRaw);
         const selectedAnswer = String(row.risposta_selezionata ?? "");
         const selectedIndex = selectedAnswer
@@ -801,7 +803,7 @@ Deno.serve(async (req: Request) => {
           : -1;
         const normalizedQuestion = {
           id: question?.id ?? row.domanda_id,
-          testo_domanda: question?.testo_domanda ?? "",
+          testo_domanda: localized?.testo_domanda ?? question?.testo_domanda ?? "",
           opzioni: options,
           risposta_corretta: correctIndex >= 0 ? options[correctIndex] : correctRaw,
           correct_index: correctIndex,
