@@ -11,6 +11,17 @@ function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), { status, headers: corsHeaders });
 }
 
+function normalizeOptionValue(value: unknown) {
+  return String(value ?? "").normalize("NFKC").trim().replace(/\s+/g, " ").toLocaleLowerCase("it");
+}
+function findNormalizedOptionIndex(options: string[], value: unknown) {
+  const target = normalizeOptionValue(value);
+  const exact = options.findIndex(option => normalizeOptionValue(option) === target);
+  if (exact >= 0) return exact;
+  const raw = String(value ?? "").trim();
+  return /^[A-D]$/i.test(raw) ? "ABCD".indexOf(raw.toUpperCase()) : -1;
+}
+
 function localizedQuestion<T extends { testo_domanda?: string; opzioni?: string[]; risposta_corretta?: string; spiegazione?: string | null; traduzioni?: Record<string, any> }>(q: T, language: string) {
   const translated = language === "it" ? null : q.traduzioni?.[language];
   if (!translated) return q;
@@ -557,6 +568,12 @@ Deno.serve(async (req: Request) => {
         .select("id,testo_domanda,opzioni,risposta_corretta,spiegazione,traduzioni").eq("quiz_id", quizSetId);
       if (bankError) throw bankError;
       if (!bank || bank.length !== 10) return json({ error: "Il quiz non contiene 10 domande verificate" }, 409);
+      const invalidQuestion = bank.find((q) => {
+        const options = Array.isArray(q.opzioni) ? q.opzioni.map(normalizeOptionValue) : [];
+        const answerIndex = findNormalizedOptionIndex(Array.isArray(q.opzioni) ? q.opzioni : [], q.risposta_corretta);
+        return options.length !== 4 || options.some((option:string) => !option) || new Set(options).size !== 4 || answerIndex < 0;
+      });
+      if (invalidQuestion) return json({ error: "Questo quiz contiene una domanda con opzioni duplicate o risposta non associata. È stato bloccato per evitare correzioni errate." }, 409);
       const selected = [...bank].sort(() => Math.random() - 0.5);
       const questionIds = selected.map((q) => q.id);
       if (isOwner) {
@@ -608,8 +625,8 @@ Deno.serve(async (req: Request) => {
       const attemptId = String(body.attemptId ?? "");
       const questionId = String(body.questionId ?? "");
       const selectedIndex = Number(body.selectedIndex);
-      const legacySelectedAnswer = String(body.selectedAnswer ?? "");
-      if (!attemptId || !questionId || (!Number.isInteger(selectedIndex) && !legacySelectedAnswer)) return json({ error: "Risposta incompleta" }, 400);
+      const selectedAnswerInput = String(body.selectedAnswer ?? "").trim();
+      if (!attemptId || !questionId || (!selectedAnswerInput && !Number.isInteger(selectedIndex))) return json({ error: "Risposta incompleta" }, 400);
       const { data: attempt, error: attemptError } = await admin.from("quiz_attempts")
         .select("id,status").eq("id", attemptId).eq("user_id", userId).maybeSingle();
       if (attemptError) throw attemptError;
@@ -624,19 +641,20 @@ Deno.serve(async (req: Request) => {
       const localized = localizedQuestion(question, language) as typeof question;
       const localizedOptions = localized.opzioni ?? question.opzioni;
       const localizedCorrect = localized.risposta_corretta ?? question.risposta_corretta;
-      const resolvedSelectedIndex = Number.isInteger(selectedIndex) && selectedIndex >= 0 && selectedIndex < localizedOptions.length
-        ? selectedIndex
-        : localizedOptions.indexOf(legacySelectedAnswer);
-      if (resolvedSelectedIndex < 0 || resolvedSelectedIndex >= localizedOptions.length) return json({ error: "Risposta non valida" }, 400);
+      // Usa il testo dell'opzione visualizzata quando presente: resta corretto anche se l'ordine cambia.
+      const resolvedSelectedIndex = selectedAnswerInput
+        ? localizedOptions.findIndex(option => normalizeOptionValue(option) === normalizeOptionValue(selectedAnswerInput))
+        : (Number.isInteger(selectedIndex) && selectedIndex >= 0 && selectedIndex < localizedOptions.length ? selectedIndex : -1);
+      if (resolvedSelectedIndex < 0 || resolvedSelectedIndex >= localizedOptions.length) return json({ error: "Risposta non valida: l'opzione selezionata non corrisponde a quelle mostrate." }, 400);
       const selectedAnswer = localizedOptions[resolvedSelectedIndex];
       const selectedLetter = String.fromCharCode(65 + resolvedSelectedIndex);
-      const correctIndex = localizedOptions.indexOf(localizedCorrect);
+      const correctIndex = findNormalizedOptionIndex(localizedOptions, localizedCorrect);
       if (correctIndex < 0) return json({ error: "La risposta corretta non corrisponde alle opzioni di questa domanda. Quiz sospeso per evitare una correzione errata." }, 409);
       const correctLetter = String.fromCharCode(65 + correctIndex);
       if (row.risposta_selezionata !== null) {
         return json({
           correct: row.esito_corretto === true,
-          correctAnswer: localizedCorrect,
+          correctAnswer: localizedOptions[correctIndex],
           correctIndex,
           correctLetter,
           selectedLetter: row.risposta_selezionata_lettera ?? null,
@@ -644,7 +662,7 @@ Deno.serve(async (req: Request) => {
           alreadyAnswered: true,
         });
       }
-      const correct = selectedAnswer === localizedCorrect;
+      const correct = resolvedSelectedIndex === correctIndex;
       const { data: savedAnswer, error: updateError } = await admin.from("quiz_attempt_questions")
         .update({
           risposta_selezionata: selectedAnswer,
@@ -660,7 +678,7 @@ Deno.serve(async (req: Request) => {
         if (currentError) throw currentError;
         return json({
           correct: currentAnswer?.esito_corretto === true,
-          correctAnswer: localizedCorrect,
+          correctAnswer: localizedOptions[correctIndex],
           correctIndex,
           correctLetter,
           selectedLetter: currentAnswer?.risposta_selezionata_lettera ?? null,
@@ -670,7 +688,7 @@ Deno.serve(async (req: Request) => {
       }
       return json({
         correct,
-        correctAnswer: localizedCorrect,
+        correctAnswer: localizedOptions[correctIndex],
         correctIndex,
         correctLetter,
         selectedLetter,
@@ -729,7 +747,8 @@ Deno.serve(async (req: Request) => {
       if (attemptError) throw attemptError;
       if (!attempt || attempt.status !== "started") return json({ error: "Sessione già conclusa o non valida" }, 409);
       const { data: answers, error: answersError } = await admin.from("quiz_attempt_questions")
-        .select("esito_corretto").eq("attempt_id", attemptId);
+        .select("position,domanda_id,risposta_selezionata,risposta_selezionata_lettera,esito_corretto,domande!inner(id,testo_domanda,opzioni,risposta_corretta,spiegazione)")
+        .eq("attempt_id", attemptId).order("position");
       if (answersError) throw answersError;
       const total = answers?.length ?? 0;
       const correct = (answers ?? []).filter((x) => x.esito_corretto === true).length;
@@ -770,7 +789,36 @@ Deno.serve(async (req: Request) => {
         if (rewardError) throw rewardError;
         referralRewarded = rewarded === true;
       }
-      return json({ total, correct, wrong, score: Number((correct - wrong * 0.25).toFixed(2)), streak, unlocked, referralRewarded });
+      const review = (answers ?? []).map((row) => {
+        const raw = row.domande as unknown as { id:string; testo_domanda:string; opzioni:string[]; risposta_corretta:string; spiegazione:string|null };
+        const question = Array.isArray(raw) ? raw[0] : raw;
+        const options = Array.isArray(question?.opzioni) ? question.opzioni : [];
+        const correctRaw = String(question?.risposta_corretta ?? "").trim();
+        const correctIndex = findNormalizedOptionIndex(options, correctRaw);
+        const selectedAnswer = String(row.risposta_selezionata ?? "");
+        const selectedIndex = selectedAnswer
+          ? options.findIndex(option => normalizeOptionValue(option) === normalizeOptionValue(selectedAnswer))
+          : -1;
+        const normalizedQuestion = {
+          id: question?.id ?? row.domanda_id,
+          testo_domanda: question?.testo_domanda ?? "",
+          opzioni: options,
+          risposta_corretta: correctIndex >= 0 ? options[correctIndex] : correctRaw,
+          correct_index: correctIndex,
+          spiegazione: question?.spiegazione ?? null,
+        };
+        const response = selectedAnswer ? {
+          selectedAnswer,
+          selectedLetter: row.risposta_selezionata_lettera ?? (selectedIndex >= 0 ? String.fromCharCode(65 + selectedIndex) : ""),
+          correctAnswer: normalizedQuestion.risposta_corretta,
+          correctLetter: correctIndex >= 0 ? String.fromCharCode(65 + correctIndex) : "",
+          correctIndex,
+          isCorrect: row.esito_corretto === true,
+          explanation: normalizedQuestion.spiegazione,
+        } : null;
+        return { question: normalizedQuestion, response };
+      });
+      return json({ total, correct, wrong, score: Number((correct - wrong * 0.25).toFixed(2)), streak, unlocked, referralRewarded, review });
     }
 
     if (action === "report") {
