@@ -2442,3 +2442,74 @@ img,svg{max-width:100%}
  .sf-result-hero{align-items:flex-start;flex-direction:column}
  .sf-result-grade{text-align:left}
 }
+
+
+/* Compact purchase experience: clear cards, short selectors and no tall empty columns. */
+.buy-page .buy-metrics{margin:0 0 12px}
+.buy-page .buy-global-consent{margin:0 0 14px;padding:10px 12px;border:1px solid var(--border,rgba(148,163,184,.2));border-radius:12px;background:rgba(255,255,255,.025);font-size:12px}
+.buy-page .account-layout{display:block}
+.buy-page .account-main-column{display:block;min-width:0}
+.buy-page .account-side-column{margin-top:14px}
+.buy-page .pricing-panel{gap:9px;padding:16px}
+.buy-page .account-panel-heading{margin-bottom:2px}
+.buy-page .account-panel-heading p{margin:5px 0 0;line-height:1.45}
+.buy-page .buy-catalog-heading h3{margin:4px 0;font-size:18px}
+.buy-page .buy-catalog-heading p{margin:0;color:var(--muted,#9aa7bf);font-size:12px}
+.buy-page .pricing-plan{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px 14px;padding:13px 14px;border-radius:13px}
+.buy-page .pricing-plan>div:first-child{min-width:0}
+.buy-page .pricing-plan>div:first-child p{margin:4px 0;font-size:12px;line-height:1.4}
+.buy-page .pricing-plan>b{grid-column:2;grid-row:1;font-size:20px}
+.buy-page .pricing-plan>button{grid-column:2;grid-row:2;min-width:112px;margin:0}
+.buy-page .pricing-plan .purchase-subject-picker{grid-column:1/-1;grid-row:2;max-width:100%}
+.buy-page .pricing-plan:has(.purchase-subject-picker)>button{grid-column:2;grid-row:3}
+.buy-page .purchase-subject-results{max-height:112px;overflow:auto}
+.buy-page .purchase-subject-results button,.buy-page .purchase-subject-results label{padding:7px 9px}
+.buy-page .coupon-form{margin-top:4px}
+.buy-semester-panel{margin:0 0 14px;padding:16px;border:1px solid rgba(120,150,255,.24);background:linear-gradient(135deg,rgba(68,105,190,.10),rgba(90,70,160,.07))}
+.buy-semester-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:12px}
+.buy-semester-heading h3{font:800 20px Manrope;margin:4px 0}
+.buy-semester-heading p{font-size:12px;color:var(--muted,#9aa7bf);line-height:1.45;margin:0;max-width:650px}
+.buy-semester-heading>svg{flex:0 0 auto;color:#9baeff}
+.buy-semester-plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.buy-semester-plans article{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px 10px;align-items:center;padding:12px;border:1px solid var(--border,rgba(148,163,184,.2));border-radius:12px;background:rgba(8,13,26,.35)}
+.buy-semester-plans article.featured{border-color:rgba(105,145,255,.45);background:rgba(87,112,205,.11)}
+.buy-semester-plans article small{font-size:9px;letter-spacing:.1em;color:var(--muted,#9aa7bf);font-weight:800}
+.buy-semester-plans h4{font-size:13px;margin:3px 0}
+.buy-semester-plans p{font-size:11px;line-height:1.4;color:var(--muted,#9aa7bf);margin:0}
+.buy-semester-plans strong{font-size:18px;white-space:nowrap}
+.buy-semester-plans button{grid-column:1/-1;width:100%;min-height:38px}
+.buy-semester-subject{display:flex;align-items:center;gap:10px;margin-top:10px}
+.buy-semester-subject label{font-size:11px;color:var(--muted,#9aa7bf)}
+.buy-semester-subject select{flex:1;min-width:0;max-width:360px;padding:9px 11px;border-radius:9px;background:#0b1325;color:inherit;border:1px solid var(--border,rgba(148,163,184,.2))}
+@media(max-width:680px){
+ .buy-page .pricing-plan{grid-template-columns:minmax(0,1fr) auto;padding:11px}
+ .buy-page .pricing-plan>div:first-child{grid-column:1/-1}
+ .buy-page .pricing-plan>b{grid-column:1;grid-row:2;justify-self:start}
+ .buy-page .pricing-plan>button{grid-column:2;grid-row:2;min-width:104px}
+ .buy-page .pricing-plan .purchase-subject-picker{grid-column:1/-1;grid-row:3}
+ .buy-page .pricing-plan:has(.purchase-subject-picker)>button{grid-column:2;grid-row:4}
+ .buy-semester-plans{grid-template-columns:1fr}
+ .buy-semester-subject{align-items:stretch;flex-direction:column}
+ .buy-semester-subject select{max-width:none;width:100%}
+}
+
+/* Tinder-inspired full-screen offer shown after a genuinely free university quiz. */
+.upsell-backdrop{z-index:75;background:rgba(3,7,19,.86);backdrop-filter:blur(12px)}
+.tinder-upsell{width:min(100%,460px);padding:22px;position:relative;animation:tinderCardIn .32s cubic-bezier(.2,.8,.2,1)}
+.tinder-upsell .close-modal{z-index:2}
+.tinder-swipe-label{display:flex;align-items:center;gap:7px;color:#a9baff;font-size:10px;font-weight:900;letter-spacing:.12em;padding:2px 30px 12px 0}
+.tinder-offer-card{position:relative;overflow:hidden;padding:22px;border-radius:22px;border:1px solid rgba(145,164,255,.38);background:radial-gradient(circle at 100% 0,rgba(115,93,220,.3),transparent 42%),linear-gradient(145deg,#1b2947,#111a2e 70%);box-shadow:0 18px 55px rgba(0,0,0,.3)}
+.tinder-offer-top{display:flex;justify-content:space-between;align-items:center;color:#bdcaff;font-size:9px;font-weight:900;letter-spacing:.12em}
+.tinder-infinity{font-size:27px;line-height:1;color:#c2b4ff}
+.tinder-offer-icon{display:grid;place-items:center;width:54px;height:54px;border-radius:17px;margin:18px 0 12px;background:linear-gradient(135deg,#647be9,#9b78e9);color:white;box-shadow:0 8px 24px rgba(101,120,230,.28)}
+.tinder-offer-card h2{font:800 clamp(23px,5vw,29px)/1.12 Manrope;margin:0 0 9px;color:#fff}
+.tinder-offer-card p{font-size:13px;line-height:1.55;color:#c4cee3;margin:0 0 17px}
+.tinder-price{font:900 30px Manrope;color:#fff}
+.tinder-price small{font-size:12px;color:#bac5dd;font-weight:600}
+.tinder-offer-foot{font-size:10px;color:#aab7d2;margin:3px 0 17px}
+.tinder-cta{width:100%;min-height:48px;justify-content:center;background:linear-gradient(100deg,#647be9,#9475e5)!important;border:0!important;box-shadow:0 8px 25px rgba(100,123,233,.24)}
+.tinder-secondary{width:100%;margin-top:12px;padding:11px;border:1px solid rgba(165,180,220,.25);border-radius:12px;background:rgba(255,255,255,.04);color:#e1e8f8;font-size:12px;font-weight:700}
+.tinder-dismiss{display:block;margin:12px auto 0;padding:6px 10px;border:0;background:transparent;color:#8f9bb5;font-size:11px}
+@keyframes tinderCardIn{from{opacity:0;transform:translateY(20px) rotate(-1.2deg) scale(.97)}to{opacity:1;transform:translateY(0) rotate(0) scale(1)}}
+.sf-pricing-always{margin-top:16px}
+@media(prefers-reduced-motion:reduce){.tinder-upsell{animation:none}}
