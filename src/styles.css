@@ -2349,6 +2349,39 @@ img,svg{max-width:100%}
 }
 
 
+/* Semestre Filtro: prevenzione overflow su viewport stretti e contenuti lunghi. */
+.sf-page{width:100%;min-width:0;overflow-x:clip}
+.sf-page>*{min-width:0;max-width:100%}
+.sf-page .sf-hero,.sf-page .sf-result-hero,.sf-page .sf-start-row{min-width:0}
+.sf-page .sf-hero>div:first-child,.sf-page .sf-result-hero>div:first-child{min-width:0;max-width:100%}
+.sf-page .sf-hero h2,.sf-page .sf-hero p,.sf-page .sf-subject b,
+.sf-page .sf-question h3,.sf-page .sf-options button span,
+.sf-page .sf-review h3,.sf-page .sf-explanation{overflow-wrap:anywhere;word-break:normal}
+.sf-page .sf-subject,.sf-page .sf-options button{max-width:100%;min-width:0}
+.sf-page .sf-subject>span:nth-child(2),.sf-page .sf-options button>span{min-width:0}
+.sf-page .sf-exam-layout,.sf-page .sf-question-list,.sf-page .sf-question{min-width:0}
+.sf-page .sf-result-grade{min-width:0;max-width:100%;overflow-wrap:anywhere}
+@media(max-width:520px){
+ .content.sf-page{padding-left:12px;padding-right:12px}
+ .sf-page .sf-hero{gap:12px;padding:18px 14px}
+ .sf-page .sf-big-number{flex:0 0 auto;font-size:42px}
+ .sf-page .sf-specs{gap:8px}
+ .sf-page .sf-specs>div{min-width:0;padding:12px}
+ .sf-page .sf-specs b{font-size:18px}
+ .sf-page .sf-specs span{font-size:11px}
+ .sf-page .sf-subject{gap:9px;padding:12px}
+ .sf-page .sf-subject-mark{width:34px;height:34px}
+ .sf-page .sf-start-row{gap:12px}
+ .sf-page .sf-start-row .primary{width:100%;white-space:normal}
+ .sf-page .sf-result-hero{width:100%;padding:14px}
+ .sf-page .sf-result-hero strong{font-size:34px;line-height:1.15}
+ .sf-page .sf-result-grade{font-size:26px}
+ .sf-page .sf-mode-toolbar{min-width:0}
+ .sf-page .sf-mode-toolbar>span{font-size:9px;letter-spacing:1px}
+ .sf-page .sf-review-head{min-width:0}
+ .sf-page .sf-review-head h2{font-size:16px}
+}
+
 /* Semestre Filtro paywall: due scelte chiare, layout responsive e consenso digitale esplicito. */
 .sf-paywall{margin-top:22px;padding:clamp(18px,3vw,28px);border:1px solid var(--line);background:linear-gradient(145deg,rgba(37,51,79,.5),rgba(13,20,36,.96))}
 .sf-paywall>h2{margin:8px 0 6px;font-size:clamp(22px,3vw,30px)}
