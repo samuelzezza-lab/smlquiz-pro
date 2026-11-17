@@ -2411,3 +2411,34 @@ img,svg{max-width:100%}
  backdrop-filter:none!important;
 }
 .subject-card{content-visibility:auto;contain-intrinsic-size:180px}
+
+
+/* Mobile usability refinement: Semestre Filtro touch targets and keyboard focus. */
+.sf-subject{min-height:76px}
+.sf-options button{min-height:48px;line-height:1.5}
+.sf-fill input{min-height:48px}
+.sf-mini-grid button{min-width:0;min-height:42px;font-size:12px;font-weight:700}
+.sf-mode-back:focus-visible,
+.sf-subject:focus-visible,
+.sf-options button:focus-visible,
+.sf-mini-grid button:focus-visible,
+.sf-paywall .primary:focus-visible,
+.mobile-bottom-nav button:focus-visible{
+ outline:2px solid #c4b5fd;
+ outline-offset:3px;
+}
+.sf-review{min-width:0;overflow-wrap:anywhere}
+.sf-review h3{line-height:1.65}
+.sf-explanation{line-height:1.7;overflow-wrap:anywhere}
+@media(max-width:520px){
+ .sf-mini-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+ .sf-mini-grid button{min-height:44px;border-radius:9px;font-size:13px}
+ .sf-question h3{font-size:15px;line-height:1.65}
+ .sf-options{gap:10px}
+ .sf-options button{padding:13px 11px;min-height:52px}
+ .sf-subject{padding:14px;min-height:78px}
+ .sf-mode-screen .sf-counter strong{font-size:25px}
+ .sf-review{padding:14px}
+ .sf-result-hero{align-items:flex-start;flex-direction:column}
+ .sf-result-grade{text-align:left}
+}
