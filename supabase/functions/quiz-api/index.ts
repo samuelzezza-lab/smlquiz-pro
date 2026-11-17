@@ -799,7 +799,7 @@ Deno.serve(async (req: Request) => {
         const correctIndex = findNormalizedOptionIndex(options, correctRaw);
         const selectedAnswer = String(row.risposta_selezionata ?? "");
         const selectedIndex = selectedAnswer
-          ? options.findIndex(option => normalizeOptionValue(option) === normalizeOptionValue(selectedAnswer))
+          ? options.findIndex((option: string) => normalizeOptionValue(option) === normalizeOptionValue(selectedAnswer))
           : -1;
         const normalizedQuestion = {
           id: question?.id ?? row.domanda_id,
