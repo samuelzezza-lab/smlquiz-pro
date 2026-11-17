@@ -43,7 +43,7 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComple
    setResult(data as Result);setMode('result');if(accessType==='free')onFreeComplete()
   }catch(e){setError(e instanceof Error?e.message:'Consegna non riuscita. Riprova.');finishLock.current=false}
   finally{setSubmitting(false)}
- },[examId,answers])
+ },[examId,answers,accessType,onFreeComplete])
  useEffect(()=>{
   if(mode!=='exam'||!startedAt)return
   const tick=()=>setSeconds(Math.max(0,3000-Math.floor((Date.now()-startedAt)/1000)))
