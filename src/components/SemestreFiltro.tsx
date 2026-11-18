@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import StudyCompletion from './StudyCompletion'
 import { ArrowLeft, ArrowRight, Clock3, CheckCircle2, GraduationCap, RotateCcw } from 'lucide-react'
 
 type SubjectId='biologia'|'chimica'|'fisica'
@@ -96,7 +97,16 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComple
    <p className="sf-scoring-note">Calcolo: +1 per risposta corretta, −0,1 per risposta errata, 0 per omessa. La soglia per superare la prova è 18/30; solo i punteggi pari o superiori a 18 vengono arrotondati all’unità più prossima. Con 31 risposte corrette è prevista la lode. Simulazione didattica non ufficiale.</p>
    <div className="sf-review-head"><h2>Correzione completa</h2><button className="secondary" onClick={()=>setShowExplanations(v=>!v)}>{showExplanations?'Nascondi spiegazioni':'Mostra spiegazioni'}</button></div>
    {review.map((q,i)=><article className="panel sf-review" key={q.id}><div className="sf-question-meta"><span>QUESITO {i+1} · {q.tipo==='scelta_multipla'?'SCELTA MULTIPLA':'COMPLETAMENTO'}</span><b className={!q.given?'is-blank':q.is_correct?'is-correct':'is-wrong'}>{!q.given?'OMESSA':q.is_correct?'CORRETTA':'ERRATA'}</b></div><h3>{q.testo_domanda}</h3><p>La tua risposta: <b>{q.given?(q.tipo==='scelta_multipla'?q.given+'. '+(q.opzioni['ABCDE'.indexOf(q.given)]||''):q.given):'Non risposta'}</b></p><p>Risposta corretta: <b>{q.tipo==='scelta_multipla'?q.correct+'. '+q.correct_text:q.correct_text}</b></p>{showExplanations&&<p className="sf-explanation">{q.spiegazione}</p>}</article>)}
-   <div className="sf-start-row"><button className="secondary" onClick={exitMode}><ArrowLeft size={15}/> Torna alle materie</button><button className="primary" onClick={()=>void start()}><RotateCcw size={15}/> Nuova simulazione</button></div>
+   <StudyCompletion
+    eyebrow="SIMULAZIONE COMPLETATA"
+    title="Hai concluso questa prova."
+    description="La correzione è completa e il risultato è stato calcolato. Puoi allenarti ancora sulla stessa materia oppure scegliere una delle altre prove del Semestre Filtro."
+    meta={`${result.correct} corrette · ${result.wrong} errate · ${result.blank} omesse`}
+    primaryLabel="Nuova simulazione"
+    onPrimary={()=>void start()}
+    secondaryLabel="Scegli un'altra materia"
+    onSecondary={exitMode}
+   />
   </>}
  </section>
 }
