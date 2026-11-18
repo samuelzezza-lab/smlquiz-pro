@@ -2764,6 +2764,11 @@ html,body,#root{max-width:100%;overflow-x:clip}
 .flashcards-subject-panel{display:grid;grid-template-columns:auto minmax(180px,1fr) auto;align-items:center;gap:15px;margin:0 0 20px;padding:15px 17px;border:1px solid rgba(145,165,210,.18);border-radius:16px;background:linear-gradient(120deg,rgba(35,51,83,.62),rgba(17,27,47,.82));box-shadow:0 10px 30px rgba(0,0,0,.12)}
 .flashcards-subject-label{display:flex;align-items:center;gap:8px;color:#c7d3ea;font-size:12px;font-weight:800;white-space:nowrap}
 .flashcards-subject-label svg{color:#9eafff}
+.flashcards-subject-picker{display:grid;grid-template-columns:minmax(0,1fr);gap:7px;min-width:0}
+.flashcards-subject-picker input{width:100%;min-width:0;min-height:44px;padding:10px 13px;border:1px solid rgba(145,165,210,.25);border-radius:11px;background:#0c172b;color:#edf2ff;font-size:14px;font-weight:600;outline:none}
+.flashcards-subject-picker input::placeholder{color:#8292ae;font-weight:500}
+.flashcards-subject-picker input:focus{border-color:#8298ff;box-shadow:0 0 0 3px rgba(112,137,255,.15)}
+.flashcards-subject-results{color:#8292ae;font-size:11px;padding-left:3px}
 .flashcards-subject-picker select{width:100%;min-width:0;min-height:46px;padding:10px 40px 10px 13px;border:1px solid rgba(145,165,210,.25);border-radius:11px;background:#0c172b;color:#edf2ff;font-size:14px;font-weight:650;outline:none}
 .flashcards-subject-picker select:focus{border-color:#8298ff;box-shadow:0 0 0 3px rgba(112,137,255,.15)}
 .flashcards-subject-count{display:grid;gap:2px;text-align:right;white-space:nowrap}
