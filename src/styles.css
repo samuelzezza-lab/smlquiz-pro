@@ -3213,3 +3213,28 @@ html,body,#root{max-width:100%;overflow-x:clip}
  .flashcards-controls{grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr)}
  .flashcards-controls button{font-size:10px}
 }
+
+
+/* Spazio pubblicitario effettivamente riservato: evita slot a altezza zero.
+   La pubblicazione degli annunci resta subordinata al consenso CMP configurato. */
+.sml-ad-slot[data-sml-ad-slot="catalog-top"] {
+  min-height: 250px;
+  margin: 14px 0 20px;
+}
+.sml-ad-slot[data-sml-ad-slot="quiz-top"],
+.sml-ad-slot[data-sml-ad-slot="quiz-bottom"] {
+  min-height: 90px;
+  margin: 12px 0;
+}
+.sml-ad-slot { overflow: visible; }
+@media(max-width:620px) {
+  .sml-ad-slot[data-sml-ad-slot="catalog-top"] {
+    min-height: 180px;
+    margin: 10px 0 16px;
+  }
+  .sml-ad-slot[data-sml-ad-slot="quiz-top"],
+  .sml-ad-slot[data-sml-ad-slot="quiz-bottom"] {
+    min-height: 70px;
+    margin: 8px 0;
+  }
+}
