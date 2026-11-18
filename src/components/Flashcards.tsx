@@ -72,7 +72,7 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
   }, [subjectId, subjects])
   useEffect(() => { if (subjectId) void loadDeck(subjectId) }, [subjectId, loadDeck])
 
-  const next = async () => {
+  const next = useCallback(async () => {
     if (!flipped) { setFlipped(true); return }
     if (index < displayedCards.length - 1) { setIndex(v => v + 1); setFlipped(false); return }
     if (!unlocked && total > FREE_LIMIT) { setPaywall(true); return }
@@ -84,10 +84,10 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
         if (data?.error) throw new Error(data.error)
         const more = (data?.cards ?? []) as Flashcard[]
         setCards(prev => [...prev, ...more]); setIndex(v => v + 1); setFlipped(false)
-      } catch (err) { notify(err instanceof Error ? err.message : 'Errore nel caricamento delle altre carte.') }
+      } catch (err) { notifyRef.current(err instanceof Error ? err.message : 'Errore nel caricamento delle altre carte.') }
       finally { setLoading(false) }
     }
-  }
+  }, [flipped, index, displayedCards.length, unlocked, total, cards.length, subjectId, loading])
 
   const rate = async (rating: 'difficult'|'medium'|'easy') => {
     if (!current) return
@@ -126,7 +126,7 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
     }
     window.addEventListener('keydown', handler)
     return () => window.removeEventListener('keydown', handler)
-  }, [current, flipped, index, paywall, displayedCards.length, unlocked, cards.length, total])
+  }, [current, flipped, index, paywall, displayedCards.length, unlocked, cards.length, total, next])
 
   return <section className="content flashcards-page">
     <div className="page-heading"><div><div className="eyebrow"><Sparkles size={14}/> RIPASSO ATTIVO</div><h1>Flashcard</h1><p>Ripassa una materia alla volta: domanda davanti, risposta corretta e spiegazione dietro.</p></div></div>
