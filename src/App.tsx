@@ -673,7 +673,7 @@ export default function App(){
    <button type="button" onClick={()=>setLegalDoc(legalDocuments.find(doc=>doc.key==='cookies')??null)}>Cookie Policy</button>
    <button type="button" onClick={()=>setLegalDoc(legalDocuments.find(doc=>doc.key==='about')??null)}>Chi siamo</button>
    <a href="mailto:smlquiz@virgilio.it">Contatti</a>
-   <button type="button" onClick={()=>{localStorage.removeItem('smlquiz.cookies.v1');setCookieChoice('')}}>Preferenze cookie</button>
+   <span className="footer-consent-note">Preferenze pubblicitarie gestite dal messaggio privacy Google</span>
   </footer></main>
   {!(questions.length&&current&&!quizPaused&&!quizDismissed)&&<nav className="mobile-bottom-nav" aria-label="Navigazione principale">
    <button type="button" className={page==='home'?'active':''} aria-current={page==='home'?'page':undefined} onClick={()=>go('home')}><Target size={19}/><span>{tr('startQuiz')}</span></button>
