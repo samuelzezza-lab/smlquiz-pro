@@ -10,7 +10,7 @@ type Result={correct:number;wrong:number;blank:number;score:number;review:Review
 const subjects=[{id:'biologia' as const,label:'Biologia',tone:'bio'},{id:'chimica' as const,label:'Chimica e propedeutica biochimica',tone:'chem'},{id:'fisica' as const,label:'Fisica',tone:'phys'}]
 const fmt=(s:number)=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')
 
-type SemestreFiltroProps={onBuyPackage:(priceId:string,subjectIds:string[],consentConfirmed:boolean)=>void;onRequireLogin:()=>void;onFreeComplete:()=>void}
+type SemestreFiltroProps={onBuyPackage:(priceId:string,subjectIds:string[],consentConfirmed:boolean)=>void;onRequireLogin:()=>void}
 const semestreSinglePrice='price_1UcVlkBCybXKHSfRs9hj7caG'
 const semestreCompletePrice='price_1UcVo8BCybXKHSfRDXpOyB0q'
 export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComplete}:SemestreFiltroProps){
