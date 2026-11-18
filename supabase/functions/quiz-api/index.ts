@@ -1,7 +1,7 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": (Deno.env.get("APP_ORIGIN") && Deno.env.get("APP_ORIGIN") !== "*") ? Deno.env.get("APP_ORIGIN")! : "https://smlquiz.it",
+  "Access-Control-Allow-Origin": "https://smlquiz.it",
   "Vary": "Origin",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, idempotency-key",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
