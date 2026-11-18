@@ -91,7 +91,10 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       setRatings(mergedRatings)
       setTotal(cardTotal)
       setUnlocked(hasUnlock)
-      setPaywall(data?.paywall === true && loaded.length === 0)
+      const remainingCards = loaded.filter(card => !(card.user_rating)).length
+      const previewFinished = !hasUnlock && cardTotal > FREE_LIMIT && remainingCards === 0
+      setPaywall(data?.paywall === true && (loaded.length === 0 || previewFinished))
+      setDeckCompleted(loaded.length > 0 && remainingCards === 0 && !previewFinished)
     } catch (err) {
       notifyRef.current(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
     } finally { setLoading(false) }
@@ -149,6 +152,9 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     if (displayedCards.length <= 1) {
       if (!unlocked && total > FREE_LIMIT) setPaywall(true)
       else setDeckCompleted(true)
+    } else if (index >= displayedCards.length - 1) {
+      // Se si valuta l'ultima carta visibile, riparti dalla prima ancora da fare.
+      setIndex(0)
     }
   }
 
@@ -240,8 +246,11 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       title={deckMode === 'difficult' ? 'Hai ripassato tutte le carte difficili.' : 'Ottimo lavoro: hai completato tutte le flashcard.'}
       description={deckMode === 'difficult' ? 'Non restano altre carte contrassegnate come difficili in questa sessione. Puoi tornare al mazzo completo oppure continuare con un quiz.' : 'Hai terminato il materiale disponibile per questa materia. I tuoi progressi e le valutazioni restano salvati.'}
       meta={`${total.toLocaleString('it-IT')} carte disponibili · ${easyCount} facili · ${difficultCount} da ripassare`}
-      primaryLabel={deckMode === 'difficult' ? 'Torna a tutte le flashcard' : 'Ricomincia le flashcard'}
-      onPrimary={() => { if (deckMode === 'difficult') setDeckMode('all'); setIndex(0); setFlipped(false); setDeckCompleted(false) }}
+      primaryLabel={deckMode === 'difficult' ? 'Torna alle flashcard da fare' : difficultCount > 0 ? 'Ripassa le carte difficili' : 'Hai completato il mazzo'}
+      onPrimary={() => {
+        if (deckMode === 'difficult') { setDeckMode('all'); setIndex(0); setFlipped(false); setDeckCompleted(false); return }
+        if (difficultCount > 0) { setDeckMode('difficult'); setIndex(0); setFlipped(false); setDeckCompleted(false) }
+      }}
       secondaryLabel="Fai un quiz su questa materia"
       onSecondary={() => { if (selectedSubject) onStartQuiz?.(selectedSubject.id) }}
     />}
