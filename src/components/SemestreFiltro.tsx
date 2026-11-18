@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import StudyCompletion from './StudyCompletion'
-import { ArrowLeft, ArrowRight, Clock3, CheckCircle2, GraduationCap, RotateCcw } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Clock3, CheckCircle2, GraduationCap } from 'lucide-react'
 
 type SubjectId='biologia'|'chimica'|'fisica'
 type Question={id:string;codice:string;materia:SubjectId;argomento:string;tipo:'scelta_multipla'|'completamento';difficolta:string;testo_domanda:string;opzioni:string[]}
