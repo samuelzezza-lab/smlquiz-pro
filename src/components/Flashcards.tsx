@@ -39,11 +39,14 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     if (!query) return subjects
     return subjects.filter(subject => (subject.traduzioni?.it?.nome || subject.nome).toLocaleLowerCase('it').includes(query))
   }, [subjects, subjectSearch])
+  // Nel mazzo principale restano soltanto le carte non ancora valutate.
+  // Le carte difficili restano accessibili separatamente nel ripasso dedicato.
   const displayedCards = useMemo(() => deckMode === 'difficult'
     ? cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'difficult')
-    : cards, [cards, deckMode, ratings])
+    : cards.filter(card => !(ratings[card.id] ?? card.user_rating)), [cards, deckMode, ratings])
   const current = displayedCards[index]
   const progressTotal = deckMode === 'difficult' ? displayedCards.length : (unlocked ? total : Math.min(total, FREE_LIMIT))
+  const completedInDeck = cards.filter(card => Boolean(ratings[card.id] ?? card.user_rating)).length
   const easyCount = cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'easy').length
   const difficultCount = cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'difficult').length
   const ratedCount = cards.filter(card => ratings[card.id] || card.user_rating).length
@@ -70,7 +73,22 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
           loaded = [...loaded, ...batch]
         }
       }
+      // Ripristina le valutazioni locali (anche per ospiti/offline) e uniscile
+      // a quelle sincronizzate sul server. Così una carta già fatta non ricompare
+      // quando si cambia scheda o si riapre l'app.
+      let localRatings: Record<string, 'difficult'|'medium'|'easy'> = {}
+      try {
+        const saved = JSON.parse(localStorage.getItem(`smlquiz.flashcards.progress.v1:${user?.id || 'guest'}`) || '{}')
+        if (saved && typeof saved === 'object' && saved[id] && typeof saved[id] === 'object') localRatings = saved[id]
+      } catch { /* cache locale non disponibile: si usano i progressi cloud */ }
+      const mergedRatings: Record<string, 'difficult'|'medium'|'easy'> = { ...localRatings }
+      loaded = loaded.map(card => {
+        const rating = localRatings[card.id] ?? card.user_rating ?? null
+        if (rating) mergedRatings[card.id] = rating
+        return { ...card, user_rating: rating }
+      })
       setCards(loaded)
+      setRatings(mergedRatings)
       setTotal(cardTotal)
       setUnlocked(hasUnlock)
       setPaywall(data?.paywall === true && loaded.length === 0)
@@ -105,20 +123,33 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
 
   const rate = async (rating: 'difficult'|'medium'|'easy') => {
     if (!current) return
-    setRatings(prev => ({ ...prev, [current.id]: rating }))
+    // Salva subito sul dispositivo: la carta sparisce immediatamente dal mazzo
+    // e il progresso resta anche se la pagina viene smontata o si perde la rete.
+    setRatings(prev => {
+      const updated = { ...prev, [current.id]: rating }
+      try {
+        const key = `smlquiz.flashcards.progress.v1:${user?.id || 'guest'}`
+        const saved = JSON.parse(localStorage.getItem(key) || '{}')
+        const subjectRatings = { ...(saved?.[subjectId] || {}), [current.id]: rating }
+        localStorage.setItem(key, JSON.stringify({ ...saved, [subjectId]: subjectRatings }))
+      } catch { /* il salvataggio cloud resta disponibile per gli utenti autenticati */ }
+      return updated
+    })
     if (user && supabase) {
       const { error } = await supabase.functions.invoke('flashcards-api', { body: { action: 'rate', subjectId, flashcardId: current.id, rating } })
-      if (error) notify('Valutazione non sincronizzata: riprova quando sei online.')
+      if (error) notify('Valutazione salvata su questo dispositivo; sincronizzazione cloud da riprovare.')
     }
-    if (deckMode === 'difficult' && rating !== 'difficult') {
-      setIndex(Math.min(index, Math.max(0, displayedCards.length - 2))); setFlipped(false); return
+    setFlipped(false)
+    if (deckMode === 'difficult') {
+      if (rating !== 'difficult') setIndex(Math.min(index, Math.max(0, displayedCards.length - 2)))
+      return
     }
-    if (rating === 'difficult') {
-      const nextIndex = displayedCards.findIndex((card, i) => i > index && (ratings[card.id] ?? card.user_rating) !== 'difficult')
-      if (nextIndex >= 0) { setIndex(nextIndex); setFlipped(false); return }
+    // Il mazzo si restringe dopo ogni valutazione: mantenendo lo stesso indice
+    // si passa automaticamente alla prossima carta ancora da fare.
+    if (displayedCards.length <= 1) {
+      if (!unlocked && total > FREE_LIMIT) setPaywall(true)
+      else setDeckCompleted(true)
     }
-    if (index < displayedCards.length - 1) { setIndex(v => v + 1); setFlipped(false) }
-    else if (!unlocked && total > FREE_LIMIT) setPaywall(true)
   }
 
   const shuffle = () => {
@@ -182,7 +213,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     {loading && <div className="panel empty">Caricamento flashcard…</div>}
     {!loading && cards.length > 0 && !paywall && !deckCompleted && current && <>
       <div className="flashcards-progress">
-        <div className="flashcards-progress-label"><span>Carta {Math.min(index + 1, progressTotal)} di {progressTotal}{!unlocked && total > FREE_LIMIT ? ' · Anteprima gratuita' : ''}</span><span>{easyCount} memorizzate</span></div>
+        <div className="flashcards-progress-label"><span>Restano {displayedCards.length} di {progressTotal}{!unlocked && total > FREE_LIMIT ? ' · Anteprima gratuita' : ''}</span><span>{completedInDeck} già valutate</span></div>
         <div className="flashcards-progress-track"><span style={{width: `${Math.min(100, ((index + 1) / Math.max(1, progressTotal)) * 100)}%`}}/></div>
       </div>
       <div className="flashcard-stage">
