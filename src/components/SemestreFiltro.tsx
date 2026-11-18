@@ -29,8 +29,10 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin}:SemestreFil
  const [paywall,setPaywall]=useState(false)
  const [accessType,setAccessType]=useState<'free'|'single_subject'|'complete'|'unlimited'|''>('')
  const [digitalConsent,setDigitalConsent]=useState(false)
+ const [freeUsed,setFreeUsed]=useState(0),[freeRemaining,setFreeRemaining]=useState(5),[freeUsageLoaded,setFreeUsageLoaded]=useState(false)
  const finishLock=useRef(false)
  const draftKey='smlquiz.semestre-filtro-draft.v1'
+ useEffect(()=>{let active=true;if(!supabase)return;void supabase.rpc('get_semestre_filtro_free_usage').then(({data,error})=>{if(!active||error||!data)return;const usage=data as {free_used?:number;free_remaining?:number};setFreeUsed(Math.max(0,Math.min(5,Number(usage.free_used)||0)));setFreeRemaining(Math.max(0,Math.min(5,Number(usage.free_remaining)||0)));setFreeUsageLoaded(true)});return()=>{active=false}},[])
  useEffect(()=>{
   try{
    const raw=localStorage.getItem(draftKey)
@@ -76,11 +78,11 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin}:SemestreFil
    if(refreshError||!refreshed.session){onRequireLogin();throw new Error('Sessione scaduta. Accedi di nuovo e riprova.')}
    const {data,error}=await supabase.rpc('start_semestre_filtro_exam',{p_materia:subject})
    if(error)throw error
-   const payload=data as {exam_id?:string;questions?:Question[];duration_seconds?:number;paywall?:boolean;access_type?:'free'|'single_subject'|'complete'|'unlimited'}
-   if(payload?.paywall){setPaywall(true);return}
+   const payload=data as {exam_id?:string;questions?:Question[];duration_seconds?:number;paywall?:boolean;access_type?:'free'|'single_subject'|'complete'|'unlimited';free_used?:number;free_remaining?:number}
+   if(payload?.paywall){setPaywall(true);setFreeUsed(5);setFreeRemaining(0);setFreeUsageLoaded(true);return}
    if(!payload?.exam_id||payload.questions?.length!==31)throw new Error('Il materiale per questa simulazione non è ancora completo. SMLQUIZ è in continua crescita: nuove domande e simulazioni verranno aggiunte progressivamente. Nel frattempo puoi scegliere un’altra materia.')
-   setPaywall(false);setAccessType(payload.access_type||'')
-   setExamId(payload.exam_id);setExam(payload.questions);setAnswers({});setResult(null);setSeconds(3000);setStartedAt(Date.now());finishLock.current=false;try{localStorage.setItem(draftKey,JSON.stringify({examId:payload.exam_id,exam:payload.questions,answers:{},subject,startedAt:Date.now(),accessType:payload.access_type||''}))}catch{};window.dispatchEvent(new Event('smlquiz-semestre-draft-change'))window.history.pushState({...window.history.state,semestreFiltroMode:true},'','/semestre-filtro');setMode('exam')
+   setPaywall(false);setAccessType(payload.access_type||'');if(typeof payload.free_used==='number')setFreeUsed(payload.free_used);if(typeof payload.free_remaining==='number')setFreeRemaining(payload.free_remaining);setFreeUsageLoaded(true)
+   setExamId(payload.exam_id);setExam(payload.questions);setAnswers({});setResult(null);setSeconds(3000);setStartedAt(Date.now());finishLock.current=false;try{localStorage.setItem(draftKey,JSON.stringify({examId:payload.exam_id,exam:payload.questions,answers:{},subject,startedAt:Date.now(),accessType:payload.access_type||''}))}catch{};window.dispatchEvent(new Event('smlquiz-semestre-draft-change'));window.history.pushState({...window.history.state,semestreFiltroMode:true},'','/semestre-filtro');setMode('exam')
   }catch(e){const message=e instanceof Error?e.message:'Non riesco a preparare la simulazione.';if(message.toLowerCase().includes('accedere')){onRequireLogin();return}setError(message)}
   finally{setLoading(false)}
  }
@@ -95,7 +97,7 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin}:SemestreFil
    <div className="section-head"><div><h2>Scegli la materia</h2><p>Ogni prova contiene 21 domande a scelta multipla e 10 a completamento.</p></div></div>
    <div className="sf-subjects">{subjects.map(s=><button key={s.id} className={'sf-subject panel '+(subject===s.id?'selected':'')} onClick={()=>setSubject(s.id)}><span className={'sf-subject-mark '+s.tone}>{s.label[0]}</span><span><b>{s.label}</b><small>Simulazione completa da 31 quesiti</small></span><span className="sf-radio">{subject===s.id?'✓':''}</span></button>)}</div>
    {error&&<div className="notice">{error}</div>}
-   <div className="sf-start-row"><div><b>5 simulazioni gratuite totali per account</b><small>Non si rinnovano ogni giorno. Dopo le prime cinque puoi scegliere il pacchetto più adatto.</small></div><button className="primary" disabled={loading} onClick={()=>void start()}>{loading?'Preparazione…':'Inizia simulazione'} <ArrowRight size={16}/></button></div>
+   <div className="sf-start-row"><div><b>{freeUsageLoaded?`${freeRemaining} simulazioni gratuite disponibili`:'Verifica simulazioni gratuite…'}</b><small>{freeUsageLoaded?`${freeUsed} di 5 già utilizzate · quota totale per account, non giornaliera.`:'La disponibilità viene aggiornata direttamente dal tuo account.'} Dopo le prime cinque puoi scegliere il pacchetto più adatto.</small></div><button className="primary" disabled={loading} onClick={()=>void start()}>{loading?'Preparazione…':'Inizia simulazione'} <ArrowRight size={16}/></button></div>
    <div className="sf-paywall panel sf-pricing-always"><div className="eyebrow">{paywall?'SIMULAZIONI GRATUITE ESAURITE':'PACCHETTI SEMESTRE FILTRO'}</div><h2>Continua ad allenarti</h2><p>{paywall?'Hai utilizzato tutte le 5 simulazioni gratuite. Sblocca questa materia oppure tutte e tre.':'Puoi acquistare l’accesso anche prima di esaurire le simulazioni gratuite.'}</p><div className="sf-paywall-plans"><article><span>UNA MATERIA</span><h3>Semestre Filtro – {subjects.find(s=>s.id===subject)?.label}</h3><p>Tutte le simulazioni della materia selezionata, senza limiti.</p><strong>1,99 €</strong><button className="primary" disabled={!digitalConsent} onClick={()=>onBuyPackage(semestreSinglePrice,[subject],digitalConsent)}>Sblocca questa materia</button></article><article className="featured"><span>PACCHETTO COMPLETO</span><h3>Semestre Filtro – Completo</h3><p>Accesso illimitato a Biologia, Chimica e Fisica: tutte le 900 domande.</p><strong>3,99 €</strong><button className="primary" disabled={!digitalConsent} onClick={()=>onBuyPackage(semestreCompletePrice,[],digitalConsent)}>Sblocca tutte e 3</button></article></div><label className="sf-digital-consent"><input type="checkbox" checked={digitalConsent} onChange={e=>setDigitalConsent(e.target.checked)}/> Richiedo l'accesso immediato ai contenuti digitali e riconosco che, iniziata la fornitura, perdo il diritto di recesso.</label>{!digitalConsent&&<small className="sf-consent-hint">Conferma per procedere al pagamento.</small>}</div>
   </>}
   {mode==='exam'&&<>
