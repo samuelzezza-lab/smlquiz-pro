@@ -13,7 +13,7 @@ const fmt=(s:number)=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).
 type SemestreFiltroProps={onBuyPackage:(priceId:string,subjectIds:string[],consentConfirmed:boolean)=>void;onRequireLogin:()=>void}
 const semestreSinglePrice='price_1UcVlkBCybXKHSfRs9hj7caG'
 const semestreCompletePrice='price_1UcVo8BCybXKHSfRDXpOyB0q'
-export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComplete}:SemestreFiltroProps){
+export default function SemestreFiltro({onBuyPackage,onRequireLogin}:SemestreFiltroProps){
  const [subject,setSubject]=useState<SubjectId>('biologia')
  const [mode,setMode]=useState<'intro'|'exam'|'result'>('intro')
  const [examId,setExamId]=useState('')
@@ -55,10 +55,10 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComple
   try{
    const {data,error:rpcError}=await supabase.rpc('submit_semestre_filtro_exam',{p_exam_id:examId,p_answers:answers})
    if(rpcError)throw rpcError
-   setResult(data as Result);setMode('result');try{localStorage.removeItem(draftKey)}catch{}if(accessType==='free')onFreeComplete()
+   setResult(data as Result);setMode('result');try{localStorage.removeItem(draftKey)}catch{}
   }catch(e){setError(e instanceof Error?e.message:'Consegna non riuscita. Riprova.');finishLock.current=false}
   finally{setSubmitting(false)}
- },[examId,answers,accessType,onFreeComplete])
+ },[examId,answers])
  useEffect(()=>{
   if(mode!=='exam'||!startedAt)return
   const tick=()=>setSeconds(Math.max(0,3000-Math.floor((Date.now()-startedAt)/1000)))
