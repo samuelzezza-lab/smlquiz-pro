@@ -71,7 +71,7 @@ const QUESTION_TOOL=(n:number)=>({name:"generate_questions",description:"Genera 
 Deno.serve(async(req:Request)=>{
  if(req.method==="OPTIONS")return new Response("ok",{headers:cors});
  if(req.method!=="POST")return reply({error:"Metodo non supportato"},405);
- const url=Deno.env.get("SUPABASE_URL"), serviceKey=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"), claudeKey=Deno.env.get("ANTHROPIC_API_KEY");
+ const url=Deno.env.get("SUPABASE_URL"), serviceKey=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"), claudeKey=Deno.env.get("ANTHROPIC_API_KEY") ?? "";
  if(!url||!serviceKey||!claudeKey)return reply({error:"Configurazione server incompleta: verificare ANTHROPIC_API_KEY."},500);
  const db=createClient(url,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
  try{
