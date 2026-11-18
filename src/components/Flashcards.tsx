@@ -131,13 +131,22 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
   }, [current, flipped, index, paywall, displayedCards.length, unlocked, cards.length, total, next])
 
   return <section className="content flashcards-page">
-    <div className="page-heading"><div><div className="eyebrow"><Sparkles size={14}/> RIPASSO ATTIVO</div><h1>Flashcard</h1><p>Ripassa una materia alla volta: domanda davanti, risposta corretta e spiegazione dietro.</p></div></div>
-    <div className="panel flashcards-toolbar">
-      <label htmlFor="flashcards-subject">Materia</label>
-      <select id="flashcards-subject" value={subjectId} onChange={e => setSubjectId(e.target.value)}>
-        {subjects.map(subject => <option key={subject.id} value={subject.id}>{subject.traduzioni?.it?.nome || subject.nome}</option>)}
-      </select>
-      <span className="flashcards-total">{total.toLocaleString('it-IT')} carte disponibili</span>
+    <header className="flashcards-hero">
+      <div className="flashcards-hero-copy">
+        <div className="flashcards-eyebrow"><Sparkles size={14}/> METODO DI STUDIO ATTIVO</div>
+        <h1>Flashcard</h1>
+        <p>Memorizza i concetti chiave, verifica ciò che ricordi e concentra il ripasso sugli argomenti più difficili.</p>
+      </div>
+      <div className="flashcards-hero-mark" aria-hidden="true"><Layers3 size={30}/></div>
+    </header>
+    <div className="flashcards-subject-panel panel">
+      <div className="flashcards-subject-label"><BookOpen size={16}/><span>La tua materia</span></div>
+      <div className="flashcards-subject-picker">
+        <select id="flashcards-subject" aria-label="Seleziona materia" value={subjectId} onChange={e => setSubjectId(e.target.value)}>
+          {subjects.map(subject => <option key={subject.id} value={subject.id}>{subject.traduzioni?.it?.nome || subject.nome}</option>)}
+        </select>
+      </div>
+      <div className="flashcards-subject-count"><strong>{total.toLocaleString('it-IT')}</strong><span>carte disponibili</span></div>
     </div>
     <div className="flashcards-overview">
       <div className="flashcards-overview-item"><span className="flashcards-overview-icon"><BookOpen size={17}/></span><div><strong>{total.toLocaleString('it-IT')}</strong><small>Carte disponibili</small></div></div>
@@ -153,8 +162,8 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
       </div>
       <div className="flashcard-stage">
         <div ref={cardRef} className={`flashcard-3d ${flipped ? 'is-flipped' : ''}`} onClick={() => setFlipped(v => !v)} role="button" tabIndex={0} aria-label={flipped ? 'Mostra la domanda' : 'Gira la flashcard'} onKeyDown={e => { if (e.key === 'Enter') setFlipped(v => !v) }}>
-          <div className="flashcard-face flashcard-front"><span className="flashcard-kicker">DOMANDA</span><div className="flashcard-copy">{current.question_front}</div><span className="flashcard-hint">Tocca per vedere la risposta · Spazio</span></div>
-          <div className="flashcard-face flashcard-back"><span className="flashcard-kicker">RISPOSTA CORRETTA</span><div className="flashcard-copy">{current.answer_back}</div>{current.explanation && <p className="flashcard-explanation">{current.explanation}</p>}<span className="flashcard-hint">Valuta quanto la ricordi qui sotto</span></div>
+          <div className="flashcard-face flashcard-front"><span className="flashcard-kicker">DOMANDA</span><div className="flashcard-copy">{current.question_front}</div><span className="flashcard-hint">Tocca la carta per rivelare la risposta · SPAZIO</span></div>
+          <div className="flashcard-face flashcard-back"><span className="flashcard-kicker">RISPOSTA CORRETTA</span><div className="flashcard-copy">{current.answer_back}</div>{current.explanation && <p className="flashcard-explanation">{current.explanation}</p>}<span className="flashcard-hint">Come hai ricordato questo concetto?</span></div>
         </div>
       </div>
       {flipped && <div className="flashcard-ratings">
