@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, BookOpen, Check, CreditCard, Layers3, Shuffle, Sparkles } from 'lucide-react'
+import StudyCompletion from './StudyCompletion'
 import { supabase } from '../lib/supabase'
 
 type Subject = { id: string; nome: string; traduzioni?: Record<string, { nome?: string }> }
@@ -10,11 +11,12 @@ type Props = {
   onBuy: (priceId: string, subjectIds: string[], consentConfirmed: boolean) => void
   notify: (message: string) => void
   showAds?: boolean
+  onStartQuiz?: (subjectId: string) => void
 }
 const PRICE_ID = 'price_1UdBxFBCybXKHSfRwLeImDFx'
 const FREE_LIMIT = 50
 
-export default function Flashcards({ subjects, user, onBuy, notify, showAds = true }: Props) {
+export default function Flashcards({ subjects, user, onBuy, notify, showAds = true, onStartQuiz }: Props) {
   const [subjectId, setSubjectId] = useState('')
   const [subjectSearch, setSubjectSearch] = useState('')
   const [cards, setCards] = useState<Flashcard[]>([])
@@ -23,6 +25,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
   const [flipped, setFlipped] = useState(false)
   const [unlocked, setUnlocked] = useState(false)
   const [paywall, setPaywall] = useState(false)
+  const [deckCompleted, setDeckCompleted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [consent, setConsent] = useState(false)
   const [ratings, setRatings] = useState<Record<string, 'difficult'|'medium'|'easy'>>({})
@@ -48,7 +51,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
 
   const loadDeck = useCallback(async (id: string) => {
     if (!supabase || !id) return
-    setLoading(true); setCards([]); setIndex(0); setFlipped(false); setPaywall(false); setUnlocked(false); setRatings({}); setDeckMode('all')
+    setLoading(true); setCards([]); setIndex(0); setFlipped(false); setPaywall(false); setDeckCompleted(false); setUnlocked(false); setRatings({}); setDeckMode('all')
     try {
       const { data, error } = await supabase.functions.invoke('flashcards-api', { body: { subjectId: id, offset: 0, limit: FREE_LIMIT } })
       if (error) throw error
@@ -95,7 +98,9 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
         setCards(prev => [...prev, ...more]); setIndex(v => v + 1); setFlipped(false)
       } catch (err) { notifyRef.current(err instanceof Error ? err.message : 'Errore nel caricamento delle altre carte.') }
       finally { setLoading(false) }
+      return
     }
+    setDeckCompleted(true)
   }, [flipped, index, displayedCards.length, unlocked, total, cards.length, subjectId, loading])
 
   const rate = async (rating: 'difficult'|'medium'|'easy') => {
@@ -122,7 +127,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]] }
       return copy
     })
-    setIndex(0); setFlipped(false); setDeckMode('all')
+    setIndex(0); setFlipped(false); setDeckMode('all'); setDeckCompleted(false)
   }
 
   useEffect(() => {
@@ -175,7 +180,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     </div>
     {showAds && <div className="flashcards-ad-slot" data-sml-ad-slot="flashcards-top" aria-label="Spazio pubblicitario" />}
     {loading && <div className="panel empty">Caricamento flashcard…</div>}
-    {!loading && cards.length > 0 && !paywall && current && <>
+    {!loading && cards.length > 0 && !paywall && !deckCompleted && current && <>
       <div className="flashcards-progress">
         <div className="flashcards-progress-label"><span>Carta {Math.min(index + 1, progressTotal)} di {progressTotal}{!unlocked && total > FREE_LIMIT ? ' · Anteprima gratuita' : ''}</span><span>{easyCount} memorizzate</span></div>
         <div className="flashcards-progress-track"><span style={{width: `${Math.min(100, ((index + 1) / Math.max(1, progressTotal)) * 100)}%`}}/></div>
@@ -195,10 +200,20 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
         <button className="secondary" disabled={index===0} onClick={() => {setIndex(v=>v-1);setFlipped(false)}}><ArrowLeft size={15}/> Precedente</button>
         <button className="primary" onClick={() => void next()} disabled={loading}>{flipped ? 'Prossima carta' : 'Gira la carta'} <ArrowRight size={15}/></button>
       </div>
-      {unlocked && <div className="flashcards-deck-actions"><button className="secondary" onClick={shuffle}><Shuffle size={15}/> Mescola</button><button className={deckMode==='difficult'?'primary':'secondary'} onClick={() => {setDeckMode(v=>v==='difficult'?'all':'difficult');setIndex(0);setFlipped(false)}}>Solo da ripassare</button></div>}
+      {unlocked && <div className="flashcards-deck-actions"><button className="secondary" onClick={shuffle}><Shuffle size={15}/> Mescola</button><button className={deckMode==='difficult'?'primary':'secondary'} onClick={() => {setDeckMode(v=>v==='difficult'?'all':'difficult');setIndex(0);setFlipped(false);setDeckCompleted(false)}}>Solo da ripassare</button></div>}
       {showAds && <div className="flashcards-ad-slot flashcards-ad-slot-bottom" data-sml-ad-slot="flashcards-bottom" aria-label="Spazio pubblicitario" />}
       <p className="flashcards-footnote">{user ? 'I tuoi progressi vengono salvati sul tuo account.' : 'Puoi provare gratuitamente senza registrazione. Accedi per salvare le valutazioni.'}</p>
     </>}
+    {!loading && deckCompleted && !paywall && <StudyCompletion
+      eyebrow={deckMode === 'difficult' ? 'RIPASSO COMPLETATO' : 'SESSIONE COMPLETATA'}
+      title={deckMode === 'difficult' ? 'Hai ripassato tutte le carte difficili.' : 'Ottimo lavoro: hai completato tutte le flashcard.'}
+      description={deckMode === 'difficult' ? 'Non restano altre carte contrassegnate come difficili in questa sessione. Puoi tornare al mazzo completo oppure continuare con un quiz.' : 'Hai terminato il materiale disponibile per questa materia. I tuoi progressi e le valutazioni restano salvati.'}
+      meta={`${total.toLocaleString('it-IT')} carte disponibili · ${easyCount} facili · ${difficultCount} da ripassare`}
+      primaryLabel={deckMode === 'difficult' ? 'Torna a tutte le flashcard' : 'Ricomincia le flashcard'}
+      onPrimary={() => { if (deckMode === 'difficult') setDeckMode('all'); setIndex(0); setFlipped(false); setDeckCompleted(false) }}
+      secondaryLabel="Fai un quiz su questa materia"
+      onSecondary={() => { if (selectedSubject) onStartQuiz?.(selectedSubject.id) }}
+    />}
     {!loading && total===0 && <div className="panel empty">Non ci sono ancora flashcard disponibili per questa materia.</div>}
     {!loading && total>0 && deckMode==='difficult' && displayedCards.length===0 && !paywall && <div className="panel empty">Non hai carte difficili da ripassare. <button className="simple-link" onClick={()=>setDeckMode('all')}>Torna a tutte le flashcard</button></div>}
     {paywall && <div className="flashcards-paywall-backdrop"><div className="flashcards-paywall panel">
