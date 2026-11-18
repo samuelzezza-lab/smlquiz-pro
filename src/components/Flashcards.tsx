@@ -31,6 +31,7 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
     ? cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'difficult')
     : cards, [cards, deckMode, ratings])
   const current = displayedCards[index]
+  const progressTotal = deckMode === 'difficult' ? displayedCards.length : (unlocked ? total : Math.min(total, FREE_LIMIT))
   const easyCount = cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'easy').length
   const title = selectedSubject?.traduzioni?.it?.nome || selectedSubject?.nome || 'Flashcard'
 
@@ -93,6 +94,9 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
       const { error } = await supabase.functions.invoke('flashcards-api', { body: { action: 'rate', subjectId, flashcardId: current.id, rating } })
       if (error) notify('Valutazione non sincronizzata: riprova quando sei online.')
     }
+    if (deckMode === 'difficult' && rating !== 'difficult') {
+      setIndex(Math.min(index, Math.max(0, displayedCards.length - 2))); setFlipped(false); return
+    }
     if (rating === 'difficult') {
       const nextIndex = displayedCards.findIndex((card, i) => i > index && (ratings[card.id] ?? card.user_rating) !== 'difficult')
       if (nextIndex >= 0) { setIndex(nextIndex); setFlipped(false); return }
@@ -134,8 +138,8 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
     {loading && <div className="panel empty">Caricamento flashcard…</div>}
     {!loading && cards.length > 0 && !paywall && current && <>
       <div className="flashcards-progress">
-        <div className="flashcards-progress-label"><span>Carta {index + 1} di {unlocked ? total : Math.min(total, FREE_LIMIT)}{!unlocked && total > FREE_LIMIT ? ' · Anteprima gratuita' : ''}</span><span>{easyCount} memorizzate</span></div>
-        <div className="flashcards-progress-track"><span style={{width: `${Math.min(100, ((index + 1) / (unlocked ? total : Math.min(total, FREE_LIMIT))) * 100)}%`}}/></div>
+        <div className="flashcards-progress-label"><span>Carta {Math.min(index + 1, progressTotal)} di {progressTotal}{!unlocked && total > FREE_LIMIT ? ' · Anteprima gratuita' : ''}</span><span>{easyCount} memorizzate</span></div>
+        <div className="flashcards-progress-track"><span style={{width: `${Math.min(100, ((index + 1) / Math.max(1, progressTotal)) * 100)}%`}}/></div>
       </div>
       <div className="flashcard-stage">
         <div ref={cardRef} className={`flashcard-3d ${flipped ? 'is-flipped' : ''}`} onClick={() => setFlipped(v => !v)} role="button" tabIndex={0} aria-label={flipped ? 'Mostra la domanda' : 'Gira la flashcard'} onKeyDown={e => { if (e.key === 'Enter') setFlipped(v => !v) }}>
@@ -156,6 +160,7 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
       <p className="flashcards-footnote">{user ? 'I tuoi progressi vengono salvati sul tuo account.' : 'Puoi provare gratuitamente senza registrazione. Accedi per salvare le valutazioni.'}</p>
     </>}
     {!loading && total===0 && <div className="panel empty">Non ci sono ancora flashcard disponibili per questa materia.</div>}
+    {!loading && total>0 && deckMode==='difficult' && displayedCards.length===0 && !paywall && <div className="panel empty">Non hai carte difficili da ripassare. <button className="simple-link" onClick={()=>setDeckMode('all')}>Torna a tutte le flashcard</button></div>}
     {paywall && <div className="flashcards-paywall-backdrop"><div className="flashcards-paywall panel">
       <div className="flashcards-paywall-icon"><CreditCard size={22}/></div><span className="eyebrow">ANTEPRIMA COMPLETATA</span>
       <h2>Hai completato le 50 flashcard gratuite di anteprima!</h2>
