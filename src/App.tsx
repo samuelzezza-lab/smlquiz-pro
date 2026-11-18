@@ -185,7 +185,7 @@ export default function App(){
   // Verifica subito il wallet: la pubblicità non deve attendere gli altri caricamenti.
   void client.functions.invoke('quiz-api',{body:{action:'wallet'}}).then(({data,error})=>{
    if(!active)return;
-   if(!error&&data){setWallet(data);setAdsWalletReadyFor(user.id)}
+   if(!error&&data){setWallet(data)}
    else console.warn('Verifica wallet per la pubblicità non riuscita:',error?.message);
   }).catch(error=>{if(active)console.warn('Verifica wallet per la pubblicità non riuscita:',error)});
   Promise.all([
@@ -205,29 +205,7 @@ export default function App(){
   }).catch(err=>{if(active)notify(err instanceof Error?err.message:tr('catalogLoadFailed'))});
   return()=>{active=false}
  },[user])
- useEffect(()=>{
-  // Google Privacy & messaging deve mostrare il consenso prima della scelta.
-  // Il vecchio banner locale non raccoglie segnali TCF e non deve bloccare AdSense.
-  // Attendi il controllo dei diritti senza annunci prima di caricare il tag.
-  const walletChecked=!user||(adsWalletReadyFor===user.id);
-  // Abilitare solo dopo aver pubblicato la European regulations message in AdSense.
-  const googleCmpEnabled=import.meta.env.VITE_GOOGLE_CMP_ENABLED==='true';
-  const eligible=Boolean(googleCmpEnabled&&authReady&&walletChecked&&!wallet.hasAdsRemoved&&!wallet.ownerUnlimited);
-  const scriptId='smlquiz-adsense-loader';
-  const existing=document.getElementById(scriptId);
-  if(!eligible){
-   existing?.remove();
-   document.querySelectorAll('.google-auto-placed,ins.adsbygoogle,iframe[id^="google_ads_iframe"],div[id^="google_ads_iframe"]').forEach(node=>node.remove());
-   return;
-  }
-  if(existing)return;
-  const script=document.createElement('script');
-  script.id=scriptId;
-  script.async=true;
-  script.crossOrigin='anonymous';
-  script.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8117138172088873';
-  document.head.appendChild(script);
- },[authReady,user?.id,adsWalletReadyFor,wallet.hasAdsRemoved,wallet.ownerUnlimited]);
+
  useEffect(()=>{
   const inviterId=new URLSearchParams(location.search).get('ref');
   if(inviterId&&/^[0-9a-f-]{36}$/i.test(inviterId)){
