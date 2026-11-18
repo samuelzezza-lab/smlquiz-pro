@@ -80,7 +80,7 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComple
    if(payload?.paywall){setPaywall(true);return}
    if(!payload?.exam_id||payload.questions?.length!==31)throw new Error('Il materiale per questa simulazione non è ancora completo. SMLQUIZ è in continua crescita: nuove domande e simulazioni verranno aggiunte progressivamente. Nel frattempo puoi scegliere un’altra materia.')
    setPaywall(false);setAccessType(payload.access_type||'')
-   setExamId(payload.exam_id);setExam(payload.questions);setAnswers({});setResult(null);setSeconds(3000);setStartedAt(Date.now());finishLock.current=false;localStorage.setItem(draftKey,JSON.stringify({examId:payload.exam_id,exam:payload.questions,answers:{},subject,startedAt:Date.now(),accessType:payload.access_type||''}));window.history.pushState({...window.history.state,semestreFiltroMode:true},'','/semestre-filtro');setMode('exam')
+   setExamId(payload.exam_id);setExam(payload.questions);setAnswers({});setResult(null);setSeconds(3000);setStartedAt(Date.now());finishLock.current=false;try{localStorage.setItem(draftKey,JSON.stringify({examId:payload.exam_id,exam:payload.questions,answers:{},subject,startedAt:Date.now(),accessType:payload.access_type||''}))}catch{}window.history.pushState({...window.history.state,semestreFiltroMode:true},'','/semestre-filtro');setMode('exam')
   }catch(e){const message=e instanceof Error?e.message:'Non riesco a preparare la simulazione.';if(message.toLowerCase().includes('accedere')){onRequireLogin();return}setError(message)}
   finally{setLoading(false)}
  }
