@@ -16,6 +16,7 @@ const FREE_LIMIT = 50
 
 export default function Flashcards({ subjects, user, onBuy, notify, showAds = true }: Props) {
   const [subjectId, setSubjectId] = useState('')
+  const [subjectSearch, setSubjectSearch] = useState('')
   const [cards, setCards] = useState<Flashcard[]>([])
   const [total, setTotal] = useState(0)
   const [index, setIndex] = useState(0)
@@ -30,6 +31,11 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
   const notifyRef = useRef(notify)
   useEffect(() => { notifyRef.current = notify }, [notify])
   const selectedSubject = useMemo(() => subjects.find(s => s.id === subjectId), [subjects, subjectId])
+  const filteredSubjects = useMemo(() => {
+    const query = subjectSearch.trim().toLocaleLowerCase('it')
+    if (!query) return subjects
+    return subjects.filter(subject => (subject.traduzioni?.it?.nome || subject.nome).toLocaleLowerCase('it').includes(query))
+  }, [subjects, subjectSearch])
   const displayedCards = useMemo(() => deckMode === 'difficult'
     ? cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'difficult')
     : cards, [cards, deckMode, ratings])
@@ -143,9 +149,21 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     <div className="flashcards-subject-panel panel">
       <div className="flashcards-subject-label"><BookOpen size={16}/><span>La tua materia</span></div>
       <div className="flashcards-subject-picker">
+        <input
+          id="flashcards-subject-search"
+          type="search"
+          value={subjectSearch}
+          onChange={e => setSubjectSearch(e.target.value)}
+          placeholder="Cerca una materia…"
+          aria-label="Cerca una materia"
+          autoComplete="off"
+        />
         <select id="flashcards-subject" aria-label="Seleziona materia" value={subjectId} onChange={e => setSubjectId(e.target.value)}>
-          {subjects.map(subject => <option key={subject.id} value={subject.id}>{subject.traduzioni?.it?.nome || subject.nome}</option>)}
+          {selectedSubject && !filteredSubjects.some(subject => subject.id === selectedSubject.id) && <option value={selectedSubject.id}>{selectedSubject.traduzioni?.it?.nome || selectedSubject.nome} · selezionata</option>}
+          {filteredSubjects.map(subject => <option key={subject.id} value={subject.id}>{subject.traduzioni?.it?.nome || subject.nome}</option>)}
+          {filteredSubjects.length === 0 && <option value={subjectId} disabled>Nessuna materia trovata</option>}
         </select>
+        <span className="flashcards-subject-results">{filteredSubjects.length} materie trovate</span>
       </div>
       <div className="flashcards-subject-count"><strong>{total.toLocaleString('it-IT')}</strong><span>carte disponibili</span></div>
     </div>
