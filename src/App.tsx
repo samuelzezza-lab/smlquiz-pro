@@ -206,7 +206,9 @@ export default function App(){
   // Il vecchio banner locale non raccoglie segnali TCF e non deve bloccare AdSense.
   // Attendi il controllo dei diritti senza annunci prima di caricare il tag.
   const walletChecked=!user||(adsWalletReadyFor===user.id);
-  const eligible=Boolean(authReady&&walletChecked&&!wallet.hasAdsRemoved&&!wallet.ownerUnlimited);
+  // Abilitare solo dopo aver pubblicato la European regulations message in AdSense.
+  const googleCmpEnabled=import.meta.env.VITE_GOOGLE_CMP_ENABLED==='true';
+  const eligible=Boolean(googleCmpEnabled&&authReady&&walletChecked&&!wallet.hasAdsRemoved&&!wallet.ownerUnlimited);
   const scriptId='smlquiz-adsense-loader';
   const existing=document.getElementById(scriptId);
   if(!eligible){
