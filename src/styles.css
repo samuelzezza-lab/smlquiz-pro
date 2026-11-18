@@ -2568,3 +2568,15 @@ html,body,#root{max-width:100%;overflow-x:clip}
   .cookie-banner{grid-template-columns:minmax(0,1fr)}
   .cookie-banner>div{grid-column:1}
 }
+
+
+/* SMLQUIZ: uniform answer markers and lighter touch navigation */
+.answer>span,.answer.chosen>span,.answer.right>span,.answer.wrong>span,
+.final-review-answer>span:first-child,.final-review-answer.correct>span:first-child,.final-review-answer.selected-wrong>span:first-child{
+ background:#ffffff0b!important;color:#99a7c2!important;box-shadow:none!important;
+}
+@media(hover:none) and (max-width:800px){
+ html{scroll-behavior:auto!important}
+ .subject-card:hover{transform:none!important;box-shadow:none!important}
+ .nav-link,.subject-card,.answer,.primary,.secondary{transition:none!important}
+}
