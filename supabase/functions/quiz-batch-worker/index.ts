@@ -1,10 +1,12 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "npm:@supabase/supabase-js@2";
-const cors={ "Access-Control-Allow-Origin":"*", "Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type, x-cron-token", "Access-Control-Allow-Methods":"POST, OPTIONS", "Content-Type":"application/json" };
+const cors={ "Access-Control-Allow-Headers":"authorization, x-client-info, apikey, content-type, x-cron-token", "Access-Control-Allow-Methods":"POST, OPTIONS", "Content-Type":"application/json" };
+const allowedOrigins = new Set(["https://smlquiz.it", "https://www.smlquiz.it"]);
+function corsFor(origin:string|null){return {...cors,"Access-Control-Allow-Origin":origin&&allowedOrigins.has(origin)?origin:"https://smlquiz.it","Vary":"Origin"};}
 const MODEL="claude-haiku-5-5";
 const MAX_OUTPUT_TOKENS=30000;
 const INPUT_USD_PER_M=0.10, OUTPUT_USD_PER_M=0.50;
-function reply(body:unknown,status=200){return new Response(JSON.stringify(body),{status,headers:cors});}
+function reply(body:unknown,status=200,origin:string|null=null){return new Response(JSON.stringify(body),{status,headers:corsFor(origin)});}
 function normalizeText(s:string){return s.toLocaleLowerCase("it").normalize("NFD").replace(/[\\u0300-\\u036f]/g,"").replace(/[^a-z0-9]+/g," ").trim();}
 function questionValidationErrors(q:any):string[] {
  const errors:string[]=[];
@@ -69,21 +71,22 @@ function questionsFrom(parsed: any): any[] {
 }
 const QUESTION_TOOL=(n:number)=>({name:"generate_questions",description:"Genera esattamente il numero richiesto di domande universitarie conformi al programma e alle regole permanenti.",input_schema:{type:"object",additionalProperties:false,properties:{questions:{type:"array",minItems:n,maxItems:n,items:{type:"object",additionalProperties:false,properties:{question:{type:"string"},options:{type:"array",minItems:4,maxItems:4,items:{type:"string"}},correct_answer_index:{type:"integer",enum:[0,1,2,3]},explanation:{type:"string"},topic:{type:"string"}},required:["question","options","correct_answer_index","explanation","topic"]}}},required:["questions"]}});
 Deno.serve(async(req:Request)=>{
- if(req.method==="OPTIONS")return new Response("ok",{headers:cors});
- if(req.method!=="POST")return reply({error:"Metodo non supportato"},405);
+ const send=(body:unknown,status=200)=>reply(body,status,req.headers.get("Origin"));
+ if(req.method==="OPTIONS")return new Response("ok",{headers:corsFor(req.headers.get("Origin"))});
+ if(req.method!=="POST")return send({error:"Metodo non supportato"},405);
  const url=Deno.env.get("SUPABASE_URL"), serviceKey=Deno.env.get("SUPABASE_SERVICE_ROLE_KEY"), claudeKey=Deno.env.get("ANTHROPIC_API_KEY") ?? "";
- if(!url||!serviceKey||!claudeKey)return reply({error:"Configurazione server incompleta: verificare ANTHROPIC_API_KEY."},500);
+ if(!url||!serviceKey||!claudeKey)return send({error:"Configurazione server incompleta: verificare ANTHROPIC_API_KEY."},500);
  const db=createClient(url,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
  try{
  const payload=await req.json().catch(()=>({}));
  const token=req.headers.get("x-cron-token")??String(payload.worker_token??"");
  const {data:control,error:controlError}=await db.from("quiz_generation_control").select("cron_token,status").eq("singleton",true).single();
- if(controlError||!control?.cron_token||token!==control.cron_token)return reply({error:"Non autorizzato"},401);
+ if(controlError||!control?.cron_token||token!==control.cron_token)return send({error:"Non autorizzato"},401);
  const action=String(payload.action??"run");
  const planKey=String(payload.plan_key??"").trim();
- if(!["prepare","run","generate","generate_test"].includes(action))return reply({error:"Azione non valida. Le vecchie azioni OpenAI sono disabilitate."},400);
- if(action==="generate_test"&&control.status!=="paused")return reply({error:"I test isolati sono consentiti soltanto con la produzione in pausa."},409);
- if(action!=="prepare"&&action!=="generate_test"&&control.status!=="active")return reply({status:"paused",message:"Sistema in pausa: nessuna chiamata Claude effettuata."});
+ if(!["prepare","run","generate","generate_test"].includes(action))return send({error:"Azione non valida. Le vecchie azioni OpenAI sono disabilitate."},400);
+ if(action==="generate_test"&&control.status!=="paused")return send({error:"I test isolati sono consentiti soltanto con la produzione in pausa."},409);
+ if(action!=="prepare"&&action!=="generate_test"&&control.status!=="active")return send({status:"paused",message:"Sistema in pausa: nessuna chiamata Claude effettuata."});
      async function prepare() {
       const requestedMateriaId = String(payload.materia_id ?? "").trim();
       let subjects: any[] = [];
@@ -331,11 +334,11 @@ Deno.serve(async(req:Request)=>{
    throw e;
   }
  }
- if(action==="prepare")return reply(await prepare());
+ if(action==="prepare")return send(await prepare());
  if(action==="generate_test"){
    const itemId=String(payload.item_id??"").trim();
-   if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(itemId))return reply({error:"Per il test isolato serve un item_id UUID valido."},400);
-   return reply({status:"claude_test_worker",model:MODEL,result:await generateOne(itemId)});
+   if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(itemId))return send({error:"Per il test isolato serve un item_id UUID valido."},400);
+   return send({status:"claude_test_worker",model:MODEL,result:await generateOne(itemId)});
  }
  const prepared=action==="run"?await prepare():{status:"not_requested"};
  const results:any[]=[];
@@ -344,6 +347,6 @@ Deno.serve(async(req:Request)=>{
    results.push(result);
    if(result.status==="idle"||result.status==="budget_stopped")break;
  }
- return reply({status:"claude_worker",model:MODEL,prepared,results});
- }catch(e){return reply({status:"error",error:(e instanceof Error?e.message:String(e)).slice(0,1800)},500);}
+ return send({status:"claude_worker",model:MODEL,prepared,results});
+ }catch(e){return send({status:"error",error:(e instanceof Error?e.message:String(e)).slice(0,1800)},500);}
 });
