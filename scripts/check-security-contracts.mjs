@@ -6,6 +6,8 @@ const fail = message => { console.error('Security contract failed:', message); p
 const app = read('src/App.tsx')
 const i18n = read('src/i18n.ts')
 const headers = read('public/_headers')
+const styles = read('src/styles.css')
+const serviceWorker = read('public/sw.js')
 
 if (!/export type Language = 'it'/.test(i18n)) fail('The application language must remain Italian-only.')
 if (!/import it from '\.\/locales\/it\.json'/.test(i18n)) fail('The Italian dictionary must be the only loaded locale.')
@@ -16,6 +18,14 @@ const recoveryStart = app.indexOf("<h2>{tr('setNewPassword')}</h2>")
 const recoveryEnd = app.indexOf('</form>', recoveryStart)
 const recovery = recoveryStart >= 0 && recoveryEnd > recoveryStart ? app.slice(recoveryStart, recoveryEnd) : ''
 if (!recovery.includes('minLength={12}') || !recovery.includes('.{12,}')) fail('Password recovery must enforce the same 12-character policy.')
+const cookieBannerIndex = app.indexOf('{!cookieChoice&&<div className="cookie-banner">')
+const mainContentIndex = app.indexOf('<main className="main" id="main-content"')
+if (cookieBannerIndex < 0 || mainContentIndex < 0 || cookieBannerIndex > mainContentIndex) fail('Cookie consent must be placed before the main content in document flow.')
+if (!/\\.cookie-banner\\{position:relative;/.test(styles) || /\\.cookie-banner\\{position:fixed/.test(styles)) fail('Cookie consent must never overlay page content.')
+if (!/@media\\(max-width:800px\\)\\{\\.cookie-banner\\{margin:12px;/.test(styles)) fail('Cookie consent must use safe mobile spacing.')
+if (!/\\.sidebar\\{transform:translate3d\\(-100%,0,0\\)/.test(styles) || !/\\.hamb\\{display:inline-grid/.test(styles)) fail('Mobile navigation must start with a closed sidebar and expose the menu button.')
+if (!/\\.mobile-bottom-nav\\{position:fixed/.test(styles)) fail('Mobile bottom navigation must be present.')
+if (!/const CACHE_NAME = 'smlquiz-pwa-v\\d+'/.test(serviceWorker)) fail('The PWA cache must use an explicit version to invalidate stale app shells.')
 for (const directive of ["object-src 'none'", "frame-ancestors 'none'", "upgrade-insecure-requests", "default-src 'self'"]) {
   if (!headers.includes(directive)) fail('Missing CSP directive: ' + directive)
 }
