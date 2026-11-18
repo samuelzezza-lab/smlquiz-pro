@@ -449,14 +449,10 @@ export default function App(){
     await new Promise(resolve=>window.setTimeout(resolve,700));
    }
    if(data?.error)throw new Error(data.error);
-   const correctAnswer=String(data?.correctAnswer??''),correctIndex=findOptionIndex(current.opzioni,correctAnswer),selectedIndex=findOptionIndex(current.opzioni,selectedAnswer);
-   if(correctIndex<0||selectedIndex<0)throw new Error('La correzione ricevuta non corrisponde alle opzioni visualizzate. Risposta non registrata: riprova.');
-   const good=Boolean(data.correct),selectedLetter=String(data.selectedLetter||String.fromCharCode(65+selectedIndex)),correctLetter=String.fromCharCode(65+correctIndex),explanation=(data.explanation??null) as string|null;
-   const response:QuizResponse={selectedAnswer,selectedLetter,correctAnswer,correctLetter,correctIndex,isCorrect:good,explanation};
-   setQuizResponses(v=>({...v,[current.id]:response}));
-   setAnswerFeedback({correct:good,correctAnswer,correctIndex,correctLetter,selectedLetter,explanation});
-   setSavedQuestions(v=>v.map(q=>q.id===current.id?{...q,risposta_corretta:correctAnswer,correct_index:correctIndex,spiegazione:explanation}:q));
-   if(good)setCorrect(v=>v+1);else{setWrong(v=>v+1);setWrongQuestions(v=>[...v.filter(q=>q.id!==current.id),{...current,risposta_corretta:correctAnswer,correct_index:correctIndex,spiegazione:explanation}])}
+   if(data?.saved!==true)throw new Error('La risposta non è stata registrata. Riprova.');
+   // Durante il quiz il client riceve soltanto la conferma di salvataggio.
+   // Soluzioni, esito e spiegazioni arrivano esclusivamente alla consegna finale.
+   setAnswerFeedback(null);
    setRevealed(true);
   }catch(err){notify(err instanceof Error?err.message:tr('answerSaveFailed'))}
   finally{setBusy(false);answerSubmittingRef.current=false}
