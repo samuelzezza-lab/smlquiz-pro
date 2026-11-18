@@ -2661,3 +2661,76 @@ html,body,#root{max-width:100%;overflow-x:clip}
  .flashcards-controls button{flex:1;padding-inline:10px}
  .flashcard-ratings button{flex:1;min-width:90px;padding-inline:10px}
 }
+
+
+/* Flashcard experience — visual refinement */
+.flashcards-page{width:min(100%,960px);padding-top:clamp(18px,3vw,34px);padding-bottom:48px}
+.flashcards-page .page-heading{margin-bottom:22px}
+.flashcards-page .page-heading h1{font-size:clamp(29px,4vw,38px);letter-spacing:-.045em;margin:7px 0 8px}
+.flashcards-page .page-heading p{max-width:650px;font-size:14px;line-height:1.7;color:var(--muted)}
+.flashcards-page .page-heading .eyebrow{display:flex;align-items:center;gap:7px;color:#9eafff;font-size:10px;font-weight:850;letter-spacing:.14em}
+.flashcards-toolbar{position:relative;display:grid;grid-template-columns:auto minmax(220px,1fr) auto;align-items:center;gap:14px;margin:0 0 24px;padding:15px 18px;border:1px solid rgba(145,165,210,.18);border-radius:16px;background:linear-gradient(120deg,rgba(35,51,83,.58),rgba(17,27,47,.78));box-shadow:0 10px 30px rgba(0,0,0,.12)}
+.flashcards-toolbar label{font-size:12px;font-weight:800;letter-spacing:.02em;color:#c8d3e9}
+.flashcards-toolbar select{width:100%;min-width:0;min-height:46px;padding:11px 40px 11px 14px;border:1px solid rgba(145,165,210,.25);border-radius:11px;background:#0c172b;color:#edf2ff;font-size:14px;font-weight:650;outline:none;transition:border-color .18s,box-shadow .18s}
+.flashcards-toolbar select:focus{border-color:#8298ff;box-shadow:0 0 0 3px rgba(112,137,255,.15)}
+.flashcards-total{white-space:nowrap;font-size:12px;color:#aebbd3;font-weight:700}
+.flashcards-progress{margin:0 0 22px;padding:0 2px}
+.flashcards-progress-label{font-size:12px;letter-spacing:.01em;color:#aebbd3}
+.flashcards-progress-track{height:7px;background:rgba(135,154,194,.16);border:1px solid rgba(145,165,210,.08)}
+.flashcards-progress-track span{background:linear-gradient(90deg,#7188f7,#a58cf5);box-shadow:0 0 14px rgba(119,137,255,.28)}
+.flashcard-stage{max-width:790px}
+.flashcard-3d{min-height:365px;border:0;border-radius:22px;background:transparent;color:inherit;text-align:inherit;font:inherit;width:100%;padding:0;display:block}
+.flashcard-face{min-height:365px;inset:0;align-items:stretch;text-align:left;justify-content:flex-start;padding:clamp(24px,5vw,46px);border:1px solid rgba(145,165,210,.22);border-radius:22px;background:radial-gradient(ellipse at 90% 0%,rgba(101,124,226,.15),transparent 43%),linear-gradient(145deg,#17243d,#101a2d 72%);box-shadow:0 24px 65px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.045)}
+.flashcard-front{background:radial-gradient(ellipse at 90% 0%,rgba(101,124,226,.16),transparent 43%),linear-gradient(145deg,#17243d,#101a2d 72%)}
+.flashcard-back{background:radial-gradient(ellipse at 10% 0%,rgba(65,169,142,.13),transparent 45%),linear-gradient(145deg,#152b32,#101e2c 72%)}
+.flashcard-3d:focus-visible{outline:3px solid #91a4ff;outline-offset:5px}
+.flashcard-kicker{display:flex;align-items:center;gap:8px;margin:0;color:#aebdff;font-size:10px;letter-spacing:.13em}
+.flashcard-kicker:before{content:"";width:7px;height:7px;border-radius:50%;background:#8da0ff;box-shadow:0 0 12px rgba(141,160,255,.65)}
+.flashcard-copy{max-width:690px;margin:auto 0;font-size:clamp(20px,3vw,27px);font-weight:700;line-height:1.55;letter-spacing:-.015em;color:#f2f5ff}
+.flashcard-hint{margin:0;padding-top:22px;color:#9baac5;font-size:11px}
+.flashcard-explanation{max-width:690px;margin:20px 0 0;padding:15px 17px;border:1px solid rgba(145,165,210,.13);border-left:3px solid #6fae9b;border-radius:0 12px 12px 0;background:rgba(4,13,24,.32);color:#c2d0dc;font-size:13px;line-height:1.7;text-align:left}
+.flashcard-ratings{gap:10px;margin:18px auto 8px;max-width:790px}
+.flashcard-ratings button{min-height:50px;flex:1;border-radius:12px;font-size:13px;transition:transform .15s,filter .15s}
+.flashcard-ratings button:hover{transform:translateY(-1px);filter:brightness(1.04)}
+.flashcard-ratings .rating-difficult{background:rgba(184,76,76,.12);color:#ffaaa5;border-color:rgba(235,126,118,.28)}
+.flashcard-ratings .rating-medium{background:rgba(187,143,47,.12);color:#f3d18a;border-color:rgba(220,177,83,.28)}
+.flashcard-ratings .rating-easy{background:rgba(53,153,111,.13);color:#8fe0b7;border-color:rgba(90,200,148,.28)}
+.flashcards-controls{max-width:790px;margin:18px auto 0}
+.flashcards-controls button{min-height:48px;padding:0 19px;border-radius:12px;font-size:13px;font-weight:750}
+.flashcards-controls .primary{box-shadow:0 8px 22px rgba(86,109,224,.2)}
+.flashcards-deck-actions{margin:17px auto 0}
+.flashcards-deck-actions button{min-height:42px;background:rgba(255,255,255,.035);color:#c5d0e6;border-color:rgba(145,165,210,.2);font-size:12px}
+.flashcards-deck-actions button.primary{background:#526de0;color:#fff;border-color:#526de0}
+.flashcards-footnote{margin-top:22px;color:#8493ad;font-size:11px}
+.flashcards-paywall-backdrop{padding:16px;background:rgba(3,8,18,.82);backdrop-filter:blur(10px)}
+.flashcards-paywall{position:relative;border:1px solid rgba(145,165,210,.22);border-radius:20px;background:radial-gradient(ellipse at 100% 0%,rgba(103,121,222,.16),transparent 45%),#111d32}
+.flashcards-paywall h2{letter-spacing:-.025em}
+.flashcards-paywall>p{font-size:13px;line-height:1.7}
+.flashcards-paywall-icon{border:1px solid rgba(126,147,255,.2);background:rgba(91,114,232,.15)}
+.flashcards-consent{font-size:11px;line-height:1.6}
+.flashcards-unlock{border-radius:12px}
+.flashcards-paywall .simple-link{color:#aebbd3}
+@media(max-width:680px){
+ .flashcards-page{padding-top:14px}
+ .flashcards-toolbar{grid-template-columns:1fr;gap:9px;padding:14px}
+ .flashcards-toolbar label{font-size:11px}
+ .flashcards-toolbar select{min-height:48px;font-size:16px}
+ .flashcards-total{white-space:normal}
+ .flashcard-stage{width:100%}
+ .flashcard-3d,.flashcard-face{min-height:390px}
+ .flashcard-face{padding:22px 20px}
+ .flashcard-copy{font-size:clamp(18px,5vw,22px);line-height:1.58}
+ .flashcard-hint{font-size:10px}
+ .flashcards-controls{gap:9px}
+ .flashcards-controls button{min-height:48px;padding-inline:11px;font-size:12px}
+ .flashcard-ratings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+ .flashcard-ratings button{min-width:0;min-height:54px;padding:8px 5px;font-size:11px}
+}
+@media(max-width:380px){
+ .flashcard-3d,.flashcard-face{min-height:410px}
+ .flashcard-face{padding:19px 16px}
+ .flashcards-controls button{font-size:11px}
+}
+@media(prefers-reduced-motion:reduce){
+ .flashcard-3d,.flashcard-ratings button,.flashcards-progress-track span{transition:none!important}
+}
