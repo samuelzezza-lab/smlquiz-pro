@@ -3040,3 +3040,25 @@ html,body,#root{max-width:100%;overflow-x:clip}
     font-size:11px;
   }
 }
+
+
+/* Minimal white home-return control: no visible box or button chrome. */
+.function-home-back{
+  min-height:32px;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  color:#fff!important;
+  box-shadow:none;
+  backdrop-filter:none;
+  font-size:12px;
+  font-weight:750;
+}
+.function-home-back:hover{
+  border:0;
+  background:transparent;
+  color:#fff!important;
+  opacity:.82;
+}
+.function-home-back svg{color:#fff}
