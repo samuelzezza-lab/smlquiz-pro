@@ -32,8 +32,6 @@ jobs:
         run: npm run build
         env:
           VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
-          VITE_INFOLINKS_PID: ${{ vars.VITE_INFOLINKS_PID }}
-          VITE_INFOLINKS_WSID: ${{ vars.VITE_INFOLINKS_WSID }}
           VITE_STRIPE_CHECKOUT_ENABLED: 'false'
       - name: Create Cloudflare Pages project if needed
         run: npx wrangler pages project create smlquiz-pro --production-branch main || true
