@@ -589,11 +589,10 @@ export default function App(){
    <div className="subject-leaderboard-select">
     <label htmlFor="leaderboard-subject-search">Materia e anno</label>
     <div className="leaderboard-subject-results" role="listbox" aria-label="Risultati materie">
-     {leaderboardSubjects.slice(0,10).map(s=><button type="button" role="option" aria-selected={leaderboardMateriaId===s.id} key={s.id} className={leaderboardMateriaId===s.id?'selected':''} onClick={()=>{setLeaderboardMateriaId(s.id);setLeaderboardSubjectSearch(localizedName(s,language))}}>
+     {leaderboardSubjects.map(s=><button type="button" role="option" aria-selected={leaderboardMateriaId===s.id} key={s.id} className={leaderboardMateriaId===s.id?'selected':''} onClick={()=>setLeaderboardMateriaId(s.id)}>
       <span><b>{localizedName(s,language)}</b><small>{faculties.find(f=>f.id===s.facolta_id)?.nome||s.corso_di_laurea||'Corso di laurea'}</small></span><em>{s.anno_corso}° anno</em>
      </button>)}
     </div>
-    {leaderboardSubjects.length>10&&<small className="subject-results-hint">Mostrate 10 di {leaderboardSubjects.length}: affina la ricerca per trovare la materia.</small>}
    </div>
    {leaderboardSubjects.length===0&&<p className="subject-leaderboard-no-results">Nessuna materia corrisponde alla ricerca. Prova con un nome più breve.</p>}
    {leaderboardMateriaId&&<div className="subject-leaderboard-meta">{(()=>{const selected=subjects.find(s=>s.id===leaderboardMateriaId);return selected?localizedName(selected,language)+' · '+(selected.anno_corso??'—')+'° anno · '+(faculties.find(f=>f.id===selected.facolta_id)?.nome||''):''})()}</div>}
