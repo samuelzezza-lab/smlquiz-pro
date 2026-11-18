@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowLeft, ArrowRight, Check, CreditCard, Shuffle, Sparkles } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, Check, CreditCard, Layers3, Shuffle, Sparkles } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 type Subject = { id: string; nome: string; traduzioni?: Record<string, { nome?: string }> }
