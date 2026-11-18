@@ -2965,3 +2965,78 @@ html,body,#root{max-width:100%;overflow-x:clip}
 @media(max-width:390px){
   .study-completion-actions{grid-template-columns:1fr}
 }
+
+
+/* Immersive workspace: every opened function occupies the whole app viewport.
+   The only global chrome retained is the compact return-to-home control. */
+.function-fullscreen{
+  min-height:100dvh;
+  height:100dvh;
+  overflow:hidden;
+  background:radial-gradient(ellipse at 68% -15%,rgba(82,68,157,.15),transparent 36%),#050915;
+}
+.function-fullscreen .sidebar,
+.function-fullscreen .scrim,
+.function-fullscreen .topbar,
+.function-fullscreen .offline,
+.function-fullscreen>.notice,
+.function-fullscreen .cookie-banner,
+.function-fullscreen .footer,
+.function-fullscreen .mobile-bottom-nav{
+  display:none!important;
+}
+.function-fullscreen .main{
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  height:100dvh;
+  min-height:100dvh;
+  margin:0!important;
+  overflow-y:auto;
+  overflow-x:hidden;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.function-fullscreen .main>.content{
+  flex:1 0 auto;
+  width:100%;
+  max-width:none;
+  min-height:100dvh;
+  margin:0;
+  padding:76px clamp(18px,3vw,44px) 30px;
+}
+.function-home-back{
+  position:fixed;
+  z-index:120;
+  top:14px;
+  left:16px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  min-height:34px;
+  padding:0 11px;
+  border:1px solid rgba(145,165,210,.2);
+  border-radius:9px;
+  background:rgba(13,22,39,.92);
+  color:#cbd5ea;
+  font-size:11px;
+  font-weight:700;
+  box-shadow:0 5px 18px rgba(0,0,0,.18);
+  backdrop-filter:blur(12px);
+  cursor:pointer;
+}
+.function-home-back:hover{background:#1a2942;color:#fff;border-color:rgba(165,145,245,.45)}
+.function-home-back svg{width:15px;height:15px}
+@media(max-width:800px){
+  .function-fullscreen .main>.content{
+    padding:calc(62px + env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) calc(22px + env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));
+  }
+  .function-home-back{
+    top:calc(10px + env(safe-area-inset-top));
+    left:max(12px,env(safe-area-inset-left));
+    min-height:34px;
+    padding:0 10px;
+    font-size:11px;
+  }
+}
