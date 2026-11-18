@@ -64,7 +64,7 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComple
    if(error)throw error
    const payload=data as {exam_id?:string;questions?:Question[];duration_seconds?:number;paywall?:boolean;access_type?:'free'|'single_subject'|'complete'|'unlimited'}
    if(payload?.paywall){setPaywall(true);return}
-   if(!payload?.exam_id||payload.questions?.length!==31)throw new Error('La banca non contiene ancora 31 domande utilizzabili per questa materia.')
+   if(!payload?.exam_id||payload.questions?.length!==31)throw new Error('Il materiale per questa simulazione non è ancora completo. SMLQUIZ è in continua crescita: nuove domande e simulazioni verranno aggiunte progressivamente. Nel frattempo puoi scegliere un’altra materia.')
    setPaywall(false);setAccessType(payload.access_type||'')
    setExamId(payload.exam_id);setExam(payload.questions);setAnswers({});setResult(null);setSeconds(3000);setStartedAt(Date.now());finishLock.current=false;window.history.pushState({...window.history.state,semestreFiltroMode:true},'','/semestre-filtro');setMode('exam')
   }catch(e){const message=e instanceof Error?e.message:'Non riesco a preparare la simulazione.';if(message.toLowerCase().includes('accedere')){onRequireLogin();return}setError(message)}
