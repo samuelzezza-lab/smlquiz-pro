@@ -683,7 +683,6 @@ Deno.serve(async (req: Request) => {
       const selectedLetter = String.fromCharCode(65 + resolvedSelectedIndex);
       const correctIndex = findNormalizedOptionIndex(localizedOptions, localizedCorrect);
       if (correctIndex < 0) return json({ error: "La risposta corretta non corrisponde alle opzioni di questa domanda. Quiz sospeso per evitare una correzione errata." }, 409);
-      const correctLetter = String.fromCharCode(65 + correctIndex);
       if (row.risposta_selezionata !== null) {
         return json({
           saved: true,
