@@ -9,11 +9,12 @@ type Props = {
   user: { id: string } | null
   onBuy: (priceId: string, subjectIds: string[], consentConfirmed: boolean) => void
   notify: (message: string) => void
+  showAds?: boolean
 }
 const PRICE_ID = 'price_1UdBxFBCybXKHSfRwLeImDFx'
 const FREE_LIMIT = 50
 
-export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
+export default function Flashcards({ subjects, user, onBuy, notify, showAds = true }: Props) {
   const [subjectId, setSubjectId] = useState('')
   const [cards, setCards] = useState<Flashcard[]>([])
   const [total, setTotal] = useState(0)
@@ -154,6 +155,7 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
       <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-review"><Sparkles size={17}/></span><div><strong>{difficultCount}</strong><small>Da ripassare</small></div></div>
       <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-progress"><Layers3 size={17}/></span><div><strong>{ratedCount}</strong><small>Valutate</small></div></div>
     </div>
+    {showAds && <div className="flashcards-ad-slot" data-sml-ad-slot="flashcards-top" aria-label="Spazio pubblicitario" />}
     {loading && <div className="panel empty">Caricamento flashcard…</div>}
     {!loading && cards.length > 0 && !paywall && current && <>
       <div className="flashcards-progress">
@@ -176,6 +178,7 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
         <button className="primary" onClick={() => void next()} disabled={loading}>{flipped ? 'Prossima carta' : 'Gira la carta'} <ArrowRight size={15}/></button>
       </div>
       {unlocked && <div className="flashcards-deck-actions"><button className="secondary" onClick={shuffle}><Shuffle size={15}/> Mescola</button><button className={deckMode==='difficult'?'primary':'secondary'} onClick={() => {setDeckMode(v=>v==='difficult'?'all':'difficult');setIndex(0);setFlipped(false)}}>Solo da ripassare</button></div>}
+      {showAds && <div className="flashcards-ad-slot flashcards-ad-slot-bottom" data-sml-ad-slot="flashcards-bottom" aria-label="Spazio pubblicitario" />}
       <p className="flashcards-footnote">{user ? 'I tuoi progressi vengono salvati sul tuo account.' : 'Puoi provare gratuitamente senza registrazione. Accedi per salvare le valutazioni.'}</p>
     </>}
     {!loading && total===0 && <div className="panel empty">Non ci sono ancora flashcard disponibili per questa materia.</div>}
