@@ -1,15 +1,24 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "https://smlquiz.it",
-  "Vary": "Origin",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, idempotency-key",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json; charset=utf-8",
 };
+const allowedOrigins = new Set(["https://smlquiz.it", "https://www.smlquiz.it"]);
+const configuredOrigin = Deno.env.get("APP_ORIGIN");
+if (configuredOrigin && configuredOrigin !== "*") allowedOrigins.add(configuredOrigin);
 
-function json(body: unknown, status = 200) {
-  return new Response(JSON.stringify(body), { status, headers: corsHeaders });
+function corsHeadersFor(origin: string | null) {
+  return {
+    ...corsHeaders,
+    "Access-Control-Allow-Origin": origin && allowedOrigins.has(origin) ? origin : "https://smlquiz.it",
+    "Vary": "Origin",
+  };
+}
+
+function json(body: unknown, status = 200, origin: string | null = null) {
+  return new Response(JSON.stringify(body), { status, headers: corsHeadersFor(origin) });
 }
 
 function normalizeOptionValue(value: unknown) {
@@ -60,22 +69,23 @@ function romeDayStart() {
 }
 
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "POST") return json({ error: "Metodo non consentito" }, 405);
+  const requestJson = (body: unknown, status = 200) => json(body, status, req.headers.get("Origin"));
+  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeadersFor(req.headers.get("Origin")) });
+  if (req.method !== "POST") return requestJson({ error: "Metodo non consentito" }, 405);
 
   const url = Deno.env.get("SUPABASE_URL");
   const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-  if (!url || !serviceKey) return json({ error: "Configurazione server incompleta" }, 500);
+  if (!url || !serviceKey) return requestJson({ error: "Configurazione server incompleta" }, 500);
 
   const authorization = req.headers.get("Authorization") ?? "";
   const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
-  if (!token) return json({ error: "Accesso richiesto" }, 401);
+  if (!token) return requestJson({ error: "Accesso richiesto" }, 401);
 
   const admin = createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
   const { data: authData, error: authError } = await admin.auth.getUser(token);
-  if (authError || !authData.user) return json({ error: "Sessione non valida. Accedi di nuovo." }, 401);
+  if (authError || !authData.user) return requestJson({ error: "Sessione non valida. Accedi di nuovo." }, 401);
   const userId = authData.user.id;
   const isOwner = (authData.user.email ?? "").trim().toLowerCase() === "samuel.zezza@gmail.com";
 
@@ -85,7 +95,7 @@ Deno.serve(async (req: Request) => {
 
     if (!isOwner) {
       const sessionId = sessionIdFromJwt(token);
-      if (!sessionId) return json({ error: "Sessione non valida. Accedi di nuovo." }, 401);
+      if (!sessionId) return requestJson({ error: "Sessione non valida. Accedi di nuovo." }, 401);
       const { data: guardResult, error: guardError } = await admin.rpc("guard_quiz_api_request", {
         p_user_id: userId,
         p_session_id: sessionId,
@@ -94,7 +104,7 @@ Deno.serve(async (req: Request) => {
       if (guardError) throw guardError;
       if (!guardResult?.allowed) {
         if (guardResult?.reason === "session_limit") {
-          return json({
+          return requestJson({
             error: "Questo account è già attivo su 2 dispositivi. Per continuare, esci da Quizmind su un altro dispositivo e aggiorna questa pagina.",
             code: "SESSION_LIMIT",
             activeSessions: guardResult.active_sessions,
@@ -102,27 +112,27 @@ Deno.serve(async (req: Request) => {
           }, 409);
         }
         if (guardResult?.reason === "rate_limit") {
-          return json({
+          return requestJson({
             error: `Troppe richieste in poco tempo. Riprova tra ${guardResult.retry_after_seconds ?? 60} secondi.`,
             code: "RATE_LIMIT",
             retryAfterSeconds: guardResult.retry_after_seconds ?? 60,
           }, 429);
         }
-        return json({ error: "Sessione scaduta o non più valida. Accedi di nuovo.", code: "INVALID_SESSION" }, 401);
+        return requestJson({ error: "Sessione scaduta o non più valida. Accedi di nuovo.", code: "INVALID_SESSION" }, 401);
       }
     }
 
-    if (action === "session-check") return json({ sessionOk: true });
+    if (action === "session-check") return requestJson({ sessionOk: true });
 
     if (action === "profile") {
       const profileColumns = "user_id,display_name,language,leaderboard_opt_in,university_id,university_name,university_city,university_course,privacy_policy_version,terms_version,consented_at";
       const { data: existing, error: readError } = await admin.from("user_profiles").select(profileColumns).eq("user_id", userId).maybeSingle();
       if (readError) throw readError;
       if (body.mode === "read") {
-        if (existing) return json({ profile: existing });
+        if (existing) return requestJson({ profile: existing });
         const { data, error } = await admin.from("user_profiles").insert({ user_id: userId, display_name: authData.user.email?.split("@")[0] ?? "" }).select(profileColumns).single();
         if (error) throw error;
-        return json({ profile: data });
+        return requestJson({ profile: data });
       }
       let universityId = existing?.university_id ?? null;
       let universityName = String(body.universityName ?? existing?.university_name ?? "").trim().slice(0, 140) || null;
@@ -132,7 +142,7 @@ Deno.serve(async (req: Request) => {
         if (requestedId) {
           const { data: university, error: universityError } = await admin.from("universities").select("id,name,city").eq("id", requestedId).maybeSingle();
           if (universityError) throw universityError;
-          if (!university) return json({ error: "Università non valida. Selezionala dall’elenco." }, 400);
+          if (!university) return requestJson({ error: "Università non valida. Selezionala dall’elenco." }, 400);
           universityId = university.id;
           universityName = university.name;
           universityCity = university.city;
@@ -156,22 +166,22 @@ Deno.serve(async (req: Request) => {
         ? await admin.from("user_profiles").update(values).eq("user_id", userId).select(profileColumns).single()
         : await admin.from("user_profiles").insert({ user_id: userId, ...values }).select(profileColumns).single();
       if (result.error) throw result.error;
-      return json({ profile: result.data });
+      return requestJson({ profile: result.data });
     }
 
     if (action === "subject-leaderboard") {
       const materiaId = String(body.materiaId ?? "").trim();
-      if (!materiaId || materiaId.length > 200) return json({ error: "Materia non valida" }, 400);
+      if (!materiaId || materiaId.length > 200) return requestJson({ error: "Materia non valida" }, 400);
       const { data: subject, error: subjectError } = await admin.from("materie")
         .select("id,nome,anno_corso,facolta_id").eq("id", materiaId).maybeSingle();
       if (subjectError) throw subjectError;
-      if (!subject) return json({ error: "Materia non trovata" }, 404);
+      if (!subject) return requestJson({ error: "Materia non trovata" }, 404);
       const { data, error } = await admin.rpc("get_subject_leaderboard", {
         p_materia_id: materiaId,
         p_current_user_id: userId,
       });
       if (error) throw error;
-      return json({ leaderboard: data ?? [], subject });
+      return requestJson({ leaderboard: data ?? [], subject });
     }
 
     if (action === "university-leaderboard") {
@@ -179,13 +189,13 @@ Deno.serve(async (req: Request) => {
         .select("university_course").eq("user_id", userId).maybeSingle();
       if (profileError) throw profileError;
       const course = String(profile?.university_course ?? "").trim();
-      if (!course) return json({ leaderboard: [], needsProfile: true });
+      if (!course) return requestJson({ leaderboard: [], needsProfile: true });
       const { data, error } = await admin.rpc("get_university_leaderboard", { p_course: course });
       if (error) throw error;
-      return json({ leaderboard: data ?? [], course });
+      return requestJson({ leaderboard: data ?? [], course });
     }
     if (action === "consent") {
-      if (body.accepted !== true) return json({ error: "Il consenso richiesto non risulta accettato" }, 400);
+      if (body.accepted !== true) return requestJson({ error: "Il consenso richiesto non risulta accettato" }, 400);
       const values = { privacy_policy_version: "2026-11-03", terms_version: "2026-11-03", consented_at: new Date().toISOString(), updated_at: new Date().toISOString() };
       const { data: existing, error: readError } = await admin.from("user_profiles").select("user_id").eq("user_id", userId).maybeSingle();
       if (readError) throw readError;
@@ -193,7 +203,7 @@ Deno.serve(async (req: Request) => {
         ? await admin.from("user_profiles").update(values).eq("user_id", userId)
         : await admin.from("user_profiles").insert({ user_id: userId, ...values });
       if (result.error) throw result.error;
-      return json({ accepted: true });
+      return requestJson({ accepted: true });
     }
     if (action === "streaks") {
       const [streak, achievements] = await Promise.all([
@@ -202,10 +212,10 @@ Deno.serve(async (req: Request) => {
       ]);
       if (streak.error) throw streak.error;
       if (achievements.error) throw achievements.error;
-      return json({ streak: streak.data ?? { current_streak: 0, longest_streak: 0, last_study_date: null }, achievements: achievements.data ?? [] });
+      return requestJson({ streak: streak.data ?? { current_streak: 0, longest_streak: 0, last_study_date: null }, achievements: achievements.data ?? [] });
     }
     if (action === "delete-account") {
-      if (body.confirmation !== "ELIMINA" || typeof body.password !== "string" || body.password.length < 8) return json({ error: "Conferma la cancellazione e inserisci la password attuale" }, 400);
+      if (body.confirmation !== "ELIMINA" || typeof body.password !== "string" || body.password.length < 8) return requestJson({ error: "Conferma la cancellazione e inserisci la password attuale" }, 400);
       let publishableKey = Deno.env.get("SUPABASE_PUBLISHABLE_KEY") ?? Deno.env.get("SUPABASE_ANON_KEY") ?? "";
       const publishableKeysJson = Deno.env.get("SUPABASE_PUBLISHABLE_KEYS");
       if (publishableKeysJson) {
@@ -213,10 +223,10 @@ Deno.serve(async (req: Request) => {
           const keys = JSON.parse(publishableKeysJson) as Record<string, unknown>;
           if (typeof keys.default === "string") publishableKey = keys.default;
         } catch {
-          return json({ error: "Configurazione autenticazione non valida" }, 500);
+          return requestJson({ error: "Configurazione autenticazione non valida" }, 500);
         }
       }
-      if (!publishableKey) return json({ error: "Configurazione autenticazione incompleta" }, 500);
+      if (!publishableKey) return requestJson({ error: "Configurazione autenticazione incompleta" }, 500);
       const verifier = createClient(url, publishableKey, {
         auth: { persistSession: false, autoRefreshToken: false },
       });
@@ -224,7 +234,7 @@ Deno.serve(async (req: Request) => {
         email: authData.user.email ?? "",
         password: body.password,
       });
-      if (verifyError || verified.user?.id !== userId) return json({ error: "Password non corretta" }, 401);
+      if (verifyError || verified.user?.id !== userId) return requestJson({ error: "Password non corretta" }, 401);
 
       // Prima di cancellare l'account, annulla davvero ogni abbonamento Stripe ancora attivo.
       const { data: subscriptions, error: subscriptionsError } = await admin.from("user_site_subscriptions")
@@ -233,7 +243,7 @@ Deno.serve(async (req: Request) => {
       const cancellable = (subscriptions ?? []).filter((s) => !["canceled","incomplete_expired"].includes(String(s.status)));
       if (cancellable.length) {
         const stripeSecret = Deno.env.get("STRIPE_SECRET_KEY");
-        if (!stripeSecret) return json({ error: "Non posso completare la cancellazione: impossibile verificare e interrompere l'abbonamento. Contatta l'assistenza." }, 503);
+        if (!stripeSecret) return requestJson({ error: "Non posso completare la cancellazione: impossibile verificare e interrompere l'abbonamento. Contatta l'assistenza." }, 503);
         for (const subscription of cancellable) {
           const response = await fetch("https://api.stripe.com/v1/subscriptions/" + encodeURIComponent(subscription.stripe_subscription_id), {
             method: "DELETE",
@@ -242,7 +252,7 @@ Deno.serve(async (req: Request) => {
           if (!response.ok && response.status !== 404) {
             const detail = await response.text();
             console.error("Stripe subscription cancellation failed:", subscription.stripe_subscription_id, detail.slice(0, 500));
-            return json({ error: "Non sono riuscito a interrompere tutti gli abbonamenti. L'account non è stato cancellato: riprova o contatta l'assistenza." }, 502);
+            return requestJson({ error: "Non sono riuscito a interrompere tutti gli abbonamenti. L'account non è stato cancellato: riprova o contatta l'assistenza." }, 502);
           }
         }
       }
@@ -291,15 +301,15 @@ Deno.serve(async (req: Request) => {
       if (attemptsDeleteError) throw attemptsDeleteError;
       const { error: deleteUserError } = await admin.auth.admin.deleteUser(userId);
       if (deleteUserError) throw deleteUserError;
-      return json({ deleted: true });
+      return requestJson({ deleted: true });
     }
 
     if (action === "coupon") {
       const code = String(body.code ?? "").trim().toUpperCase();
-      if (!code || code.length > 64) return json({ error: "Inserisci un codice valido" }, 400);
+      if (!code || code.length > 64) return requestJson({ error: "Inserisci un codice valido" }, 400);
       const { data, error } = await admin.rpc("redeem_quiz_coupon", { p_user_id: userId, p_code: code });
-      if (error) return json({ error: error.message }, 400);
-      return json({ ...data, success: true });
+      if (error) return requestJson({ error: error.message }, 400);
+      return requestJson({ ...data, success: true });
     }
 
     if (action === "wallet") {
@@ -330,7 +340,7 @@ Deno.serve(async (req: Request) => {
       // Advertising is disabled only for users with an active "Tutto il sito" (illimitato) subscription.
       // Owner privileges and one-off quiz purchases do not remove advertising.
       const hasAdsRemoved = (siteSubscriptions.data?.length ?? 0) > 0;
-      return json({
+      return requestJson({
         paidCredits,
         freeUsed: 0,
         freeRemaining: 5,
@@ -368,7 +378,7 @@ Deno.serve(async (req: Request) => {
         if (!rows || rows.length < pageSize) break;
         offset += pageSize;
       }
-      return json({ questions: [...unique.values()], total: unique.size });
+      return requestJson({ questions: [...unique.values()], total: unique.size });
     }
 
     if (action === "weak-topics") {
@@ -376,7 +386,7 @@ Deno.serve(async (req: Request) => {
         .select("id,completed_at").eq("user_id", userId).eq("status", "completed").gte("completed_at", new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()).limit(1000);
       if (attemptsError) throw attemptsError;
       const attemptIds = (attempts ?? []).map((x) => x.id);
-      if (!attemptIds.length) return json({ topics: [] });
+      if (!attemptIds.length) return requestJson({ topics: [] });
       const { data: answers, error: answersError } = await admin.from("quiz_attempt_questions")
         .select("domanda_id,esito_corretto").in("attempt_id", attemptIds);
       if (answersError) throw answersError;
@@ -406,7 +416,7 @@ Deno.serve(async (req: Request) => {
         topic, correct: stats.correct, wrong: stats.wrong, total: stats.correct + stats.wrong,
         errorRate: stats.correct + stats.wrong ? stats.wrong / (stats.correct + stats.wrong) : 0,
       })).filter((x) => x.total > 0).sort((a, b) => b.errorRate - a.errorRate || b.wrong - a.wrong).slice(0, 8);
-      return json({ topics });
+      return requestJson({ topics });
     }
 
     if (action === "history") {
@@ -439,7 +449,7 @@ Deno.serve(async (req: Request) => {
         }
         statsByAttempt.set(answer.attempt_id, stats);
       }
-      return json({ attempts: (data ?? []).map((x) => {
+      return requestJson({ attempts: (data ?? []).map((x) => {
         const stats = statsByAttempt.get(x.id) ?? { score: 0, correct: 0, wrong: 0 };
         return {
           id: x.id, subject: names.get(x.materia_id) ?? "Quiz",
@@ -452,9 +462,9 @@ Deno.serve(async (req: Request) => {
     if (action === "translate-catalog") {
       const language = String(body.language ?? "");
       const languageNames: Record<string, string> = { en: "English", fr: "French", de: "German", es: "Spanish", zh: "Simplified Chinese" };
-      if (!languageNames[language]) return json({ error: "Lingua non valida." }, 400);
+      if (!languageNames[language]) return requestJson({ error: "Lingua non valida." }, 400);
       const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
-      if (!anthropicKey) return json({ error: "Traduzione non disponibile." }, 503);
+      if (!anthropicKey) return requestJson({ error: "Traduzione non disponibile." }, 503);
       const modelFromEnv = Deno.env.get("ANTHROPIC_MODEL")?.trim() ?? "";
       const allowedModels = ["claude-haiku-4-5", "claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5", "claude-fable-5"];
       const model = allowedModels.includes(modelFromEnv) ? modelFromEnv : "claude-haiku-4-5";
@@ -470,21 +480,21 @@ Deno.serve(async (req: Request) => {
           if (!isOwner) {
             const { data: allowed, error: limitError } = await admin.rpc("claim_ai_request", { p_user_id: userId, p_limit: 20 });
             if (limitError) throw limitError;
-            if (allowed !== true) return json({ error: "Limite giornaliero di traduzioni raggiunto.", translated: translatedCount }, 429);
+            if (allowed !== true) return requestJson({ error: "Limite giornaliero di traduzioni raggiunto.", translated: translatedCount }, 429);
           }
           const prompt = "Translate these Italian university faculty and subject names into " + languageNames[language] + ". Return only JSON array objects with the same id and translated nome. Preserve scientific terms, proper names and acronyms. Input: " + JSON.stringify(batch.map((x: any) => ({ id: x.id, nome: x.nome })));
           const response = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "x-api-key": anthropicKey, "anthropic-version": "2023-06-01", "content-type": "application/json" }, body: JSON.stringify({ model, max_tokens: 16000, messages: [{ role: "user", content: prompt }] }) });
-          if (!response.ok) return json({ error: "Traduzione catalogo non disponibile." }, 502);
+          if (!response.ok) return requestJson({ error: "Traduzione catalogo non disponibile." }, 502);
           const payload = await response.json();
           const raw = (payload.content ?? []).filter((x: any) => x.type === "text").map((x: any) => x.text).join("\n");
           const start = raw.indexOf("["); const end = raw.lastIndexOf("]");
-          if (start < 0 || end <= start) return json({ error: "Risposta di traduzione non valida." }, 502);
+          if (start < 0 || end <= start) return requestJson({ error: "Risposta di traduzione non valida." }, 502);
           const translated = JSON.parse(raw.slice(start, end + 1));
-          if (!Array.isArray(translated) || translated.length !== batch.length) return json({ error: "Traduzione catalogo incompleta." }, 502);
+          if (!Array.isArray(translated) || translated.length !== batch.length) return requestJson({ error: "Traduzione catalogo incompleta." }, 502);
           const byId = new Map<string, any>(translated.map((x: any) => [String(x.id), x]));
           for (const row of batch as any[]) {
             const name = String(byId.get(String(row.id))?.nome ?? "").trim();
-            if (!name || name.length > 180) return json({ error: "Nome tradotto non valido." }, 502);
+            if (!name || name.length > 180) return requestJson({ error: "Nome tradotto non valido." }, 502);
             const traduzioni = { ...(row.traduzioni ?? {}), [language]: { ...(row.traduzioni?.[language] ?? {}), nome: name } };
             const saved = await admin.from(table).update({ traduzioni }).eq("id", row.id);
             if (saved.error) throw saved.error;
@@ -492,30 +502,30 @@ Deno.serve(async (req: Request) => {
           }
         }
       }
-      return json({ translated: true, cached: translatedCount === 0, count: translatedCount, cachedCount });
+      return requestJson({ translated: true, cached: translatedCount === 0, count: translatedCount, cachedCount });
     }
 
     if (action === "translate-quiz-set") {
       const quizSetId = String(body.quizSetId ?? "").trim();
       const language = String(body.language ?? "");
       const languageNames: Record<string, string> = { en: "English", fr: "French", de: "German", es: "Spanish", zh: "Simplified Chinese" };
-      if (!quizSetId || !languageNames[language]) return json({ error: "Lingua o quiz non valido." }, 400);
+      if (!quizSetId || !languageNames[language]) return requestJson({ error: "Lingua o quiz non valido." }, 400);
       const { data: questions, error: questionsError } = await admin.from("domande")
         .select("id,testo_domanda,concetto_chiave,opzioni,risposta_corretta,spiegazione,traduzioni")
         .eq("quiz_id", quizSetId);
       if (questionsError) throw questionsError;
-      if (!questions || questions.length !== 10) return json({ error: "Il quiz non contiene 10 domande verificate." }, 409);
+      if (!questions || questions.length !== 10) return requestJson({ error: "Il quiz non contiene 10 domande verificate." }, 409);
       const missing = questions.filter((q: any) => {
         const t = q.traduzioni?.[language];
         return !t || !t.testo_domanda || !Array.isArray(t.opzioni) || t.opzioni.length !== 4
           || !t.risposta_corretta || !t.spiegazione;
       });
-      if (!missing.length) return json({ translated: true, cached: true });
+      if (!missing.length) return requestJson({ translated: true, cached: true });
       const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
-      if (!anthropicKey) return json({ error: "Traduzione non disponibile: manca la chiave Anthropic sul server." }, 503);
+      if (!anthropicKey) return requestJson({ error: "Traduzione non disponibile: manca la chiave Anthropic sul server." }, 503);
       const { data: aiAllowed, error: aiLimitError } = await admin.rpc("claim_ai_request", { p_user_id: userId, p_limit: 20 });
       if (aiLimitError) throw aiLimitError;
-      if (aiAllowed !== true) return json({ error: "Hai raggiunto il limite di 20 richieste AI per oggi. Riprova domani." }, 429);
+      if (aiAllowed !== true) return requestJson({ error: "Hai raggiunto il limite di 20 richieste AI per oggi. Riprova domani." }, 429);
       const modelFromEnv = Deno.env.get("ANTHROPIC_MODEL")?.trim() ?? "";
       const allowedModels = ["claude-haiku-4-5", "claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5", "claude-fable-5"];
       const model = allowedModels.includes(modelFromEnv) ? modelFromEnv : "claude-haiku-4-5";
@@ -544,7 +554,7 @@ Deno.serve(async (req: Request) => {
       if (!response.ok) {
         const detail = await response.text();
         console.error("Anthropic translation error:", detail.slice(0, 500));
-        return json({ error: "Il servizio di traduzione non è disponibile in questo momento." }, 502);
+        return requestJson({ error: "Il servizio di traduzione non è disponibile in questo momento." }, 502);
       }
       const payload = await response.json();
       const rawText = (payload.content ?? [])
@@ -552,10 +562,10 @@ Deno.serve(async (req: Request) => {
         .map((part: any) => part.text).join("\n").trim();
       const jsonStart = rawText.indexOf("[");
       const jsonEnd = rawText.lastIndexOf("]");
-      if (jsonStart < 0 || jsonEnd <= jsonStart) return json({ error: "La traduzione generata non è valida." }, 502);
+      if (jsonStart < 0 || jsonEnd <= jsonStart) return requestJson({ error: "La traduzione generata non è valida." }, 502);
       const translatedRows = JSON.parse(rawText.slice(jsonStart, jsonEnd + 1));
       if (!Array.isArray(translatedRows) || translatedRows.length !== missing.length) {
-        return json({ error: "La traduzione non contiene tutte le domande richieste." }, 502);
+        return requestJson({ error: "La traduzione non contiene tutte le domande richieste." }, 502);
       }
       const byId = new Map<string, any>(translatedRows.map((t: any) => [String(t.id), t]));
       for (const question of missing as any[]) {
@@ -565,7 +575,7 @@ Deno.serve(async (req: Request) => {
         if (!t || !String(t.testo_domanda ?? "").trim() || options.length !== 4
           || new Set(options.map((x: string) => x.toLocaleLowerCase())).size !== 4
           || !options.includes(correct) || !String(t.spiegazione ?? "").trim()) {
-          return json({ error: "Una o più traduzioni non hanno superato i controlli di qualità." }, 502);
+          return requestJson({ error: "Una o più traduzioni non hanno superato i controlli di qualità." }, 502);
         }
         const merged = {
           ...(question.traduzioni ?? {}),
@@ -580,7 +590,7 @@ Deno.serve(async (req: Request) => {
         const { error: saveError } = await admin.from("domande").update({ traduzioni: merged }).eq("id", question.id);
         if (saveError) throw saveError;
       }
-      return json({ translated: true, cached: false, count: missing.length });
+      return requestJson({ translated: true, cached: false, count: missing.length });
     }
 
     if (action === "start") {
@@ -588,25 +598,25 @@ Deno.serve(async (req: Request) => {
       const quizSetId = String(body.quizSetId ?? "");
       const idempotencyKey = String(body.idempotencyKey ?? req.headers.get("Idempotency-Key") ?? "");
       if (!materiaId || !quizSetId || idempotencyKey.length < 12 || idempotencyKey.length > 100) {
-        return json({ error: "Dati del quiz incompleti" }, 400);
+        return requestJson({ error: "Dati del quiz incompleti" }, 400);
       }
       const { data: set, error: setError } = await admin.from("quiz_sets")
         .select("id,materia_id,status,question_count")
         .eq("id", quizSetId).eq("materia_id", materiaId).eq("status", "ready").maybeSingle();
       if (setError) throw setError;
-      if (!set || set.question_count !== 10) return json({ error: "Questo quiz non è ancora disponibile" }, 404);
+      if (!set || set.question_count !== 10) return requestJson({ error: "Questo quiz non è ancora disponibile" }, 404);
 
       const language = "it";
       const { data: bank, error: bankError } = await admin.from("domande")
         .select("id,testo_domanda,opzioni,risposta_corretta,spiegazione,traduzioni").eq("quiz_id", quizSetId);
       if (bankError) throw bankError;
-      if (!bank || bank.length !== 10) return json({ error: "Il quiz non contiene 10 domande verificate" }, 409);
+      if (!bank || bank.length !== 10) return requestJson({ error: "Il quiz non contiene 10 domande verificate" }, 409);
       const invalidQuestion = bank.find((q) => {
         const options = Array.isArray(q.opzioni) ? q.opzioni.map(normalizeOptionValue) : [];
         const answerIndex = findNormalizedOptionIndex(Array.isArray(q.opzioni) ? q.opzioni : [], q.risposta_corretta);
         return options.length !== 4 || options.some((option:string) => !option) || new Set(options).size !== 4 || answerIndex < 0;
       });
-      if (invalidQuestion) return json({ error: "Questo quiz contiene una domanda con opzioni duplicate o risposta non associata. È stato bloccato per evitare correzioni errate." }, 409);
+      if (invalidQuestion) return requestJson({ error: "Questo quiz contiene una domanda con opzioni duplicate o risposta non associata. È stato bloccato per evitare correzioni errate." }, 409);
       const selected = [...bank].sort(() => Math.random() - 0.5);
       const questionIds = selected.map((q) => q.id);
       if (isOwner) {
@@ -634,7 +644,7 @@ Deno.serve(async (req: Request) => {
         const message = startError.message.includes("Jolly") || startError.message.includes("primi 5 quiz")
           ? "I primi 5 quiz sono gratuiti per ogni materia. Per questo quiz scegli un pass oppure usa un credito Jolly."
           : "Non è stato possibile avviare il quiz. Riprova.";
-        return json({ error: message }, 403);
+        return requestJson({ error: message }, 403);
       }
       const attemptId = started.attempt_id as string;
       const { data: rows, error: rowsError } = await admin.from("quiz_attempt_questions")
@@ -651,7 +661,7 @@ Deno.serve(async (req: Request) => {
           position: row.position,
         };
       });
-      return json({ attemptId, accessSource: started.access_source, existing: started.existing, language, questions });
+      return requestJson({ attemptId, accessSource: started.access_source, existing: started.existing, language, questions });
     }
 
     if (action === "answer") {
@@ -659,16 +669,16 @@ Deno.serve(async (req: Request) => {
       const questionId = String(body.questionId ?? "");
       const selectedIndex = Number(body.selectedIndex);
       const selectedAnswerInput = String(body.selectedAnswer ?? "").trim();
-      if (!attemptId || !questionId || (!selectedAnswerInput && !Number.isInteger(selectedIndex))) return json({ error: "Risposta incompleta" }, 400);
+      if (!attemptId || !questionId || (!selectedAnswerInput && !Number.isInteger(selectedIndex))) return requestJson({ error: "Risposta incompleta" }, 400);
       const { data: attempt, error: attemptError } = await admin.from("quiz_attempts")
         .select("id,status").eq("id", attemptId).eq("user_id", userId).maybeSingle();
       if (attemptError) throw attemptError;
-      if (!attempt || attempt.status !== "started") return json({ error: "Sessione non valida o già conclusa" }, 409);
+      if (!attempt || attempt.status !== "started") return requestJson({ error: "Sessione non valida o già conclusa" }, 409);
       const { data: row, error: rowError } = await admin.from("quiz_attempt_questions")
         .select("id,risposta_selezionata,risposta_selezionata_lettera,esito_corretto,domande!inner(id,opzioni,risposta_corretta,spiegazione,traduzioni)")
         .eq("attempt_id", attemptId).eq("domanda_id", questionId).maybeSingle();
       if (rowError) throw rowError;
-      if (!row) return json({ error: "Domanda non appartenente a questa sessione" }, 404);
+      if (!row) return requestJson({ error: "Domanda non appartenente a questa sessione" }, 404);
       const question = row.domande as unknown as { opzioni: string[]; risposta_corretta: string; spiegazione: string | null; traduzioni?: Record<string, any> };
       const language = "it";
       const localized = localizedQuestion(question, language) as typeof question;
@@ -678,13 +688,13 @@ Deno.serve(async (req: Request) => {
       const resolvedSelectedIndex = selectedAnswerInput
         ? localizedOptions.findIndex(option => normalizeOptionValue(option) === normalizeOptionValue(selectedAnswerInput))
         : (Number.isInteger(selectedIndex) && selectedIndex >= 0 && selectedIndex < localizedOptions.length ? selectedIndex : -1);
-      if (resolvedSelectedIndex < 0 || resolvedSelectedIndex >= localizedOptions.length) return json({ error: "Risposta non valida: l'opzione selezionata non corrisponde a quelle mostrate." }, 400);
+      if (resolvedSelectedIndex < 0 || resolvedSelectedIndex >= localizedOptions.length) return requestJson({ error: "Risposta non valida: l'opzione selezionata non corrisponde a quelle mostrate." }, 400);
       const selectedAnswer = localizedOptions[resolvedSelectedIndex];
       const selectedLetter = String.fromCharCode(65 + resolvedSelectedIndex);
       const correctIndex = findNormalizedOptionIndex(localizedOptions, localizedCorrect);
-      if (correctIndex < 0) return json({ error: "La risposta corretta non corrisponde alle opzioni di questa domanda. Quiz sospeso per evitare una correzione errata." }, 409);
+      if (correctIndex < 0) return requestJson({ error: "La risposta corretta non corrisponde alle opzioni di questa domanda. Quiz sospeso per evitare una correzione errata." }, 409);
       if (row.risposta_selezionata !== null) {
-        return json({
+        return requestJson({
           saved: true,
           selectedLetter: row.risposta_selezionata_lettera ?? null,
           alreadyAnswered: true,
@@ -704,13 +714,13 @@ Deno.serve(async (req: Request) => {
         const { data: currentAnswer, error: currentError } = await admin.from("quiz_attempt_questions")
           .select("esito_corretto,risposta_selezionata_lettera").eq("id", row.id).maybeSingle();
         if (currentError) throw currentError;
-        return json({
+        return requestJson({
           saved: true,
           selectedLetter: currentAnswer?.risposta_selezionata_lettera ?? null,
           alreadyAnswered: true,
         });
       }
-      return json({
+      return requestJson({
         saved: true,
         selectedLetter,
         alreadyAnswered: false,
@@ -719,11 +729,11 @@ Deno.serve(async (req: Request) => {
 
     if (action === "referral-claim") {
       const inviterId = String(body.inviterId ?? "").trim();
-      if (!/^[0-9a-f-]{36}$/i.test(inviterId)) return json({ error: "Link invito non valido." }, 400);
-      if (inviterId === userId) return json({ claimed: false, reason: "self_referral" });
+      if (!/^[0-9a-f-]{36}$/i.test(inviterId)) return requestJson({ error: "Link invito non valido." }, 400);
+      if (inviterId === userId) return requestJson({ claimed: false, reason: "self_referral" });
       const createdAt = Date.parse(String(authData.user.created_at ?? ""));
       if (!authData.user.email_confirmed_at || !Number.isFinite(createdAt) || Date.now() - createdAt > 7 * 86400000) {
-        return json({ error: "L'invito si può confermare entro 7 giorni dalla registrazione, dopo la verifica dell'email." }, 403);
+        return requestJson({ error: "L'invito si può confermare entro 7 giorni dalla registrazione, dopo la verifica dell'email." }, 403);
       }
       const { count, error: completedError } = await admin.from("quiz_attempts")
         .select("id", { count: "exact", head: true })
@@ -731,41 +741,41 @@ Deno.serve(async (req: Request) => {
       if (completedError) throw completedError;
       const hasCompletedQuiz = (count ?? 0) > 0;
       const { data: inviter, error: inviterError } = await admin.auth.admin.getUserById(inviterId);
-      if (inviterError || !inviter.user) return json({ error: "Il link invito non appartiene a un account valido." }, 400);
+      if (inviterError || !inviter.user) return requestJson({ error: "Il link invito non appartiene a un account valido." }, 400);
       const { data: existing, error: existingError } = await admin.from("user_referrals")
         .select("id,inviter_id,status").eq("referred_user_id", userId).maybeSingle();
       if (existingError) throw existingError;
       if (existing) {
-        if (existing.inviter_id !== inviterId) return json({ claimed: false, alreadyClaimed: true });
+        if (existing.inviter_id !== inviterId) return requestJson({ claimed: false, alreadyClaimed: true });
         if (existing.status === "pending" && hasCompletedQuiz) {
           const { data: rewarded, error: rewardError } = await admin.rpc("reward_user_referral", { p_referral_id: existing.id });
           if (rewardError) throw rewardError;
-          return json({ claimed: true, alreadyClaimed: true, status: rewarded ? "rewarded" : "pending", rewarded, rewardCredits: 1 });
+          return requestJson({ claimed: true, alreadyClaimed: true, status: rewarded ? "rewarded" : "pending", rewarded, rewardCredits: 1 });
         }
-        return json({ claimed: true, alreadyClaimed: true, status: existing.status });
+        return requestJson({ claimed: true, alreadyClaimed: true, status: existing.status });
       }
       const { data: referral, error: referralError } = await admin.from("user_referrals")
         .insert({ inviter_id: inviterId, referred_user_id: userId })
         .select("id").single();
       if (referralError) {
-        if (referralError.code === "23505") return json({ claimed: false, alreadyClaimed: true });
+        if (referralError.code === "23505") return requestJson({ claimed: false, alreadyClaimed: true });
         throw referralError;
       }
       if (hasCompletedQuiz) {
         const { data: rewarded, error: rewardError } = await admin.rpc("reward_user_referral", { p_referral_id: referral.id });
         if (rewardError) throw rewardError;
-        return json({ claimed: true, status: rewarded ? "rewarded" : "pending", rewarded, rewardCredits: 1 });
+        return requestJson({ claimed: true, status: rewarded ? "rewarded" : "pending", rewarded, rewardCredits: 1 });
       }
-      return json({ claimed: true, status: "pending", rewardCredits: 1 });
+      return requestJson({ claimed: true, status: "pending", rewardCredits: 1 });
     }
 
     if (action === "finish") {
       const attemptId = String(body.attemptId ?? "");
-      if (!attemptId) return json({ error: "Sessione mancante" }, 400);
+      if (!attemptId) return requestJson({ error: "Sessione mancante" }, 400);
       const { data: attempt, error: attemptError } = await admin.from("quiz_attempts")
         .select("id,status").eq("id", attemptId).eq("user_id", userId).maybeSingle();
       if (attemptError) throw attemptError;
-      if (!attempt || attempt.status !== "started") return json({ error: "Sessione già conclusa o non valida" }, 409);
+      if (!attempt || attempt.status !== "started") return requestJson({ error: "Sessione già conclusa o non valida" }, 409);
       const { data: answers, error: answersError } = await admin.from("quiz_attempt_questions")
         .select("position,domanda_id,risposta_selezionata,risposta_selezionata_lettera,esito_corretto,domande!inner(id,testo_domanda,opzioni,risposta_corretta,spiegazione)")
         .eq("attempt_id", attemptId).order("position");
@@ -840,20 +850,20 @@ Deno.serve(async (req: Request) => {
         } : null;
         return { question: normalizedQuestion, response };
       });
-      return json({ total, correct, wrong, score: Number((correct - wrong * 0.25).toFixed(2)), streak, unlocked, referralRewarded, review });
+      return requestJson({ total, correct, wrong, score: Number((correct - wrong * 0.25).toFixed(2)), streak, unlocked, referralRewarded, review });
     }
 
     if (action === "report") {
       const questionId = String(body.questionId ?? "");
       const category = String(body.category ?? "altro");
       const details = String(body.details ?? "").trim().slice(0, 2000);
-      if (!questionId || !["errore_testo","risposta_errata","spiegazione","duplicato","altro"].includes(category)) return json({ error: "Seleziona un tipo di segnalazione valido" }, 400);
+      if (!questionId || !["errore_testo","risposta_errata","spiegazione","duplicato","altro"].includes(category)) return requestJson({ error: "Seleziona un tipo di segnalazione valido" }, 400);
       const { data, error } = await admin.from("question_reports").insert({ user_id: userId, question_id: questionId, category, details }).select("id").single();
       if (error) throw error;
-      return json({ submitted: true, reportId: data.id });
+      return requestJson({ submitted: true, reportId: data.id });
     }
 
-    if (action.startsWith("admin-") && !isOwner) return json({ error: "Permessi amministratore richiesti" }, 403);
+    if (action.startsWith("admin-") && !isOwner) return requestJson({ error: "Permessi amministratore richiesti" }, 403);
     if (action === "admin-list") {
       const [questions, reports, sets, chapters] = await Promise.all([
         admin.from("domande").select("id,capitolo_id,concetto_chiave,testo_domanda,opzioni,risposta_corretta,spiegazione,quiz_id").order("created_at", { ascending: false }).limit(100),
@@ -862,7 +872,7 @@ Deno.serve(async (req: Request) => {
         admin.from("capitoli").select("id,materia_id,nome").order("nome").limit(2000),
       ]);
       for (const result of [questions,reports,sets,chapters]) if (result.error) throw result.error;
-      return json({
+      return requestJson({
         questions: questions.data ?? [],
         reports: reports.data ?? [],
         quizSets: sets.data ?? [],
@@ -880,21 +890,21 @@ Deno.serve(async (req: Request) => {
       const id = String(body.id ?? ""); const capitoloId = String(body.capitoloId ?? "");
       const question = String(body.question ?? "").trim(); const options = Array.isArray(body.options) ? body.options.map((x: unknown) => String(x).trim()) : [];
       const correct = String(body.correct ?? "").trim();
-      if (!capitoloId || !question || options.length !== 4 || options.some((x: string) => !x) || new Set(options).size !== 4 || !options.includes(correct)) return json({ error: "Servono una domanda, quattro risposte diverse e la risposta corretta" }, 400);
+      if (!capitoloId || !question || options.length !== 4 || options.some((x: string) => !x) || new Set(options).size !== 4 || !options.includes(correct)) return requestJson({ error: "Servono una domanda, quattro risposte diverse e la risposta corretta" }, 400);
       const { data: chapter, error: chapterError } = await admin.from("capitoli").select("id,materia_id").eq("id", capitoloId).maybeSingle();
-      if (chapterError) throw chapterError; if (!chapter) return json({ error: "Capitolo non valido" }, 400);
+      if (chapterError) throw chapterError; if (!chapter) return requestJson({ error: "Capitolo non valido" }, 400);
       const values = { capitolo_id: capitoloId, concetto_chiave: String(body.concept ?? "").trim() || question.slice(0,120), testo_domanda: question, opzioni: options, risposta_corretta: correct, spiegazione: String(body.explanation ?? "").trim(), ...(body.quizId !== undefined ? { quiz_id: body.quizId || null } : id ? {} : { quiz_id: null }) };
       const result = id ? await admin.from("domande").update(values).eq("id", id).select("id").single() : await admin.from("domande").insert(values).select("id").single();
-      if (result.error) throw result.error; return json({ saved: true, id: result.data.id });
+      if (result.error) throw result.error; return requestJson({ saved: true, id: result.data.id });
     }
     if (action === "admin-report-status") {
       const id = String(body.reportId ?? ""); const status = String(body.status ?? "");
-      if (!id || !["new","reviewing","resolved","rejected"].includes(status)) return json({ error: "Stato non valido" }, 400);
-      const { error } = await admin.from("question_reports").update({ status }).eq("id", id); if (error) throw error; return json({ updated: true });
+      if (!id || !["new","reviewing","resolved","rejected"].includes(status)) return requestJson({ error: "Stato non valido" }, 400);
+      const { error } = await admin.from("question_reports").update({ status }).eq("id", id); if (error) throw error; return requestJson({ updated: true });
     }
-    return json({ error: "Operazione non riconosciuta" }, 400);
+    return requestJson({ error: "Operazione non riconosciuta" }, 400);
   } catch (error) {
     console.error("quiz-api error:", error);
-    return json({ error: "Operazione non riuscita. Riprova tra qualche istante." }, 500);
+    return requestJson({ error: "Operazione non riuscita. Riprova tra qualche istante." }, 500);
   }
 });
