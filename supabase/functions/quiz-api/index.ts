@@ -1,7 +1,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": Deno.env.get("APP_ORIGIN") ?? "*",
+  "Access-Control-Allow-Origin": (Deno.env.get("APP_ORIGIN") && Deno.env.get("APP_ORIGIN") !== "*") ? Deno.env.get("APP_ORIGIN")! : "https://smlquiz.it",
+  "Vary": "Origin",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, idempotency-key",
   "Access-Control-Allow-Methods": "POST, OPTIONS",
   "Content-Type": "application/json; charset=utf-8",
@@ -32,10 +33,6 @@ function localizedQuestion<T extends { testo_domanda?: string; opzioni?: string[
     risposta_corretta: translated.risposta_corretta || q.risposta_corretta,
     spiegazione: translated.spiegazione ?? q.spiegazione,
   };
-}
-
-function errorMessage(error: unknown) {
-  return error instanceof Error ? error.message : "Operazione non riuscita";
 }
 
 function sessionIdFromJwt(token: string): string | null {
@@ -599,7 +596,7 @@ Deno.serve(async (req: Request) => {
       if (setError) throw setError;
       if (!set || set.question_count !== 10) return json({ error: "Questo quiz non è ancora disponibile" }, 404);
 
-      const language = ["it","en","fr","de","es","zh"].includes(String(body.language ?? "it")) ? String(body.language ?? "it") : "it";
+      const language = "it";
       const { data: bank, error: bankError } = await admin.from("domande")
         .select("id,testo_domanda,opzioni,risposta_corretta,spiegazione,traduzioni").eq("quiz_id", quizSetId);
       if (bankError) throw bankError;
@@ -636,7 +633,7 @@ Deno.serve(async (req: Request) => {
       if (startError) {
         const message = startError.message.includes("Jolly") || startError.message.includes("primi 5 quiz")
           ? "I primi 5 quiz sono gratuiti per ogni materia. Per questo quiz scegli un pass oppure usa un credito Jolly."
-          : startError.message;
+          : "Non è stato possibile avviare il quiz. Riprova.";
         return json({ error: message }, 403);
       }
       const attemptId = started.attempt_id as string;
@@ -673,7 +670,7 @@ Deno.serve(async (req: Request) => {
       if (rowError) throw rowError;
       if (!row) return json({ error: "Domanda non appartenente a questa sessione" }, 404);
       const question = row.domande as unknown as { opzioni: string[]; risposta_corretta: string; spiegazione: string | null; traduzioni?: Record<string, any> };
-      const language = ["it","en","fr","de","es","zh"].includes(String(body.language ?? "it")) ? String(body.language ?? "it") : "it";
+      const language = "it";
       const localized = localizedQuestion(question, language) as typeof question;
       const localizedOptions = localized.opzioni ?? question.opzioni;
       const localizedCorrect = localized.risposta_corretta ?? question.risposta_corretta;
@@ -689,12 +686,8 @@ Deno.serve(async (req: Request) => {
       const correctLetter = String.fromCharCode(65 + correctIndex);
       if (row.risposta_selezionata !== null) {
         return json({
-          correct: row.esito_corretto === true,
-          correctAnswer: localizedOptions[correctIndex],
-          correctIndex,
-          correctLetter,
+          saved: true,
           selectedLetter: row.risposta_selezionata_lettera ?? null,
-          explanation: localized.spiegazione,
           alreadyAnswered: true,
         });
       }
@@ -713,22 +706,14 @@ Deno.serve(async (req: Request) => {
           .select("esito_corretto,risposta_selezionata_lettera").eq("id", row.id).maybeSingle();
         if (currentError) throw currentError;
         return json({
-          correct: currentAnswer?.esito_corretto === true,
-          correctAnswer: localizedOptions[correctIndex],
-          correctIndex,
-          correctLetter,
+          saved: true,
           selectedLetter: currentAnswer?.risposta_selezionata_lettera ?? null,
-          explanation: localized.spiegazione,
           alreadyAnswered: true,
         });
       }
       return json({
-        correct,
-        correctAnswer: localizedOptions[correctIndex],
-        correctIndex,
-        correctLetter,
+        saved: true,
         selectedLetter,
-        explanation: localized.spiegazione,
         alreadyAnswered: false,
       });
     }
@@ -786,7 +771,7 @@ Deno.serve(async (req: Request) => {
         .select("position,domanda_id,risposta_selezionata,risposta_selezionata_lettera,esito_corretto,domande!inner(id,testo_domanda,opzioni,risposta_corretta,spiegazione)")
         .eq("attempt_id", attemptId).order("position");
       if (answersError) throw answersError;
-      const language = ["it","en","fr","de","es","zh"].includes(String(body.language ?? "it")) ? String(body.language ?? "it") : "it";
+      const language = "it";
       const total = answers?.length ?? 0;
       const correct = (answers ?? []).filter((x) => x.esito_corretto === true).length;
       const wrong = (answers ?? []).filter((x) => x.esito_corretto === false).length;
@@ -911,6 +896,6 @@ Deno.serve(async (req: Request) => {
     return json({ error: "Operazione non riconosciuta" }, 400);
   } catch (error) {
     console.error("quiz-api error:", error);
-    return json({ error: errorMessage(error) }, 500);
+    return json({ error: "Operazione non riuscita. Riprova tra qualche istante." }, 500);
   }
 });
