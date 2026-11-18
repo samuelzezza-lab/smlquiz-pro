@@ -2580,3 +2580,33 @@ html,body,#root{max-width:100%;overflow-x:clip}
  .subject-card:hover{transform:none!important;box-shadow:none!important}
  .nav-link,.subject-card,.answer,.primary,.secondary{transition:none!important}
 }
+
+
+/* Mobile readability: testo leggibile e controlli comodi al tocco. */
+@media (max-width: 800px) {
+  .shell { font-size: 15px; }
+  .content { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+  .crumb { font-size: 11px; }
+  .top-actions select { min-height: 40px; font-size: 12px; }
+  .shell :where(small, .eyebrow, .tag, .db-label, .count span, .stat > span, .stat > small, .history-line small, .quick small, .footer, .footer a, .footer button, .legal-card small, .turnstile-warning, .transaction-history > small, .delete-form > small) {
+    font-size: max(11px, .8em);
+    line-height: 1.45;
+  }
+  .shell :where(p, .filters label, .auth-form > label, .legal-section p, .legal-section h3, .cookie-banner p, .report-form, .digital-consent) {
+    font-size: max(12px, .86em);
+    line-height: 1.55;
+  }
+  .primary, .secondary, .answer, .bookmark-button, .load-more, .nav-link,
+  .filters select, .filters input, .auth-form input, .auth-form select,
+  .auth-form textarea {
+    min-height: 42px;
+  }
+  .answer { font-size: 14px; line-height: 1.45; }
+  .filters select, .filters input, .auth-form input, .auth-form select,
+  .auth-form textarea { font-size: 16px; }
+}
+@media (max-width: 380px) {
+  .content { padding-left: 13px; padding-right: 13px; }
+  .topbar { padding-left: 12px; padding-right: 12px; }
+  .top-actions { gap: 6px; }
+}
