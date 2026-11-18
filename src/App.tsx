@@ -193,7 +193,9 @@ export default function App(){
  useEffect(()=>{
   // Carica AdSense solo dopo aver verificato il wallet dell'utente:
   // chi ha Unlimited non deve ricevere richieste pubblicitarie.
-  const eligible=Boolean(authReady&&cookieChoice==='all'&&(!user||(adsWalletReadyFor===user.id&&!wallet.hasAdsRemoved)));
+  // Il banner locale non è una CMP certificata Google. Non caricare AdSense finché la CMP TCF certificata non sarà integrata e verificata.
+  const certifiedCmpConfigured=false;
+  const eligible=Boolean(certifiedCmpConfigured&&authReady&&cookieChoice==='all'&&(!user||(adsWalletReadyFor===user.id&&!wallet.hasAdsRemoved)));
   const scriptId='smlquiz-adsense-loader';
   const existing=document.getElementById(scriptId);
   if(!eligible){existing?.remove();document.querySelectorAll('.google-auto-placed,ins.adsbygoogle,iframe[id^="google_ads_iframe"],div[id^="google_ads_iframe"]').forEach(node=>node.remove());return}
