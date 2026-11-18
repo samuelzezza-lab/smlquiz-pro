@@ -2539,3 +2539,32 @@ img,svg{max-width:100%}
 @keyframes tinderCardIn{from{opacity:0;transform:translateY(20px) rotate(-1.2deg) scale(.97)}to{opacity:1;transform:translateY(0) rotate(0) scale(1)}}
 .sf-pricing-always{margin-top:16px}
 @media(prefers-reduced-motion:reduce){.tinder-upsell{animation:none}}
+
+
+/* Mobile layout hardening: prevent page-level horizontal overflow without clipping vertical content. */
+html,body,#root{max-width:100%;overflow-x:clip}
+#root,.shell,.main,.main>.content,.footer{min-width:0;max-width:100%}
+@media(max-width:800px){
+  .main{width:100%;margin-left:0}
+  .main>.content{width:100%;min-width:0;padding-left:clamp(12px,4vw,18px);padding-right:clamp(12px,4vw,18px)}
+  .footer{width:auto;max-width:calc(100% - 24px);margin:0 12px;gap:10px 14px;overflow-wrap:anywhere}
+  .cookie-banner{
+    position:relative;inset:auto;z-index:5;
+    width:auto;max-width:calc(100% - 24px);min-width:0;
+    margin:12px 12px 0;padding:14px;
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    gap:9px;align-items:stretch;
+  }
+  .cookie-banner>div{grid-column:1/-1;min-width:0;overflow-wrap:anywhere}
+  .cookie-banner p{font-size:12px;line-height:1.55}
+  .cookie-banner button{min-width:0;min-height:44px;white-space:normal;padding:10px 8px}
+  .cookie-banner .simple-link{justify-self:start;min-height:32px}
+}
+@media(max-width:360px){
+  .topbar{padding-left:8px;padding-right:8px}
+  .crumb{min-width:0;overflow:hidden}
+  .crumb b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .top-actions{min-width:0}
+  .cookie-banner{grid-template-columns:minmax(0,1fr)}
+  .cookie-banner>div{grid-column:1}
+}
