@@ -35,6 +35,8 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
   const current = displayedCards[index]
   const progressTotal = deckMode === 'difficult' ? displayedCards.length : (unlocked ? total : Math.min(total, FREE_LIMIT))
   const easyCount = cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'easy').length
+  const difficultCount = cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'difficult').length
+  const ratedCount = cards.filter(card => ratings[card.id] || card.user_rating).length
   const title = selectedSubject?.traduzioni?.it?.nome || selectedSubject?.nome || 'Flashcard'
 
   const loadDeck = useCallback(async (id: string) => {
@@ -136,6 +138,12 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
         {subjects.map(subject => <option key={subject.id} value={subject.id}>{subject.traduzioni?.it?.nome || subject.nome}</option>)}
       </select>
       <span className="flashcards-total">{total.toLocaleString('it-IT')} carte disponibili</span>
+    </div>
+    <div className="flashcards-overview">
+      <div className="flashcards-overview-item"><span className="flashcards-overview-icon"><BookOpen size={17}/></span><div><strong>{total.toLocaleString('it-IT')}</strong><small>Carte disponibili</small></div></div>
+      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-success"><Check size={17}/></span><div><strong>{easyCount}</strong><small>Facili</small></div></div>
+      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-review"><Sparkles size={17}/></span><div><strong>{difficultCount}</strong><small>Da ripassare</small></div></div>
+      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-progress"><Layers3 size={17}/></span><div><strong>{ratedCount}</strong><small>Valutate</small></div></div>
     </div>
     {loading && <div className="panel empty">Caricamento flashcard…</div>}
     {!loading && cards.length > 0 && !paywall && current && <>
