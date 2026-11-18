@@ -7,6 +7,7 @@ async function signature(secret:string,timestamp:string,body:string){
 }
 const products = new Map([
  ["price_1Uc9w5BCybXKHSfRCFwx5NAT",{type:"single_subject",amount:199,mode:"payment"}],
+ ["price_1UdBxFBCybXKHSfRwLeImDFx",{type:"flashcard_subject_lifetime",amount:199,mode:"payment"}],
  ["price_1Uc9yMBCybXKHSfRP4SJ4wuL",{type:"jolly_100",amount:349,mode:"payment"}],
  ["price_1UcA1EBCybXKHSfRwyemWunq",{type:"session",amount:499,mode:"payment"}],
  ["price_1UcC6ZBCybXKHSfRotiMdjz9",{type:"site_subscription",amount:999,mode:"subscription"}],
