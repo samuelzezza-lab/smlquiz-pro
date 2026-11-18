@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smlquiz-pwa-v21';
+const CACHE_NAME = 'smlquiz-pwa-v22';
 const APP_SHELL = [
   '/',
   '/manifest.webmanifest',
@@ -38,26 +38,31 @@ self.addEventListener('fetch', event => {
   if (url.origin !== self.location.origin) return;
 
   if (request.mode === 'navigate') {
-    // Prima la versione online: evita che il sito installato mostri una vecchia
-    // schermata dopo una pubblicazione. La cache serve soltanto se manca rete.
-    event.respondWith((async () => {
+    // Mostra subito l'ultima app shell disponibile; aggiorna la cache in
+    // background, così il ritorno da un'altra app non resta in attesa della rete.
+    const cachePromise = caches.open(CACHE_NAME);
+    const networkPromise = fetch(request, { cache: 'no-store' }).then(async response => {
+      if (response.ok) {
+        const cache = await cachePromise;
+        await cache.put('/', response.clone());
+      }
+      return response;
+    });
+    event.waitUntil(networkPromise.then(() => undefined).catch(() => undefined));
+    event.respondWith(cachePromise.then(async cache => {
+      const cached = await cache.match('/');
+      if (cached) return cached;
       try {
-        const response = await fetch(request, { cache: 'no-store' });
-        if (response.ok) {
-          const copy = response.clone();
-          await caches.open(CACHE_NAME).then(cache => cache.put('/', copy));
-        }
-        return response;
+        return await networkPromise;
       } catch {
-        return (await caches.match('/')) ||
-          (await caches.match(request)) ||
-          (await caches.match('/offline.html')) ||
+        return (await cache.match(request)) ||
+          (await cache.match('/offline.html')) ||
           new Response('Connessione non disponibile', {
             status: 503,
             headers: { 'Content-Type': 'text/plain; charset=utf-8' }
           });
       }
-    })());
+    }));
     return;
   }
 
