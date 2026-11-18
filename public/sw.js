@@ -1,4 +1,4 @@
-const CACHE_NAME = 'smlquiz-pwa-v27';
+const CACHE_NAME = 'smlquiz-pwa-v28';
 const APP_SHELL = [
   '/',
   '/manifest.webmanifest',
@@ -38,31 +38,24 @@ self.addEventListener('fetch', event => {
   if (url.origin !== self.location.origin) return;
 
   if (request.mode === 'navigate') {
-    // Mostra subito l'ultima app shell disponibile; aggiorna la cache in
-    // background, così il ritorno da un'altra app non resta in attesa della rete.
-    const cachePromise = caches.open(CACHE_NAME);
-    const networkPromise = fetch(request, { cache: 'no-store' }).then(async response => {
-      if (response.ok) {
-        const cache = await cachePromise;
-        await cache.put('/', response.clone());
-      }
-      return response;
-    });
-    event.waitUntil(networkPromise.then(() => undefined).catch(() => undefined));
-    event.respondWith(cachePromise.then(async cache => {
-      const cached = await cache.match('/');
-      if (cached) return cached;
+    // Network-first: non servire una vecchia app shell quando la rete è disponibile.
+    // La cache resta soltanto come fallback offline.
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE_NAME);
       try {
-        return await networkPromise;
+        const response = await fetch(request, { cache: 'no-store' });
+        if (response.ok) await cache.put('/', response.clone());
+        return response;
       } catch {
-        return (await cache.match(request)) ||
+        return (await cache.match('/')) ||
+          (await cache.match(request)) ||
           (await cache.match('/offline.html')) ||
           new Response('Connessione non disponibile', {
             status: 503,
             headers: { 'Content-Type': 'text/plain; charset=utf-8' }
           });
       }
-    }));
+    })());
     return;
   }
 
