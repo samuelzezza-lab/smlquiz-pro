@@ -214,7 +214,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       secondaryLabel="Fai un quiz su questa materia"
       onSecondary={() => { if (selectedSubject) onStartQuiz?.(selectedSubject.id) }}
     />}
-    {!loading && total===0 && <div className="panel empty">Non ci sono ancora flashcard disponibili per questa materia.</div>}
+    {!loading && total===0 && <StudyCompletion eyebrow="CATALOGO IN CRESCITA" title="Le flashcard di questa materia stanno arrivando." description="Al momento non ci sono ancora carte disponibili per questa materia. SMLQUIZ è in continua crescita: il catalogo verrà ampliato progressivamente con nuove flashcard e contenuti di studio." primaryLabel="Prova un'altra materia" onPrimary={()=>{const nextSubject=subjects.find(s=>s.id!==subjectId);if(nextSubject){setSubjectSearch('');setSubjectId(nextSubject.id)}else setSubjectSearch('')}} secondaryLabel="Allenati con un quiz" onSecondary={()=>{if(selectedSubject)onStartQuiz?.(selectedSubject.id)}}/>}
     {!loading && total>0 && deckMode==='difficult' && displayedCards.length===0 && !paywall && <div className="panel empty">Non hai carte difficili da ripassare. <button className="simple-link" onClick={()=>setDeckMode('all')}>Torna a tutte le flashcard</button></div>}
     {paywall && <div className="flashcards-paywall-backdrop"><div className="flashcards-paywall panel">
       <div className="flashcards-paywall-icon"><CreditCard size={22}/></div><span className="eyebrow">ANTEPRIMA COMPLETATA</span>
