@@ -164,7 +164,7 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
     {paywall && <div className="flashcards-paywall-backdrop"><div className="flashcards-paywall panel">
       <div className="flashcards-paywall-icon"><CreditCard size={22}/></div><span className="eyebrow">ANTEPRIMA COMPLETATA</span>
       <h2>Hai completato le 50 flashcard gratuite di anteprima!</h2>
-      <p>Sblocca tutte le {total.toLocaleString('it-IT')} flashcard e i 30 quiz completi di <strong>{title}</strong> per sempre a soli <strong>1,99 €</strong> (pagamento unico, zero abbonamenti).</p>
+      <p>Sblocca tutte le {total.toLocaleString('it-IT')} flashcard e tutti i quiz disponibili di <strong>{title}</strong>, comprese le nuove aggiunte in futuro, per sempre a soli <strong>1,99 €</strong> (pagamento unico, zero abbonamenti).</p>
       <label className="flashcards-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)}/> Acconsento alla fornitura immediata dei contenuti digitali e riconosco la perdita del diritto di recesso nei limiti previsti dalla legge.</label>
       <button className="primary flashcards-unlock" disabled={!consent} onClick={() => onBuy(PRICE_ID,[subjectId],true)}>Sblocca per sempre · 1,99 € <CreditCard size={16}/></button>
       {!user && <p className="flashcards-login-note">Per completare l'acquisto dovrai accedere o creare un account.</p>}
