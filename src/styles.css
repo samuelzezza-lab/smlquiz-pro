@@ -3246,14 +3246,15 @@ html,body,#root{max-width:100%;overflow-x:clip}
 .shell.function-fullscreen .scrim,
 .shell.function-fullscreen .topbar,
 .shell.function-fullscreen .offline,
-.shell.function-fullscreen .notice,
+.shell.function-fullscreen>.notice,
 .shell.function-fullscreen .cookie-banner,
 .shell.function-fullscreen .footer,
 .shell.function-fullscreen .mobile-bottom-nav,
 .shell.function-fullscreen .mobile-resume-quiz,
 .shell.function-fullscreen .skip-link,
 .shell.function-fullscreen .sml-ad-slot,
-.shell.function-fullscreen .flashcards-ad-slot{display:none!important}
+.shell.function-fullscreen .flashcards-ad-slot,
+.shell.function-fullscreen .toast{display:none!important}
 .shell.function-fullscreen .main{display:flex;width:100%;height:100dvh;min-height:100dvh;margin:0!important;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
 .shell.function-fullscreen .main>.content{flex:1 0 auto;width:100%;max-width:none;min-height:100dvh;margin:0;padding:76px clamp(16px,3vw,42px) 28px}
 .shell.function-fullscreen .function-home-back{display:inline-flex!important;position:fixed;z-index:500;top:14px;left:16px;align-items:center;justify-content:center;width:42px;height:42px;min-height:42px;padding:0;border:0;border-radius:50%;background:rgba(8,15,29,.82);color:#fff!important;box-shadow:none;backdrop-filter:none;cursor:pointer}
