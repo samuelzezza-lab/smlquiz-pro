@@ -79,7 +79,7 @@ export default function App(){
  const [flashcardIndex,setFlashcardIndex]=useState(0),[flashcardRevealed,setFlashcardRevealed]=useState(false)
  const [studyExams,setStudyExams]=useState<StudyExam[]>(()=>{try{const x=JSON.parse(localStorage.getItem('smlquiz.studyExams.v1')||'[]');return Array.isArray(x)?x:[]}catch{return []}}),[newExamName,setNewExamName]=useState(''),[newExamDate,setNewExamDate]=useState(''),[newExamNote,setNewExamNote]=useState('')
  const [wrongQuestions,setWrongQuestions]=useState<Question[]>([]),[reviewQuestions,setReviewQuestions]=useState<Question[]>(()=>{try{const saved=JSON.parse(localStorage.getItem('smlquiz.review.v1')||'[]');return Array.isArray(saved)?saved:[]}catch{return []}}),[reviewMode,setReviewMode]=useState(false)
- const [cookieChoice,setCookieChoice]=useState(()=>localStorage.getItem('smlquiz.cookies.v1')||''),[authLocked,setAuthLocked]=useState(false),[digitalConsent,setDigitalConsent]=useState(false)
+ const [authLocked,setAuthLocked]=useState(false),[digitalConsent,setDigitalConsent]=useState(false)
  const [deletePassword,setDeletePassword]=useState(''),[deleteConfirm,setDeleteConfirm]=useState(''),[deleteBusy,setDeleteBusy]=useState(false),[upsellOpen,setUpsellOpen]=useState(false)
  const [debugOpen,setDebugOpen]=useState(false),[debugLogs,setDebugLogs]=useState<{time:string;message:string}[]>([]),[legalDoc,setLegalDoc]=useState<LegalDocument|null>(null),[installHelpOpen,setInstallHelpOpen]=useState(false)
  const [faculty,setFaculty]=useState(''),[year,setYear]=useState('all'),[search,setSearch]=useState(''),[visibleSubjects,setVisibleSubjects]=useState(24)
