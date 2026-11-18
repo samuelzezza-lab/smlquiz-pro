@@ -2868,3 +2868,100 @@ html,body,#root{max-width:100%;overflow-x:clip}
   .flashcards-ad-slot{min-height:92px;margin:15px auto 19px;border-radius:11px}
   .flashcards-ad-slot-bottom{margin-top:18px;margin-bottom:7px}
 }
+
+
+/* Shared end-of-study state across quizzes, flashcards and Semestre Filtro */
+.study-completion{
+  display:grid;
+  grid-template-columns:54px minmax(0,1fr) auto;
+  align-items:center;
+  gap:18px;
+  margin:28px 0 18px;
+  padding:22px;
+  border:1px solid rgba(112,153,190,.22);
+  border-radius:18px;
+  background:radial-gradient(ellipse at 0% 0%,rgba(75,153,130,.12),transparent 46%),linear-gradient(135deg,rgba(25,43,61,.96),rgba(15,27,44,.98));
+  box-shadow:0 16px 42px rgba(0,0,0,.16);
+}
+.study-completion-icon{
+  display:grid;
+  place-items:center;
+  width:50px;
+  height:50px;
+  border:1px solid rgba(103,207,157,.25);
+  border-radius:15px;
+  background:rgba(66,174,125,.12);
+  color:#86ddb1;
+}
+.study-completion-copy{min-width:0}
+.study-completion-eyebrow{
+  display:block;
+  margin-bottom:6px;
+  color:#91d8b4;
+  font-size:10px;
+  font-weight:850;
+  letter-spacing:.14em;
+}
+.study-completion-copy h2{
+  margin:0 0 7px;
+  color:#f0f5ff;
+  font-size:clamp(18px,2.2vw,22px);
+  line-height:1.25;
+  letter-spacing:-.025em;
+}
+.study-completion-copy p{
+  max-width:690px;
+  margin:0;
+  color:#aebbd0;
+  font-size:13px;
+  line-height:1.65;
+}
+.study-completion-copy small{
+  display:block;
+  margin-top:9px;
+  color:#8d9db8;
+  font-size:11px;
+  font-weight:700;
+}
+.study-completion-actions{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:8px;
+  min-width:190px;
+}
+.study-completion-actions button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:44px;
+  padding:10px 14px;
+  border-radius:11px;
+  font-size:12px;
+  font-weight:800;
+  white-space:normal;
+}
+@media(max-width:760px){
+  .study-completion{
+    grid-template-columns:44px minmax(0,1fr);
+    gap:12px;
+    margin:22px 0 16px;
+    padding:17px;
+  }
+  .study-completion-icon{width:42px;height:42px;border-radius:13px}
+  .study-completion-icon svg{width:20px;height:20px}
+  .study-completion-copy h2{font-size:18px}
+  .study-completion-copy p{font-size:12px}
+  .study-completion-actions{
+    grid-column:1/-1;
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    min-width:0;
+    margin-top:4px;
+  }
+  .study-completion-actions button{min-height:46px;padding:9px 10px;font-size:11px}
+}
+@media(max-width:390px){
+  .study-completion-actions{grid-template-columns:1fr}
+}
