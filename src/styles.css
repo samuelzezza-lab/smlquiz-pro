@@ -3268,3 +3268,112 @@ html,body,#root{max-width:100%;overflow-x:clip}
  .shell.function-fullscreen .function-home-back{top:calc(9px + env(safe-area-inset-top));left:max(12px,env(safe-area-inset-left));width:40px;height:40px}
  .shell.function-fullscreen .main>.content.sf-page{padding-top:calc(66px + env(safe-area-inset-top))}
 }
+
+
+/* UX repair: remove empty ad reservations until a real Adsterra unit is injected.
+   The slot expands naturally as soon as its publisher script adds content. */
+.shell .adsterra-slot:empty,
+.shell .flashcards-ad-slot:empty {
+  display:none!important;
+  min-height:0!important;
+  height:0!important;
+  margin:0!important;
+  padding:0!important;
+}
+
+/* Quiz session: one real content column, no phantom second grid column. */
+.shell.quiz-active .main>.content {
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:100dvh;
+  padding:72px clamp(16px,3vw,40px) 28px;
+}
+.shell.quiz-active .quiz-grid {
+  display:grid;
+  grid-template-columns:minmax(0,1fr);
+  width:min(100%,1000px);
+  max-width:1000px;
+  min-height:0;
+  margin:auto;
+  align-content:center;
+  gap:0;
+}
+.shell.quiz-active .quiz-column {
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  min-width:0;
+  gap:0;
+}
+.shell.quiz-active .quiz {
+  width:100%;
+  min-width:0;
+  margin:0;
+}
+@media(max-width:800px) {
+  .shell.quiz-active .main>.content {
+    justify-content:flex-start;
+    min-height:100svh;
+    padding:calc(60px + env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) calc(18px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));
+  }
+  .shell.quiz-active .quiz-grid {
+    width:100%;
+    max-width:720px;
+    min-height:0;
+    margin:0 auto;
+    align-content:start;
+  }
+  .shell.quiz-active .quiz-column { gap:0; }
+  .shell.quiz-active .quiz { padding:clamp(14px,3.5vw,22px); }
+}
+
+/* Consistent fullscreen navigation: the return control is always reachable. */
+.shell.function-fullscreen .function-home-back {
+  display:inline-flex!important;
+  position:fixed;
+  z-index:10000;
+  top:calc(12px + env(safe-area-inset-top));
+  left:calc(14px + env(safe-area-inset-left));
+  width:44px;
+  height:44px;
+  min-width:44px;
+  min-height:44px;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  border:1px solid rgba(151,171,215,.18);
+  border-radius:50%;
+  background:rgba(9,16,30,.78);
+  color:#f4f6ff!important;
+  box-shadow:0 6px 24px rgba(0,0,0,.2);
+  backdrop-filter:blur(14px);
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.shell.function-fullscreen .function-home-back svg {
+  width:21px;
+  height:21px;
+  color:currentColor;
+}
+.shell.function-fullscreen .function-home-back:focus-visible {
+  outline:2px solid #a99aff;
+  outline-offset:3px;
+}
+.shell.function-fullscreen .main>.content {
+  width:100%;
+  max-width:none;
+  min-width:0;
+  box-sizing:border-box;
+}
+@media(max-width:800px) {
+  .shell.function-fullscreen .function-home-back {
+    top:calc(8px + env(safe-area-inset-top));
+    left:calc(10px + env(safe-area-inset-left));
+    width:42px;
+    height:42px;
+    min-width:42px;
+    min-height:42px;
+  }
+}
