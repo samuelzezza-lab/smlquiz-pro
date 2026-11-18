@@ -3062,3 +3062,29 @@ html,body,#root{max-width:100%;overflow-x:clip}
   opacity:.82;
 }
 .function-home-back svg{color:#fff}
+
+
+/* Mobile navigation: keep the app shell and bottom navigation visible on every page. */
+@media(max-width:800px){
+  .mobile-page-active .sidebar{display:none!important}
+  .mobile-page-active .sidebar.open{display:flex!important}
+  .mobile-page-active .topbar .crumb{gap:9px}
+  .mobile-page-active .topbar .hamb{
+    display:inline-flex;align-items:center;justify-content:center;flex:none;
+    width:40px;height:40px;min-width:40px;padding:0;
+    border:1px solid var(--line);border-radius:11px;
+    background:var(--surface-2, #202b3d);color:var(--text, #f4f6ff);
+  }
+  .mobile-page-active .topbar .hamb svg{width:21px;height:21px}
+  .mobile-page-active .main{
+    min-height:100dvh;height:auto;overflow:visible;
+    padding-bottom:calc(70px + env(safe-area-inset-bottom));
+  }
+  .mobile-page-active .main>.content{
+    min-height:0;padding-top:16px;
+    padding-bottom:calc(100px + env(safe-area-inset-bottom));
+  }
+  .mobile-page-active .mobile-bottom-nav{display:grid!important}
+  .mobile-page-active .function-home-back{display:none!important}
+  .mobile-page-active .footer{display:none}
+}
