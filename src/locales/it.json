@@ -123,7 +123,7 @@
   "createYourAccount": "Crea il tuo account",
   "resetPassword": "Recupera password",
   "emailPlaceholder": "nome@email.com",
-  "passwordPlaceholder": "Almeno 8 caratteri",
+  "passwordPlaceholder": "Almeno 12 caratteri",
   "forgotPassword": "Hai dimenticato la password?",
   "backToLogin": "Torna all’accesso",
   "sendLink": "Invia link",

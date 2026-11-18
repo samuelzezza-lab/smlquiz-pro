@@ -30,8 +30,8 @@ type StudyCloudData = { exams?:{name:string;grade:string;cfu:string}[]; savedQue
 const pricing = { single:'price_1Uc9w5BCybXKHSfRCFwx5NAT', jolly:'price_1Uc9yMBCybXKHSfRP4SJ4wuL', session:'price_1UcA1EBCybXKHSfRwyemWunq', site:'price_1UcC6ZBCybXKHSfRotiMdjz9', semestreSingle:'price_1UcVlkBCybXKHSfRs9hj7caG', semestreComplete:'price_1UcVo8BCybXKHSfRDXpOyB0q' }
 const historyKey='smlquiz.history.v1'
 const turnstileSiteKey=import.meta.env.VITE_TURNSTILE_SITE_KEY||''
-const strongPasswordPattern=/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/
-const passwordRequirementsText='La password deve contenere almeno 8 caratteri, una maiuscola, una minuscola, un numero e un simbolo.'
+const strongPasswordPattern=/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{12,}$/
+const passwordRequirementsText='La password deve contenere almeno 12 caratteri, una maiuscola, una minuscola, un numero e un simbolo.'
 function loadHistory():Attempt[]{try{const saved=JSON.parse(localStorage.getItem(historyKey)||'[]');if(Array.isArray(saved))return saved;if(saved?.v===2&&Array.isArray(saved.d))return saved.d.map((x:string[])=>({id:x[0],subject:x[1],score:Number(x[2]),total:Number(x[3]),correct:Number(x[4]),wrong:Number(x[5]),date:x[6],durationSeconds:Number(x[7])||undefined}));return []}catch{return []}}
 function compactHistory(items:Attempt[]){return {v:2,d:items.slice(0,50).map(h=>[h.id,h.subject,h.score,h.total,h.correct,h.wrong,h.date,h.durationSeconds||0])}}
 function localizedName(item:{nome:string;traduzioni?:Record<string,{nome?:string}>},_language:Language){return item.traduzioni?.it?.nome||item.nome}

@@ -129,8 +129,15 @@ Deno.serve(async (req: Request) => {
       const { data: existing, error: readError } = await admin.from("user_profiles").select(profileColumns).eq("user_id", userId).maybeSingle();
       if (readError) throw readError;
       if (body.mode === "read") {
-        if (existing) return requestJson({ profile: existing });
-        const { data, error } = await admin.from("user_profiles").insert({ user_id: userId, display_name: authData.user.email?.split("@")[0] ?? "" }).select(profileColumns).single();
+        if (existing) {
+          if (existing.language !== "it") {
+            const { data, error } = await admin.from("user_profiles").update({ language: "it" }).eq("user_id", userId).select(profileColumns).single();
+            if (error) throw error;
+            return requestJson({ profile: data });
+          }
+          return requestJson({ profile: existing });
+        }
+        const { data, error } = await admin.from("user_profiles").insert({ user_id: userId, display_name: authData.user.email?.split("@")[0] ?? "", language: "it" }).select(profileColumns).single();
         if (error) throw error;
         return requestJson({ profile: data });
       }
@@ -154,7 +161,7 @@ Deno.serve(async (req: Request) => {
       }
       const values = {
         display_name: String(body.displayName ?? existing?.display_name ?? "").trim().slice(0, 60),
-        language: ["it","en","fr","de","es","zh"].includes(String(body.language ?? existing?.language)) ? String(body.language ?? existing?.language) : "it",
+        language: "it",
         leaderboard_opt_in: body.leaderboardOptIn === undefined ? Boolean(existing?.leaderboard_opt_in) : body.leaderboardOptIn === true,
         university_id: universityId,
         university_name: universityName,
@@ -459,138 +466,8 @@ Deno.serve(async (req: Request) => {
       }) });
     }
 
-    if (action === "translate-catalog") {
-      const language = String(body.language ?? "");
-      const languageNames: Record<string, string> = { en: "English", fr: "French", de: "German", es: "Spanish", zh: "Simplified Chinese" };
-      if (!languageNames[language]) return requestJson({ error: "Lingua non valida." }, 400);
-      const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
-      if (!anthropicKey) return requestJson({ error: "Traduzione non disponibile." }, 503);
-      const modelFromEnv = Deno.env.get("ANTHROPIC_MODEL")?.trim() ?? "";
-      const allowedModels = ["claude-haiku-4-5", "claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5", "claude-fable-5"];
-      const model = allowedModels.includes(modelFromEnv) ? modelFromEnv : "claude-haiku-4-5";
-      let translatedCount = 0;
-      let cachedCount = 0;
-      for (const table of ["facolta", "materie"]) {
-        const { data: rows, error } = await admin.from(table).select("id,nome,traduzioni").order("nome");
-        if (error) throw error;
-        const missing = (rows ?? []).filter((row: any) => !String(row.traduzioni?.[language]?.nome ?? "").trim());
-        cachedCount += (rows?.length ?? 0) - missing.length;
-        for (let offset = 0; offset < missing.length; offset += 200) {
-          const batch = missing.slice(offset, offset + 200);
-          if (!isOwner) {
-            const { data: allowed, error: limitError } = await admin.rpc("claim_ai_request", { p_user_id: userId, p_limit: 20 });
-            if (limitError) throw limitError;
-            if (allowed !== true) return requestJson({ error: "Limite giornaliero di traduzioni raggiunto.", translated: translatedCount }, 429);
-          }
-          const prompt = "Translate these Italian university faculty and subject names into " + languageNames[language] + ". Return only JSON array objects with the same id and translated nome. Preserve scientific terms, proper names and acronyms. Input: " + JSON.stringify(batch.map((x: any) => ({ id: x.id, nome: x.nome })));
-          const response = await fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "x-api-key": anthropicKey, "anthropic-version": "2023-06-01", "content-type": "application/json" }, body: JSON.stringify({ model, max_tokens: 16000, messages: [{ role: "user", content: prompt }] }) });
-          if (!response.ok) return requestJson({ error: "Traduzione catalogo non disponibile." }, 502);
-          const payload = await response.json();
-          const raw = (payload.content ?? []).filter((x: any) => x.type === "text").map((x: any) => x.text).join("\n");
-          const start = raw.indexOf("["); const end = raw.lastIndexOf("]");
-          if (start < 0 || end <= start) return requestJson({ error: "Risposta di traduzione non valida." }, 502);
-          const translated = JSON.parse(raw.slice(start, end + 1));
-          if (!Array.isArray(translated) || translated.length !== batch.length) return requestJson({ error: "Traduzione catalogo incompleta." }, 502);
-          const byId = new Map<string, any>(translated.map((x: any) => [String(x.id), x]));
-          for (const row of batch as any[]) {
-            const name = String(byId.get(String(row.id))?.nome ?? "").trim();
-            if (!name || name.length > 180) return requestJson({ error: "Nome tradotto non valido." }, 502);
-            const traduzioni = { ...(row.traduzioni ?? {}), [language]: { ...(row.traduzioni?.[language] ?? {}), nome: name } };
-            const saved = await admin.from(table).update({ traduzioni }).eq("id", row.id);
-            if (saved.error) throw saved.error;
-            translatedCount++;
-          }
-        }
-      }
-      return requestJson({ translated: true, cached: translatedCount === 0, count: translatedCount, cachedCount });
-    }
-
-    if (action === "translate-quiz-set") {
-      const quizSetId = String(body.quizSetId ?? "").trim();
-      const language = String(body.language ?? "");
-      const languageNames: Record<string, string> = { en: "English", fr: "French", de: "German", es: "Spanish", zh: "Simplified Chinese" };
-      if (!quizSetId || !languageNames[language]) return requestJson({ error: "Lingua o quiz non valido." }, 400);
-      const { data: questions, error: questionsError } = await admin.from("domande")
-        .select("id,testo_domanda,concetto_chiave,opzioni,risposta_corretta,spiegazione,traduzioni")
-        .eq("quiz_id", quizSetId);
-      if (questionsError) throw questionsError;
-      if (!questions || questions.length !== 10) return requestJson({ error: "Il quiz non contiene 10 domande verificate." }, 409);
-      const missing = questions.filter((q: any) => {
-        const t = q.traduzioni?.[language];
-        return !t || !t.testo_domanda || !Array.isArray(t.opzioni) || t.opzioni.length !== 4
-          || !t.risposta_corretta || !t.spiegazione;
-      });
-      if (!missing.length) return requestJson({ translated: true, cached: true });
-      const anthropicKey = Deno.env.get("ANTHROPIC_API_KEY");
-      if (!anthropicKey) return requestJson({ error: "Traduzione non disponibile: manca la chiave Anthropic sul server." }, 503);
-      const { data: aiAllowed, error: aiLimitError } = await admin.rpc("claim_ai_request", { p_user_id: userId, p_limit: 20 });
-      if (aiLimitError) throw aiLimitError;
-      if (aiAllowed !== true) return requestJson({ error: "Hai raggiunto il limite di 20 richieste AI per oggi. Riprova domani." }, 429);
-      const modelFromEnv = Deno.env.get("ANTHROPIC_MODEL")?.trim() ?? "";
-      const allowedModels = ["claude-haiku-4-5", "claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5", "claude-fable-5"];
-      const model = allowedModels.includes(modelFromEnv) ? modelFromEnv : "claude-haiku-4-5";
-      const prompt = [
-        "Traduci integralmente in " + languageNames[language] + " le domande universitarie seguenti.",
-        "Mantieni invariati significato, livello, numeri, formule, simboli, unità di misura e nomi propri.",
-        "Traduci anche opzioni, risposta corretta, spiegazione e concetto chiave.",
-        "Non cambiare il contenuto scientifico e non aggiungere informazioni.",
-        "Mantieni le quattro opzioni nello stesso ordine dell'originale.",
-        "Restituisci esclusivamente un array JSON valido con un oggetto per ogni domanda e gli stessi id.",
-        'Schema: [{"id":"...","testo_domanda":"...","concetto_chiave":"...","opzioni":["...","...","...","..."],"risposta_corretta":"...","spiegazione":"..."}]',
-        "Domande: " + JSON.stringify(missing.map((q: any) => ({
-          id: q.id, testo_domanda: q.testo_domanda, concetto_chiave: q.concetto_chiave,
-          opzioni: q.opzioni, risposta_corretta: q.risposta_corretta, spiegazione: q.spiegazione,
-        }))),
-      ].join("\n");
-      const response = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "x-api-key": anthropicKey,
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({ model, max_tokens: 12000, messages: [{ role: "user", content: prompt }] }),
-      });
-      if (!response.ok) {
-        const detail = await response.text();
-        console.error("Anthropic translation error:", detail.slice(0, 500));
-        return requestJson({ error: "Il servizio di traduzione non è disponibile in questo momento." }, 502);
-      }
-      const payload = await response.json();
-      const rawText = (payload.content ?? [])
-        .filter((part: any) => part.type === "text" && typeof part.text === "string")
-        .map((part: any) => part.text).join("\n").trim();
-      const jsonStart = rawText.indexOf("[");
-      const jsonEnd = rawText.lastIndexOf("]");
-      if (jsonStart < 0 || jsonEnd <= jsonStart) return requestJson({ error: "La traduzione generata non è valida." }, 502);
-      const translatedRows = JSON.parse(rawText.slice(jsonStart, jsonEnd + 1));
-      if (!Array.isArray(translatedRows) || translatedRows.length !== missing.length) {
-        return requestJson({ error: "La traduzione non contiene tutte le domande richieste." }, 502);
-      }
-      const byId = new Map<string, any>(translatedRows.map((t: any) => [String(t.id), t]));
-      for (const question of missing as any[]) {
-        const t = byId.get(question.id);
-        const options = Array.isArray(t?.opzioni) ? t.opzioni.map((x: any) => String(x).trim()) : [];
-        const correct = String(t?.risposta_corretta ?? "").trim();
-        if (!t || !String(t.testo_domanda ?? "").trim() || options.length !== 4
-          || new Set(options.map((x: string) => x.toLocaleLowerCase())).size !== 4
-          || !options.includes(correct) || !String(t.spiegazione ?? "").trim()) {
-          return requestJson({ error: "Una o più traduzioni non hanno superato i controlli di qualità." }, 502);
-        }
-        const merged = {
-          ...(question.traduzioni ?? {}),
-          [language]: {
-            testo_domanda: String(t.testo_domanda).trim(),
-            concetto_chiave: String(t.concetto_chiave ?? question.concetto_chiave ?? "").trim(),
-            opzioni: options,
-            risposta_corretta: correct,
-            spiegazione: String(t.spiegazione).trim(),
-          },
-        };
-        const { error: saveError } = await admin.from("domande").update({ traduzioni: merged }).eq("id", question.id);
-        if (saveError) throw saveError;
-      }
-      return requestJson({ translated: true, cached: false, count: missing.length });
+    if (action === "translate-catalog" || action === "translate-quiz-set") {
+      return requestJson({ error: "SMLQUIZ è disponibile esclusivamente in italiano." }, 410);
     }
 
     if (action === "start") {
