@@ -101,7 +101,7 @@ Deno.serve(async(req:Request)=>{
     body:form
   });
   const session=await response.json();
-  if(!response.ok){console.error("Stripe checkout:",session);return reply({error:"Stripe non ha potuto creare il pagamento. Riprova più tardi."},502,origin);}
+  if(!response.ok){console.error("Stripe checkout failed:",{status:response.status,type:session?.error?.type,code:session?.error?.code});return reply({error:"Stripe non ha potuto creare il pagamento. Riprova più tardi."},502,origin);}
   return reply({url:session.url,sessionId:session.id,productType:product.type,amount:product.amount},200,origin);
- }catch(e){console.error(e);return reply({error:"Errore nella preparazione del pagamento"},500,origin);}
+ }catch(e){console.error("Stripe checkout exception:",e instanceof Error?e.name:"UnknownError");return reply({error:"Errore nella preparazione del pagamento"},500,origin);}
 });

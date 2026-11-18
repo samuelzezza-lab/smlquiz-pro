@@ -904,7 +904,7 @@ Deno.serve(async (req: Request) => {
     }
     return requestJson({ error: "Operazione non riconosciuta" }, 400);
   } catch (error) {
-    console.error("quiz-api error:", error);
+    console.error("quiz-api error:", error instanceof Error ? error.name : "UnknownError");
     return requestJson({ error: "Operazione non riuscita. Riprova tra qualche istante." }, 500);
   }
 });

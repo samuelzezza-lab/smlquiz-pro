@@ -74,7 +74,7 @@ Deno.serve(async(req:Request)=>{
     }
   }
   const {data,error}=await admin.rpc("process_smlquiz_stripe_event",args);
-  if(error){console.error("Stripe event fulfillment failed",event.id,error);return new Response("Webhook processing failed",{status:500});}
+  if(error){console.error("Stripe event fulfillment failed",{eventType:event.type,errorName:error instanceof Error?error.name:"UnknownError"});return new Response("Webhook processing failed",{status:500});}
   return Response.json({received:true,...data});
- }catch(e){console.error("Stripe webhook error",e);return new Response("Webhook processing failed",{status:500});}
+ }catch(e){console.error("Stripe webhook error",e instanceof Error?e.name:"UnknownError");return new Response("Webhook processing failed",{status:500});}
 });
