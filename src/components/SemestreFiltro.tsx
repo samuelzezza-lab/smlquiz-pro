@@ -55,7 +55,7 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComple
   try{
    const {data,error:rpcError}=await supabase.rpc('submit_semestre_filtro_exam',{p_exam_id:examId,p_answers:answers})
    if(rpcError)throw rpcError
-   setResult(data as Result);setMode('result');if(accessType==='free')onFreeComplete()
+   setResult(data as Result);setMode('result');try{localStorage.removeItem(draftKey)}catch{}if(accessType==='free')onFreeComplete()
   }catch(e){setError(e instanceof Error?e.message:'Consegna non riuscita. Riprova.');finishLock.current=false}
   finally{setSubmitting(false)}
  },[examId,answers,accessType,onFreeComplete])
