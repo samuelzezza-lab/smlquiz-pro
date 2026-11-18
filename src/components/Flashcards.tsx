@@ -26,6 +26,8 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
   const [ratings, setRatings] = useState<Record<string, 'difficult'|'medium'|'easy'>>({})
   const [deckMode, setDeckMode] = useState<'all'|'difficult'>('all')
   const cardRef = useRef<HTMLDivElement>(null)
+  const notifyRef = useRef(notify)
+  useEffect(() => { notifyRef.current = notify }, [notify])
   const selectedSubject = useMemo(() => subjects.find(s => s.id === subjectId), [subjects, subjectId])
   const displayedCards = useMemo(() => deckMode === 'difficult'
     ? cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'difficult')
@@ -61,9 +63,9 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
       setUnlocked(hasUnlock)
       setPaywall(data?.paywall === true && loaded.length === 0)
     } catch (err) {
-      notify(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
+      notifyRef.current(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
     } finally { setLoading(false) }
-  }, [notify])
+  }, [])
 
   useEffect(() => {
     if (!subjectId && subjects.length) setSubjectId(subjects[0].id)
