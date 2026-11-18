@@ -21,11 +21,11 @@ if (!recovery.includes('minLength={12}') || !recovery.includes('.{12,}')) fail('
 const cookieBannerIndex = app.indexOf('{!cookieChoice&&<div className="cookie-banner">')
 const mainContentIndex = app.indexOf('<main className="main" id="main-content"')
 if (cookieBannerIndex < 0 || mainContentIndex < 0 || cookieBannerIndex > mainContentIndex) fail('Cookie consent must be placed before the main content in document flow.')
-if (!/\\.cookie-banner\\{position:relative;/.test(styles) || /\\.cookie-banner\\{position:fixed/.test(styles)) fail('Cookie consent must never overlay page content.')
-if (!/@media\\(max-width:800px\\)\\{\\.cookie-banner\\{margin:12px;/.test(styles)) fail('Cookie consent must use safe mobile spacing.')
-if (!/\\.sidebar\\{transform:translate3d\\(-100%,0,0\\)/.test(styles) || !/\\.hamb\\{display:inline-grid/.test(styles)) fail('Mobile navigation must start with a closed sidebar and expose the menu button.')
-if (!/\\.mobile-bottom-nav\\{position:fixed/.test(styles)) fail('Mobile bottom navigation must be present.')
-if (!/const CACHE_NAME = 'smlquiz-pwa-v\\d+'/.test(serviceWorker)) fail('The PWA cache must use an explicit version to invalidate stale app shells.')
+if (!styles.includes('.cookie-banner{position:relative;') || styles.includes('.cookie-banner{position:fixed')) fail('Cookie consent must never overlay page content.')
+if (!styles.includes('@media(max-width:800px){.cookie-banner{margin:12px;')) fail('Cookie consent must use safe mobile spacing.')
+if (!styles.includes('.sidebar{transform:translate3d(-100%,0,0)') || !styles.includes('.hamb{display:inline-grid')) fail('Mobile navigation must start with a closed sidebar and expose the menu button.')
+if (!styles.includes('.mobile-bottom-nav{position:fixed')) fail('Mobile bottom navigation must be present.')
+if (!/const CACHE_NAME = 'smlquiz-pwa-v\d+'/.test(serviceWorker)) fail('The PWA cache must use an explicit version to invalidate stale app shells.')
 for (const directive of ["object-src 'none'", "frame-ancestors 'none'", "upgrade-insecure-requests", "default-src 'self'"]) {
   if (!headers.includes(directive)) fail('Missing CSP directive: ' + directive)
 }
