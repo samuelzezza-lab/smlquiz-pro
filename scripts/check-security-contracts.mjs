@@ -9,7 +9,7 @@ const headers = read('public/_headers')
 
 if (!/export type Language = 'it'/.test(i18n)) fail('The application language must remain Italian-only.')
 if (!/import it from '\.\/locales\/it\.json'/.test(i18n)) fail('The Italian dictionary must be the only loaded locale.')
-if (!/strongPasswordPattern\s*=\s*\/\^\(\?=\.\*\[a-z\]\)\(\?=\.\*\[A-Z\]\)\(\?=\.\*\\d\)\(\?=\.\*\[\^A-Za-z0-9\]\)\.\{12,\}\$\//.test(app)) fail('The password policy must require 12 characters with mixed character classes.')
+if (!app.includes("const strongPasswordPattern=/^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).{12,}$/")) fail('The password policy must require 12 characters with mixed character classes.')
 const register = app.slice(app.indexOf("authMode!=='reset'&&<>"), app.indexOf("authMode==='register'&&<label className=\"consent\""))
 if (!register.includes("minLength={authMode==='register'?12:8}") || !register.includes(".{12,}")) fail('Registration form validation must enforce the 12-character policy.')
 const recoveryStart = app.indexOf("<h2>{tr('setNewPassword')}</h2>")
