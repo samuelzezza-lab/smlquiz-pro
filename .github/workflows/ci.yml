@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 22
-      - run: npm install
+      - run: npm ci
       - name: Block high-severity production dependency vulnerabilities
         run: npm audit --omit=dev --audit-level=high
       - name: Report development dependency vulnerabilities
