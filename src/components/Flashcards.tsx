@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowLeft, ArrowRight, Check, CreditCard, RotateCcw, Shuffle, Sparkles } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Check, CreditCard, Shuffle, Sparkles } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 type Subject = { id: string; nome: string; traduzioni?: Record<string, { nome?: string }> }
@@ -41,10 +41,24 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
       const { data, error } = await supabase.functions.invoke('flashcards-api', { body: { subjectId: id, offset: 0, limit: FREE_LIMIT } })
       if (error) throw error
       if (data?.error) throw new Error(data.error)
-      setCards((data?.cards ?? []) as Flashcard[])
-      setTotal(Number(data?.total_cards ?? 0))
-      setUnlocked(data?.unlocked === true)
-      setPaywall(data?.paywall === true && (data?.cards?.length ?? 0) === 0)
+      let loaded = (data?.cards ?? []) as Flashcard[]
+      const cardTotal = Number(data?.total_cards ?? 0)
+      const hasUnlock = data?.unlocked === true
+      if (hasUnlock && loaded.length < cardTotal) {
+        while (loaded.length < cardTotal) {
+          const { data: page, error: pageError } = await supabase.functions.invoke('flashcards-api', {
+            body: { subjectId: id, offset: loaded.length, limit: FREE_LIMIT }
+          })
+          if (pageError) throw pageError
+          const batch = (page?.cards ?? []) as Flashcard[]
+          if (!batch.length) break
+          loaded = [...loaded, ...batch]
+        }
+      }
+      setCards(loaded)
+      setTotal(cardTotal)
+      setUnlocked(hasUnlock)
+      setPaywall(data?.paywall === true && loaded.length === 0)
     } catch (err) {
       notify(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
     } finally { setLoading(false) }
@@ -145,7 +159,7 @@ export default function Flashcards({ subjects, user, onBuy, notify }: Props) {
     {paywall && <div className="flashcards-paywall-backdrop"><div className="flashcards-paywall panel">
       <div className="flashcards-paywall-icon"><CreditCard size={22}/></div><span className="eyebrow">ANTEPRIMA COMPLETATA</span>
       <h2>Hai completato le 50 flashcard gratuite di anteprima!</h2>
-      <p>Sblocca tutte le {total.toLocaleString('it-IT')} flashcard e i quiz completi di <strong>{title}</strong> per sempre a soli <strong>1,99 €</strong> (pagamento unico, zero abbonamenti).</p>
+      <p>Sblocca tutte le {total.toLocaleString('it-IT')} flashcard e i 30 quiz completi di <strong>{title}</strong> per sempre a soli <strong>1,99 €</strong> (pagamento unico, zero abbonamenti).</p>
       <label className="flashcards-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)}/> Acconsento alla fornitura immediata dei contenuti digitali e riconosco la perdita del diritto di recesso nei limiti previsti dalla legge.</label>
       <button className="primary flashcards-unlock" disabled={!consent} onClick={() => onBuy(PRICE_ID,[subjectId],true)}>Sblocca per sempre · 1,99 € <CreditCard size={16}/></button>
       {!user && <p className="flashcards-login-note">Per completare l'acquisto dovrai accedere o creare un account.</p>}
