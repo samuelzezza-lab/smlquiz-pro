@@ -62,6 +62,33 @@ try {
     await page.goto(`${baseUrl}/come-funziona`, { waitUntil: 'domcontentloaded', timeout: 45000 })
     await page.locator('.mobile-bottom-nav button').first().waitFor({ state: mobileNavExpected ? 'visible' : 'attached', timeout: 20000 })
     await page.evaluate(() => document.fonts.ready)
+    await page.route('**/functions/v1/flashcards-api', async route => {
+      const request = route.request()
+      const headers = {
+        'access-control-allow-origin': '*',
+        'access-control-allow-headers': 'authorization, apikey, content-type, x-client-info',
+        'access-control-allow-methods': 'POST, OPTIONS',
+        'content-type': 'application/json'
+      }
+      if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers })
+      let payload = {}
+      try { payload = request.postDataJSON() || {} } catch {}
+      if (payload.action === 'rate') return route.fulfill({ status: 200, headers, body: JSON.stringify({ saved: true }) })
+      return route.fulfill({
+        status: 200, headers,
+        body: JSON.stringify({
+          subject: 'Materia dimostrativa', subject_id: payload.subjectId || 'test-subject',
+          cards: [{
+            id: 'responsive-test-card', subject_id: payload.subjectId || 'test-subject',
+            question_front: 'Quale principio scientifico spiega il fenomeno descritto nel caso clinico?',
+            answer_back: 'Il principio di conservazione dell’energia, applicato al sistema considerato.',
+            explanation: 'La spiegazione chiarisce il meccanismo e distingue la risposta corretta dalle alternative.',
+            order_index: 1, quiz_number: 1, user_rating: null
+          }],
+          total_cards: 1, offset: 0, unlocked: false, free_limit: 50, paywall: false, next_offset: 1
+        })
+      })
+    })
 
     const initial = await page.evaluate(() => ({
       width: window.innerWidth,
@@ -175,7 +202,20 @@ try {
           if (item.background !== 'rgba(0, 0, 0, 0)' && item.background !== 'transparent') failures.push(`${viewport.name}, flashcard ${item.selector}: sfondo testo inatteso ${item.background}`)
         }
       }
-      if (index === 2 && viewport.name === 'iphone-se-small') await page.screenshot({ path: 'artifacts/mobile-responsive/iphone-se-small-flashcards.png', fullPage: true })
+      if (index === 2) {
+        await page.waitForFunction(() => {
+          const select = document.querySelector('#flashcards-subject')
+          return !!select && select.options.length > 1
+        }, { timeout: 15000 }).catch(() => {})
+        await page.locator('.flashcard-stage .flashcard-3d').waitFor({ state: 'visible', timeout: 15000 })
+        if (index === 2 && viewport.name === 'iphone-se-small') await page.screenshot({ path: 'artifacts/mobile-responsive/iphone-se-small-flashcards.png', fullPage: true })
+        await page.locator('.flashcard-3d').click()
+        await page.locator('.flashcard-ratings').waitFor({ state: 'visible', timeout: 5000 })
+        if (viewport.name === 'iphone-se-small') await page.screenshot({ path: 'artifacts/mobile-responsive/iphone-se-small-flashcards-back.png', fullPage: true })
+        if (!(await page.locator('.flashcard-explanation').isVisible())) failures.push(`${viewport.name}: spiegazione flashcard non visibile sul retro`)
+        await page.locator('.rating-easy').click()
+        await page.getByText('Ottimo lavoro: hai completato tutte le flashcard.').waitFor({ state: 'visible', timeout: 5000 })
+      }
     }
 
     // Verifica che tutte le sezioni principali si adattino allo stesso schermo senza zoom o scroll laterale.
