@@ -14,12 +14,16 @@ let browser
 
 const viewports = [
   { name: 'iphone-se-small', width: 320, height: 568 },
+  { name: 'phone-344', width: 344, height: 720 },
   { name: 'phone-360', width: 360, height: 800 },
   { name: 'iphone-375', width: 375, height: 812 },
   { name: 'iphone-390', width: 390, height: 844 },
+  { name: 'phone-393', width: 393, height: 852 },
+  { name: 'phone-412', width: 412, height: 915 },
   { name: 'phone-414', width: 414, height: 896 },
   { name: 'phone-430', width: 430, height: 932 },
   { name: 'tablet-768', width: 768, height: 1024 },
+  { name: 'landscape-740', width: 740, height: 360 },
   { name: 'landscape-844', width: 844, height: 390 },
   { name: 'landscape-915', width: 915, height: 412 },
 ]
