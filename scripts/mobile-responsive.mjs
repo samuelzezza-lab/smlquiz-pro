@@ -203,10 +203,9 @@ try {
 
     // Prima prova il blocco anonimo; poi crea una sessione di test locale per esercitare le funzioni protette.
     await page.goto(`${baseUrl}/review`, { waitUntil: 'domcontentloaded', timeout: 45000 })
-    await page.getByRole('heading', { name: 'Accedi per continuare.' }).waitFor({ state: 'visible', timeout: 10000 })
+    await page.locator('.auth-form').waitFor({ state: 'visible', timeout: 15000 })
+    if (new URL(page.url()).pathname !== '/account') failures.push(`${viewport.name}: una rotta protetta non reindirizza all'accesso`)
     if (await page.locator('.flashcards-page').count()) failures.push(`${viewport.name}: flashcard visibili senza autenticazione`)
-    await page.locator('button').filter({ hasText: 'Accedi o crea un account' }).click()
-    await page.locator('.auth-form').waitFor({ state: 'visible', timeout: 10000 })
     const testToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJlbWFpbCI6InJlc3BvbnNpdmVAZXhhbXBsZS5jb20iLCJzZXNzaW9uX2lkIjoiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwiZXhwIjo0MTAyNDQ0ODAwfQ.signature'
     await page.evaluate(({ token, user }) => {
       localStorage.setItem('sb-fgrwwauwnxvrcgqqpksp-auth-token', JSON.stringify({
