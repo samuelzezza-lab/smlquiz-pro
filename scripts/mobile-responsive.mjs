@@ -206,7 +206,7 @@ try {
         await page.waitForFunction(() => {
           const select = document.querySelector('#flashcards-subject')
           return !!select && select.options.length > 1
-        }, { timeout: 15000 }).catch(() => {})
+        }, null, { timeout: 15000 }).catch(() => {})
         await page.locator('.flashcard-stage .flashcard-3d').waitFor({ state: 'visible', timeout: 15000 })
         if (index === 2 && viewport.name === 'iphone-se-small') await page.screenshot({ path: 'artifacts/mobile-responsive/iphone-se-small-flashcards.png', fullPage: true })
         await page.locator('.flashcard-3d').click()
