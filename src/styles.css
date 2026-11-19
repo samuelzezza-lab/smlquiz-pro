@@ -4158,3 +4158,13 @@ html,body,.shell{scroll-behavior:auto!important}
     overflow:auto;
   }
 }
+
+
+/* Le schede iniziali non riservano colonne vuote: testo e descrizioni usano tutta la larghezza. */
+@media (max-width: 800px) {
+  .guide-primary-grid .launch-card { grid-template-columns:28px minmax(0,1fr); }
+  .guide-page .launch-ad-placeholder { display:none!important; }
+}
+@media (max-width: 390px) {
+  .guide-primary-grid .launch-card { grid-template-columns:24px minmax(0,1fr); }
+}
