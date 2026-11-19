@@ -264,21 +264,21 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     {!loading && total===0 && <StudyCompletion eyebrow="CATALOGO IN CRESCITA" title="Le flashcard di questa materia stanno arrivando." description="Al momento non ci sono ancora carte disponibili per questa materia. SMLQUIZ è in continua crescita: il catalogo verrà ampliato progressivamente con nuove flashcard e contenuti di studio." primaryLabel="Prova un'altra materia" onPrimary={()=>{const nextSubject=subjects.find(s=>s.id!==subjectId);if(nextSubject){setSubjectSearch('');setSubjectId(nextSubject.id)}else setSubjectSearch('')}} secondaryLabel="Allenati con un quiz" onSecondary={()=>{if(selectedSubject)onStartQuiz?.(selectedSubject.id)}}/>}
     {!loading && total>0 && deckMode==='difficult' && displayedCards.length===0 && !paywall && !deckCompleted && <div className="panel empty">Non hai carte difficili da ripassare. <button className="simple-link" onClick={()=>changeDeckMode('all')}>Torna a tutte le flashcard</button></div>}
     {paywall && <div className="flashcards-paywall-backdrop"><div className="flashcards-paywall panel flashcards-tinder-paywall">
-      <div className="flashcards-paywall-top"><span><Heart size={15} fill="currentColor"/> SMLQUIZ PREMIUM</span><span className="flashcards-free-tag">50 / 50 COMPLETATE</span></div>
+      <div className="flashcards-paywall-top"><span><Heart size={15} fill="currentColor"/> CONTINUA A STUDIARE</span><span className="flashcards-free-tag">HAI FINITO LE 50 GRATIS</span></div>
       <div className="flashcards-paywall-art" aria-hidden="true">
         <div className="flashcards-preview-card preview-card-back"><span>FLASHCARD 53</span><Lock size={19}/></div>
         <div className="flashcards-preview-card preview-card-mid"><span>FLASHCARD 52</span><Lock size={19}/></div>
-        <div className="flashcards-preview-card preview-card-front"><small>IL TUO PROSSIMO LIVELLO</small><strong>51–300</strong><span>FLASHCARD BLOCCATE</span><div><Lock size={15}/> CONTENUTI PREMIUM</div></div>
+        <div className="flashcards-preview-card preview-card-front"><small>ALTRE CARTE DISPONIBILI</small><strong>51–300</strong><span>CARTE DA SBLOCCARE</span><div><Lock size={15}/> PACCHETTO A PAGAMENTO</div></div>
         <div className="flashcards-preview-spark">✦</div>
       </div>
-      <span className="flashcards-paywall-kicker">HAI SBLOCCATO IL GUSTO DI STUDIARE</span>
+      <span className="flashcards-paywall-kicker">HAI COMPLETATO LE 50 CARTE GRATIS</span>
       <h2>Non fermarti proprio adesso.</h2>
-      <p className="flashcards-paywall-lead">Hai completato le tue <strong>50 flashcard gratuite</strong> di <strong>{title}</strong>. Le successive, dalla <strong>51ª alla 300ª</strong>, ti aspettano: sblocca l'intero mazzo e continua senza interruzioni.</p>
-      <div className="flashcards-premium-perks"><span><Check size={14}/> Tutte le flashcard fino alla 300ª</span><span><Check size={14}/> Nuove carte future incluse</span><span><Check size={14}/> Paghi una volta, senza abbonamento</span></div>
-      <div className="flashcards-paywall-price"><strong>1,99 €</strong><span>una tantum · accesso per sempre</span></div>
+      <p className="flashcards-paywall-lead">Hai finito le prime <strong>50 carte</strong> di <strong>{title}</strong>. Con il pacchetto puoi usare anche le carte dalla <strong>51 alla 300</strong>.</p>
+      <div className="flashcards-premium-perks"><span><Check size={14}/> Tutte le 300 carte</span><span><Check size={14}/> Nuove carte future incluse</span><span><Check size={14}/> Paghi una volta, senza abbonamento</span></div>
+      <div className="flashcards-paywall-price"><strong>1,99 €</strong><span>Paghi una volta sola</span></div>
       <label className="flashcards-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)}/> Acconsento alla fornitura immediata dei contenuti digitali e riconosco la perdita del diritto di recesso nei limiti previsti dalla legge.</label>
       <button className="primary flashcards-unlock" disabled={!consent} onClick={() => onBuy(PRICE_ID,[subjectId],true)}>Sblocca tutte le flashcard <ArrowRight size={17}/></button>
-      {!user && <p className="flashcards-login-note">Per completare l'acquisto dovrai accedere o creare un account.</p>}
+      {!user && <p className="flashcards-login-note">Per acquistare, accedi o crea un account.</p>}
       <button className="simple-link" onClick={() => {setPaywall(false);setDeckCompleted(true)}}>Magari più tardi</button>
     </div></div>}
   </section>
