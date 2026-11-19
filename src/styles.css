@@ -6356,3 +6356,16 @@ body{
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+/* Final component alignment: action cards stack their content vertically. */
+.dashboard-action{
+  position:relative!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+  flex-direction:column!important;
+  justify-content:flex-start!important;
+}
+.dashboard-action>svg{flex:none!important}
+.dashboard-action>b{display:block!important;margin:2px 0 5px!important}
+.dashboard-action>span{display:block!important}
+.dashboard-action>strong{display:flex!important;align-items:center!important;gap:7px!important;margin-top:auto!important;padding-top:13px!important}
