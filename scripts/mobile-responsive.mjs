@@ -160,6 +160,18 @@ try {
       if (state.navVisible) failures.push(`${viewport.name}, ${state.path}: navigazione globale ancora visibile in modalità immersiva`)
       const overflow = Math.max(state.documentWidth, state.bodyWidth) - state.width
       if (overflow > 1) failures.push(`${viewport.name}, destinazione ${index + 1} ${state.path}: overflow di ${overflow}px; elementi: ${JSON.stringify(state.offenders)}`)
+      if (index === 2) {
+        const textBackgrounds = await page.evaluate(() => [
+          '.flashcards-eyebrow','.flashcards-hero h1','.flashcards-hero p',
+          '.flashcards-subject-label','.flashcards-overview-item strong','.flashcards-overview-item small'
+        ].map(selector => {
+          const el = document.querySelector(selector)
+          return { selector, background: el ? getComputedStyle(el).backgroundColor : 'missing' }
+        }))
+        for (const item of textBackgrounds) {
+          if (item.background !== 'rgba(0, 0, 0, 0)' && item.background !== 'transparent') failures.push(`${viewport.name}, flashcard ${item.selector}: sfondo testo inatteso ${item.background}`)
+        }
+      }
       if (index === 2 && viewport.name === 'iphone-se-small') await page.screenshot({ path: 'artifacts/mobile-responsive/iphone-se-small-flashcards.png', fullPage: true })
     }
 
