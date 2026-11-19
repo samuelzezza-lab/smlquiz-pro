@@ -27,6 +27,9 @@ const viewports = [
   { name: 'landscape-740', width: 740, height: 360 },
   { name: 'landscape-844', width: 844, height: 390 },
   { name: 'landscape-915', width: 915, height: 412 },
+  { name: 'desktop-1280', width: 1280, height: 800 },
+  { name: 'desktop-1440', width: 1440, height: 900 },
+  { name: 'desktop-1920', width: 1920, height: 1080 },
 ]
 
 async function waitForServer() {
@@ -54,9 +57,10 @@ try {
     })
     const pageErrors = []
     page.on('pageerror', error => pageErrors.push(error.message))
+    const mobileNavExpected = viewport.width <= 800 || (viewport.height <= 500 && viewport.width > viewport.height)
     // La dashboard pubblica è /come-funziona; /quiz è invece il catalogo delle esercitazioni.
     await page.goto(`${baseUrl}/come-funziona`, { waitUntil: 'domcontentloaded', timeout: 45000 })
-    await page.locator('.mobile-bottom-nav button').first().waitFor({ state: 'visible', timeout: 20000 })
+    await page.locator('.mobile-bottom-nav button').first().waitFor({ state: mobileNavExpected ? 'visible' : 'attached', timeout: 20000 })
     await page.evaluate(() => document.fonts.ready)
 
     const initial = await page.evaluate(() => ({
@@ -100,7 +104,6 @@ try {
     if (Math.abs(initial.visualScale - 1) > 0.01) failures.push(`${viewport.name}: scala iniziale diversa da 100% (${initial.visualScale})`)
     const horizontalOverflow = Math.max(initial.documentWidth, initial.bodyWidth) - initial.width
     if (horizontalOverflow > 1) failures.push(`${viewport.name}: overflow orizzontale di ${horizontalOverflow}px`)
-    const mobileNavExpected = viewport.width <= 800 || (viewport.height <= 500 && viewport.width > viewport.height)
     if (mobileNavExpected && !initial.navVisible) failures.push(`${viewport.name}: navigazione mobile non visibile nella dashboard`)
     if (!mobileNavExpected && initial.navVisible) failures.push(`${viewport.name}: navigazione mobile inattesa su viewport desktop`)
     if (!initial.homeHeaderVisible) failures.push(`${viewport.name}: barra superiore home non visibile`)
@@ -124,7 +127,7 @@ try {
       }
     })
     if (initial.navButtons !== 5) failures.push(`${viewport.name}: attesi 5 pulsanti di navigazione, trovati ${initial.navButtons}`)
-    initial.navTargets.forEach((target, index) => {
+    if (mobileNavExpected) initial.navTargets.forEach((target, index) => {
       if (target.width < 44 || target.height < 40) failures.push(`${viewport.name}: pulsante ${index + 1} troppo piccolo (${target.width}x${target.height}px)`)
     })
 
