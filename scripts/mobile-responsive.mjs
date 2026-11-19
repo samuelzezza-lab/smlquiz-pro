@@ -62,6 +62,10 @@ try {
         return !!nav && getComputedStyle(nav).display !== 'none' && nav.getBoundingClientRect().height > 0
       })(),
       navButtons: document.querySelectorAll('.mobile-bottom-nav button').length,
+      homeHeaderVisible: (() => { const header = document.querySelector('.topbar:has(.home-wordmark)'); return !!header && getComputedStyle(header).display !== 'none' && header.getBoundingClientRect().height > 0 })(),
+      homeMenuVisible: (() => { const button = document.querySelector('.topbar:has(.home-wordmark) .hamb'); return !!button && getComputedStyle(button).display !== 'none' && button.getBoundingClientRect().width > 0 })(),
+      creditsVisible: (() => { const button = document.querySelector('.home-buy-credits'); return !!button && getComputedStyle(button).display !== 'none' && button.getBoundingClientRect().width > 0 })(),
+      profileVisible: (() => { const button = document.querySelector('.home-profile-avatar'); return !!button && getComputedStyle(button).display !== 'none' && button.getBoundingClientRect().width > 0 })(),
       navTargets: [...document.querySelectorAll('.mobile-bottom-nav button')].map(button => {
         const rect = button.getBoundingClientRect()
         return { width: Math.round(rect.width), height: Math.round(rect.height) }
@@ -71,6 +75,10 @@ try {
     const horizontalOverflow = Math.max(initial.documentWidth, initial.bodyWidth) - initial.width
     if (horizontalOverflow > 1) failures.push(`${viewport.name}: overflow orizzontale di ${horizontalOverflow}px`)
     if (!initial.navVisible) failures.push(`${viewport.name}: navigazione mobile non visibile`)
+    if (!initial.homeHeaderVisible) failures.push(`${viewport.name}: barra superiore home non visibile`)
+    if (!initial.homeMenuVisible) failures.push(`${viewport.name}: pulsante Menu home non visibile`)
+    if (!initial.creditsVisible) failures.push(`${viewport.name}: acquisto crediti non visibile in home`)
+    if (!initial.profileVisible) failures.push(`${viewport.name}: profilo non visibile in home`)
     if (initial.navButtons !== 5) failures.push(`${viewport.name}: attesi 5 pulsanti di navigazione, trovati ${initial.navButtons}`)
     initial.navTargets.forEach((target, index) => {
       if (target.width < 44 || target.height < 40) failures.push(`${viewport.name}: pulsante ${index + 1} troppo piccolo (${target.width}x${target.height}px)`)
