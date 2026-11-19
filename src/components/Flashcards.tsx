@@ -102,7 +102,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     } catch (err) {
       notifyRef.current(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
     } finally { setLoading(false) }
-  }, [])
+  }, [user?.id])
 
   useEffect(() => {
     if (!subjectId && subjects.length) setSubjectId(subjects[0].id)
