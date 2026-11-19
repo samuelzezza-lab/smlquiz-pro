@@ -4899,3 +4899,133 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .flashcards-page label,.experiences-page label,.semestre-filtro label,.semestre-filtro-page label{color:#263d5e}
 .flashcards-page input,.flashcards-page select,.experiences-page input,.experiences-page select,.experiences-page textarea,.semestre-filtro input,.semestre-filtro select,.semestre-filtro textarea{background:#f0f5fd!important;color:#14264a!important;border:1px solid #c8d8ed!important}
 @media(max-width:700px){.back-home-button{padding:9px 10px;font-size:12px}.current-page-title{display:none}.main:has(.flashcards-page),.main:has(.semestre-filtro),.main:has(.experiences-page){background:linear-gradient(155deg,#eaf2ff,#f6f8fc 60%,#fff0df)!important}}
+
+
+/* QUIZMIND — Graphite + Amber, palette accademica uniforme */
+:root{
+ color-scheme:dark;
+ --bg:#202832;--panel:#303B49;--line:#485565;--muted:#C0C5CC;
+ --sml-bg:#202832;--sml-panel:#303B49;--sml-surface:#394653;
+ --sml-blue:#6487B5;--sml-amber:#F0AD42;--sml-text:#F4F2ED;--sml-muted:#C0C5CC;
+ --purple:#6487B5;--mint:#F0AD42;
+}
+html,body,#root,.shell{background:#202832!important;color:#F4F2ED}
+body{background:radial-gradient(ellipse at 80% -20%,#52677f55,transparent 42%),#202832!important}
+.shell{--text:#F4F2ED}
+.main{background:#202832!important}
+.sidebar{background:#252E39!important;border-color:#465363!important;color:#F4F2ED}
+.brand-logo,.avatar,.top-avatar{background:linear-gradient(145deg,#6487B5,#3D5878)!important;color:#fff!important}
+.brand-name b,.brand-name b span{color:#F4F2ED!important}
+.brand-name b span{color:#F0AD42!important}
+.nav-caption{color:#AEB8C4!important}
+.nav-link{color:#C0C9D3!important}
+.nav-link:hover{background:#394653!important;color:#fff!important}
+.nav-link.active{background:linear-gradient(100deg,#526F96,#6487B5)!important;color:#fff!important;box-shadow:inset 3px 0 #F0AD42!important}
+.topbar{background:#252E39F2!important;border-color:#465363!important}
+.crumb,.crumb span,.crumb b,.current-page-title{color:#F4F2ED!important}
+.online-label,.welcome p,.page-heading p,.section-head p,.muted{color:#C0C5CC!important}
+.panel,.stat,.subject-card,.dashboard-panel,.dashboard-stat,.account-metric,.account-panel,.account-buy-panel,
+.calc-overview-card,.calc-panel,.career-planner,.experience-form,.quiz,.sf-question,.sf-result-card,
+.flashcards-subject-panel,.flashcards-overview-item,.experiences-hero-aside>div{
+ background:#303B49!important;color:#F4F2ED!important;border-color:#4B5969!important;
+ box-shadow:0 8px 24px #0b111a55!important;
+}
+.panel-title h3,.panel h1,.panel h2,.panel h3,.subject-card h3,.dashboard-section-title h2,
+.dashboard-welcome h1,.dashboard-stat>strong,.dashboard-stat>span,.dashboard-action b,
+.dashboard-result b,.dashboard-subject b,.account-identity h2,.account-panel-heading h3,
+.welcome h1,.page-heading h1,.section-head h2,.question,.quiz-top h2{color:#F4F2ED!important}
+p,small,label,.panel-title p,.dashboard-welcome p,.dashboard-action span,.dashboard-stat>small,
+.dashboard-result small,.dashboard-subject small,.account-identity p,.account-panel-heading p,
+.stat>span,.stat>small{color:#C0C5CC}
+.dashboard-welcome,.hero,.experiences-hero,.flashcards-hero,.flashcards-subject-panel,
+.dashboard-action,.dashboard-stat,.dashboard-stat.orange{
+ background:linear-gradient(125deg,#344354,#303B49 68%,#4A4034)!important;
+ border-color:#536477!important;color:#F4F2ED!important;
+}
+.dashboard-stat.orange,.dashboard-action.orange{border-color:#8B6B3C!important}
+.dashboard-action{background:#394653!important;color:#F4F2ED!important;border-color:#536477!important}
+.dashboard-action.orange{background:#453B30!important}
+.dashboard-action strong,.primary,.nav-link.active{
+ background:linear-gradient(120deg,#587BA8,#6487B5)!important;border-color:#7898C0!important;color:#fff!important;
+}
+.dashboard-action.orange strong{background:linear-gradient(120deg,#D99432,#F0AD42)!important;color:#202832!important}
+.secondary,.back-home-button{
+ background:#394653!important;border:1px solid #617184!important;color:#F4F2ED!important;
+}
+.back-home-button{background:linear-gradient(110deg,#526F96,#D99432)!important;color:#fff!important;border:1px solid #8797A8!important}
+.primary:hover,.secondary:hover,.back-home-button:hover{filter:brightness(1.12)}
+.eyebrow,.simple-link,.hero-link,.dashboard-section-title h2 svg,.dashboard-result-icon{color:#F0AD42!important}
+.tag,.timer,.notice,.help-card,.count,.credit-chip,.wallet-summary{
+ background:#453B30!important;border-color:#8B6B3C!important;color:#F6C978!important;
+}
+input,textarea,select,.filters,.filters label>div,.filters select,.filters input,
+.auth-form>input,.coupon-form input,.report-form select,.report-form textarea,
+.exam-row input,.settings select{
+ background:#252E39!important;color:#F4F2ED!important;border:1px solid #596879!important;
+}
+input::placeholder,textarea::placeholder{color:#AEB8C4!important}
+select option{background:#303B49!important;color:#F4F2ED!important}
+.answer,.package-row,.report-form,.auth-tabs,.calc-steps,.flashcards-overview-item,
+.experiences-section-heading,.sf-explanation{
+ background:#394653!important;color:#F4F2ED!important;border-color:#596879!important;
+}
+.answer.chosen{background:#344B67!important;border-color:#83A4D0!important}
+.answer>span{background:#526F96!important;color:#fff!important}
+.answer.right{background:#244638!important;color:#E8FFF1!important;border-color:#64B88D!important}
+.answer.wrong{background:#4B302F!important;color:#FFEAE7!important;border-color:#D47D70!important}
+.progress-track,.progress-day-bar,.flashcards-progress-track,.calc-goal-track{background:#4A5868!important}
+.progress-track i,.dashboard-bar span,.flashcards-progress-track>span,.calc-goal-track i{background:linear-gradient(90deg,#6487B5,#F0AD42)!important}
+.dashboard-panel,.dashboard-welcome{box-shadow:0 8px 24px #0b111a55!important}
+.dashboard-bars{border-color:#536171!important}
+.dashboard-subject,.dashboard-result,.history-line,.account-detail,.exam-row{border-color:#536171!important}
+.dashboard-empty,.empty{color:#F0AD42!important}
+.dashboard-empty b,.empty b{color:#F4F2ED!important}
+.dashboard-empty span,.empty p{color:#C0C5CC!important}
+.flashcard-front{background:linear-gradient(145deg,#526F96,#344354)!important;color:#fff!important}
+.flashcard-back{background:linear-gradient(145deg,#394653,#453B30)!important;color:#F4F2ED!important;border-color:#8B6B3C!important}
+.flashcard-front *,.flashcard-back *{color:inherit!important}
+.flashcards-overview-item:nth-child(even){background:#453B30!important;border-color:#8B6B3C!important}
+.flashcards-subject-panel{background:linear-gradient(120deg,#344354,#453B30)!important}
+.sf-review,.sf-question,.sf-question-card,.sf-result-card{background:#303B49!important;color:#F4F2ED!important;border-color:#596879!important}
+.sf-explanation{background:#453B30!important;color:#F6D6A2!important;border-color:#8B6B3C!important}
+.sf-options button,.sf-mode-back{background:#394653!important;color:#F4F2ED!important;border-color:#596879!important}
+.sf-options button.chosen{background:#344B67!important;border-color:#83A4D0!important}
+.sf-mode-toolbar,.sf-exam-top,.sf-exam-aside{color:#F4F2ED!important}
+.experiences-hero{background:linear-gradient(110deg,#344354,#303B49 55%,#453B30)!important;border-color:#617184!important}
+.experiences-hero h1,.experiences-hero p,.flashcards-hero h1,.flashcards-hero p{color:#F4F2ED!important}
+.experiences-hero-aside>div{background:#394653!important;border-color:#596879!important}
+.experiences-section-heading h2,.experience-form h2{color:#F4F2ED!important}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,
+:focus-visible{outline:3px solid #F0AD42!important;outline-offset:2px!important}
+.footer{border-color:#465363!important;color:#AEB8C4!important}
+.footer button,.footer a{color:#C0C5CC!important}
+.cookie-banner{background:#303B49!important;border-color:#596879!important;color:#F4F2ED!important}
+.toast{background:#303B49!important;border-color:#F0AD42!important;color:#F4F2ED!important}
+.modal-backdrop{background:#111820E8!important}
+.modal-backdrop .panel{background:#303B49!important;color:#F4F2ED!important}
+.mobile-bottom-nav{background:#252E39!important;border-color:#465363!important}
+
+/* Ogni sezione operativa è isolata: solo il comando per tornare alla home resta visibile. */
+.shell.mode-fullscreen .sidebar,
+.shell.mode-fullscreen .scrim,
+.shell.mode-fullscreen .mobile-bottom-nav,
+.shell.mode-fullscreen .footer,
+.shell.mode-fullscreen .cookie-banner,
+.shell.mode-fullscreen .mobile-resume-quiz,
+.shell.mode-fullscreen .top-actions,
+.shell.mode-fullscreen .current-page-title{display:none!important}
+.shell.mode-fullscreen .main{margin-left:0!important;width:100%!important;min-width:0!important}
+.shell.mode-fullscreen .topbar{position:sticky;top:0;z-index:30;height:64px;padding:0 clamp(16px,3vw,42px);justify-content:flex-start;background:#252E39F5!important;border-bottom:1px solid #596879!important}
+.shell.mode-fullscreen .crumb{width:100%;display:flex;align-items:center}
+.shell.mode-fullscreen .back-home-button{display:inline-flex!important}
+.shell.mode-fullscreen .content{width:100%!important;max-width:none!important;margin:0!important;padding:clamp(18px,3vw,38px) clamp(16px,3vw,42px) 48px!important}
+.shell.mode-fullscreen .main:has(.flashcards-page),
+.shell.mode-fullscreen .main:has(.semestre-filtro),
+.shell.mode-fullscreen .main:has(.experiences-page){min-height:calc(100vh - 64px)!important;background:#202832!important}
+.shell.mode-fullscreen .main> .notice{display:none!important}
+.shell.mode-fullscreen .function-home-back{display:none!important}
+@media(max-width:800px){
+ .shell.mode-fullscreen .topbar{height:58px;padding:0 14px}
+ .shell.mode-fullscreen .content{padding:18px 14px 30px!important}
+ .shell.mode-fullscreen .main{margin-left:0!important}
+}
