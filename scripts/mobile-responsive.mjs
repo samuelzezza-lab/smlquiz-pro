@@ -58,10 +58,6 @@ try {
     const pageErrors = []
     page.on('pageerror', error => pageErrors.push(error.message))
     const mobileNavExpected = viewport.width <= 800 || (viewport.height <= 500 && viewport.width > viewport.height)
-    // La dashboard pubblica è /come-funziona; /quiz è invece il catalogo delle esercitazioni.
-    await page.goto(`${baseUrl}/come-funziona`, { waitUntil: 'domcontentloaded', timeout: 45000 })
-    await page.locator('.mobile-bottom-nav button').first().waitFor({ state: mobileNavExpected ? 'visible' : 'attached', timeout: 20000 })
-    await page.evaluate(() => document.fonts.ready)
     const catalogHeaders = {
       'access-control-allow-origin': '*',
       'access-control-allow-headers': 'authorization, apikey, content-type, x-client-info',
@@ -108,7 +104,10 @@ try {
         })
       })
     })
-
+    // La dashboard pubblica è /come-funziona; /quiz è invece il catalogo delle esercitazioni.
+    await page.goto(`${baseUrl}/come-funziona`, { waitUntil: 'domcontentloaded', timeout: 45000 })
+    await page.locator('.mobile-bottom-nav button').first().waitFor({ state: mobileNavExpected ? 'visible' : 'attached', timeout: 20000 })
+    await page.evaluate(() => document.fonts.ready)
     const initial = await page.evaluate(() => ({
       width: window.innerWidth,
       viewportMeta: document.querySelector('meta[name="viewport"]')?.getAttribute('content') || '',
