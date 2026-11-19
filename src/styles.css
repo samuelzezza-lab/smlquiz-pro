@@ -3213,3 +3213,25 @@ html,body,#root{max-width:100%;overflow-x:clip}
  .flashcards-controls{grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr)}
  .flashcards-controls button{font-size:10px}
 }
+
+
+/* Percorsi guidati e leggibili nelle schermate principali */
+.easy-guide{display:grid;grid-template-columns:56px minmax(0,1fr);gap:14px 18px;align-items:start;margin:0 0 24px;padding:clamp(18px,2.8vw,26px);border:1px solid rgba(111,153,230,.24);border-radius:20px;background:linear-gradient(135deg,rgba(36,73,133,.22),rgba(18,27,45,.92));box-shadow:0 12px 34px rgba(0,0,0,.12)}
+.easy-guide-icon{width:56px;height:56px;display:grid;place-items:center;border-radius:16px;background:rgba(76,139,255,.16);color:#8dbaff}
+.easy-guide>div:nth-child(2){min-width:0}
+.easy-guide strong{display:block;font-size:clamp(19px,2.2vw,23px);line-height:1.3;letter-spacing:-.02em;color:var(--text,#f4f7ff)}
+.easy-guide p{max-width:850px;margin:7px 0 0;font-size:16px;line-height:1.65;color:var(--muted,#b5c0d4)}
+.easy-guide-steps{grid-column:2;display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:2px}
+.easy-guide-steps span{display:inline-flex;align-items:center;gap:8px;min-height:40px;font-size:14px;line-height:1.4;color:var(--text,#eaf0ff)}
+.easy-guide-steps b{display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;border-radius:50%;background:rgba(76,139,255,.2);color:#a9cbff;font-size:14px}
+.progress-page .stats{gap:14px}
+.progress-page .stat{min-height:112px;padding:18px}
+.progress-page .stat span{font-size:14px;line-height:1.45}
+.progress-page .stat b{font-size:clamp(25px,3vw,32px)}
+.leaderboard-page .subject-leaderboard-settings,.leaderboard-page .subject-leaderboard-filter{padding:clamp(18px,2.5vw,26px)}
+.leaderboard-page .subject-leaderboard-controls label,.leaderboard-page .leaderboard-subject-search label{font-size:15px;font-weight:650}
+.leaderboard-page .subject-leaderboard-controls input:not([type=checkbox]),.leaderboard-page .leaderboard-subject-search input{min-height:48px;font-size:16px}
+.buy-page .buy-global-consent{font-size:15px;line-height:1.55}
+.experiences-entry{padding:0;max-width:1200px;margin:0 auto}
+@media(max-width:640px){.easy-guide{grid-template-columns:44px minmax(0,1fr);gap:12px;padding:17px;border-radius:16px}.easy-guide-icon{width:44px;height:44px;border-radius:13px}.easy-guide p{font-size:15px;line-height:1.6}.easy-guide-steps{grid-column:1/-1;display:grid;gap:8px}.easy-guide-steps span{font-size:14px;min-height:36px}.progress-page .stats{grid-template-columns:repeat(2,minmax(0,1fr))}.progress-page .stat{min-height:100px;padding:14px}}
+@media(prefers-reduced-motion:reduce){.easy-guide *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
