@@ -3798,3 +3798,14 @@ html,body,.shell{scroll-behavior:auto!important}
  .guide-quick-links{grid-template-columns:1fr}
  .nav-group{margin-top:6px}
 }
+
+
+/* Header e brand: menu più evidente e accesso rapido al profilo */
+.brand{gap:10px}
+.brand-name{min-width:0;flex:1}
+.brand-profile{width:34px;height:34px;flex:none;display:grid;place-items:center;border:1px solid #8f7be8;border-radius:50%;background:linear-gradient(145deg,#a18af4,#4c568e);color:#fff;font:800 14px system-ui;cursor:pointer;box-shadow:0 0 0 3px #8f7be822,0 5px 15px #0005;transition:transform .18s,box-shadow .18s}
+.brand-profile:hover{transform:translateY(-1px);box-shadow:0 0 0 4px #8f7be833,0 7px 18px #0006}
+.hamb{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:38px;padding:0 13px;border:1px solid #8f7be866;border-radius:9px;background:linear-gradient(135deg,#8f7be82b,#38bdf812);color:#f2efff;font-size:12px;font-weight:800;letter-spacing:.2px;cursor:pointer;box-shadow:0 3px 12px #0003}
+.hamb svg{width:20px;height:20px;color:#c8baff;stroke-width:2.5}
+.hamb:hover{background:#8f7be844;border-color:#a995ff;color:#fff}
+@media(max-width:800px){.hamb{min-height:40px;padding:0 14px;font-size:13px}.hamb svg{width:21px;height:21px}}
