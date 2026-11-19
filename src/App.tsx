@@ -24,10 +24,10 @@ function loadAdcashScript(): Promise<void> {
       script.type = 'text/javascript'
       script.src = 'https://acscdn.com/script/aclib.js'
       script.async = true
-      document.head.appendChild(script)
     }
     script.addEventListener('load', () => resolve(), { once: true })
     script.addEventListener('error', () => { adcashScriptPromise = null; reject(new Error('Adcash non disponibile')) }, { once: true })
+    if (!script.isConnected) document.head.appendChild(script)
   })
   return adcashScriptPromise
 }
@@ -784,7 +784,7 @@ export default function App(){
    <span className="footer-consent-note">Preferenze pubblicitarie gestite dal messaggio privacy Google</span>
   </footer>
   <AdcashBanner zoneId="12467710" width={250} height={250} consent={cookieChoice==='all'} className="adcash-square" />
-  </main>>
+  </main>
   {!(questions.length&&current&&!quizPaused&&!quizDismissed)&&<nav className="mobile-bottom-nav" aria-label="Navigazione principale">
    <button type="button" className={page==='home'?'active':''} aria-current={page==='home'?'page':undefined} onClick={()=>go('home')}><Target size={19}/><span>{tr('startQuiz')}</span></button>
    <button type="button" className={page==='semestre'?'active':''} aria-current={page==='semestre'?'page':undefined} onClick={()=>go('semestre')}><GraduationCap size={19}/><span>Semestre</span></button>
