@@ -3,6 +3,27 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './styles.css'
 
+// Rimuove una tantum eventuali Service Worker e cache lasciati dalle vecchie versioni PWA.
+if ('serviceWorker' in navigator) {
+  void (async () => {
+    try {
+      const hadController = Boolean(navigator.serviceWorker.controller);
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map(registration => registration.unregister()));
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.filter(key => key.startsWith('smlquiz-')).map(key => caches.delete(key)));
+      }
+      if (hadController && !sessionStorage.getItem('smlquiz-legacy-pwa-cleared')) {
+        sessionStorage.setItem('smlquiz-legacy-pwa-cleared', '1');
+        window.location.reload();
+      }
+    } catch (error) {
+      console.warn('Pulizia della vecchia cache PWA non riuscita:', error);
+    }
+  })();
+}
+
 type ErrorBoundaryState = { hasError: boolean }
 
 class AppErrorBoundary extends React.Component<React.PropsWithChildren, ErrorBoundaryState> {
