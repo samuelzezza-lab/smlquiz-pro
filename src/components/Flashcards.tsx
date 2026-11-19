@@ -29,6 +29,9 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
   const [loading, setLoading] = useState(false)
   const [consent, setConsent] = useState(false)
   const [ratings, setRatings] = useState<Record<string, 'difficult'|'medium'|'easy'>>({})
+  const [sessionRatings, setSessionRatings] = useState<Record<string, 'difficult'|'medium'|'easy'>>({})
+  const [sessionQueue, setSessionQueue] = useState<string[]>([])
+  const [repeatCounts, setRepeatCounts] = useState<Record<string, number>>({})
   const [deckMode, setDeckMode] = useState<'all'|'difficult'>('all')
   const cardRef = useRef<HTMLDivElement>(null)
   const notifyRef = useRef(notify)
@@ -39,28 +42,29 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     if (!query) return subjects
     return subjects.filter(subject => (subject.traduzioni?.it?.nome || subject.nome).toLocaleLowerCase('it').includes(query))
   }, [subjects, subjectSearch])
-  // Nel mazzo principale restano soltanto le carte non ancora valutate.
-  // Le carte difficili restano accessibili separatamente nel ripasso dedicato.
-  const displayedCards = useMemo(() => deckMode === 'difficult'
-    ? cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'difficult')
-    : cards.filter(card => !(ratings[card.id] ?? card.user_rating)), [cards, deckMode, ratings])
+  const displayedCards = useMemo(() => sessionQueue
+    .map(id => cards.find(card => card.id === id))
+    .filter((card): card is Flashcard => Boolean(card))
+    .filter(card => deckMode === 'all' || (sessionRatings[card.id] ?? ratings[card.id] ?? card.user_rating) === 'difficult'),
+    [sessionQueue, cards, deckMode, sessionRatings, ratings])
   const current = displayedCards[index]
-  const progressTotal = deckMode === 'difficult' ? displayedCards.length : (unlocked ? total : Math.min(total, FREE_LIMIT))
-  const completedInDeck = cards.filter(card => Boolean(ratings[card.id] ?? card.user_rating)).length
-  const easyCount = cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'easy').length
-  const difficultCount = cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'difficult').length
-  const ratedCount = cards.filter(card => ratings[card.id] || card.user_rating).length
+  const accessibleTotal = unlocked ? Math.min(total, 300) : Math.min(total, FREE_LIMIT)
+  const reviewedCount = Object.keys(sessionRatings).length
+  const easyCount = Object.values(sessionRatings).filter(value => value === 'easy').length
+  const difficultCount = Object.values(sessionRatings).filter(value => value === 'difficult').length
+  const mediumCount = Object.values(sessionRatings).filter(value => value === 'medium').length
+  const ratedCount = reviewedCount
   const title = selectedSubject?.traduzioni?.it?.nome || selectedSubject?.nome || 'Flashcard'
 
   const loadDeck = useCallback(async (id: string) => {
     if (!supabase || !id) return
-    setLoading(true); setCards([]); setIndex(0); setFlipped(false); setPaywall(false); setDeckCompleted(false); setUnlocked(false); setRatings({}); setDeckMode('all')
+    setLoading(true); setCards([]); setIndex(0); setFlipped(false); setPaywall(false); setDeckCompleted(false); setUnlocked(false); setRatings({}); setSessionRatings({}); setSessionQueue([]); setRepeatCounts({}); setDeckMode('all')
     try {
       const { data, error } = await supabase.functions.invoke('flashcards-api', { body: { subjectId: id, offset: 0, limit: FREE_LIMIT } })
       if (error) throw error
       if (data?.error) throw new Error(data.error)
       let loaded = (data?.cards ?? []) as Flashcard[]
-      const cardTotal = Number(data?.total_cards ?? 0)
+      const cardTotal = Math.min(300, Number(data?.total_cards ?? 0))
       const hasUnlock = data?.unlocked === true
       if (hasUnlock && loaded.length < cardTotal) {
         while (loaded.length < cardTotal) {
@@ -89,12 +93,13 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       })
       setCards(loaded)
       setRatings(mergedRatings)
+      setSessionRatings({})
+      setSessionQueue(loaded.map(card => card.id))
+      setRepeatCounts({})
       setTotal(cardTotal)
       setUnlocked(hasUnlock)
-      const remainingCards = loaded.filter(card => !(card.user_rating)).length
-      const previewFinished = !hasUnlock && cardTotal > FREE_LIMIT && remainingCards === 0
-      setPaywall(data?.paywall === true && (loaded.length === 0 || previewFinished))
-      setDeckCompleted(loaded.length > 0 && remainingCards === 0 && !previewFinished)
+      setPaywall(data?.paywall === true && loaded.length === 0)
+      setDeckCompleted(loaded.length === 0 && cardTotal === 0)
     } catch (err) {
       notifyRef.current(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
     } finally { setLoading(false) }
@@ -107,64 +112,67 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
 
   const next = useCallback(async () => {
     if (!flipped) { setFlipped(true); return }
-    if (index < displayedCards.length - 1) { setIndex(v => v + 1); setFlipped(false); return }
-    if (!unlocked && total > FREE_LIMIT) { setPaywall(true); return }
-    if (unlocked && cards.length < total) {
-      setLoading(true)
-      try {
-        const { data, error } = await supabase!.functions.invoke('flashcards-api', { body: { subjectId, offset: cards.length, limit: FREE_LIMIT } })
-        if (error) throw error
-        if (data?.error) throw new Error(data.error)
-        const more = (data?.cards ?? []) as Flashcard[]
-        setCards(prev => [...prev, ...more]); setIndex(v => v + 1); setFlipped(false)
-      } catch (err) { notifyRef.current(err instanceof Error ? err.message : 'Errore nel caricamento delle altre carte.') }
-      finally { setLoading(false) }
+    if (displayedCards.length > 1 && current) {
+      setSessionQueue(prev => {
+        const rest = prev.filter((id, i) => !(i === index && id === current.id))
+        return [...rest, current.id]
+      })
+      setIndex(0)
+      setFlipped(false)
       return
     }
-    setDeckCompleted(true)
-  }, [flipped, index, displayedCards.length, unlocked, total, cards.length, subjectId, loading])
+    setFlipped(false)
+  }, [flipped, displayedCards.length, current, index])
 
   const rate = async (rating: 'difficult'|'medium'|'easy') => {
     if (!current) return
-    // Salva subito sul dispositivo: la carta sparisce immediatamente dal mazzo
-    // e il progresso resta anche se la pagina viene smontata o si perde la rete.
-    setRatings(prev => {
-      const updated = { ...prev, [current.id]: rating }
-      try {
-        const key = `smlquiz.flashcards.progress.v1:${user?.id || 'guest'}`
-        const saved = JSON.parse(localStorage.getItem(key) || '{}')
-        const subjectRatings = { ...(saved?.[subjectId] || {}), [current.id]: rating }
-        localStorage.setItem(key, JSON.stringify({ ...saved, [subjectId]: subjectRatings }))
-      } catch { /* il salvataggio cloud resta disponibile per gli utenti autenticati */ }
-      return updated
-    })
+    const cardId = current.id
+    const queueWithoutCurrent = sessionQueue.filter((id, i) => !(i === index && id === cardId))
+    const timesRepeated = repeatCounts[cardId] ?? 0
+    let nextQueue = queueWithoutCurrent
+    if (rating === 'difficult' && timesRepeated < 1) {
+      const insertAt = Math.min(3, queueWithoutCurrent.length)
+      nextQueue = [...queueWithoutCurrent.slice(0, insertAt), cardId, ...queueWithoutCurrent.slice(insertAt)]
+    } else if (rating === 'medium' && timesRepeated < 1) {
+      nextQueue = [...queueWithoutCurrent, cardId]
+    }
+    setSessionRatings(prev => ({ ...prev, [cardId]: rating }))
+    setRatings(prev => ({ ...prev, [cardId]: rating }))
+    setRepeatCounts(prev => ({ ...prev, [cardId]: timesRepeated + 1 }))
+    setSessionQueue(nextQueue)
+    setIndex(0)
+    setFlipped(false)
+    try {
+      const key = `smlquiz.flashcards.progress.v1:${user?.id || 'guest'}`
+      const saved = JSON.parse(localStorage.getItem(key) || '{}')
+      const subjectRatings = { ...(saved?.[subjectId] || {}), [cardId]: rating }
+      localStorage.setItem(key, JSON.stringify({ ...saved, [subjectId]: subjectRatings }))
+    } catch { /* il salvataggio cloud resta disponibile per gli utenti autenticati */ }
     if (user && supabase) {
-      const { error } = await supabase.functions.invoke('flashcards-api', { body: { action: 'rate', subjectId, flashcardId: current.id, rating } })
+      const { error } = await supabase.functions.invoke('flashcards-api', { body: { action: 'rate', subjectId, flashcardId: cardId, rating } })
       if (error) notify('Valutazione salvata su questo dispositivo; sincronizzazione cloud da riprovare.')
     }
-    setFlipped(false)
-    if (deckMode === 'difficult') {
-      if (rating !== 'difficult') setIndex(Math.min(index, Math.max(0, displayedCards.length - 2)))
-      return
-    }
-    // Il mazzo si restringe dopo ogni valutazione: mantenendo lo stesso indice
-    // si passa automaticamente alla prossima carta ancora da fare.
-    if (displayedCards.length <= 1) {
+    if (nextQueue.length === 0) {
       if (!unlocked && total > FREE_LIMIT) setPaywall(true)
       else setDeckCompleted(true)
-    } else if (index >= displayedCards.length - 1) {
-      // Se si valuta l'ultima carta visibile, riparti dalla prima ancora da fare.
-      setIndex(0)
     }
   }
 
   const shuffle = () => {
-    setCards(prev => {
+    setSessionQueue(prev => {
       const copy = [...prev]
       for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]] }
       return copy
     })
     setIndex(0); setFlipped(false); setDeckMode('all'); setDeckCompleted(false)
+  }
+  const changeDeckMode = (mode: 'all'|'difficult') => {
+    setDeckMode(mode)
+    const eligible = cards.filter(card => mode === 'all'
+      ? sessionRatings[card.id] !== 'easy'
+      : (sessionRatings[card.id] ?? ratings[card.id] ?? card.user_rating) === 'difficult')
+    setSessionQueue(eligible.map(card => card.id))
+    setIndex(0); setFlipped(false); setDeckCompleted(false); setPaywall(false)
   }
 
   useEffect(() => {
@@ -211,15 +219,15 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     </div>
     <div className="flashcards-overview">
       <div className="flashcards-overview-item"><span className="flashcards-overview-icon"><BookOpen size={17}/></span><div><strong>{total.toLocaleString('it-IT')}</strong><small>Carte disponibili</small></div></div>
-      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-success"><Check size={17}/></span><div><strong>{easyCount}</strong><small>Facili</small></div></div>
-      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-review"><Sparkles size={17}/></span><div><strong>{difficultCount}</strong><small>Da ripassare</small></div></div>
-      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-progress"><Layers3 size={17}/></span><div><strong>{ratedCount}</strong><small>Valutate</small></div></div>
+      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-success"><Check size={17}/></span><div><strong>{easyCount}</strong><small>Imparate · Facili</small></div></div>
+      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-review"><Sparkles size={17}/></span><div><strong>{difficultCount}</strong><small>Difficili</small></div></div>
+      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-progress"><Layers3 size={17}/></span><div><strong>{mediumCount}</strong><small>Medie</small></div></div>
     </div>
     {loading && <div className="panel empty">Caricamento flashcard…</div>}
     {!loading && cards.length > 0 && !paywall && !deckCompleted && current && <>
       <div className="flashcards-progress">
-        <div className="flashcards-progress-label"><span>Restano {displayedCards.length} di {progressTotal}{!unlocked && total > FREE_LIMIT ? ' · Anteprima gratuita' : ''}</span><span>{completedInDeck} già valutate</span></div>
-        <div className="flashcards-progress-track"><span style={{width: `${Math.min(100, ((index + 1) / Math.max(1, progressTotal)) * 100)}%`}}/></div>
+        <div className="flashcards-progress-label"><span>Studiate {reviewedCount} / {accessibleTotal}{!unlocked && total > FREE_LIMIT ? ' · Gratis' : ''}</span><span>{displayedCards.length} da fare in questo giro</span></div>
+        <div className="flashcards-progress-track"><span style={{width: `${Math.min(100, (reviewedCount / Math.max(1, accessibleTotal)) * 100)}%`}}/></div>
       </div>
       <div className="flashcard-stage">
         <div ref={cardRef} className={`flashcard-3d ${flipped ? 'is-flipped' : ''}`} onClick={() => setFlipped(v => !v)} role="button" tabIndex={0} aria-label={flipped ? 'Mostra la domanda' : 'Gira la flashcard'} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFlipped(v => !v) } }}>
@@ -229,14 +237,18 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       </div>
       {flipped && <div className="flashcard-ratings">
         <button className="rating-difficult" onClick={() => void rate('difficult')}>Difficile</button>
-        <button className="rating-medium" onClick={() => void rate('medium')}>Media</button>
+        <button className="rating-medium" onClick={() => void rate('medium')}>Medio</button>
         <button className="rating-easy" onClick={() => void rate('easy')}><Check size={15}/> Facile</button>
       </div>}
       <div className="flashcards-controls">
         <button className="secondary" disabled={index===0} onClick={() => {setIndex(v=>v-1);setFlipped(false)}}><ArrowLeft size={15}/> Precedente</button>
         <button className="primary" onClick={() => void next()} disabled={loading}>{flipped ? (index === displayedCards.length - 1 ? (!unlocked && total > FREE_LIMIT ? 'Sblocca le altre carte' : cards.length >= total ? 'Completa sessione' : 'Carica altre carte') : 'Prossima carta') : 'Mostra la risposta'} <ArrowRight size={15}/></button>
       </div>
-      {unlocked && <div className="flashcards-deck-actions"><button className="secondary" onClick={shuffle}><Shuffle size={15}/> Mescola</button><button className={deckMode==='difficult'?'primary':'secondary'} onClick={() => {setDeckMode(v=>v==='difficult'?'all':'difficult');setIndex(0);setFlipped(false);setDeckCompleted(false)}}>Solo da ripassare</button></div>}
+      <div className="flashcards-deck-actions">
+        <button className={deckMode==='all'?'primary':'secondary'} onClick={() => changeDeckMode('all')}>Tutte le carte</button>
+        <button className={deckMode==='difficult'?'primary':'secondary'} onClick={() => changeDeckMode('difficult')}>Solo difficili ({cards.filter(card => (sessionRatings[card.id] ?? ratings[card.id] ?? card.user_rating) === 'difficult').length})</button>
+        <button className="secondary" onClick={shuffle}><Shuffle size={15}/> Mescola</button>
+      </div>
       <p className="flashcards-footnote">{user ? 'I tuoi progressi vengono salvati sul tuo account.' : 'Puoi provare gratuitamente senza registrazione. Accedi per salvare le valutazioni.'}</p>
     </>}
     {!loading && deckCompleted && !paywall && <StudyCompletion
@@ -253,7 +265,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       onSecondary={() => { if (selectedSubject) onStartQuiz?.(selectedSubject.id) }}
     />}
     {!loading && total===0 && <StudyCompletion eyebrow="CATALOGO IN CRESCITA" title="Le flashcard di questa materia stanno arrivando." description="Al momento non ci sono ancora carte disponibili per questa materia. SMLQUIZ è in continua crescita: il catalogo verrà ampliato progressivamente con nuove flashcard e contenuti di studio." primaryLabel="Prova un'altra materia" onPrimary={()=>{const nextSubject=subjects.find(s=>s.id!==subjectId);if(nextSubject){setSubjectSearch('');setSubjectId(nextSubject.id)}else setSubjectSearch('')}} secondaryLabel="Allenati con un quiz" onSecondary={()=>{if(selectedSubject)onStartQuiz?.(selectedSubject.id)}}/>}
-    {!loading && total>0 && deckMode==='difficult' && displayedCards.length===0 && !paywall && <div className="panel empty">Non hai carte difficili da ripassare. <button className="simple-link" onClick={()=>setDeckMode('all')}>Torna a tutte le flashcard</button></div>}
+    {!loading && total>0 && deckMode==='difficult' && displayedCards.length===0 && !paywall && !deckCompleted && <div className="panel empty">Non hai carte difficili da ripassare. <button className="simple-link" onClick={()=>changeDeckMode('all')}>Torna a tutte le flashcard</button></div>
     {paywall && <div className="flashcards-paywall-backdrop"><div className="flashcards-paywall panel flashcards-tinder-paywall">
       <div className="flashcards-paywall-top"><span><Heart size={15} fill="currentColor"/> SMLQUIZ PREMIUM</span><span className="flashcards-free-tag">50 / 50 COMPLETATE</span></div>
       <div className="flashcards-paywall-art" aria-hidden="true">
