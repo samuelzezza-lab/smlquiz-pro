@@ -54,11 +54,9 @@ try {
     })
     const pageErrors = []
     page.on('pageerror', error => pageErrors.push(error.message))
-    await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 45000 })
+    // La dashboard pubblica è /come-funziona; /quiz è invece il catalogo delle esercitazioni.
+    await page.goto(`${baseUrl}/come-funziona`, { waitUntil: 'domcontentloaded', timeout: 45000 })
     await page.locator('.mobile-bottom-nav button').first().waitFor({ state: 'visible', timeout: 20000 })
-    // I test partono dalla panoramica: apri Avvia quiz per verificare la vera home.
-    await page.locator('.mobile-bottom-nav button').first().click()
-    await page.waitForURL('**/quiz', { timeout: 10000 })
     await page.evaluate(() => document.fonts.ready)
 
     const initial = await page.evaluate(() => ({
@@ -126,7 +124,7 @@ try {
         width: window.innerWidth,
         path: window.location.pathname,
       }))
-      const expectedPaths = ['/quiz', '/semestre-filtro', '/account', '/account']
+      const expectedPaths = ['/quiz', '/semestre-filtro', '/review', '/account']
       if (state.path !== expectedPaths[index]) failures.push(`${viewport.name}, destinazione ${index + 1}: percorso ${state.path}, atteso ${expectedPaths[index]}`)
       const overflow = Math.max(state.documentWidth, state.bodyWidth) - state.width
       if (overflow > 1) failures.push(`${viewport.name}, destinazione ${index + 1}: overflow di ${overflow}px`)
