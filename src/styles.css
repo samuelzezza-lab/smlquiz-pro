@@ -3235,3 +3235,24 @@ html,body,#root{max-width:100%;overflow-x:clip}
 .experiences-entry{padding:0;max-width:1200px;margin:0 auto}
 @media(max-width:640px){.easy-guide{grid-template-columns:44px minmax(0,1fr);gap:12px;padding:17px;border-radius:16px}.easy-guide-icon{width:44px;height:44px;border-radius:13px}.easy-guide p{font-size:15px;line-height:1.6}.easy-guide-steps{grid-column:1/-1;display:grid;gap:8px}.easy-guide-steps span{font-size:14px;min-height:36px}.progress-page .stats{grid-template-columns:repeat(2,minmax(0,1fr))}.progress-page .stat{min-height:100px;padding:14px}}
 @media(prefers-reduced-motion:reduce){.easy-guide *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* Accessibilità: comandi principali leggibili e facili da raggiungere. */
+.function-home-back{
+  min-height:44px;
+  padding:0 15px;
+  font-size:14px;
+  gap:8px;
+}
+.function-home-back svg{width:17px;height:17px}
+.function-home-back:focus-visible,
+.easy-guide a:focus-visible,
+.easy-guide button:focus-visible{
+  outline:3px solid #9cc7ff;
+  outline-offset:3px;
+}
+.easy-guide-steps span{min-height:44px;font-size:15px}
+@media(max-width:800px){
+  .function-home-back{min-height:44px;font-size:14px}
+  .easy-guide-steps span{min-height:44px;font-size:15px}
+}
