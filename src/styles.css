@@ -3809,3 +3809,15 @@ html,body,.shell{scroll-behavior:auto!important}
 .hamb svg{width:20px;height:20px;color:#c8baff;stroke-width:2.5}
 .hamb:hover{background:#8f7be844;border-color:#a995ff;color:#fff}
 @media(max-width:800px){.hamb{min-height:40px;padding:0 14px;font-size:13px}.hamb svg{width:21px;height:21px}}
+
+
+/* Home header: azioni principali allineate e Menu con testo nero */
+.hamb{color:#111!important;background:#f0ecff!important;border-color:#b9a8f4!important}
+.hamb svg{color:#111!important}
+.hamb:hover{color:#000!important;background:#ddd3ff!important}
+.home-wordmark{font-weight:900;letter-spacing:.7px;font-size:15px;color:var(--text,#f8fafc);margin-left:5px;white-space:nowrap}
+.home-top-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-left:auto}
+.home-buy-credits{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:0 13px;border:1px solid #9b87f2;border-radius:9px;background:linear-gradient(135deg,#8f7be8,#6555bd);color:#fff;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer;box-shadow:0 4px 14px #0003}
+.home-buy-credits:hover{filter:brightness(1.12)}
+.home-profile-avatar{flex:none;cursor:pointer}
+@media(max-width:520px){.home-wordmark{font-size:13px}.home-top-actions{gap:7px}.home-buy-credits{padding:0 9px;font-size:11px;min-height:34px}.home-buy-credits svg{width:13px;height:13px}.home-profile-avatar{width:32px;height:32px}}
