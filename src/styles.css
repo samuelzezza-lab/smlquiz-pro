@@ -4333,3 +4333,55 @@ body { overscroll-behavior-y: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
 }
+
+
+/* SMLQUIZ · ripristino scorrimento globale per tutte le schermate non-quiz.
+   Le viste immersive usano ora lo scroll nativo del documento: un solo asse
+   verticale evita blocchi causati da contenitori annidati con altezza fissa. */
+@media (min-width: 0px) {
+  .shell.function-fullscreen:not(.quiz-active) {
+    height: auto !important;
+    min-height: 100dvh;
+    overflow: visible !important;
+  }
+  .shell.function-fullscreen:not(.quiz-active) .main {
+    height: auto !important;
+    min-height: 100dvh;
+    flex: 1 0 auto;
+    overflow: visible !important;
+    overscroll-behavior-y: auto;
+    -webkit-overflow-scrolling: auto;
+  }
+  .shell.function-fullscreen:not(.quiz-active) .main > .content {
+    height: auto !important;
+    min-height: 100dvh;
+    flex: 0 0 auto;
+    overflow: visible !important;
+  }
+}
+
+/* Semestre Filtro mantiene il proprio contenitore esame dedicato e scorrevole. */
+.sf-mode-screen {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+}
+@media (max-width: 800px) {
+  .sf-mode-screen {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom)) !important;
+  }
+  .sf-mode-screen .sf-question-list,
+  .sf-mode-screen .sf-review-head,
+  .sf-mode-screen .sf-review {
+    min-width: 0;
+    overflow: visible;
+  }
+}
+
+/* Nessuna schermata standard deve bloccare lo scroll verticale del documento. */
+html, body, #root { min-height: 100%; }
+body { overflow-y: auto; }
