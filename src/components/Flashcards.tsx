@@ -215,7 +215,6 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-review"><Sparkles size={17}/></span><div><strong>{difficultCount}</strong><small>Da ripassare</small></div></div>
       <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-progress"><Layers3 size={17}/></span><div><strong>{ratedCount}</strong><small>Valutate</small></div></div>
     </div>
-    {showAds && <div className="flashcards-ad-slot adsterra-slot" data-sml-ad-slot="flashcards-top" aria-label="Spazio pubblicitario" />}
     {loading && <div className="panel empty">Caricamento flashcard…</div>}
     {!loading && cards.length > 0 && !paywall && !deckCompleted && current && <>
       <div className="flashcards-progress">
