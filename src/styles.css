@@ -5794,3 +5794,83 @@ body{background:radial-gradient(ellipse at 75% -10%,#123c91 0,transparent 38%),l
     margin-top:0!important;
   }
 }
+
+
+/* Final palette consistency pass: remove slate-grey surfaces from the redesigned study screens. */
+.shell.function-fullscreen .resolve-heading,
+.shell.mode-fullscreen .resolve-heading,
+.shell .sf-page>.page-heading{
+  background:linear-gradient(115deg,#0b245f 0%,#10357f 62%,#1250a2 100%)!important;
+  border:1px solid rgba(111,164,255,.38)!important;
+  border-radius:20px!important;
+  padding:clamp(22px,3vw,38px)!important;
+}
+.shell.function-fullscreen .resolve-search,
+.shell.mode-fullscreen .resolve-search{
+  background:linear-gradient(145deg,#0b245f,#081d50)!important;
+  border:1px solid rgba(111,164,255,.34)!important;
+}
+.shell.function-fullscreen .resolve-search>div:first-of-type,
+.shell.mode-fullscreen .resolve-search>div:first-of-type{
+  background:#071a49!important;
+  border:1px solid #4772bb!important;
+}
+.shell.function-fullscreen .resolve-filter-grid select,
+.shell.mode-fullscreen .resolve-filter-grid select{
+  background:#071a49!important;
+  color:#f3f7ff!important;
+  border:1px solid #4772bb!important;
+}
+.shell.function-fullscreen .resolve-subject,
+.shell.mode-fullscreen .resolve-subject{
+  background:linear-gradient(145deg,#123b88,#0b245f)!important;
+  border:1px solid rgba(111,164,255,.42)!important;
+  color:#f5f8ff!important;
+}
+.shell.function-fullscreen .resolve-subject:hover,
+.shell.mode-fullscreen .resolve-subject:hover{
+  background:linear-gradient(145deg,#1850a8,#10357f)!important;
+  border-color:#48c9ff!important;
+}
+.shell .dashboard-subject{
+  background:linear-gradient(110deg,#102f79,#0b245f)!important;
+  border:1px solid rgba(111,164,255,.28)!important;
+  border-radius:10px!important;
+  padding:13px 14px!important;
+  margin-top:8px;
+}
+.shell .sf-page .sf-hero{
+  background:linear-gradient(125deg,#0b245f,#10357f 65%,#1250a2)!important;
+  border:1px solid rgba(111,164,255,.38)!important;
+  border-radius:18px!important;
+}
+.shell .sf-page .sf-specs>div{
+  background:linear-gradient(145deg,#123b88,#0b245f)!important;
+  border:1px solid rgba(111,164,255,.34)!important;
+  color:#f5f8ff!important;
+}
+.shell .sf-page .sf-subject{
+  background:linear-gradient(145deg,#102f79,#0b245f)!important;
+  border:1px solid rgba(111,164,255,.34)!important;
+  color:#f5f8ff!important;
+}
+.shell .sf-page .sf-subject.selected{
+  background:linear-gradient(120deg,#1454b7,#10357f)!important;
+  border-color:#48c9ff!important;
+  box-shadow:0 0 0 1px #48c9ff inset,0 8px 22px rgba(0,0,0,.18)!important;
+}
+.shell .sf-page .sf-paywall{
+  background:linear-gradient(145deg,#0b245f,#081d50)!important;
+  border:1px solid rgba(111,164,255,.34)!important;
+}
+.shell .sf-page .sf-paywall-plans article{
+  background:linear-gradient(145deg,#102f79,#091f55)!important;
+  border:1px solid rgba(111,164,255,.34)!important;
+}
+.shell .sf-page .sf-paywall-plans article.featured{
+  background:linear-gradient(145deg,#173d83,#182c70)!important;
+  border-color:#7668df!important;
+}
+.shell .sf-page.sf-mode-screen{
+  background:#061642!important;
+}
