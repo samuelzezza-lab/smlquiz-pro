@@ -4471,3 +4471,26 @@ body { position: relative; }
     padding-bottom: calc(92px + env(safe-area-inset-bottom));
   }
 }
+
+
+/* Scroll fluido senza scrollbar visibile: resta attivo mouse, touch e trackpad. */
+html, body {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#root::-webkit-scrollbar,
+.shell::-webkit-scrollbar,
+.shell .main::-webkit-scrollbar,
+.shell .main > .content::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+html, body, #root, .shell, .shell .main, .shell .main > .content {
+  overscroll-behavior-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+}
