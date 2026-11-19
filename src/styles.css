@@ -3567,3 +3567,42 @@ html:has(.shell.quiz-active),body:has(.shell.quiz-active),body:has(.shell.quiz-a
 .guide-tools-links button svg:last-child{margin-left:auto;color:var(--muted,#9ba9c2)}
 .guide-tools-links button:hover,.guide-primary-grid .launch-card:hover{border-color:var(--accent,#718dca);transform:translateY(-1px)}
 @media(max-width:700px){.guide-primary-grid{grid-template-columns:1fr;gap:10px}.guide-primary-grid .launch-card{min-height:130px;padding:17px}.guide-tools-links{grid-template-columns:repeat(2,minmax(0,1fr))}.guide-tools-links button{font-size:11px;padding:9px;gap:7px}}
+
+
+/* Semplificazione delle aree personali: dettagli secondari su richiesta */
+.simple-disclosure{padding:0;overflow:hidden}
+.simple-disclosure>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:52px;padding:13px 16px;cursor:pointer;list-style:none;color:var(--text,#edf1ff);font-size:13px;font-weight:700}
+.simple-disclosure>summary::-webkit-details-marker{display:none}
+.simple-disclosure>summary>span{display:flex;align-items:center;gap:10px}
+.simple-disclosure>summary>svg{flex:0 0 auto;color:var(--muted,#9ba9c2);transition:transform .18s ease}
+.simple-disclosure[open]>summary>svg{transform:rotate(180deg)}
+.simple-disclosure[open]>summary{border-bottom:1px solid var(--line)}
+.simple-disclosure>.panel,.simple-disclosure>.progress-insights-grid,.simple-disclosure>.subject-performance,.simple-disclosure>.account-security-panel,.simple-disclosure>.account-danger-panel,.simple-disclosure>.settings{margin:14px}
+.progress-simple-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.progress-next-step{padding:18px;margin:18px 0}
+.progress-next-step>div:first-child{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.progress-next-step h3{margin:0 0 4px;font-size:15px}
+.progress-next-step p{margin:0;color:var(--muted,#9ba9c2);font-size:12px}
+.progress-next-step .progress-weak-topic-list{display:grid;gap:10px}
+.progress-details{margin-top:14px}
+.progress-details .progress-insights-grid{margin:14px;gap:12px}
+.progress-details .subject-performance{margin:14px}
+.leaderboard-profile-settings{margin-bottom:14px}
+.account-security-details{margin-top:14px}
+.account-security-details .account-security-panel{margin:14px 0 0}
+.account-danger-details .account-danger-panel{margin:14px}
+.buy-more-options{margin-top:18px}
+.buy-more-options>.account-panel-heading,.buy-more-options>.buy-catalog-heading,.buy-more-options>.pricing-plan,.buy-more-options>.account-payment-note,.buy-more-options>.coupon-form{margin-left:14px;margin-right:14px}
+.buy-more-options>.account-panel-heading{padding-top:16px}
+.buy-more-options>.coupon-form{margin-bottom:14px}
+.settings-simple{padding:8px 18px}
+.settings-simple>div{padding:13px 0}
+.settings-advanced{margin-top:14px}
+.settings-advanced .settings{padding:8px 16px}
+.settings-advanced .settings>div{padding:12px 0}
+@media(max-width:650px){
+ .progress-simple-stats{grid-template-columns:1fr 1fr}
+ .progress-simple-stats .stat:last-child{grid-column:1/-1}
+ .simple-disclosure>summary{min-height:48px;padding:12px}
+ .progress-next-step{padding:14px}
+}
