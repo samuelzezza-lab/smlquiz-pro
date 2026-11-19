@@ -7,6 +7,10 @@ const app = read('src/App.tsx')
 const i18n = read('src/i18n.ts')
 const headers = read('public/_headers')
 const styles = read('src/styles.css')
+const checkout = read('supabase/functions/stripe-checkout/index.ts')
+const webhook = read('supabase/functions/stripe-webhook/index.ts')
+const manifest = read('public/manifest.webmanifest')
+const html = read('index.html')
 
 if (!/export type Language = 'it'/.test(i18n)) fail('The application language must remain Italian-only.')
 if (!/import it from '\.\/locales\/it\.json'/.test(i18n)) fail('The Italian dictionary must be the only loaded locale.')
@@ -41,5 +45,13 @@ for (const path of files) {
   const source = read(path)
   for (const pattern of forbidden) if (pattern.test(source)) fail('Unsafe DOM/code execution sink detected in ' + path + ': ' + pattern)
 }
+
+if (!html.includes('<link rel="manifest" href="/manifest.webmanifest"/>')) fail('The installable PWA manifest must be linked from index.html.')
+if (!manifest.includes('"display": "standalone"') || !manifest.includes('/icon-192.svg') || !manifest.includes('/icon-512.svg')) fail('The PWA manifest must define standalone display and both app icons.')
+if (!app.includes("single:'price_1Uc9w5BCybXKHSfRCFwx5NAT'") || !checkout.includes('price_1Uc9w5BCybXKHSfRCFwx5NAT') || !webhook.includes('price_1Uc9w5BCybXKHSfRCFwx5NAT')) fail('Single-subject purchase must use the same Stripe product in frontend, checkout and webhook.')
+if (app.includes("if(authReady&&!user&&['review','progress'")) fail('Free flashcards must remain reachable for guest users.')
+if (!app.includes("if(!user&&['progress','leaderboard','settings','buy'].includes(p))")) fail('Protected account areas must still require authentication.')
+if (!styles.includes('.shell.mode-fullscreen .mobile-bottom-nav{display:none!important}')) fail('Immersive mobile pages must hide global navigation.')
+
 if (process.exitCode) process.exit(process.exitCode)
 console.log('Security contracts passed: Italian-only UI, password policy, CSP and unsafe-sink scan.')
