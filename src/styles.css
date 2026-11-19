@@ -4289,3 +4289,47 @@ html,body,.shell{scroll-behavior:auto!important}
     padding: 7px 10px;
   }
 }
+
+
+/* SMLQUIZ · scroll nativo fluido e navigazione mobile a selezione singola */
+html { scroll-behavior: auto; }
+body { overscroll-behavior-y: none; }
+.main, .function-fullscreen .main {
+  scroll-behavior: auto;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-gutter: stable;
+}
+.main > .content { min-width: 0; }
+.mobile-bottom-nav button {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: color .14s ease, background-color .14s ease;
+}
+.mobile-bottom-nav button:active { transform: none; }
+.mobile-bottom-nav button.active { position: relative; }
+@media (max-width:800px) {
+  /* La pagina Avvia Quiz deve crescere con i contenuti: niente viewport bloccato. */
+  .home-auth-fullscreen { height: auto; min-height: 100dvh; overflow: visible; }
+  .home-auth-fullscreen .main {
+    height: auto; min-height: 100dvh; overflow: visible;
+    display: flex; flex-direction: column;
+  }
+  .home-auth-fullscreen .main > .content {
+    flex: 1 0 auto; height: auto; min-height: 0;
+    overflow: visible; padding-bottom: calc(104px + env(safe-area-inset-bottom));
+  }
+  /* Nelle viste immersive lo scroll appartiene a un solo contenitore. */
+  .function-fullscreen { height: 100dvh; min-height: 100dvh; overflow: hidden; }
+  .function-fullscreen .main {
+    height: 100dvh; min-height: 0; overflow-x: hidden; overflow-y: auto;
+    overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch;
+  }
+  .function-fullscreen .main > .content { min-height: 0; flex: 0 0 auto; }
+  .mobile-bottom-nav button { min-width: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
