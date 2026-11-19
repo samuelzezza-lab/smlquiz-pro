@@ -29,7 +29,7 @@ type WeakTopic = { topic:string; correct:number; wrong:number; total:number; err
 type StudyCollection = { id:string; name:string; questionIds:string[]; createdAt:string }
 type StudyExam = { id:string; name:string; date:string; note?:string }
 type StudyCloudData = { exams?:{name:string;grade:string;cfu:string}[]; savedQuestions?:Question[]; studyCollections?:StudyCollection[]; studyExams?:StudyExam[]; dailyGoal?:number }
-const pricing = { single:'price_1UdBxFBCybXKHSfRwLeImDFx', jolly:'price_1Uc9yMBCybXKHSfRP4SJ4wuL', session:'price_1UcA1EBCybXKHSfRwyemWunq', site:'price_1UcC6ZBCybXKHSfRotiMdjz9', semestreSingle:'price_1UcVlkBCybXKHSfRs9hj7caG', semestreComplete:'price_1UcVo8BCybXKHSfRDXpOyB0q', flashcards:'price_1UdBxFBCybXKHSfRwLeImDFx' }
+const pricing = { single:'price_1Uc9w5BCybXKHSfRCFwx5NAT', jolly:'price_1Uc9yMBCybXKHSfRP4SJ4wuL', session:'price_1UcA1EBCybXKHSfRwyemWunq', site:'price_1UcC6ZBCybXKHSfRotiMdjz9', semestreSingle:'price_1UcVlkBCybXKHSfRs9hj7caG', semestreComplete:'price_1UcVo8BCybXKHSfRDXpOyB0q', flashcards:'price_1UdBxFBCybXKHSfRwLeImDFx' }
 const historyKey='smlquiz.history.v1'
 const turnstileSiteKey=import.meta.env.VITE_TURNSTILE_SITE_KEY||''
 const strongPasswordPattern=/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{12,}$/
