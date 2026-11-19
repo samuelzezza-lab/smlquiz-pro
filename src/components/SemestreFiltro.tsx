@@ -10,10 +10,10 @@ type Result={correct:number;wrong:number;blank:number;score:number;review:Review
 const subjects=[{id:'biologia' as const,label:'Biologia',tone:'bio'},{id:'chimica' as const,label:'Chimica e propedeutica biochimica',tone:'chem'},{id:'fisica' as const,label:'Fisica',tone:'phys'}]
 const fmt=(s:number)=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')
 
-type SemestreFiltroProps={onBuyPackage:(priceId:string,subjectIds:string[],consentConfirmed:boolean)=>void;onRequireLogin:()=>void;hasSiteSubscription?:boolean}
+type SemestreFiltroProps={onBuyPackage:(priceId:string,subjectIds:string[],consentConfirmed:boolean)=>void;onRequireLogin:()=>void;onFreeComplete:()=>void}
 const semestreSinglePrice='price_1UcVlkBCybXKHSfRs9hj7caG'
 const semestreCompletePrice='price_1UcVo8BCybXKHSfRDXpOyB0q'
-export default function SemestreFiltro({onBuyPackage,onRequireLogin,hasSiteSubscription=false}:SemestreFiltroProps){
+export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComplete}:SemestreFiltroProps){
  const [subject,setSubject]=useState<SubjectId>('biologia')
  const [mode,setMode]=useState<'intro'|'exam'|'result'>('intro')
  const [examId,setExamId]=useState('')
@@ -29,27 +29,20 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,hasSiteSubsc
  const [paywall,setPaywall]=useState(false)
  const [accessType,setAccessType]=useState<'free'|'single_subject'|'complete'|'unlimited'|''>('')
  const [digitalConsent,setDigitalConsent]=useState(false)
- const [freeUsed,setFreeUsed]=useState(0),[freeRemaining,setFreeRemaining]=useState(5),[freeUsageLoaded,setFreeUsageLoaded]=useState(false)
  const finishLock=useRef(false)
  const draftKey='smlquiz.semestre-filtro-draft.v1'
- useEffect(()=>{let active=true;if(!supabase)return;void supabase.rpc('get_semestre_filtro_free_usage').then(({data,error})=>{if(!active||error||!data)return;const usage=data as {free_used?:number;free_remaining?:number};setFreeUsed(Math.max(0,Math.min(5,Number(usage.free_used)||0)));setFreeRemaining(Math.max(0,Math.min(5,Number(usage.free_remaining)||0)));setFreeUsageLoaded(true)});return()=>{active=false}},[])
  useEffect(()=>{
   try{
    const raw=localStorage.getItem(draftKey)
    if(!raw)return
    const draft=JSON.parse(raw) as {examId?:string;exam?:Question[];answers?:Record<string,string>;subject?:SubjectId;startedAt?:number;accessType?:'free'|'single_subject'|'complete'|'unlimited'}
-   if(!draft.examId||!Array.isArray(draft.exam)||draft.exam.length!==31||!draft.startedAt){localStorage.removeItem(draftKey);return}
-   const elapsed=Math.max(0,Date.now()-draft.startedAt)
-   if(elapsed>=3000000){localStorage.removeItem(draftKey);window.dispatchEvent(new Event('smlquiz-semestre-draft-change'));return}
-   const remaining=Math.max(0,3000-Math.floor(elapsed/1000))
-   const resume=window.confirm(`Hai una simulazione precedente di Semestre Filtro con ${fmt(remaining)} rimanenti. Vuoi riprenderla? Se scegli Annulla, la vecchia bozza verrà eliminata e potrai iniziare una nuova prova da 50:00.`)
-   if(!resume){localStorage.removeItem(draftKey);window.dispatchEvent(new Event('smlquiz-semestre-draft-change'));return}
-   setExamId(draft.examId);setExam(draft.exam);setAnswers(draft.answers||{});setSubject(draft.subject||'biologia');setAccessType(draft.accessType||'');setStartedAt(draft.startedAt);setSeconds(remaining);setMode('exam')
+   if(!draft.examId||!Array.isArray(draft.exam)||draft.exam.length!==31||!draft.startedAt||Date.now()-draft.startedAt>=3000000)return
+   setExamId(draft.examId);setExam(draft.exam);setAnswers(draft.answers||{});setSubject(draft.subject||'biologia');setAccessType(draft.accessType||'');setStartedAt(draft.startedAt);setSeconds(Math.max(0,3000-Math.floor((Date.now()-draft.startedAt)/1000)));setMode('exam')
   }catch{localStorage.removeItem(draftKey)}
  },[])
  useEffect(()=>{
   if(mode!=='exam'||!examId||exam.length!==31||!startedAt)return
-  try{localStorage.setItem(draftKey,JSON.stringify({examId,exam,answers,subject,startedAt,accessType}))}catch{};window.dispatchEvent(new Event('smlquiz-semestre-draft-change'))
+  try{localStorage.setItem(draftKey,JSON.stringify({examId,exam,answers,subject,startedAt,accessType}))}catch{}
  },[mode,examId,exam,answers,subject,startedAt,accessType])
  const exitMode=()=>{if(mode==='exam'&&!window.confirm('Uscire dalla simulazione? Le risposte inserite vengono salvate su questo dispositivo e potrai riprendere la prova riaprendola.'))return;if(window.history.state?.semestreFiltroMode)window.history.back();else setMode('intro')}
  useEffect(()=>{const onPopState=()=>{if(mode!=='intro'){setMode('intro');setStartedAt(null)}};window.addEventListener('popstate',onPopState);return()=>window.removeEventListener('popstate',onPopState)},[mode])
@@ -62,10 +55,10 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,hasSiteSubsc
   try{
    const {data,error:rpcError}=await supabase.rpc('submit_semestre_filtro_exam',{p_exam_id:examId,p_answers:answers})
    if(rpcError)throw rpcError
-   setResult(data as Result);setMode('result');try{localStorage.removeItem(draftKey)}catch{};window.dispatchEvent(new Event('smlquiz-semestre-draft-change'))
+   setResult(data as Result);setMode('result');try{localStorage.removeItem(draftKey)}catch{}if(accessType==='free')onFreeComplete()
   }catch(e){setError(e instanceof Error?e.message:'Consegna non riuscita. Riprova.');finishLock.current=false}
   finally{setSubmitting(false)}
- },[examId,answers])
+ },[examId,answers,accessType,onFreeComplete])
  useEffect(()=>{
   if(mode!=='exam'||!startedAt)return
   const tick=()=>setSeconds(Math.max(0,3000-Math.floor((Date.now()-startedAt)/1000)))
@@ -83,28 +76,27 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,hasSiteSubsc
    if(refreshError||!refreshed.session){onRequireLogin();throw new Error('Sessione scaduta. Accedi di nuovo e riprova.')}
    const {data,error}=await supabase.rpc('start_semestre_filtro_exam',{p_materia:subject})
    if(error)throw error
-   const payload=data as {exam_id?:string;questions?:Question[];duration_seconds?:number;paywall?:boolean;access_type?:'free'|'single_subject'|'complete'|'unlimited';free_used?:number;free_remaining?:number}
-   if(payload?.paywall){setPaywall(true);setFreeUsed(5);setFreeRemaining(0);setFreeUsageLoaded(true);return}
+   const payload=data as {exam_id?:string;questions?:Question[];duration_seconds?:number;paywall?:boolean;access_type?:'free'|'single_subject'|'complete'|'unlimited'}
+   if(payload?.paywall){setPaywall(true);return}
    if(!payload?.exam_id||payload.questions?.length!==31)throw new Error('Il materiale per questa simulazione non è ancora completo. SMLQUIZ è in continua crescita: nuove domande e simulazioni verranno aggiunte progressivamente. Nel frattempo puoi scegliere un’altra materia.')
-   setPaywall(false);setAccessType(payload.access_type||'');if(typeof payload.free_used==='number')setFreeUsed(payload.free_used);if(typeof payload.free_remaining==='number')setFreeRemaining(payload.free_remaining);setFreeUsageLoaded(true)
-   setExamId(payload.exam_id);setExam(payload.questions);setAnswers({});setResult(null);setSeconds(3000);setStartedAt(Date.now());finishLock.current=false;try{localStorage.setItem(draftKey,JSON.stringify({examId:payload.exam_id,exam:payload.questions,answers:{},subject,startedAt:Date.now(),accessType:payload.access_type||''}))}catch{};window.dispatchEvent(new Event('smlquiz-semestre-draft-change'));window.history.pushState({...window.history.state,semestreFiltroMode:true},'','/semestre-filtro');setMode('exam')
+   setPaywall(false);setAccessType(payload.access_type||'')
+   setExamId(payload.exam_id);setExam(payload.questions);setAnswers({});setResult(null);setSeconds(3000);setStartedAt(Date.now());finishLock.current=false;try{localStorage.setItem(draftKey,JSON.stringify({examId:payload.exam_id,exam:payload.questions,answers:{},subject,startedAt:Date.now(),accessType:payload.access_type||''}))}catch{}window.history.pushState({...window.history.state,semestreFiltroMode:true},'','/semestre-filtro');setMode('exam')
   }catch(e){const message=e instanceof Error?e.message:'Non riesco a preparare la simulazione.';if(message.toLowerCase().includes('accedere')){onRequireLogin();return}setError(message)}
   finally{setLoading(false)}
  }
  const review=useMemo(()=>result?.review||[],[result])
  return <section className={"content progress-page sf-page "+(mode!=='intro'?"sf-mode-screen":"")}>
   {mode==='intro'&&<>
-   <div className="page-heading"><div><div className="eyebrow"><GraduationCap size={15}/> PROVA NAZIONALE · A.A. 2026/27</div><h1>Semestre Filtro</h1><p>Esercitati con simulazioni simili alla prova di accesso a Medicina, Odontoiatria e Veterinaria. Scegli una materia e inizia: al resto pensa SMLQUIZ.</p></div></div>
-   <div className="sf-hero panel"><div><span className="sf-kicker">FORMATO D'ESAME</span><h2>Allenati come il giorno della prova.</h2><p>Una prova completa, con timer e correzione alla fine. Rispondi con calma e consegna quando hai terminato.</p></div><div className="sf-big-number">31<small>quesiti</small></div></div>
-   <div className="sf-specs"><div><b>31</b><span>Domande per prova</span></div><div><b>21 + 10</b><span>Due tipi di quesito</span></div><div><b>50 min</b><span>Tempo a disposizione</span></div><div><b>Alla fine</b><span>Vedi correzione e punteggio</span></div></div>
-   
-   <p className="sf-scoring-note">Sono simulazioni di allenamento create da SMLQUIZ, non prove ufficiali. Ogni prova contiene 31 domande della materia scelta.</p>
-   <div className="section-head"><div><h2>Da quale materia vuoi iniziare?</h2><p>Seleziona una materia qui sotto. Puoi cambiare scelta in qualsiasi momento prima di iniziare.</p></div></div>
+   <div className="page-heading"><div><div className="eyebrow"><GraduationCap size={15}/> PROVA NAZIONALE · A.A. 2026/27</div><h1>Semestre Filtro</h1><p>Preparazione per Medicina, Odontoiatria e Veterinaria. Il semestre filtro 2026/27 prevede lo stesso programma nazionale e le stesse tre prove per tutti e tre i corsi.</p></div></div>
+   <div className="sf-hero panel"><div><span className="sf-kicker">FORMATO D'ESAME</span><h2>Allenati come il giorno della prova.</h2><p>31 quesiti · 50 minuti · soluzioni visibili soltanto alla consegna.</p></div><div className="sf-big-number">31<small>quesiti</small></div></div>
+   <div className="sf-specs"><div><b>21</b><span>Scelta multipla</span></div><div><b>10</b><span>Completamento</span></div><div><b>50 min</b><span>Tempo massimo</span></div><div><b>+1 / −0,1</b><span>Corretta / errata</span></div></div>
+   <div className="notice"><div><b>Un’unica preparazione per tre corsi</b><span>Le simulazioni sono valide per Medicina e Chirurgia, Odontoiatria e Protesi Dentaria e Medicina Veterinaria: il programma e le tre materie del Semestre Filtro sono comuni.</span></div></div>
+   <p className="sf-scoring-note">Queste sono simulazioni didattiche create da SMLQUIZ, non prove ufficiali del Ministero. Ogni simulazione seleziona 31 quesiti dalla banca dati della materia.</p>
+   <div className="section-head"><div><h2>Scegli la materia</h2><p>Ogni prova contiene 21 domande a scelta multipla e 10 a completamento.</p></div></div>
    <div className="sf-subjects">{subjects.map(s=><button key={s.id} className={'sf-subject panel '+(subject===s.id?'selected':'')} onClick={()=>setSubject(s.id)}><span className={'sf-subject-mark '+s.tone}>{s.label[0]}</span><span><b>{s.label}</b><small>Simulazione completa da 31 quesiti</small></span><span className="sf-radio">{subject===s.id?'✓':''}</span></button>)}</div>
    {error&&<div className="notice">{error}</div>}
-    {hasSiteSubscription && <div className="panel sf-subscription-active"><b>Accesso completo attivo</b><p>Il tuo abbonamento Tutto il Sito include le simulazioni illimitate di Biologia, Chimica e Fisica.</p></div>}
-    <div className="sf-start-row"><div><b>{hasSiteSubscription?'Simulazioni illimitate incluse':freeUsageLoaded?`${freeRemaining} simulazioni gratuite disponibili`:'Verifica simulazioni gratuite…'}</b><small>{hasSiteSubscription?'Il tuo abbonamento Tutto il Sito è attivo.':freeUsageLoaded?`${freeUsed} di 5 già utilizzate · quota totale per account, non giornaliera.`:'La disponibilità viene aggiornata direttamente dal tuo account.'}</small></div><button className="primary" disabled={loading} onClick={()=>void start()}>{loading?'Preparazione…':'Inizia simulazione'} <ArrowRight size={16}/></button></div>
-    {!hasSiteSubscription && <div className="sf-paywall panel sf-pricing-always"><div className="eyebrow">{paywall?'SIMULAZIONI GRATUITE ESAURITE':'PACCHETTI SEMESTRE FILTRO'}</div><h2>Continua ad allenarti</h2><p>{paywall?'Hai utilizzato tutte le 5 simulazioni gratuite. Sblocca questa materia oppure tutte e tre.':'Puoi acquistare l’accesso anche prima di esaurire le simulazioni gratuite.'}</p><div className="sf-paywall-plans"><article><span>UNA MATERIA</span><h3>Semestre Filtro – {subjects.find(s=>s.id===subject)?.label}</h3><p>Tutte le simulazioni della materia selezionata, senza limiti.</p><strong>1,99 €</strong><button className="primary" disabled={!digitalConsent} onClick={()=>onBuyPackage(semestreSinglePrice,[subject],digitalConsent)}>Sblocca questa materia</button></article><article className="featured"><span>PACCHETTO COMPLETO</span><h3>Semestre Filtro – Completo</h3><p>Accesso illimitato a Biologia, Chimica e Fisica: tutte le 900 domande.</p><strong>3,99 €</strong><button className="primary" disabled={!digitalConsent} onClick={()=>onBuyPackage(semestreCompletePrice,[],digitalConsent)}>Sblocca tutte e 3</button></article></div><label className="sf-digital-consent"><input type="checkbox" checked={digitalConsent} onChange={e=>setDigitalConsent(e.target.checked)}/> Richiedo l'accesso immediato ai contenuti digitali e riconosco che, iniziata la fornitura, perdo il diritto di recesso.</label>{!digitalConsent&&<small className="sf-consent-hint">Conferma per procedere al pagamento.</small>}</div>}
+   <div className="sf-start-row"><div><b>5 simulazioni gratuite totali per account</b><small>Non si rinnovano ogni giorno. Dopo le prime cinque puoi scegliere il pacchetto più adatto.</small></div><button className="primary" disabled={loading} onClick={()=>void start()}>{loading?'Preparazione…':'Inizia simulazione'} <ArrowRight size={16}/></button></div>
+   <div className="sf-paywall panel sf-pricing-always"><div className="eyebrow">{paywall?'SIMULAZIONI GRATUITE ESAURITE':'PACCHETTI SEMESTRE FILTRO'}</div><h2>Continua ad allenarti</h2><p>{paywall?'Hai utilizzato tutte le 5 simulazioni gratuite. Sblocca questa materia oppure tutte e tre.':'Puoi acquistare l’accesso anche prima di esaurire le simulazioni gratuite.'}</p><div className="sf-paywall-plans"><article><span>UNA MATERIA</span><h3>Semestre Filtro – {subjects.find(s=>s.id===subject)?.label}</h3><p>Tutte le simulazioni della materia selezionata, senza limiti.</p><strong>1,99 €</strong><button className="primary" disabled={!digitalConsent} onClick={()=>onBuyPackage(semestreSinglePrice,[subject],digitalConsent)}>Sblocca questa materia</button></article><article className="featured"><span>PACCHETTO COMPLETO</span><h3>Semestre Filtro – Completo</h3><p>Accesso illimitato a Biologia, Chimica e Fisica: tutte le 900 domande.</p><strong>3,99 €</strong><button className="primary" disabled={!digitalConsent} onClick={()=>onBuyPackage(semestreCompletePrice,[],digitalConsent)}>Sblocca tutte e 3</button></article></div><label className="sf-digital-consent"><input type="checkbox" checked={digitalConsent} onChange={e=>setDigitalConsent(e.target.checked)}/> Richiedo l'accesso immediato ai contenuti digitali e riconosco che, iniziata la fornitura, perdo il diritto di recesso.</label>{!digitalConsent&&<small className="sf-consent-hint">Conferma per procedere al pagamento.</small>}</div>
   </>}
   {mode==='exam'&&<>
    <div className="sf-mode-toolbar"><button type="button" className="sf-mode-back" onClick={exitMode}><ArrowLeft size={17}/> Indietro</button><span>MODALITÀ ESAME</span></div><div className="sf-exam-top"><div><div className="eyebrow">SEMESTRE FILTRO · {subjects.find(s=>s.id===subject)?.label.toUpperCase()}</div><h1>Simulazione d'esame</h1><p>{answered} di 31 risposte inserite · {mcq} a scelta multipla · 10 completamenti</p></div><div className={'sf-clock '+(seconds<300?'urgent':'')}><Clock3 size={18}/><b>{fmt(seconds)}</b></div></div>

@@ -29,12 +29,8 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
   const [loading, setLoading] = useState(false)
   const [consent, setConsent] = useState(false)
   const [ratings, setRatings] = useState<Record<string, 'difficult'|'medium'|'easy'>>({})
-  const [sessionRatings, setSessionRatings] = useState<Record<string, 'difficult'|'medium'|'easy'>>({})
-  const [sessionQueue, setSessionQueue] = useState<string[]>([])
-  const [repeatCounts, setRepeatCounts] = useState<Record<string, number>>({})
   const [deckMode, setDeckMode] = useState<'all'|'difficult'>('all')
   const cardRef = useRef<HTMLDivElement>(null)
-  const loadRequestRef = useRef(0)
   const notifyRef = useRef(notify)
   useEffect(() => { notifyRef.current = notify }, [notify])
   const selectedSubject = useMemo(() => subjects.find(s => s.id === subjectId), [subjects, subjectId])
@@ -43,38 +39,34 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     if (!query) return subjects
     return subjects.filter(subject => (subject.traduzioni?.it?.nome || subject.nome).toLocaleLowerCase('it').includes(query))
   }, [subjects, subjectSearch])
-  const displayedCards = useMemo(() => sessionQueue
-    .map(id => cards.find(card => card.id === id))
-    .filter((card): card is Flashcard => Boolean(card))
-    .filter(card => deckMode === 'all' || (sessionRatings[card.id] ?? ratings[card.id] ?? card.user_rating) === 'difficult'),
-    [sessionQueue, cards, deckMode, sessionRatings, ratings])
+  // Nel mazzo principale restano soltanto le carte non ancora valutate.
+  // Le carte difficili restano accessibili separatamente nel ripasso dedicato.
+  const displayedCards = useMemo(() => deckMode === 'difficult'
+    ? cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'difficult')
+    : cards.filter(card => !(ratings[card.id] ?? card.user_rating)), [cards, deckMode, ratings])
   const current = displayedCards[index]
-  const accessibleTotal = unlocked ? Math.min(total, 300) : Math.min(total, FREE_LIMIT)
-  const cardRating = (card: Flashcard) => sessionRatings[card.id] ?? ratings[card.id] ?? card.user_rating ?? null
-  const reviewedCount = cards.filter(card => cardRating(card) !== null).length
-  const easyCount = cards.filter(card => cardRating(card) === 'easy').length
-  const difficultCount = cards.filter(card => cardRating(card) === 'difficult').length
-  const mediumCount = cards.filter(card => cardRating(card) === 'medium').length
+  const progressTotal = deckMode === 'difficult' ? displayedCards.length : (unlocked ? total : Math.min(total, FREE_LIMIT))
+  const completedInDeck = cards.filter(card => Boolean(ratings[card.id] ?? card.user_rating)).length
+  const easyCount = cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'easy').length
+  const difficultCount = cards.filter(card => (ratings[card.id] ?? card.user_rating) === 'difficult').length
+  const ratedCount = cards.filter(card => ratings[card.id] || card.user_rating).length
   const title = selectedSubject?.traduzioni?.it?.nome || selectedSubject?.nome || 'Flashcard'
 
   const loadDeck = useCallback(async (id: string) => {
-    const requestId = ++loadRequestRef.current
-    if (!supabase || !id) { setLoading(false); return }
-    setLoading(true); setCards([]); setIndex(0); setFlipped(false); setPaywall(false); setDeckCompleted(false); setUnlocked(false); setRatings({}); setSessionRatings({}); setSessionQueue([]); setRepeatCounts({}); setDeckMode('all')
+    if (!supabase || !id) return
+    setLoading(true); setCards([]); setIndex(0); setFlipped(false); setPaywall(false); setDeckCompleted(false); setUnlocked(false); setRatings({}); setDeckMode('all')
     try {
       const { data, error } = await supabase.functions.invoke('flashcards-api', { body: { subjectId: id, offset: 0, limit: FREE_LIMIT } })
-      if (requestId !== loadRequestRef.current) return
       if (error) throw error
       if (data?.error) throw new Error(data.error)
       let loaded = (data?.cards ?? []) as Flashcard[]
-      const cardTotal = Math.min(300, Number(data?.total_cards ?? 0))
+      const cardTotal = Number(data?.total_cards ?? 0)
       const hasUnlock = data?.unlocked === true
       if (hasUnlock && loaded.length < cardTotal) {
         while (loaded.length < cardTotal) {
           const { data: page, error: pageError } = await supabase.functions.invoke('flashcards-api', {
             body: { subjectId: id, offset: loaded.length, limit: FREE_LIMIT }
           })
-          if (requestId !== loadRequestRef.current) return
           if (pageError) throw pageError
           const batch = (page?.cards ?? []) as Flashcard[]
           if (!batch.length) break
@@ -95,21 +87,18 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
         if (rating) mergedRatings[card.id] = rating
         return { ...card, user_rating: rating }
       })
-      if (requestId !== loadRequestRef.current) return
       setCards(loaded)
       setRatings(mergedRatings)
-      setSessionRatings({})
-      const pendingCards = loaded.filter(card => (mergedRatings[card.id] ?? card.user_rating) !== 'easy')
-      setSessionQueue(pendingCards.map(card => card.id))
-      setRepeatCounts({})
       setTotal(cardTotal)
       setUnlocked(hasUnlock)
-      setPaywall(pendingCards.length === 0 && !hasUnlock && cardTotal > FREE_LIMIT)
-      setDeckCompleted(pendingCards.length === 0 && (hasUnlock || cardTotal <= FREE_LIMIT))
+      const remainingCards = loaded.filter(card => !(card.user_rating)).length
+      const previewFinished = !hasUnlock && cardTotal > FREE_LIMIT && remainingCards === 0
+      setPaywall(data?.paywall === true && (loaded.length === 0 || previewFinished))
+      setDeckCompleted(loaded.length > 0 && remainingCards === 0 && !previewFinished)
     } catch (err) {
-      if (requestId === loadRequestRef.current) notifyRef.current(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
-    } finally { if (requestId === loadRequestRef.current) setLoading(false) }
-  }, [user?.id])
+      notifyRef.current(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
+    } finally { setLoading(false) }
+  }, [])
 
   useEffect(() => {
     if (!subjectId && subjects.length) setSubjectId(subjects[0].id)
@@ -118,62 +107,64 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
 
   const next = useCallback(async () => {
     if (!flipped) { setFlipped(true); return }
-    if (index < displayedCards.length - 1) setIndex(value => value + 1)
-    else if (!unlocked && total > FREE_LIMIT) { setPaywall(true); return }
-    else setIndex(0)
-    setFlipped(false)
-  }, [flipped, index, displayedCards.length, unlocked, total])
+    if (index < displayedCards.length - 1) { setIndex(v => v + 1); setFlipped(false); return }
+    if (!unlocked && total > FREE_LIMIT) { setPaywall(true); return }
+    if (unlocked && cards.length < total) {
+      setLoading(true)
+      try {
+        const { data, error } = await supabase!.functions.invoke('flashcards-api', { body: { subjectId, offset: cards.length, limit: FREE_LIMIT } })
+        if (error) throw error
+        if (data?.error) throw new Error(data.error)
+        const more = (data?.cards ?? []) as Flashcard[]
+        setCards(prev => [...prev, ...more]); setIndex(v => v + 1); setFlipped(false)
+      } catch (err) { notifyRef.current(err instanceof Error ? err.message : 'Errore nel caricamento delle altre carte.') }
+      finally { setLoading(false) }
+      return
+    }
+    setDeckCompleted(true)
+  }, [flipped, index, displayedCards.length, unlocked, total, cards.length, subjectId, loading])
 
   const rate = async (rating: 'difficult'|'medium'|'easy') => {
     if (!current) return
-    const cardId = current.id
-    const queueWithoutCurrent = sessionQueue.filter((id, i) => !(i === index && id === cardId))
-    const timesRepeated = repeatCounts[cardId] ?? 0
-    let nextQueue = queueWithoutCurrent
-    if (rating === 'difficult' && timesRepeated < 1) {
-      const insertAt = Math.min(index + 3, queueWithoutCurrent.length)
-      nextQueue = [...queueWithoutCurrent.slice(0, insertAt), cardId, ...queueWithoutCurrent.slice(insertAt)]
-    } else if (rating === 'medium' && timesRepeated < 1) {
-      nextQueue = [...queueWithoutCurrent, cardId]
-    }
-    setSessionRatings(prev => ({ ...prev, [cardId]: rating }))
-    setRatings(prev => ({ ...prev, [cardId]: rating }))
-    setRepeatCounts(prev => ({ ...prev, [cardId]: timesRepeated + 1 }))
-    setSessionQueue(nextQueue)
-    setIndex(Math.min(index, Math.max(0, nextQueue.length - 1)))
-    setFlipped(false)
-    try {
-      const key = `smlquiz.flashcards.progress.v1:${user?.id || 'guest'}`
-      const saved = JSON.parse(localStorage.getItem(key) || '{}')
-      const subjectRatings = { ...(saved?.[subjectId] || {}), [cardId]: rating }
-      localStorage.setItem(key, JSON.stringify({ ...saved, [subjectId]: subjectRatings }))
-    } catch { /* il salvataggio cloud resta disponibile per gli utenti autenticati */ }
+    // Salva subito sul dispositivo: la carta sparisce immediatamente dal mazzo
+    // e il progresso resta anche se la pagina viene smontata o si perde la rete.
+    setRatings(prev => {
+      const updated = { ...prev, [current.id]: rating }
+      try {
+        const key = `smlquiz.flashcards.progress.v1:${user?.id || 'guest'}`
+        const saved = JSON.parse(localStorage.getItem(key) || '{}')
+        const subjectRatings = { ...(saved?.[subjectId] || {}), [current.id]: rating }
+        localStorage.setItem(key, JSON.stringify({ ...saved, [subjectId]: subjectRatings }))
+      } catch { /* il salvataggio cloud resta disponibile per gli utenti autenticati */ }
+      return updated
+    })
     if (user && supabase) {
-      const { error } = await supabase.functions.invoke('flashcards-api', { body: { action: 'rate', subjectId, flashcardId: cardId, rating } })
+      const { error } = await supabase.functions.invoke('flashcards-api', { body: { action: 'rate', subjectId, flashcardId: current.id, rating } })
       if (error) notify('Valutazione salvata su questo dispositivo; sincronizzazione cloud da riprovare.')
     }
-    if (nextQueue.length === 0) {
-      if (deckMode === 'difficult') setDeckCompleted(true)
-      else if (!unlocked && total > FREE_LIMIT) setPaywall(true)
+    setFlipped(false)
+    if (deckMode === 'difficult') {
+      if (rating !== 'difficult') setIndex(Math.min(index, Math.max(0, displayedCards.length - 2)))
+      return
+    }
+    // Il mazzo si restringe dopo ogni valutazione: mantenendo lo stesso indice
+    // si passa automaticamente alla prossima carta ancora da fare.
+    if (displayedCards.length <= 1) {
+      if (!unlocked && total > FREE_LIMIT) setPaywall(true)
       else setDeckCompleted(true)
+    } else if (index >= displayedCards.length - 1) {
+      // Se si valuta l'ultima carta visibile, riparti dalla prima ancora da fare.
+      setIndex(0)
     }
   }
 
   const shuffle = () => {
-    setSessionQueue(prev => {
+    setCards(prev => {
       const copy = [...prev]
       for (let i = copy.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [copy[i], copy[j]] = [copy[j], copy[i]] }
       return copy
     })
     setIndex(0); setFlipped(false); setDeckMode('all'); setDeckCompleted(false)
-  }
-  const changeDeckMode = (mode: 'all'|'difficult') => {
-    setDeckMode(mode)
-    const eligible = cards.filter(card => mode === 'all'
-      ? (sessionRatings[card.id] ?? ratings[card.id] ?? card.user_rating) !== 'easy'
-      : (sessionRatings[card.id] ?? ratings[card.id] ?? card.user_rating) === 'difficult')
-    setSessionQueue(eligible.map(card => card.id))
-    setIndex(0); setFlipped(false); setDeckCompleted(mode === 'all' && eligible.length === 0); setPaywall(false)
   }
 
   useEffect(() => {
@@ -191,16 +182,14 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
   return <section className="content flashcards-page">
     <header className="flashcards-hero">
       <div className="flashcards-hero-copy">
-        <div className="flashcards-eyebrow"><Sparkles size={14}/> RIPASSO SEMPLICE</div>
+        <div className="flashcards-eyebrow"><Sparkles size={14}/> METODO DI STUDIO ATTIVO</div>
         <h1>Flashcard</h1>
-        <p>Scegli una materia, leggi la domanda e tocca la carta per vedere la risposta.</p>
+        <p>Memorizza i concetti chiave, verifica ciò che ricordi e concentra il ripasso sugli argomenti più difficili.</p>
       </div>
-      <div className="flashcards-hero-side">
-        <div className="flashcards-hero-mark" aria-hidden="true"><Layers3 size={30}/></div>
-      </div>
+      <div className="flashcards-hero-mark" aria-hidden="true"><Layers3 size={30}/></div>
     </header>
     <div className="flashcards-subject-panel panel">
-      <div className="flashcards-subject-label"><BookOpen size={16}/><span>Scegli una materia</span></div>
+      <div className="flashcards-subject-label"><BookOpen size={16}/><span>La tua materia</span></div>
       <div className="flashcards-subject-picker">
         <input
           id="flashcards-subject-search"
@@ -216,44 +205,40 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
           {filteredSubjects.map(subject => <option key={subject.id} value={subject.id}>{subject.traduzioni?.it?.nome || subject.nome}</option>)}
           {filteredSubjects.length === 0 && <option value={subjectId} disabled>Nessuna materia trovata</option>}
         </select>
-        <span className="flashcards-subject-results">{filteredSubjects.length} materie disponibili</span>
+        <span className="flashcards-subject-results">{filteredSubjects.length} materie trovate</span>
       </div>
-       
+      <div className="flashcards-subject-count"><strong>{total.toLocaleString('it-IT')}</strong><span>carte disponibili</span></div>
     </div>
     <div className="flashcards-overview">
-      <div className="flashcards-overview-item"><span className="flashcards-overview-icon"><BookOpen size={17}/></span><div><strong>{accessibleTotal.toLocaleString('it-IT')}</strong><small>Carte accessibili</small></div></div>
-      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-success"><Check size={17}/></span><div><strong>{easyCount}</strong><small>Imparate · Facili</small></div></div>
-      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-review"><Sparkles size={17}/></span><div><strong>{difficultCount}</strong><small>Difficili</small></div></div>
-      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-progress"><Layers3 size={17}/></span><div><strong>{mediumCount}</strong><small>Medie</small></div></div>
+      <div className="flashcards-overview-item"><span className="flashcards-overview-icon"><BookOpen size={17}/></span><div><strong>{total.toLocaleString('it-IT')}</strong><small>Carte disponibili</small></div></div>
+      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-success"><Check size={17}/></span><div><strong>{easyCount}</strong><small>Facili</small></div></div>
+      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-review"><Sparkles size={17}/></span><div><strong>{difficultCount}</strong><small>Da ripassare</small></div></div>
+      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-progress"><Layers3 size={17}/></span><div><strong>{ratedCount}</strong><small>Valutate</small></div></div>
     </div>
+    {showAds && <div className="flashcards-ad-slot" data-sml-ad-slot="flashcards-top" aria-label="Spazio pubblicitario" />}
     {loading && <div className="panel empty">Caricamento flashcard…</div>}
     {!loading && cards.length > 0 && !paywall && !deckCompleted && current && <>
       <div className="flashcards-progress">
-        <div className="flashcards-progress-label"><span>Studiate {reviewedCount} / {accessibleTotal}{!unlocked && total > FREE_LIMIT ? ' · Gratis' : ''}</span><span>{displayedCards.length} da fare in questo giro</span></div>
-        <div className="flashcards-progress-track"><span style={{width: `${Math.min(100, (reviewedCount / Math.max(1, accessibleTotal)) * 100)}%`}}/></div>
+        <div className="flashcards-progress-label"><span>Restano {displayedCards.length} di {progressTotal}{!unlocked && total > FREE_LIMIT ? ' · Anteprima gratuita' : ''}</span><span>{completedInDeck} già valutate</span></div>
+        <div className="flashcards-progress-track"><span style={{width: `${Math.min(100, ((index + 1) / Math.max(1, progressTotal)) * 100)}%`}}/></div>
       </div>
-      {showAds && <aside className="compact-ad-slot flashcards-ad-slot flashcards-ad-slot-top" data-ad-slot="flashcards-top" aria-label="Spazio pubblicitario"><span>Pubblicità</span><small>Annuncio</small></aside>}
       <div className="flashcard-stage">
-        <div ref={cardRef} className={`flashcard-3d ${flipped ? 'is-flipped' : ''}`} onClick={() => setFlipped(v => !v)} role="button" tabIndex={0} aria-label={flipped ? 'Mostra la domanda' : 'Gira la flashcard'} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFlipped(v => !v) } }}>
-          <div className="flashcard-face flashcard-front"><span className="flashcard-kicker">DOMANDA</span><div className="flashcard-copy">{current.question_front}</div><span className="flashcard-hint">Tocca qui per vedere la risposta</span></div>
-          <div className="flashcard-face flashcard-back"><span className="flashcard-kicker">RISPOSTA CORRETTA</span><div className="flashcard-copy">{current.answer_back}</div><section className="flashcard-explanation-section" aria-label="Spiegazione"><h3 className="flashcard-explanation-title">SPIEGAZIONE</h3>{current.explanation?.trim() ? <p className="flashcard-explanation">{current.explanation}</p> : <p className="flashcard-explanation flashcard-explanation-missing">Spiegazione non ancora disponibile per questa carta.</p>}</section><span className="flashcard-hint">Quanto è stato facile ricordarlo?</span></div>
+        <div ref={cardRef} className={`flashcard-3d ${flipped ? 'is-flipped' : ''}`} onClick={() => setFlipped(v => !v)} role="button" tabIndex={0} aria-label={flipped ? 'Mostra la domanda' : 'Gira la flashcard'} onKeyDown={e => { if (e.key === 'Enter') setFlipped(v => !v) }}>
+          <div className="flashcard-face flashcard-front"><span className="flashcard-kicker">DOMANDA</span><div className="flashcard-copy">{current.question_front}</div><span className="flashcard-hint">Tocca la carta per rivelare la risposta · SPAZIO</span></div>
+          <div className="flashcard-face flashcard-back"><span className="flashcard-kicker">RISPOSTA CORRETTA</span><div className="flashcard-copy">{current.answer_back}</div><section className="flashcard-explanation-section" aria-label="Spiegazione"><h3 className="flashcard-explanation-title">SPIEGAZIONE</h3>{current.explanation?.trim() ? <p className="flashcard-explanation">{current.explanation}</p> : <p className="flashcard-explanation flashcard-explanation-missing">Spiegazione non ancora disponibile per questa carta.</p>}</section><span className="flashcard-hint">Come hai ricordato questo concetto?</span></div>
         </div>
       </div>
-      {showAds && <aside className="compact-ad-slot flashcards-ad-slot flashcards-ad-slot-middle" data-ad-slot="flashcards-middle" aria-label="Spazio pubblicitario"><span>Pubblicità</span><small>Annuncio</small></aside>}
       {flipped && <div className="flashcard-ratings">
         <button className="rating-difficult" onClick={() => void rate('difficult')}>Difficile</button>
-        <button className="rating-medium" onClick={() => void rate('medium')}>Medio</button>
+        <button className="rating-medium" onClick={() => void rate('medium')}>Media</button>
         <button className="rating-easy" onClick={() => void rate('easy')}><Check size={15}/> Facile</button>
       </div>}
       <div className="flashcards-controls">
         <button className="secondary" disabled={index===0} onClick={() => {setIndex(v=>v-1);setFlipped(false)}}><ArrowLeft size={15}/> Precedente</button>
-        <button className="primary" onClick={() => void next()} disabled={loading}>{flipped ? (index === displayedCards.length - 1 ? (!unlocked && total > FREE_LIMIT ? 'Sblocca le altre carte' : cards.length >= total ? 'Ricomincia il mazzo' : 'Carica altre carte') : 'Prossima carta') : 'Mostra la risposta'} <ArrowRight size={15}/></button>
+        <button className="primary" onClick={() => void next()} disabled={loading}>{flipped ? (index === displayedCards.length - 1 ? (!unlocked && total > FREE_LIMIT ? 'Sblocca le altre carte' : cards.length >= total ? 'Completa sessione' : 'Carica altre carte') : 'Prossima carta') : 'Gira la carta'} <ArrowRight size={15}/></button>
       </div>
-      <div className="flashcards-deck-actions">
-        <button className={deckMode==='all'?'primary':'secondary'} onClick={() => changeDeckMode('all')}>Tutte le carte</button>
-        <button className={deckMode==='difficult'?'primary':'secondary'} onClick={() => changeDeckMode('difficult')}>Solo difficili ({cards.filter(card => (sessionRatings[card.id] ?? ratings[card.id] ?? card.user_rating) === 'difficult').length})</button>
-        <button className="secondary" onClick={shuffle}><Shuffle size={15}/> Mescola</button>
-      </div>
+      {unlocked && <div className="flashcards-deck-actions"><button className="secondary" onClick={shuffle}><Shuffle size={15}/> Mescola</button><button className={deckMode==='difficult'?'primary':'secondary'} onClick={() => {setDeckMode(v=>v==='difficult'?'all':'difficult');setIndex(0);setFlipped(false);setDeckCompleted(false)}}>Solo da ripassare</button></div>}
+      {showAds && <div className="flashcards-ad-slot flashcards-ad-slot-bottom" data-sml-ad-slot="flashcards-bottom" aria-label="Spazio pubblicitario" />}
       <p className="flashcards-footnote">{user ? 'I tuoi progressi vengono salvati sul tuo account.' : 'Puoi provare gratuitamente senza registrazione. Accedi per salvare le valutazioni.'}</p>
     </>}
     {!loading && deckCompleted && !paywall && <StudyCompletion
@@ -263,31 +248,31 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       meta={`${total.toLocaleString('it-IT')} carte disponibili · ${easyCount} facili · ${difficultCount} da ripassare`}
       primaryLabel={deckMode === 'difficult' ? 'Torna alle flashcard da fare' : difficultCount > 0 ? 'Ripassa le carte difficili' : 'Hai completato il mazzo'}
       onPrimary={() => {
-        if (deckMode === 'difficult') { changeDeckMode('all'); return }
-        if (difficultCount > 0) changeDeckMode('difficult')
+        if (deckMode === 'difficult') { setDeckMode('all'); setIndex(0); setFlipped(false); setDeckCompleted(false); return }
+        if (difficultCount > 0) { setDeckMode('difficult'); setIndex(0); setFlipped(false); setDeckCompleted(false) }
       }}
       secondaryLabel="Fai un quiz su questa materia"
       onSecondary={() => { if (selectedSubject) onStartQuiz?.(selectedSubject.id) }}
     />}
     {!loading && total===0 && <StudyCompletion eyebrow="CATALOGO IN CRESCITA" title="Le flashcard di questa materia stanno arrivando." description="Al momento non ci sono ancora carte disponibili per questa materia. SMLQUIZ è in continua crescita: il catalogo verrà ampliato progressivamente con nuove flashcard e contenuti di studio." primaryLabel="Prova un'altra materia" onPrimary={()=>{const nextSubject=subjects.find(s=>s.id!==subjectId);if(nextSubject){setSubjectSearch('');setSubjectId(nextSubject.id)}else setSubjectSearch('')}} secondaryLabel="Allenati con un quiz" onSecondary={()=>{if(selectedSubject)onStartQuiz?.(selectedSubject.id)}}/>}
-    {!loading && total>0 && deckMode==='difficult' && displayedCards.length===0 && !paywall && !deckCompleted && <div className="panel empty">Non hai carte difficili da ripassare. <button className="simple-link" onClick={()=>changeDeckMode('all')}>Torna a tutte le flashcard</button></div>}
+    {!loading && total>0 && deckMode==='difficult' && displayedCards.length===0 && !paywall && <div className="panel empty">Non hai carte difficili da ripassare. <button className="simple-link" onClick={()=>setDeckMode('all')}>Torna a tutte le flashcard</button></div>}
     {paywall && <div className="flashcards-paywall-backdrop"><div className="flashcards-paywall panel flashcards-tinder-paywall">
-      <div className="flashcards-paywall-top"><span><Heart size={15} fill="currentColor"/> CONTINUA A STUDIARE</span><span className="flashcards-free-tag">HAI FINITO LE 50 GRATIS</span></div>
+      <div className="flashcards-paywall-top"><span><Heart size={15} fill="currentColor"/> SMLQUIZ PREMIUM</span><span className="flashcards-free-tag">50 / 50 COMPLETATE</span></div>
       <div className="flashcards-paywall-art" aria-hidden="true">
-        <div className="flashcards-preview-card preview-card-back"><span>FLASHCARD 53</span><Lock size={19}/></div>
+        <div className="flashcards-preview-card preview-card-back"><span>FLASHCARD {Math.min(total,53)}</span><Lock size={19}/></div>
         <div className="flashcards-preview-card preview-card-mid"><span>FLASHCARD 52</span><Lock size={19}/></div>
-        <div className="flashcards-preview-card preview-card-front"><small>ALTRE CARTE DISPONIBILI</small><strong>51–300</strong><span>CARTE DA SBLOCCARE</span><div><Lock size={15}/> PACCHETTO A PAGAMENTO</div></div>
+        <div className="flashcards-preview-card preview-card-front"><small>IL TUO PROSSIMO LIVELLO</small><strong>51–{Math.max(300,total).toLocaleString('it-IT')}+</strong><span>FLASHCARD BLOCCATE</span><div><Lock size={15}/> CONTENUTI PREMIUM</div></div>
         <div className="flashcards-preview-spark">✦</div>
       </div>
-      <span className="flashcards-paywall-kicker">HAI COMPLETATO LE 50 CARTE GRATIS</span>
+      <span className="flashcards-paywall-kicker">HAI SBLOCCATO IL GUSTO DI STUDIARE</span>
       <h2>Non fermarti proprio adesso.</h2>
-      <p className="flashcards-paywall-lead">Hai finito le prime <strong>50 carte</strong> di <strong>{title}</strong>. Con il pacchetto puoi usare anche le carte dalla <strong>51 alla 300</strong>.</p>
-      <div className="flashcards-premium-perks"><span><Check size={14}/> Tutte le 300 carte</span><span><Check size={14}/> Nuove carte future incluse</span><span><Check size={14}/> Paghi una volta, senza abbonamento</span></div>
-      <div className="flashcards-paywall-price"><strong>1,99 €</strong><span>Paghi una volta sola</span></div>
+      <p className="flashcards-paywall-lead">Hai completato le tue <strong>50 flashcard gratuite</strong> di <strong>{title}</strong>. Le successive, dalla <strong>51ª alla {Math.max(300,total).toLocaleString('it-IT')}ª e oltre</strong>, ti aspettano: sblocca l'intero mazzo e continua senza interruzioni.</p>
+      <div className="flashcards-premium-perks"><span><Check size={14}/> Tutte le {total.toLocaleString('it-IT')}+ flashcard</span><span><Check size={14}/> Nuove carte future incluse</span><span><Check size={14}/> Paghi una volta, senza abbonamento</span></div>
+      <div className="flashcards-paywall-price"><strong>1,99 €</strong><span>una tantum · accesso per sempre</span></div>
       <label className="flashcards-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)}/> Acconsento alla fornitura immediata dei contenuti digitali e riconosco la perdita del diritto di recesso nei limiti previsti dalla legge.</label>
       <button className="primary flashcards-unlock" disabled={!consent} onClick={() => onBuy(PRICE_ID,[subjectId],true)}>Sblocca tutte le flashcard <ArrowRight size={17}/></button>
-      {!user && <p className="flashcards-login-note">Per acquistare, accedi o crea un account.</p>}
-      <button className="simple-link" onClick={() => {setPaywall(false);setDeckCompleted(true)}}>Magari più tardi</button>
+      {!user && <p className="flashcards-login-note">Per completare l'acquisto dovrai accedere o creare un account.</p>}
+      <button className="simple-link" onClick={() => setPaywall(false)}>Magari più tardi</button>
     </div></div>}
   </section>
 }

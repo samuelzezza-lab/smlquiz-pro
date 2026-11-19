@@ -22,13 +22,6 @@ Deno.serve(async (req: Request) => {
   const admin = createClient(url, service, { auth: { persistSession: false, autoRefreshToken: false } });
 
   try {
-    const authHeader = req.headers.get("Authorization") ?? "";
-    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
-    if (!token) return reply({ error: "Accesso richiesto. Accedi per continuare." }, 401, origin);
-    const { data: authData, error: authError } = await admin.auth.getUser(token);
-    if (authError || !authData.user) return reply({ error: "Sessione non valida. Accedi di nuovo." }, 401, origin);
-    const userId = authData.user.id;
-
     const body = await req.json();
     const subjectId = String(body.subjectId ?? "").trim();
     if (!subjectId || subjectId.length > 160) return reply({ error: "Materia non valida" }, 400, origin);
@@ -36,8 +29,17 @@ Deno.serve(async (req: Request) => {
     if (subjectError) throw subjectError;
     if (!subject) return reply({ error: "Materia non trovata" }, 404, origin);
 
+    const authHeader = req.headers.get("Authorization") ?? "";
+    const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : "";
+    let userId: string | null = null;
+    if (token) {
+      const { data, error } = await admin.auth.getUser(token);
+      if (!error && data.user) userId = data.user.id;
+    }
+
     const action = String(body.action ?? "list");
     if (action === "rate") {
+      if (!userId) return reply({ error: "Accedi per salvare i progressi" }, 401, origin);
       const flashcardId = String(body.flashcardId ?? "");
       const rating = String(body.rating ?? "");
       if (!flashcardId || !["difficult", "medium", "easy"].includes(rating)) {
@@ -56,24 +58,16 @@ Deno.serve(async (req: Request) => {
     }
 
     let unlocked = false;
-    {
-      const now = new Date().toISOString();
-      const [siteSubscriptions, entitlements, purchases] = await Promise.all([
-        admin.from("user_site_subscriptions").select("id").eq("user_id", userId)
-          .in("status", ["active", "trialing"])
-          .or("current_period_end.is.null,current_period_end.gt." + now).limit(1),
+    if (userId) {
+      const [entitlements, purchases] = await Promise.all([
         admin.from("user_subject_entitlements").select("id").eq("user_id", userId)
-          .eq("materia_id", subjectId).gt("expires_at", now).limit(1),
+          .eq("materia_id", subjectId).gt("expires_at", new Date().toISOString()).limit(1),
         admin.from("user_purchases").select("id").eq("user_id", userId)
           .eq("subject_id", subjectId).eq("payment_status", "paid").limit(1)
       ]);
-      if (siteSubscriptions.error) throw siteSubscriptions.error;
       if (entitlements.error) throw entitlements.error;
       if (purchases.error) throw purchases.error;
-      // Tutto il Sito include tutte le flashcard, senza acquistare un pass separato.
-      unlocked = (siteSubscriptions.data ?? []).length > 0
-        || (entitlements.data ?? []).length > 0
-        || (purchases.data ?? []).length > 0;
+      unlocked = (entitlements.data ?? []).length > 0 || (purchases.data ?? []).length > 0;
     }
 
     const requestedOffset = Number.isInteger(body.offset) ? Math.max(0, body.offset) : 0;
@@ -91,7 +85,7 @@ Deno.serve(async (req: Request) => {
     if (cardsError) throw cardsError;
 
     let progress: Record<string, string> = {};
-    if (cards?.length) {
+    if (userId && cards?.length) {
       const ids = cards.map((card: { id: string }) => card.id);
       const { data: rows, error } = await admin.from("flashcard_reviews")
         .select("flashcard_id,rating").eq("user_id", userId).in("flashcard_id", ids);

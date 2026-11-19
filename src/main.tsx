@@ -3,25 +3,44 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 import './styles.css'
 
-// Rimuove una tantum eventuali Service Worker e cache lasciati dalle vecchie versioni PWA.
+// Gestisce il pulsante di installazione mostrato nell'interfaccia.
+let deferredInstallPrompt: (Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> }) | null = null;
+
+window.addEventListener('beforeinstallprompt', event => {
+  event.preventDefault();
+  deferredInstallPrompt = event as typeof deferredInstallPrompt;
+  window.dispatchEvent(new Event('smlquiz-install-available'));
+});
+
+window.addEventListener('smlquiz-install-request', async () => {
+  if (!deferredInstallPrompt) {
+    window.dispatchEvent(new Event('smlquiz-install-help'));
+    return;
+  }
+  const promptEvent = deferredInstallPrompt;
+  deferredInstallPrompt = null;
+  await promptEvent.prompt();
+  await promptEvent.userChoice;
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+});
+
+// Registra il Service Worker in background senza cancellare le registrazioni
+// e senza forzare un secondo caricamento della pagina.
 if ('serviceWorker' in navigator) {
-  void (async () => {
-    try {
-      const hadController = Boolean(navigator.serviceWorker.controller);
-      const registrations = await navigator.serviceWorker.getRegistrations();
-      await Promise.all(registrations.map(registration => registration.unregister()));
-      if ('caches' in window) {
-        const keys = await caches.keys();
-        await Promise.all(keys.filter(key => key.startsWith('smlquiz-')).map(key => caches.delete(key)));
-      }
-      if (hadController && !sessionStorage.getItem('smlquiz-legacy-pwa-cleared')) {
-        sessionStorage.setItem('smlquiz-legacy-pwa-cleared', '1');
-        window.location.reload();
-      }
-    } catch (error) {
-      console.warn('Pulizia della vecchia cache PWA non riuscita:', error);
-    }
-  })();
+  const registerAppWorker = () => {
+    void navigator.serviceWorker.register('/sw.js', {
+      scope: '/',
+      updateViaCache: 'none'
+    }).catch(error => console.warn('Registrazione PWA non riuscita:', error));
+  };
+  if (document.readyState === 'complete') {
+    window.setTimeout(registerAppWorker, 0);
+  } else {
+    window.addEventListener('load', registerAppWorker, { once: true });
+  }
 }
 
 type ErrorBoundaryState = { hasError: boolean }
@@ -39,7 +58,7 @@ class AppErrorBoundary extends React.Component<React.PropsWithChildren, ErrorBou
 
   render() {
     if (this.state.hasError) {
-      return <main role="alert" style={{minHeight:'100vh',display:'grid',placeContent:'center',padding:24,background:'#09091f',color:'#edf1ff',fontFamily:'system-ui,sans-serif',textAlign:'center'}}>
+      return <main role="alert" style={{minHeight:'100vh',display:'grid',placeContent:'center',padding:24,background:'#050915',color:'#edf1ff',fontFamily:'system-ui,sans-serif',textAlign:'center'}}>
         <div style={{maxWidth:460}}>
           <div style={{fontSize:13,fontWeight:800,letterSpacing:2,color:'#a78bfa'}}>SMLQUIZ PRO</div>
           <h1 style={{fontSize:26,margin:'16px 0 8px'}}>Si è verificato un problema</h1>

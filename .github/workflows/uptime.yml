@@ -27,21 +27,13 @@ jobs:
           fi
           curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 https://smlquiz-pro.pages.dev/ -o /tmp/smlquiz-origin.html
           grep -qi "SMLQUIZ" /tmp/smlquiz-origin.html
-      - name: Check PWA manifest and install icons
+      - name: Check PWA service worker
         run: |
           set -eu
-          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 https://smlquiz-pro.pages.dev/manifest.webmanifest -o /tmp/smlquiz-manifest.json
-          grep -q '"display": "standalone"' /tmp/smlquiz-manifest.json
-          for icon in icon-192.png icon-512.png; do
-            curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 "https://smlquiz-pro.pages.dev/$icon" -o "/tmp/$icon"
-            test -s "/tmp/$icon"
-            file "/tmp/$icon" | grep -q 'PNG image data'
-          done
+          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 https://smlquiz-pro.pages.dev/sw.js -o /tmp/smlquiz-sw.js
+          grep -q "smlquiz-pwa" /tmp/smlquiz-sw.js
       - name: Check Supabase authentication endpoint
-        env:
-          SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
           set -eu
-          test -n "$SUPABASE_ANON_KEY"
-          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 -H "apikey: $SUPABASE_ANON_KEY" https://fgrwwauwnxvrcgqqpksp.supabase.co/auth/v1/health -o /tmp/smlquiz-auth-health.json
+          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 https://fgrwwauwnxvrcgqqpksp.supabase.co/auth/v1/health -o /tmp/smlquiz-auth-health.json
           test -s /tmp/smlquiz-auth-health.json

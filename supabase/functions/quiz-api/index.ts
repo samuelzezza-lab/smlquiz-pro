@@ -524,39 +524,21 @@ Deno.serve(async (req: Request) => {
         return requestJson({ error: message }, 403);
       }
       const attemptId = started.attempt_id as string;
-      // In the normal path the RPC stores questions in the exact order of
-      // p_question_ids. Reuse the already-fetched bank instead of making a
-      // second round-trip to quiz_attempt_questions + domande.
-      let orderedQuestions: { id: string; testo_domanda: string; opzioni: string[]; position: number }[];
-      if (started.existing) {
-        // An idempotent retry must return the original attempt order, not a
-        // newly shuffled order from this request.
-        const { data: rows, error: rowsError } = await admin.from("quiz_attempt_questions")
-          .select("domanda_id,position,domande!inner(id,testo_domanda,opzioni,traduzioni)")
-          .eq("attempt_id", attemptId).order("position");
-        if (rowsError) throw rowsError;
-        orderedQuestions = (rows ?? []).map((row) => {
-          const q = row.domande as unknown as { id: string; testo_domanda: string; opzioni: string[]; traduzioni?: Record<string, any> };
-          const localized = localizedQuestion(q, language);
-          return {
-            id: q.id,
-            testo_domanda: localized.testo_domanda ?? q.testo_domanda,
-            opzioni: localized.opzioni ?? q.opzioni,
-            position: row.position,
-          };
-        });
-      } else {
-        orderedQuestions = selected.map((q, index) => {
-          const localized = localizedQuestion(q, language);
-          return {
-            id: q.id,
-            testo_domanda: localized.testo_domanda ?? q.testo_domanda,
-            opzioni: localized.opzioni ?? q.opzioni,
-            position: index + 1,
-          };
-        });
-      }
-      return requestJson({ attemptId, accessSource: started.access_source, existing: started.existing, language, questions: orderedQuestions });
+      const { data: rows, error: rowsError } = await admin.from("quiz_attempt_questions")
+        .select("domanda_id,position,domande!inner(id,testo_domanda,opzioni,traduzioni)")
+        .eq("attempt_id", attemptId).order("position");
+      if (rowsError) throw rowsError;
+      const questions = (rows ?? []).map((row) => {
+        const q = row.domande as unknown as { id: string; testo_domanda: string; opzioni: string[]; traduzioni?: Record<string, any> };
+        const localized = localizedQuestion(q, language);
+        return {
+          id: q.id,
+          testo_domanda: localized.testo_domanda ?? q.testo_domanda,
+          opzioni: localized.opzioni ?? q.opzioni,
+          position: row.position,
+        };
+      });
+      return requestJson({ attemptId, accessSource: started.access_source, existing: started.existing, language, questions });
     }
 
     if (action === "answer") {

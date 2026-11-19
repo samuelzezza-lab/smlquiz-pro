@@ -1,18 +1,20 @@
 {
-  "id": "/",
-  "name": "SMLQUIZ — Preparazione universitaria",
+  "name": "SMLQUIZ Pro",
   "short_name": "SMLQUIZ",
-  "description": "Quiz universitari, flashcard e simulazioni d'esame per prepararti agli esami.",
-  "lang": "it",
-  "start_url": "/come-funziona",
+  "id": "/",
+  "description": "Quiz universitari, simulazioni d'esame e statistiche per prepararti al meglio.",
+  "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["standalone", "minimal-ui"],
-  "orientation": "any",
-  "background_color": "#09091f",
-  "theme_color": "#09091f",
-  "categories": ["education", "productivity"],
-  "prefer_related_applications": false,
+  "display_override": [
+    "standalone"
+  ],
+  "background_color": "#050915",
+  "theme_color": "#050915",
+  "categories": [
+    "education",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -25,20 +27,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Avvia un quiz",
-      "short_name": "Quiz",
-      "url": "/quiz",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
-    },
-    {
-      "name": "Apri le flashcard",
-      "short_name": "Flashcard",
-      "url": "/review",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }
