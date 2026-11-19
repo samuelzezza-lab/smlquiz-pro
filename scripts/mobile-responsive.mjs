@@ -86,10 +86,10 @@ try {
     if (Math.abs(initial.visualScale - 1) > 0.01) failures.push(`${viewport.name}: scala iniziale diversa da 100% (${initial.visualScale})`)
     const horizontalOverflow = Math.max(initial.documentWidth, initial.bodyWidth) - initial.width
     if (horizontalOverflow > 1) failures.push(`${viewport.name}: overflow orizzontale di ${horizontalOverflow}px`)
-    if (!initial.navVisible) failures.push(`${viewport.name}: navigazione mobile non visibile`)
+    const mobileNavExpected = viewport.width <= 800\n    if (mobileNavExpected && !initial.navVisible) failures.push(`${viewport.name}: navigazione mobile non visibile nella dashboard`)\n    if (!mobileNavExpected && initial.navVisible) failures.push(`${viewport.name}: navigazione mobile inattesa su viewport desktop`)
     if (!initial.homeHeaderVisible) failures.push(`${viewport.name}: barra superiore home non visibile`)
     if (initial.homeHeaderHeight > 78) failures.push(`${viewport.name}: barra home su più righe (${initial.homeHeaderHeight}px)`)
-    if (!initial.homeMenuVisible) failures.push(`${viewport.name}: pulsante Menu home non visibile`)
+    if (mobileNavExpected && !initial.homeMenuVisible) failures.push(`${viewport.name}: pulsante Menu home non visibile`)
     if (!initial.homeBrandVisible) failures.push(`${viewport.name}: marchio SMLQUIZ non visibile in home`)
     if (!initial.creditsVisible) failures.push(`${viewport.name}: acquisto crediti non visibile in home`)
     if (!initial.profileVisible) failures.push(`${viewport.name}: profilo non visibile in home`)
