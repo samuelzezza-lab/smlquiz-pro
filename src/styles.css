@@ -6653,3 +6653,337 @@ body{background:radial-gradient(ellipse at 72% 0%,rgba(31,111,219,.16),transpare
   .shell.quiz-active .quiz-bottom{flex-wrap:wrap!important}
   .shell.quiz-active .quiz-bottom .primary{width:100%!important}
 }
+
+
+/* =========================================================
+   SMLQUIZ · Unified application experience
+   Shared visual language for every working section.
+   ========================================================= */
+:root{
+  --app-bg:#060d1a;
+  --app-surface:#0c1a2e;
+  --app-surface-raised:#10233c;
+  --app-surface-soft:#0a1729;
+  --app-line:rgba(117,165,220,.19);
+  --app-line-strong:rgba(91,174,255,.38);
+  --app-text:#f1f6ff;
+  --app-muted:#9aafca;
+  --app-subtle:#7189a8;
+  --app-blue:#238cff;
+  --app-cyan:#55d9ff;
+  --app-violet:#7968ed;
+  --app-shadow:0 18px 55px rgba(0,0,0,.26);
+}
+.content:not(.home-page){
+  width:min(100%,1440px)!important;
+  margin-inline:auto!important;
+  padding:30px clamp(16px,3vw,42px) 54px!important;
+  color:var(--app-text)!important;
+  gap:22px!important;
+}
+.content:not(.home-page) .page-heading,
+.content:not(.home-page) .account-heading,
+.content:not(.home-page) .experiences-hero,
+.content:not(.home-page) .flashcards-hero,
+.content:not(.home-page) .sf-hero,
+.content:not(.home-page) .resolve-heading{
+  position:relative!important;
+  overflow:hidden!important;
+  padding:clamp(22px,3vw,34px)!important;
+  border:1px solid var(--app-line-strong)!important;
+  border-radius:20px!important;
+  background:
+    radial-gradient(ellipse at 88% 12%,rgba(35,140,255,.22),transparent 42%),
+    radial-gradient(ellipse at 10% 100%,rgba(121,104,237,.12),transparent 38%),
+    linear-gradient(135deg,#102541 0%,#0b192e 60%,#111b37 100%)!important;
+  box-shadow:var(--app-shadow),inset 0 1px rgba(255,255,255,.045)!important;
+}
+.content:not(.home-page) .page-heading h1,
+.content:not(.home-page) .account-heading h1,
+.content:not(.home-page) .experiences-hero h1,
+.content:not(.home-page) .flashcards-hero h1,
+.content:not(.home-page) .sf-hero h1,
+.content:not(.home-page) .resolve-heading h1{
+  color:#f5f8ff!important;
+  font-size:clamp(27px,3vw,39px)!important;
+  line-height:1.12!important;
+  letter-spacing:-1.15px!important;
+}
+.content:not(.home-page) .page-heading p,
+.content:not(.home-page) .account-heading p,
+.content:not(.home-page) .experiences-hero p,
+.content:not(.home-page) .flashcards-hero p,
+.content:not(.home-page) .sf-hero p,
+.content:not(.home-page) .resolve-heading p{
+  color:#a9bdd7!important;
+  max-width:760px;
+  line-height:1.7!important;
+}
+.content:not(.home-page) .eyebrow,
+.content:not(.home-page) .flashcards-eyebrow,
+.content:not(.home-page) .experiences-eyebrow,
+.content:not(.home-page) .sf-kicker,
+.content:not(.home-page) .account-kicker{
+  color:var(--app-cyan)!important;
+  font-size:10px!important;
+  font-weight:850!important;
+  letter-spacing:1.55px!important;
+}
+.content:not(.home-page) .panel,
+.content:not(.home-page) .account-panel,
+.content:not(.home-page) .calc-panel,
+.content:not(.home-page) .calc-overview-card,
+.content:not(.home-page) .stat,
+.content:not(.home-page) .latest-result,
+.content:not(.home-page) .progress-activity-panel,
+.content:not(.home-page) .progress-insight-panel,
+.content:not(.home-page) .experience-card,
+.content:not(.home-page) .sf-question,
+.content:not(.home-page) .sf-exam-aside,
+.content:not(.home-page) .sf-result-hero,
+.content:not(.home-page) .sf-review{
+  border:1px solid var(--app-line)!important;
+  border-radius:16px!important;
+  background:linear-gradient(145deg,rgba(15,34,58,.97),rgba(9,22,39,.98))!important;
+  color:var(--app-text)!important;
+  box-shadow:0 12px 34px rgba(0,0,0,.2),inset 0 1px rgba(255,255,255,.025)!important;
+}
+.content:not(.home-page) h2,
+.content:not(.home-page) h3,
+.content:not(.home-page) h4,
+.content:not(.home-page) strong,
+.content:not(.home-page) b{color:#eef5ff}
+.content:not(.home-page) p,
+.content:not(.home-page) small,
+.content:not(.home-page) label{color:var(--app-muted)}
+.content:not(.home-page) input,
+.content:not(.home-page) select,
+.content:not(.home-page) textarea{
+  min-height:44px!important;
+  border:1px solid rgba(112,157,208,.27)!important;
+  border-radius:10px!important;
+  background:#071529!important;
+  color:#edf5ff!important;
+  box-shadow:inset 0 1px 4px rgba(0,0,0,.18)!important;
+}
+.content:not(.home-page) input::placeholder,
+.content:not(.home-page) textarea::placeholder{color:#7088a8!important}
+.content:not(.home-page) input:focus,
+.content:not(.home-page) select:focus,
+.content:not(.home-page) textarea:focus{
+  outline:none!important;
+  border-color:#42baff!important;
+  box-shadow:0 0 0 3px rgba(35,140,255,.16)!important;
+}
+.content:not(.home-page) button.primary,
+.content:not(.home-page) .primary{
+  min-height:44px!important;
+  border:1px solid rgba(134,200,255,.42)!important;
+  border-radius:10px!important;
+  background:linear-gradient(105deg,#087be5,#6550d6)!important;
+  color:#fff!important;
+  font-weight:800!important;
+  box-shadow:0 8px 22px rgba(18,112,221,.2)!important;
+  transition:transform .18s ease,filter .18s ease,box-shadow .18s ease!important;
+}
+.content:not(.home-page) button.primary:hover,
+.content:not(.home-page) .primary:hover{transform:translateY(-1px);filter:brightness(1.1);box-shadow:0 12px 28px rgba(18,112,221,.28)!important}
+.content:not(.home-page) button.secondary,
+.content:not(.home-page) .secondary{
+  min-height:42px!important;
+  border:1px solid rgba(112,157,208,.27)!important;
+  border-radius:10px!important;
+  background:linear-gradient(145deg,#132b48,#0c1d33)!important;
+  color:#c9dcf4!important;
+}
+.content:not(.home-page) button:disabled{opacity:.45!important;transform:none!important;cursor:not-allowed!important}
+.content:not(.home-page) .notice,
+.content:not(.home-page) .empty,
+.content:not(.home-page) .experiences-empty{
+  border:1px solid var(--app-line)!important;
+  border-radius:13px!important;
+  background:rgba(12,29,50,.86)!important;
+  color:#b9cce4!important;
+}
+.content:not(.home-page) .section-head,
+.content:not(.home-page) .panel-title,
+.content:not(.home-page) .experiences-section-heading,
+.content:not(.home-page) .career-section-heading{
+  color:#eff6ff!important;
+  border-color:var(--app-line)!important;
+}
+.content:not(.home-page) .progress-track,
+.content:not(.home-page) .performance-track,
+.content:not(.home-page) .weak-topic-track,
+.content:not(.home-page) .sf-progress{
+  background:rgba(255,255,255,.085)!important;
+  border-radius:99px!important;
+  overflow:hidden!important;
+}
+.content:not(.home-page) .progress-track i,
+.content:not(.home-page) .performance-track i,
+.content:not(.home-page) .weak-topic-track i,
+.content:not(.home-page) .sf-progress i{
+  background:linear-gradient(90deg,#168cff,#55d9ff)!important;
+  border-radius:99px!important;
+}
+.content:not(.home-page) .stats,
+.content:not(.home-page) .progress-simple-stats,
+.content:not(.home-page) .account-metrics,
+.content:not(.home-page) .buy-metrics,
+.content:not(.home-page) .calc-overview{
+  gap:12px!important;
+}
+.content:not(.home-page) .stat,
+.content:not(.home-page) .account-metric{
+  padding:18px!important;
+  min-width:0!important;
+}
+.content:not(.home-page) .stat strong,
+.content:not(.home-page) .account-metric strong,
+.content:not(.home-page) .calc-overview-card strong{color:#f5f8ff!important}
+.content:not(.home-page) .stat span,
+.content:not(.home-page) .account-metric span{color:#91a9c8!important}
+.content:not(.home-page) .account-layout,
+.content:not(.home-page) .progress-insights-grid,
+.content:not(.home-page) .calc-steps,
+.content:not(.home-page) .career-result-grid{gap:16px!important}
+.content:not(.home-page) .account-panel,
+.content:not(.home-page) .calc-panel,
+.content:not(.home-page) .progress-activity-panel,
+.content:not(.home-page) .progress-insight-panel{padding:clamp(16px,2vw,24px)!important}
+.content:not(.home-page) .account-detail,
+.content:not(.home-page) .active-entitlement-row,
+.content:not(.home-page) .account-ledger-row,
+.content:not(.home-page) .exam-row,
+.content:not(.home-page) .weak-topic-row,
+.content:not(.home-page) .subject-performance{
+  border-color:var(--app-line)!important;
+}
+.content:not(.home-page) .account-avatar,
+.content:not(.home-page) .account-identity .account-avatar,
+.content:not(.home-page) .flashcards-overview-icon,
+.content:not(.home-page) .experience-card-meta{
+  background:linear-gradient(145deg,rgba(24,119,208,.28),rgba(102,78,204,.24))!important;
+  color:#7edfff!important;
+  border:1px solid rgba(95,173,245,.24)!important;
+}
+.content:not(.home-page) .pricing-plan,
+.content:not(.home-page) .buy-semester-plans article{
+  border:1px solid var(--app-line)!important;
+  border-radius:15px!important;
+  background:linear-gradient(145deg,#102541,#0a192d)!important;
+}
+.content:not(.home-page) .pricing-plan.featured,
+.content:not(.home-page) .buy-semester-plans article.featured{
+  border-color:rgba(94,177,255,.55)!important;
+  background:radial-gradient(ellipse at 100% 0%,rgba(35,140,255,.19),transparent 55%),linear-gradient(145deg,#142d4d,#101b38)!important;
+  box-shadow:0 12px 32px rgba(13,91,177,.16)!important;
+}
+/* Flashcards: centered study workspace with consistent navy controls */
+.flashcards-page{max-width:1280px!important;gap:18px!important}
+.flashcards-page .flashcards-hero{min-height:160px!important;display:flex!important;align-items:center!important}
+.flashcards-page .flashcards-subject-panel{display:grid!important;grid-template-columns:minmax(180px,.7fr) minmax(0,2fr)!important;align-items:center!important;gap:20px!important;padding:20px 24px!important}
+.flashcards-page .flashcards-subject-picker{display:grid!important;grid-template-columns:minmax(180px,1fr) minmax(220px,1fr) auto!important;gap:10px!important;align-items:center!important}
+.flashcards-page .flashcards-overview{gap:12px!important}
+.flashcards-page .flashcards-overview-item{min-height:86px!important;padding:16px!important;border:1px solid var(--app-line)!important;border-radius:14px!important;background:linear-gradient(145deg,#102541,#0a192d)!important}
+.flashcards-page .flashcards-overview-item strong{font-size:23px!important;color:#f3f8ff!important}
+.flashcards-page .flashcards-overview-item small{color:#8fa8c8!important}
+.flashcards-page .flashcards-progress{padding:0 4px!important}
+.flashcards-page .flashcards-progress-label{color:#a9bdd7!important}
+.flashcards-page .flashcards-progress-track{height:8px!important;border-radius:99px!important;background:rgba(255,255,255,.09)!important}
+.flashcards-page .flashcards-progress-track span{background:linear-gradient(90deg,#168cff,#55d9ff)!important;border-radius:99px!important}
+.flashcards-page .flashcard-stage{width:100%!important;max-width:980px!important;min-height:360px!important;margin:0 auto!important;perspective:1600px!important}
+.flashcards-page .flashcard-3d{min-height:360px!important;border-radius:22px!important}
+.flashcards-page .flashcard-face{padding:clamp(26px,4vw,48px)!important;border:1px solid rgba(100,170,235,.35)!important;border-radius:22px!important;background:radial-gradient(ellipse at 90% 0%,rgba(35,140,255,.2),transparent 42%),linear-gradient(145deg,#122b49,#09182c)!important;box-shadow:0 24px 65px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.05)!important;color:#f4f8ff!important}
+.flashcards-page .flashcard-back{background:radial-gradient(ellipse at 90% 0%,rgba(121,104,237,.2),transparent 42%),linear-gradient(145deg,#172747,#0a192e)!important}
+.flashcards-page .flashcard-kicker{color:#65d9ff!important;letter-spacing:1.7px!important;font-weight:850!important}
+.flashcards-page .flashcard-copy{max-width:850px!important;color:#f4f8ff!important;line-height:1.55!important}
+.flashcards-page .flashcard-hint{color:#8da8c8!important}
+.flashcards-page .flashcard-ratings,
+.flashcards-page .flashcards-controls,
+.flashcards-page .flashcards-deck-actions{display:flex!important;justify-content:center!important;gap:10px!important;flex-wrap:wrap!important}
+.flashcards-page .flashcard-ratings button,
+.flashcards-page .flashcards-controls button,
+.flashcards-page .flashcards-deck-actions button{min-width:130px!important}
+.flashcards-page .rating-difficult{background:rgba(255,105,117,.12)!important;border:1px solid rgba(255,125,135,.38)!important;color:#ffb2b8!important;border-radius:10px!important}
+.flashcards-page .rating-medium{background:rgba(246,190,89,.12)!important;border:1px solid rgba(246,190,89,.38)!important;color:#f4d18e!important;border-radius:10px!important}
+.flashcards-page .rating-easy{background:rgba(61,204,159,.12)!important;border:1px solid rgba(61,204,159,.38)!important;color:#8de9c9!important;border-radius:10px!important}
+/* Semestre Filtro: exam desk, balanced columns and readable question cards */
+.sf-hero{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:24px!important}
+.sf-specs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important}
+.sf-specs>*{border:1px solid var(--app-line)!important;border-radius:12px!important;background:rgba(4,17,33,.45)!important;padding:13px!important}
+.sf-subjects{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:12px!important}
+.sf-radio{border:1px solid var(--app-line)!important;border-radius:13px!important;background:linear-gradient(145deg,#102541,#0a192d)!important;padding:16px!important}
+.sf-mode-toolbar{position:sticky!important;top:12px!important;z-index:5!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;padding:12px 16px!important;border:1px solid var(--app-line)!important;border-radius:13px!important;background:rgba(7,19,35,.94)!important;backdrop-filter:blur(16px)!important}
+.sf-exam-top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important;padding:16px 20px!important;border:1px solid var(--app-line)!important;border-radius:14px!important;background:linear-gradient(145deg,#102541,#0a192d)!important}
+.sf-exam-layout{display:grid!important;grid-template-columns:minmax(0,1fr) 280px!important;gap:16px!important;align-items:start!important}
+.sf-question-list{display:grid!important;gap:14px!important}
+.sf-question{padding:clamp(18px,2.5vw,28px)!important}
+.sf-question-meta{color:#65d9ff!important;font-weight:800!important;letter-spacing:1px!important}
+.sf-options{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+.sf-options>*{min-height:58px!important;padding:13px 15px!important;border:1px solid var(--app-line)!important;border-radius:12px!important;background:#091a30!important;color:#dce9f8!important;text-align:left!important}
+.sf-options>*:hover{border-color:#42baff!important;background:#102a49!important}
+.sf-exam-aside{position:sticky!important;top:82px!important;padding:18px!important}
+.sf-mini-grid{display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:7px!important}
+.sf-mini-grid>*{min-height:34px!important;border-radius:8px!important;background:#102541!important;border:1px solid var(--app-line)!important;color:#bdd1e9!important}
+.sf-result-hero{padding:clamp(22px,3vw,34px)!important}
+.sf-review{padding:18px!important}
+/* Experiences, account, progress, settings and tools share the same grid rhythm */
+.experiences-page{gap:20px!important}
+.experiences-hero{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:22px!important}
+.experience-form{padding:22px!important}
+.experience-form-grid{gap:14px!important}
+.experiences-filters{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(180px,.45fr)!important;gap:12px!important}
+.experiences-list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important}
+.experience-card{padding:20px!important;min-width:0!important}
+.experience-card-top{gap:12px!important}
+.experience-description{line-height:1.7!important;color:#b6c9e1!important}
+.progress-page{gap:18px!important}
+.progress-simple-stats{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.progress-insights-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.progress-week-chart{min-height:180px!important}
+.account-page,.buy-page,.calculator-page,.settings-page,.leaderboard-page{gap:20px!important}
+.account-layout{display:grid!important;grid-template-columns:minmax(0,1.7fr) minmax(280px,.8fr)!important;align-items:start!important}
+.account-main-column,.account-side-column{min-width:0!important}
+.account-panel-heading{padding-bottom:14px!important;border-bottom:1px solid var(--app-line)!important;margin-bottom:14px!important}
+.auth-grid{gap:22px!important}
+.auth-intro,.auth-form{padding:clamp(20px,3vw,34px)!important;border:1px solid var(--app-line)!important;border-radius:18px!important;background:linear-gradient(145deg,#102541,#0a192d)!important}
+.auth-tabs{background:#071529!important;border:1px solid var(--app-line)!important;border-radius:12px!important;padding:4px!important}
+.auth-tabs button.active{background:linear-gradient(100deg,#087be5,#6550d6)!important;color:white!important;border-radius:9px!important}
+.calc-overview{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.calc-overview-card{padding:20px!important}
+.calc-panel{padding:22px!important}
+.calc-steps{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.settings{padding:20px!important;border:1px solid var(--app-line)!important;border-radius:15px!important;background:linear-gradient(145deg,#102541,#0a192d)!important}
+.legal-grid{gap:14px!important}
+.legal-card{border:1px solid var(--app-line)!important;border-radius:14px!important;background:linear-gradient(145deg,#102541,#0a192d)!important}
+@media(max-width:900px){
+ .sf-exam-layout,.account-layout{grid-template-columns:1fr!important}
+ .sf-exam-aside{position:static!important}
+ .experiences-list{grid-template-columns:1fr!important}
+ .progress-simple-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .calc-steps{grid-template-columns:1fr 1fr!important}
+}
+@media(max-width:680px){
+ .content:not(.home-page){padding:18px 12px 38px!important;gap:15px!important}
+ .content:not(.home-page) .page-heading,
+ .content:not(.home-page) .account-heading,
+ .content:not(.home-page) .experiences-hero,
+ .content:not(.home-page) .flashcards-hero,
+ .content:not(.home-page) .sf-hero,
+ .content:not(.home-page) .resolve-heading{padding:20px!important;border-radius:15px!important}
+ .flashcards-page .flashcards-subject-panel{grid-template-columns:1fr!important;padding:16px!important}
+ .flashcards-page .flashcards-subject-picker{grid-template-columns:1fr!important}
+ .flashcards-page .flashcards-overview{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .flashcards-page .flashcard-stage,.flashcards-page .flashcard-3d{min-height:310px!important}
+ .flashcards-page .flashcard-copy{font-size:clamp(19px,5vw,25px)!important}
+ .sf-specs,.sf-subjects{grid-template-columns:1fr!important}
+ .sf-exam-layout{grid-template-columns:1fr!important}
+ .sf-options{grid-template-columns:1fr!important}
+ .sf-mode-toolbar{top:6px!important;flex-wrap:wrap!important}
+ .experiences-filters{grid-template-columns:1fr!important}
+ .progress-insights-grid,.calc-overview,.calc-steps{grid-template-columns:1fr!important}
+ .progress-simple-stats{grid-template-columns:1fr 1fr!important}
+ .content:not(.home-page) .panel{padding:15px!important}
+}
