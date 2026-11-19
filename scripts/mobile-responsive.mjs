@@ -49,7 +49,8 @@ try {
     })
     const pageErrors = []
     page.on('pageerror', error => pageErrors.push(error.message))
-    await page.goto(baseUrl, { waitUntil: 'networkidle', timeout: 45000 })
+    await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 45000 })
+    await page.locator('.mobile-bottom-nav button').first().waitFor({ state: 'visible', timeout: 20000 })
     await page.evaluate(() => document.fonts.ready)
 
     const initial = await page.evaluate(() => ({
@@ -61,12 +62,19 @@ try {
         return !!nav && getComputedStyle(nav).display !== 'none' && nav.getBoundingClientRect().height > 0
       })(),
       navButtons: document.querySelectorAll('.mobile-bottom-nav button').length,
+      navTargets: [...document.querySelectorAll('.mobile-bottom-nav button')].map(button => {
+        const rect = button.getBoundingClientRect()
+        return { width: Math.round(rect.width), height: Math.round(rect.height) }
+      }),
     }))
 
     const horizontalOverflow = Math.max(initial.documentWidth, initial.bodyWidth) - initial.width
     if (horizontalOverflow > 1) failures.push(`${viewport.name}: overflow orizzontale di ${horizontalOverflow}px`)
     if (!initial.navVisible) failures.push(`${viewport.name}: navigazione mobile non visibile`)
     if (initial.navButtons !== 5) failures.push(`${viewport.name}: attesi 5 pulsanti di navigazione, trovati ${initial.navButtons}`)
+    initial.navTargets.forEach((target, index) => {
+      if (target.width < 44 || target.height < 40) failures.push(`${viewport.name}: pulsante ${index + 1} troppo piccolo (${target.width}x${target.height}px)`)
+    })
 
     // Prova le quattro destinazioni principali tramite gli stessi pulsanti usati dagli utenti.
     for (let index = 0; index < 4; index++) {
@@ -76,7 +84,10 @@ try {
         documentWidth: document.documentElement.scrollWidth,
         bodyWidth: document.body.scrollWidth,
         width: window.innerWidth,
+        path: window.location.pathname,
       }))
+      const expectedPaths = ['/quiz', '/semestre-filtro', '/account', '/account']
+      if (state.path !== expectedPaths[index]) failures.push(`${viewport.name}, destinazione ${index + 1}: percorso ${state.path}, atteso ${expectedPaths[index]}`)
       const overflow = Math.max(state.documentWidth, state.bodyWidth) - state.width
       if (overflow > 1) failures.push(`${viewport.name}, destinazione ${index + 1}: overflow di ${overflow}px`)
     }
