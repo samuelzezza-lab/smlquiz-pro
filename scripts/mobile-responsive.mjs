@@ -198,12 +198,15 @@ try {
           documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth,
           width: window.innerWidth, path: window.location.pathname, offenders,
           homeBackVisible: !!homeBack && getComputedStyle(homeBack).display !== 'none' && homeBack.getBoundingClientRect().width > 0,
+          homeBackBottom: homeBack?.getBoundingClientRect().bottom ?? 0,
+          firstHeadingTop: document.querySelector('.content h1')?.getBoundingClientRect().top ?? 0,
           topbarVisible: !!topbar && getComputedStyle(topbar).display !== 'none' && topbar.getBoundingClientRect().height > 0,
           navVisible: !!nav && getComputedStyle(nav).display !== 'none' && nav.getBoundingClientRect().height > 0
         }
       })
       if (state.path !== expectedPaths[index]) failures.push(`${viewport.name}, destinazione ${index + 1}: percorso ${state.path}, atteso ${expectedPaths[index]}`)
       if (!state.homeBackVisible) failures.push(`${viewport.name}, ${state.path}: pulsante Torna alla home non visibile`)
+      if (state.firstHeadingTop > 0 && state.firstHeadingTop < state.homeBackBottom + 4) failures.push(`${viewport.name}, ${state.path}: titolo sovrapposto al pulsante Torna alla home`)
       if (state.topbarVisible) failures.push(`${viewport.name}, ${state.path}: barra superiore ancora visibile in modalità immersiva`)
       if (state.navVisible) failures.push(`${viewport.name}, ${state.path}: navigazione globale ancora visibile in modalità immersiva`)
       const overflow = Math.max(state.documentWidth, state.bodyWidth) - state.width
