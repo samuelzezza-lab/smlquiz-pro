@@ -5724,3 +5724,22 @@ body{background:radial-gradient(ellipse at 75% -10%,#123c91 0,transparent 38%),l
     padding-top:calc(118px + env(safe-area-inset-top))!important;
   }
 }
+
+
+/* Correct root-shell selector: reserve space below the fixed return control on every immersive route. */
+.shell.function-fullscreen .content,
+.shell.mode-fullscreen .content{
+  padding-top:112px!important;
+}
+@media(max-width:800px){
+  .shell.function-fullscreen .content,
+  .shell.mode-fullscreen .content{
+    padding-top:calc(118px + env(safe-area-inset-top))!important;
+  }
+}
+@media(max-height:500px) and (min-width:801px){
+  .shell.function-fullscreen .content,
+  .shell.mode-fullscreen .content{
+    padding-top:96px!important;
+  }
+}
