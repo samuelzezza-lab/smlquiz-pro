@@ -5457,3 +5457,50 @@ body{background:radial-gradient(ellipse at 85% -15%,rgba(100,135,181,.19),transp
 @media(max-width:420px){
   .shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-page{padding-top:66px!important}
 }
+
+/* Flashcards: remove inherited light surfaces and rebuild every study control in the approved night palette. */
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-overview,
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-progress,
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-controls,
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-deck-actions,
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcard-ratings,
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-footnote{
+  background:transparent!important;background-color:transparent!important;background-image:none!important;
+  box-shadow:none!important;border:0!important;
+}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-overview-item{
+  background:linear-gradient(145deg,#1c294b,#17152f)!important;
+  border:1px solid rgba(151,132,255,.32)!important;
+  border-radius:18px!important;color:#fbfaff!important;
+}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-progress-label{color:#c4c4e3!important}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-progress-track{background:#293451!important}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-progress-track span{background:linear-gradient(90deg,#25d3e8,#5799f1 52%,#8958f4)!important}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-controls button,
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-deck-actions button,
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcard-ratings button{
+  min-height:48px!important;border-radius:14px!important;font-weight:750!important;
+}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-controls button.secondary,
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-deck-actions button.secondary{
+  background:#222044!important;color:#e8e4ff!important;border:1px solid #51467c!important;
+}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-controls button.secondary:disabled{
+  background:#17172f!important;color:#777797!important;border-color:#30304e!important;opacity:1!important;
+}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-controls button.primary,
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-deck-actions button.primary{
+  background:linear-gradient(105deg,#25d3e8,#5799f1 52%,#8958f4)!important;color:#09091f!important;border:0!important;
+}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcard-ratings .rating-difficult{
+  background:#3b203c!important;color:#ff9bd1!important;border:1px solid #a74d91!important;
+}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcard-ratings .rating-medium{
+  background:#342d50!important;color:#d0bcff!important;border:1px solid #7764bd!important;
+}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcard-ratings .rating-easy{
+  background:#123b43!important;color:#58e5d2!important;border:1px solid #238f8e!important;
+}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-footnote{
+  color:#aaa9cc!important;background:transparent!important;padding:0!important;
+}
