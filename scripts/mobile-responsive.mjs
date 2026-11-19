@@ -95,6 +95,20 @@ try {
     if (!initial.homeBrandVisible) failures.push(`${viewport.name}: marchio SMLQUIZ non visibile in home`)
     if (!initial.creditsVisible) failures.push(`${viewport.name}: acquisto crediti non visibile in home`)
     if (!initial.profileVisible) failures.push(`${viewport.name}: profilo non visibile in home`)
+    // Titoli e descrizioni della home devono stare su righe distinte, mai sovrapporsi.
+    const homeFeatureText = await page.locator('.home-intro .performance-row').evaluateAll(rows => rows.map(row => {
+      const title = row.querySelector('b')
+      const description = row.querySelector('small')
+      if (!title || !description) return { valid: false }
+      const a = title.getBoundingClientRect()
+      const b = description.getBoundingClientRect()
+      return { valid: true, titleBottom: a.bottom, descriptionTop: b.top, descriptionHeight: b.height }
+    }))
+    homeFeatureText.forEach((item, index) => {
+      if (!item.valid || item.descriptionTop < item.titleBottom - 1 || item.descriptionHeight < 1) {
+        failures.push(`${viewport.name}: testo descrittivo della scheda home ${index + 1} sovrapposto o non visibile`)
+      }
+    })
     if (initial.navButtons !== 5) failures.push(`${viewport.name}: attesi 5 pulsanti di navigazione, trovati ${initial.navButtons}`)
     initial.navTargets.forEach((target, index) => {
       if (target.width < 44 || target.height < 40) failures.push(`${viewport.name}: pulsante ${index + 1} troppo piccolo (${target.width}x${target.height}px)`)
