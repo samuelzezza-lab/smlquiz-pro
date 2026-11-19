@@ -38,7 +38,10 @@ jobs:
             file "/tmp/$icon" | grep -q 'PNG image data'
           done
       - name: Check Supabase authentication endpoint
+        env:
+          SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
           set -eu
-          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 https://fgrwwauwnxvrcgqqpksp.supabase.co/auth/v1/health -o /tmp/smlquiz-auth-health.json
+          test -n "$SUPABASE_ANON_KEY"
+          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 -H "apikey: $SUPABASE_ANON_KEY" https://fgrwwauwnxvrcgqqpksp.supabase.co/auth/v1/health -o /tmp/smlquiz-auth-health.json
           test -s /tmp/smlquiz-auth-health.json
