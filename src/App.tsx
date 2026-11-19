@@ -1,4 +1,4 @@
-import { lazy, memo, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent, type CSSProperties } from 'react'
+import { lazy, memo, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type FormEvent } from 'react'
 import { Activity, ArrowLeft, ArrowRight, Award, BarChart3, BookOpen, Brain, Calculator, CheckCircle2, Clipboard, ClipboardList, ChevronDown, CircleHelp, Clock3, CreditCard, GraduationCap, LayoutDashboard, LogOut, Menu, MessageCircle, Search, Settings, ShieldCheck, ShoppingBag, Sparkles, Target, Trophy, UserRound, WifiOff, X, CalendarDays, ChevronLeft, ChevronRight, FolderPlus, Layers, RotateCcw } from 'lucide-react'
 import { supabase, supabaseReady, requireSupabase } from './lib/supabase'
 import { checkPasswordExposure } from './lib/passwordSecurity'
@@ -10,46 +10,6 @@ import Flashcards from './components/Flashcards'
 import StudyCompletion from './components/StudyCompletion'
 const SemestreFiltro = lazy(() => import('./components/SemestreFiltro'))
 const ReferralCard = lazy(() => import('./components/FreeGrowthTools').then(module => ({ default: module.ReferralCard })))
-
-let adcashScriptPromise: Promise<void> | null = null
-function loadAdcashScript(): Promise<void> {
-  const w = window as Window & { aclib?: { runBanner: (options: { zoneId: string }) => void } }
-  if (w.aclib) return Promise.resolve()
-  if (adcashScriptPromise) return adcashScriptPromise
-  adcashScriptPromise = new Promise<void>((resolve, reject) => {
-    let script = document.getElementById('aclib') as HTMLScriptElement | null
-    if (!script) {
-      script = document.createElement('script')
-      script.id = 'aclib'
-      script.type = 'text/javascript'
-      script.src = 'https://acscdn.com/script/aclib.js'
-      script.async = true
-    }
-    script.addEventListener('load', () => resolve(), { once: true })
-    script.addEventListener('error', () => { adcashScriptPromise = null; reject(new Error('Adcash non disponibile')) }, { once: true })
-    if (!script.isConnected) document.head.appendChild(script)
-  })
-  return adcashScriptPromise
-}
-function AdcashBanner({ zoneId, width, height, consent, className = '' }: { zoneId: string; width: number; height: number; consent: boolean; className?: string }) {
-  const slotRef = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    const slot = slotRef.current
-    if (!consent || !slot || slot.dataset.adcashStarted === '1') return
-    slot.dataset.adcashStarted = '1'
-    void loadAdcashScript().then(() => {
-      const w = window as Window & { aclib?: { runBanner: (options: { zoneId: string }) => void } }
-      if (slot.isConnected && w.aclib) w.aclib.runBanner({ zoneId })
-    }).catch(error => {
-      if (slot.isConnected) slot.dataset.adcashStarted = '0'
-      console.warn('Caricamento banner Adcash non riuscito:', error)
-    })
-  }, [consent, zoneId])
-  return <div className={'sml-ad-slot adcash-slot '+className} style={{'--ad-width':width+'px','--ad-height':height+'px'} as CSSProperties} aria-label="Spazio pubblicitario">
-    <span className="sml-ad-label">Pubblicità</span><div ref={slotRef} className="sml-ad-content" />
-  </div>
-}
-
 
 type User = { id: string; email?: string; acceptedPrivacy?: boolean }
 type Faculty = { id: string; nome: string; traduzioni?: Record<string,{nome?:string}> }
