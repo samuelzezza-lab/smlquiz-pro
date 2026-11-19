@@ -152,7 +152,8 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       if (error) notify('Valutazione salvata su questo dispositivo; sincronizzazione cloud da riprovare.')
     }
     if (nextQueue.length === 0) {
-      if (!unlocked && total > FREE_LIMIT) setPaywall(true)
+      if (deckMode === 'difficult') setDeckCompleted(true)
+      else if (!unlocked && total > FREE_LIMIT) setPaywall(true)
       else setDeckCompleted(true)
     }
   }
@@ -217,7 +218,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
        
     </div>
     <div className="flashcards-overview">
-      <div className="flashcards-overview-item"><span className="flashcards-overview-icon"><BookOpen size={17}/></span><div><strong>{total.toLocaleString('it-IT')}</strong><small>Carte disponibili</small></div></div>
+      <div className="flashcards-overview-item"><span className="flashcards-overview-icon"><BookOpen size={17}/></span><div><strong>{accessibleTotal.toLocaleString('it-IT')}</strong><small>Carte accessibili</small></div></div>
       <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-success"><Check size={17}/></span><div><strong>{easyCount}</strong><small>Imparate · Facili</small></div></div>
       <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-review"><Sparkles size={17}/></span><div><strong>{difficultCount}</strong><small>Difficili</small></div></div>
       <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-progress"><Layers3 size={17}/></span><div><strong>{mediumCount}</strong><small>Medie</small></div></div>
@@ -281,7 +282,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       <label className="flashcards-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)}/> Acconsento alla fornitura immediata dei contenuti digitali e riconosco la perdita del diritto di recesso nei limiti previsti dalla legge.</label>
       <button className="primary flashcards-unlock" disabled={!consent} onClick={() => onBuy(PRICE_ID,[subjectId],true)}>Sblocca tutte le flashcard <ArrowRight size={17}/></button>
       {!user && <p className="flashcards-login-note">Per completare l'acquisto dovrai accedere o creare un account.</p>}
-      <button className="simple-link" onClick={() => setPaywall(false)}>Magari più tardi</button>
+      <button className="simple-link" onClick={() => {setPaywall(false);setDeckCompleted(true)}}>Magari più tardi</button>
     </div></div>}
   </section>
 }
