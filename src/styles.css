@@ -4408,3 +4408,66 @@ body{overflow-x:hidden;overflow-y:auto!important}
  .shell:not(.quiz-active) .main{width:100%;min-width:0;-webkit-overflow-scrolling:touch}
  .shell:not(.quiz-active) .main>.content{padding-bottom:calc(28px + env(safe-area-inset-bottom))}
 }
+
+
+/* FIX SCORRIMENTO GLOBALE — layout a flusso nativo su desktop e mobile.
+   Nessuna schermata deve dipendere da un pannello interno con altezza viewport fissa. */
+html, body, #root {
+  width: 100%;
+  min-height: 100%;
+  height: auto !important;
+}
+html, body {
+  overflow-x: clip !important;
+  overflow-y: auto !important;
+  overscroll-behavior-y: auto !important;
+}
+body { position: relative; }
+#root { overflow: visible !important; }
+.shell,
+.shell.function-fullscreen,
+.shell.quiz-active {
+  width: 100%;
+  height: auto !important;
+  min-height: 100dvh;
+  overflow: visible !important;
+}
+.shell .main,
+.shell.function-fullscreen .main,
+.shell.quiz-active .main {
+  width: 100%;
+  height: auto !important;
+  min-height: 100dvh;
+  overflow: visible !important;
+  overscroll-behavior: auto !important;
+  -webkit-overflow-scrolling: auto;
+}
+.shell .main > .content,
+.shell.function-fullscreen .main > .content,
+.shell.quiz-active .main > .content {
+  height: auto !important;
+  min-height: 0;
+  overflow: visible !important;
+  flex: 0 0 auto;
+}
+.shell.quiz-active .quiz,
+.shell.quiz-active .quiz-grid,
+.shell.quiz-active .quiz-column {
+  height: auto !important;
+  min-height: 0;
+  overflow: visible !important;
+}
+@media (max-width: 800px) {
+  .shell .main,
+  .shell.function-fullscreen .main,
+  .shell.quiz-active .main {
+    width: 100%;
+    min-width: 0;
+    margin-left: 0 !important;
+  }
+  .shell .main > .content,
+  .shell.function-fullscreen .main > .content,
+  .shell.quiz-active .main > .content {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  }
+}
