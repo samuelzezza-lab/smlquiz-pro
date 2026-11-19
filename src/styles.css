@@ -4173,3 +4173,33 @@ html,body,.shell{scroll-behavior:auto!important}
 @media (max-width: 800px) {
   .guide-page>.page-heading { min-height:0; }
 }
+
+
+/* Home mobile: conserva la barra richiesta con Menu, crediti e profilo anche per utenti autenticati. */
+@media (max-width: 800px) {
+  .home-auth-fullscreen .topbar,
+  .topbar:has(.home-wordmark) { display:flex!important; }
+  .home-auth-fullscreen .topbar {
+    min-height:58px;
+    height:auto;
+    padding:7px max(11px,env(safe-area-inset-left)) 7px max(11px,env(safe-area-inset-right));
+    justify-content:space-between;
+  }
+  .home-auth-fullscreen .main>.content {
+    min-height:calc(100dvh - 58px);
+    padding-top:14px;
+  }
+  .topbar:has(.home-wordmark) .crumb {
+    flex:1 1 auto;
+    width:auto;
+    gap:7px;
+  }
+  .topbar:has(.home-wordmark) .crumb>.hamb {
+    display:inline-flex!important;
+    flex:none;
+  }
+  .topbar:has(.home-wordmark) .home-top-actions {
+    flex:0 0 auto;
+    margin-left:6px;
+  }
+}
