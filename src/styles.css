@@ -2394,8 +2394,7 @@ img,svg{max-width:100%}
 
 
 /* Watermark dinamico anti-redistribuzione: identificativo pseudonimo dell'account, non email. */
-.panel.quiz{position:relative;overflow:hidden}.quiz-watermark{position:absolute;z-index:4;inset:76px 8px 42px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(3,minmax(0,1fr));align-items:center;justify-items:center;gap:12px;pointer-events:none;overflow:hidden;user-select:none}.quiz-watermark span{display:block;max-width:100%;color:rgba(185,202,232,.16);font:700 9px/1.4 system-ui, sans-serif;letter-spacing:1.1px;text-align:center;white-space:nowrap;transform:rotate(-22deg);text-shadow:0 1px 2px rgba(0,0,0,.18)}.panel.quiz .question,.panel.quiz .answers{position:relative;z-index:1}.panel.quiz .question,.panel.quiz .answers,.panel.quiz .quiz-top,.panel.quiz .progress-label,.panel.quiz .q-label{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-@media(max-width:520px){.quiz-watermark{inset:84px 4px 48px;gap:5px}.quiz-watermark span{font-size:7px;letter-spacing:.6px}}
+.panel.quiz .question,.panel.quiz .answers,.panel.quiz .quiz-top,.panel.quiz .progress-label,.panel.quiz .q-label{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 
 
 /* Quiz integrity: options share one neutral style until the candidate finishes. */
@@ -3513,3 +3512,26 @@ html,body,#root{max-width:100%;overflow-x:clip}
 
 /* Lo spazio pubblicitario sostituisce la freccia decorativa in alto a destra. */
 .guide-page .launch-card::after{display:none;}
+
+
+/* Quiz a schermo pieno: nessuno spazio esterno, nessuna filigrana. */
+html:has(.shell.quiz-active),body:has(.shell.quiz-active),body:has(.shell.quiz-active) #root{width:100%;height:100%;min-height:100%;margin:0;padding:0;border:0;border-radius:0;background:#050915}
+.shell.quiz-active{width:100%;height:100dvh;min-height:100dvh;margin:0;padding:0;border:0;border-radius:0;overflow:hidden;background:#050915}
+.shell.quiz-active .main{width:100%;height:100dvh;min-height:100dvh;margin:0;padding:0;border:0;border-radius:0;overflow-y:auto;background:#050915}
+.shell.quiz-active .main>.content{display:flex;width:100%;max-width:none;min-height:100dvh;height:auto;margin:0;padding:0;border:0;border-radius:0;align-items:stretch;justify-content:flex-start;background:#050915}
+.shell.quiz-active .quiz-grid,.shell.quiz-active .quiz-column{display:flex;width:100%;max-width:none;min-height:100dvh;margin:0;padding:0;border:0;border-radius:0;gap:0;background:#050915}
+.shell.quiz-active .quiz{display:flex;flex:1;width:100%;min-height:100dvh;margin:0;padding:clamp(16px,3vw,36px);border:0;border-radius:0;box-shadow:none;background:#0c1425;overflow:visible}
+.shell.quiz-active .quiz::before,.shell.quiz-active .quiz::after,.shell.quiz-active .quiz-watermark,.shell.quiz-active .quiz-watermark::before,.shell.quiz-active .quiz-watermark::after{display:none!important;content:none!important;background-image:none!important}
+.shell.quiz-active .quiz-inline-ad-row{display:flex;align-items:center;justify-content:flex-start;gap:10px;min-width:0}
+.shell.quiz-active .quiz-inline-ad{display:flex;flex:none;width:104px;height:34px;align-items:center;justify-content:center;border:1px dashed #8290ad88;border-radius:4px;background:#8290ad0d;color:#9aa8c2;font-size:8px;font-weight:700;letter-spacing:.7px}
+.shell.quiz-active .quiz-report-ad-row{margin-right:auto}
+.shell.quiz-active .quiz-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.shell.quiz-active .quiz-bottom .quiz-report-ad-row{margin-right:auto}
+@media(max-width:800px){
+ .shell.quiz-active .main>.content{min-height:100dvh;height:auto;padding:0}
+ .shell.quiz-active .quiz-grid,.shell.quiz-active .quiz-column{min-height:100dvh}
+ .shell.quiz-active .quiz{min-height:100dvh;padding:16px 14px calc(18px + env(safe-area-inset-bottom))}
+ .shell.quiz-active .quiz-inline-ad{width:88px;height:30px;font-size:7px}
+ .shell.quiz-active .quiz-bottom{align-items:flex-start;gap:10px}
+ .shell.quiz-active .quiz-bottom .quiz-report-ad-row{width:auto}
+}
