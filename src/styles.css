@@ -5756,3 +5756,18 @@ body{background:radial-gradient(ellipse at 75% -10%,#123c91 0,transparent 38%),l
     margin-top:20px!important;
   }
 }
+
+
+/* Landscape desktop-width tablets: account heading must clear the fixed return control. */
+@media (min-width: 901px) and (max-height: 500px){
+  .shell.function-fullscreen .content,
+  .shell.mode-fullscreen .content{
+    padding-top:164px!important;
+  }
+  .shell.function-fullscreen .content .account-heading,
+  .shell.mode-fullscreen .content .account-heading,
+  .shell.function-fullscreen .content .page-heading,
+  .shell.mode-fullscreen .content .page-heading{
+    margin-top:0!important;
+  }
+}
