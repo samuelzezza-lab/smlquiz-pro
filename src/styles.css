@@ -5713,3 +5713,14 @@ body{background:radial-gradient(ellipse at 75% -10%,#123c91 0,transparent 38%),l
     padding-top:104px!important;
   }
 }
+
+
+/* Final collision guard: reserve a dedicated header lane for the fixed back control. */
+.function-fullscreen .main>.content{
+  padding-top:112px!important;
+}
+@media(max-width:800px){
+  .function-fullscreen .main>.content{
+    padding-top:calc(118px + env(safe-area-inset-top))!important;
+  }
+}
