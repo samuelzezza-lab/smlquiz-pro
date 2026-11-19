@@ -5743,3 +5743,16 @@ body{background:radial-gradient(ellipse at 75% -10%,#123c91 0,transparent 38%),l
     padding-top:96px!important;
   }
 }
+
+
+/* Tablet and landscape immersive screens: keep every page title below the fixed return control. */
+@media (min-width: 600px) and (max-width: 900px){
+  .shell:is(.function-fullscreen,.mode-fullscreen) .content{
+    padding-top:164px!important;
+  }
+  .shell:is(.function-fullscreen,.mode-fullscreen) .content h1:first-child,
+  .shell:is(.function-fullscreen,.mode-fullscreen) .content .page-heading,
+  .shell:is(.function-fullscreen,.mode-fullscreen) .content .account-heading{
+    margin-top:20px!important;
+  }
+}
