@@ -1,0 +1,37 @@
+name: SMLQUIZ Pro mobile responsive tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  mobile-responsive:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install project dependencies
+        run: npm install
+      - name: Build production app
+        run: npm run build
+      - name: Install browser test runner
+        run: npm install --no-save --package-lock=false playwright@1.55.0
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Test phone, tablet and landscape layouts
+        run: node scripts/mobile-responsive.mjs
+      - name: Save responsive screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smlquiz-mobile-responsive-screenshots
+          path: artifacts/mobile-responsive/
+          if-no-files-found: ignore
+          retention-days: 7
