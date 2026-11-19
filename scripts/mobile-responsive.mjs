@@ -84,13 +84,18 @@ try {
 
     const pwa = await page.evaluate(async () => {
       const link = document.querySelector('link[rel="manifest"]')
-      if (!link) return { linked: false, status: 0, display: '', icons: 0 }
+      if (!link) return { linked: false, status: 0, display: '', icons: 0, iconsValid: false }
       const response = await fetch(link.href)
       if (!response.ok) return { linked: true, status: response.status, display: '', icons: 0 }
       const manifest = await response.json()
-      return { linked: true, status: response.status, display: manifest.display || '', icons: Array.isArray(manifest.icons) ? manifest.icons.length : 0 }
+      const icons = Array.isArray(manifest.icons) ? manifest.icons : []
+      const iconChecks = await Promise.all(icons.map(async icon => {
+        const iconResponse = await fetch(new URL(icon.src, location.origin))
+        return iconResponse.ok && (iconResponse.headers.get('content-type') || '').includes('image/png')
+      }))
+      return { linked: true, status: response.status, display: manifest.display || '', icons: icons.length, iconsValid: iconChecks.length >= 2 && iconChecks.every(Boolean) }
     })
-    if (!pwa.linked || pwa.status !== 200 || pwa.display !== 'standalone' || pwa.icons < 2) failures.push(`${viewport.name}: manifest PWA mancante o incompleto (${JSON.stringify(pwa)})`)
+    if (!pwa.linked || pwa.status !== 200 || pwa.display !== 'standalone' || pwa.icons < 2 || !pwa.iconsValid) failures.push(`${viewport.name}: manifest PWA mancante o incompleto (${JSON.stringify(pwa)})`)
     if (!initial.viewportMeta.includes('width=device-width') || !initial.viewportMeta.includes('initial-scale=1')) failures.push(`${viewport.name}: meta viewport assente o non corretta`)
     if (Math.abs(initial.visualScale - 1) > 0.01) failures.push(`${viewport.name}: scala iniziale diversa da 100% (${initial.visualScale})`)
     const horizontalOverflow = Math.max(initial.documentWidth, initial.bodyWidth) - initial.width
