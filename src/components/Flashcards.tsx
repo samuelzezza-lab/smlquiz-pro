@@ -34,6 +34,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
   const [repeatCounts, setRepeatCounts] = useState<Record<string, number>>({})
   const [deckMode, setDeckMode] = useState<'all'|'difficult'>('all')
   const cardRef = useRef<HTMLDivElement>(null)
+  const loadRequestRef = useRef(0)
   const notifyRef = useRef(notify)
   useEffect(() => { notifyRef.current = notify }, [notify])
   const selectedSubject = useMemo(() => subjects.find(s => s.id === subjectId), [subjects, subjectId])
@@ -49,17 +50,20 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     [sessionQueue, cards, deckMode, sessionRatings, ratings])
   const current = displayedCards[index]
   const accessibleTotal = unlocked ? Math.min(total, 300) : Math.min(total, FREE_LIMIT)
-  const reviewedCount = Object.keys(sessionRatings).length
-  const easyCount = Object.values(sessionRatings).filter(value => value === 'easy').length
-  const difficultCount = Object.values(sessionRatings).filter(value => value === 'difficult').length
-  const mediumCount = Object.values(sessionRatings).filter(value => value === 'medium').length
+  const cardRating = (card: Flashcard) => sessionRatings[card.id] ?? ratings[card.id] ?? card.user_rating ?? null
+  const reviewedCount = cards.filter(card => cardRating(card) !== null).length
+  const easyCount = cards.filter(card => cardRating(card) === 'easy').length
+  const difficultCount = cards.filter(card => cardRating(card) === 'difficult').length
+  const mediumCount = cards.filter(card => cardRating(card) === 'medium').length
   const title = selectedSubject?.traduzioni?.it?.nome || selectedSubject?.nome || 'Flashcard'
 
   const loadDeck = useCallback(async (id: string) => {
-    if (!supabase || !id) return
+    const requestId = ++loadRequestRef.current
+    if (!supabase || !id) { setLoading(false); return }
     setLoading(true); setCards([]); setIndex(0); setFlipped(false); setPaywall(false); setDeckCompleted(false); setUnlocked(false); setRatings({}); setSessionRatings({}); setSessionQueue([]); setRepeatCounts({}); setDeckMode('all')
     try {
       const { data, error } = await supabase.functions.invoke('flashcards-api', { body: { subjectId: id, offset: 0, limit: FREE_LIMIT } })
+      if (requestId !== loadRequestRef.current) return
       if (error) throw error
       if (data?.error) throw new Error(data.error)
       let loaded = (data?.cards ?? []) as Flashcard[]
@@ -70,6 +74,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
           const { data: page, error: pageError } = await supabase.functions.invoke('flashcards-api', {
             body: { subjectId: id, offset: loaded.length, limit: FREE_LIMIT }
           })
+          if (requestId !== loadRequestRef.current) return
           if (pageError) throw pageError
           const batch = (page?.cards ?? []) as Flashcard[]
           if (!batch.length) break
@@ -90,18 +95,20 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
         if (rating) mergedRatings[card.id] = rating
         return { ...card, user_rating: rating }
       })
+      if (requestId !== loadRequestRef.current) return
       setCards(loaded)
       setRatings(mergedRatings)
       setSessionRatings({})
-      setSessionQueue(loaded.map(card => card.id))
+      const pendingCards = loaded.filter(card => (mergedRatings[card.id] ?? card.user_rating) !== 'easy')
+      setSessionQueue(pendingCards.map(card => card.id))
       setRepeatCounts({})
       setTotal(cardTotal)
       setUnlocked(hasUnlock)
-      setPaywall(false)
-      setDeckCompleted(loaded.length === 0 && cardTotal === 0)
+      setPaywall(pendingCards.length === 0 && !hasUnlock && cardTotal > FREE_LIMIT)
+      setDeckCompleted(pendingCards.length === 0 && (hasUnlock || cardTotal <= FREE_LIMIT))
     } catch (err) {
-      notifyRef.current(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
-    } finally { setLoading(false) }
+      if (requestId === loadRequestRef.current) notifyRef.current(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
+    } finally { if (requestId === loadRequestRef.current) setLoading(false) }
   }, [user?.id])
 
   useEffect(() => {
@@ -112,9 +119,10 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
   const next = useCallback(async () => {
     if (!flipped) { setFlipped(true); return }
     if (index < displayedCards.length - 1) setIndex(value => value + 1)
+    else if (!unlocked && total > FREE_LIMIT) { setPaywall(true); return }
     else setIndex(0)
     setFlipped(false)
-  }, [flipped, index, displayedCards.length])
+  }, [flipped, index, displayedCards.length, unlocked, total])
 
   const rate = async (rating: 'difficult'|'medium'|'easy') => {
     if (!current) return
@@ -162,7 +170,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
   const changeDeckMode = (mode: 'all'|'difficult') => {
     setDeckMode(mode)
     const eligible = cards.filter(card => mode === 'all'
-      ? sessionRatings[card.id] !== 'easy'
+      ? (sessionRatings[card.id] ?? ratings[card.id] ?? card.user_rating) !== 'easy'
       : (sessionRatings[card.id] ?? ratings[card.id] ?? card.user_rating) === 'difficult')
     setSessionQueue(eligible.map(card => card.id))
     setIndex(0); setFlipped(false); setDeckCompleted(mode === 'all' && eligible.length === 0); setPaywall(false)
@@ -239,7 +247,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       </div>}
       <div className="flashcards-controls">
         <button className="secondary" disabled={index===0} onClick={() => {setIndex(v=>v-1);setFlipped(false)}}><ArrowLeft size={15}/> Precedente</button>
-        <button className="primary" onClick={() => void next()} disabled={loading}>{flipped ? (index === displayedCards.length - 1 ? (!unlocked && total > FREE_LIMIT ? 'Sblocca le altre carte' : cards.length >= total ? 'Completa sessione' : 'Carica altre carte') : 'Prossima carta') : 'Mostra la risposta'} <ArrowRight size={15}/></button>
+        <button className="primary" onClick={() => void next()} disabled={loading}>{flipped ? (index === displayedCards.length - 1 ? (!unlocked && total > FREE_LIMIT ? 'Sblocca le altre carte' : cards.length >= total ? 'Ricomincia il mazzo' : 'Carica altre carte') : 'Prossima carta') : 'Mostra la risposta'} <ArrowRight size={15}/></button>
       </div>
       <div className="flashcards-deck-actions">
         <button className={deckMode==='all'?'primary':'secondary'} onClick={() => changeDeckMode('all')}>Tutte le carte</button>
