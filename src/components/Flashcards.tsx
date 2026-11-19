@@ -111,17 +111,10 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
 
   const next = useCallback(async () => {
     if (!flipped) { setFlipped(true); return }
-    if (displayedCards.length > 1 && current) {
-      setSessionQueue(prev => {
-        const rest = prev.filter((id, i) => !(i === index && id === current.id))
-        return [...rest, current.id]
-      })
-      setIndex(0)
-      setFlipped(false)
-      return
-    }
+    if (index < displayedCards.length - 1) setIndex(value => value + 1)
+    else setIndex(0)
     setFlipped(false)
-  }, [flipped, displayedCards.length, current, index])
+  }, [flipped, index, displayedCards.length])
 
   const rate = async (rating: 'difficult'|'medium'|'easy') => {
     if (!current) return
@@ -130,7 +123,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     const timesRepeated = repeatCounts[cardId] ?? 0
     let nextQueue = queueWithoutCurrent
     if (rating === 'difficult' && timesRepeated < 1) {
-      const insertAt = Math.min(3, queueWithoutCurrent.length)
+      const insertAt = Math.min(index + 3, queueWithoutCurrent.length)
       nextQueue = [...queueWithoutCurrent.slice(0, insertAt), cardId, ...queueWithoutCurrent.slice(insertAt)]
     } else if (rating === 'medium' && timesRepeated < 1) {
       nextQueue = [...queueWithoutCurrent, cardId]
@@ -139,7 +132,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     setRatings(prev => ({ ...prev, [cardId]: rating }))
     setRepeatCounts(prev => ({ ...prev, [cardId]: timesRepeated + 1 }))
     setSessionQueue(nextQueue)
-    setIndex(0)
+    setIndex(Math.min(index, Math.max(0, nextQueue.length - 1)))
     setFlipped(false)
     try {
       const key = `smlquiz.flashcards.progress.v1:${user?.id || 'guest'}`
