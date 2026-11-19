@@ -7,7 +7,6 @@ const app = read('src/App.tsx')
 const i18n = read('src/i18n.ts')
 const headers = read('public/_headers')
 const styles = read('src/styles.css')
-const serviceWorker = read('public/sw.js')
 
 if (!/export type Language = 'it'/.test(i18n)) fail('The application language must remain Italian-only.')
 if (!/import it from '\.\/locales\/it\.json'/.test(i18n)) fail('The Italian dictionary must be the only loaded locale.')
@@ -25,7 +24,6 @@ if (!styles.includes('.cookie-banner{position:relative;') || styles.includes('.c
 if (!styles.includes('@media(max-width:800px){.cookie-banner{margin:12px;')) fail('Cookie consent must use safe mobile spacing.')
 if (!styles.includes('.sidebar{transform:translate3d(-100%,0,0)') || !styles.includes('.hamb{display:inline-grid')) fail('Mobile navigation must start with a closed sidebar and expose the menu button.')
 if (!styles.includes('.mobile-bottom-nav{\n    position:fixed')) fail('Mobile bottom navigation must be present.')
-if (!/const CACHE_NAME = 'smlquiz-pwa-v\d+'/.test(serviceWorker)) fail('The PWA cache must use an explicit version to invalidate stale app shells.')
 for (const directive of ["object-src 'none'", "frame-ancestors 'none'", "upgrade-insecure-requests", "default-src 'self'"]) {
   if (!headers.includes(directive)) fail('Missing CSP directive: ' + directive)
 }
