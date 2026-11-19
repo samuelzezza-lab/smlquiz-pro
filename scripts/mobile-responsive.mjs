@@ -116,20 +116,25 @@ try {
 
     await page.screenshot({ path: `artifacts/mobile-responsive/${viewport.name}-home.png`, fullPage: true })
 
-    // Prova le quattro destinazioni principali tramite gli stessi pulsanti usati dagli utenti.
-    for (let index = 0; index < 4; index++) {
-      await page.locator('.mobile-bottom-nav button').nth(index).evaluate(element => element.click())
-      await page.waitForTimeout(180)
-      const state = await page.evaluate(() => ({
-        documentWidth: document.documentElement.scrollWidth,
-        bodyWidth: document.body.scrollWidth,
-        width: window.innerWidth,
-        path: window.location.pathname,
-      }))
-      const expectedPaths = ['/quiz', '/semestre-filtro', '/review', '/account']
+    // Torna alla dashboard prima di ogni prova: le funzioni sono immersive e nascondono la nav globale.
+    const expectedPaths = ['/quiz', '/semestre-filtro', '/review', '/account']
+    for (let index = 0; index < expectedPaths.length; index++) {
+      if (index > 0) await page.goto(`${baseUrl}/come-funziona`, { waitUntil: 'domcontentloaded', timeout: 45000 })
+      if (mobileNavExpected) await page.locator('.mobile-bottom-nav button').nth(index).evaluate(element => element.click())
+      else await page.goto(`${baseUrl}${expectedPaths[index]}`, { waitUntil: 'domcontentloaded', timeout: 45000 })
+      await page.waitForTimeout(250)
+      const state = await page.evaluate(() => {
+        const offenders = [...document.querySelectorAll('body *')].map(el => {
+          const rect = el.getBoundingClientRect()
+          const style = getComputedStyle(el)
+          return { tag: el.tagName, cls: typeof el.className === 'string' ? el.className.slice(0,90) : '', right: Math.round(rect.right), width: Math.round(rect.width), display: style.display, position: style.position }
+        }).filter(x => x.display !== 'none' && x.width > 0 && x.right > window.innerWidth + 1).slice(0,5)
+        return { documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth, width: window.innerWidth, path: window.location.pathname, offenders }
+      })
       if (state.path !== expectedPaths[index]) failures.push(`${viewport.name}, destinazione ${index + 1}: percorso ${state.path}, atteso ${expectedPaths[index]}`)
       const overflow = Math.max(state.documentWidth, state.bodyWidth) - state.width
-      if (overflow > 1) failures.push(`${viewport.name}, destinazione ${index + 1}: overflow di ${overflow}px`)
+      if (overflow > 1) failures.push(`${viewport.name}, destinazione ${index + 1} ${state.path}: overflow di ${overflow}px; elementi: ${JSON.stringify(state.offenders)}`)
+      if (index === 2 && viewport.name === 'iphone-se-small') await page.screenshot({ path: 'artifacts/mobile-responsive/iphone-se-small-flashcards.png', fullPage: true })
     }
 
     // Verifica che tutte le sezioni principali si adattino allo stesso schermo senza zoom o scroll laterale.
