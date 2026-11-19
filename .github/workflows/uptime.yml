@@ -27,11 +27,16 @@ jobs:
           fi
           curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 https://smlquiz-pro.pages.dev/ -o /tmp/smlquiz-origin.html
           grep -qi "SMLQUIZ" /tmp/smlquiz-origin.html
-      - name: Check PWA service worker
+      - name: Check PWA manifest and install icons
         run: |
           set -eu
-          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 https://smlquiz-pro.pages.dev/sw.js -o /tmp/smlquiz-sw.js
-          grep -q "smlquiz-pwa" /tmp/smlquiz-sw.js
+          curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 https://smlquiz-pro.pages.dev/manifest.webmanifest -o /tmp/smlquiz-manifest.json
+          grep -q '"display": "standalone"' /tmp/smlquiz-manifest.json
+          for icon in icon-192.png icon-512.png; do
+            curl --fail --silent --show-error --location --max-time 20 --retry 2 --retry-delay 3 "https://smlquiz-pro.pages.dev/$icon" -o "/tmp/$icon"
+            test -s "/tmp/$icon"
+            file "/tmp/$icon" | grep -q 'PNG image data'
+          done
       - name: Check Supabase authentication endpoint
         run: |
           set -eu
