@@ -5397,3 +5397,6 @@ body{background:radial-gradient(ellipse at 85% -15%,rgba(100,135,181,.19),transp
   .shell.mode-fullscreen .mobile-bottom-nav{display:none!important}
   .shell:is(.function-fullscreen,.mode-fullscreen) .main>.content{padding-bottom:28px!important}
 }
+
+/* Immersive views keep only the dedicated return-home control, not a duplicate top bar. */
+.shell:is(.function-fullscreen,.mode-fullscreen) .topbar{display:none!important}
