@@ -257,8 +257,8 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       meta={`${total.toLocaleString('it-IT')} carte disponibili · ${easyCount} facili · ${difficultCount} da ripassare`}
       primaryLabel={deckMode === 'difficult' ? 'Torna alle flashcard da fare' : difficultCount > 0 ? 'Ripassa le carte difficili' : 'Hai completato il mazzo'}
       onPrimary={() => {
-        if (deckMode === 'difficult') { setDeckMode('all'); setIndex(0); setFlipped(false); setDeckCompleted(false); return }
-        if (difficultCount > 0) { setDeckMode('difficult'); setIndex(0); setFlipped(false); setDeckCompleted(false) }
+        if (deckMode === 'difficult') { changeDeckMode('all'); return }
+        if (difficultCount > 0) changeDeckMode('difficult')
       }}
       secondaryLabel="Fai un quiz su questa materia"
       onSecondary={() => { if (selectedSubject) onStartQuiz?.(selectedSubject.id) }}
