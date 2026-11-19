@@ -208,6 +208,14 @@ try {
           return !!select && select.options.length > 1
         }, null, { timeout: 15000 }).catch(() => {})
         await page.locator('.flashcard-stage .flashcard-3d').waitFor({ state: 'visible', timeout: 15000 })
+        const cardMetrics = await page.evaluate(() => {
+          const card = document.querySelector('.flashcard-3d')
+          const copy = document.querySelector('.flashcard-front .flashcard-copy')
+          const rect = card?.getBoundingClientRect()
+          return { width: rect?.width ?? 0, height: rect?.height ?? 0, fontSize: copy ? Number.parseFloat(getComputedStyle(copy).fontSize) : 0 }
+        })
+        if (cardMetrics.height < 400 || cardMetrics.width < viewport.width * 0.72) failures.push(`${viewport.name}: flashcard troppo piccola (${JSON.stringify(cardMetrics)})`)
+        if (cardMetrics.fontSize < (viewport.width <= 800 ? 22 : 27)) failures.push(`${viewport.name}: testo flashcard troppo piccolo (${cardMetrics.fontSize}px)`)
         if (index === 2 && viewport.name === 'iphone-se-small') await page.screenshot({ path: 'artifacts/mobile-responsive/iphone-se-small-flashcards.png', fullPage: true })
         await page.locator('.flashcard-3d').click()
         await page.locator('.flashcard-ratings').waitFor({ state: 'visible', timeout: 5000 })
