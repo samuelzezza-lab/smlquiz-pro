@@ -4385,3 +4385,26 @@ body { overscroll-behavior-y: none; }
 /* Nessuna schermata standard deve bloccare lo scroll verticale del documento. */
 html, body, #root { min-height: 100%; }
 body { overflow-y: auto; }
+
+/* Adcash: un solo banner orizzontale per fascia dispositivo; spazio stabile per evitare CLS. */
+.sml-ad-slot.adcash-slot{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;width:100%;max-width:100%;min-height:calc(var(--ad-height) + 20px);margin:12px auto;padding:0 8px;overflow:visible;clear:both}
+.sml-ad-label{display:block;margin:0 0 4px;color:#8290ad;font:700 9px/1.2 system-ui,sans-serif;letter-spacing:.7px;text-transform:uppercase}
+.sml-ad-content{display:flex;align-items:center;justify-content:center;width:min(var(--ad-width),100%);min-height:var(--ad-height);max-width:100%;overflow:hidden}
+.sml-ad-content iframe{display:block;max-width:100%;border:0}
+.adcash-tablet,.adcash-mobile{display:none!important}
+.adcash-square{margin:20px auto 24px}
+@media(max-width:767px){.adcash-desktop{display:none!important}}
+@media(min-width:481px) and (max-width:767px){.adcash-tablet{display:flex!important}}
+@media(max-width:480px){.adcash-mobile{display:flex!important}.adcash-square{margin:14px auto 20px}}
+@media(min-width:768px){.adcash-desktop{display:flex!important}}
+/* Correzione scroll: le pagine e le modalità devono poter crescere; solo il quiz attivo usa il suo pannello scrollabile. */
+.shell:not(.quiz-active){height:auto!important;min-height:100dvh;overflow:visible!important}
+.shell:not(.quiz-active) .main{height:auto!important;min-height:100dvh;overflow:visible!important;overscroll-behavior-y:auto!important}
+.shell:not(.quiz-active) .main>.content{height:auto!important;min-height:0;overflow:visible!important;flex:0 0 auto}
+html,body,#root{min-height:100%;height:auto}
+body{overflow-x:hidden;overflow-y:auto!important}
+@media(max-width:800px){
+ .shell:not(.quiz-active){padding-bottom:calc(68px + env(safe-area-inset-bottom))}
+ .shell:not(.quiz-active) .main{width:100%;min-width:0;-webkit-overflow-scrolling:touch}
+ .shell:not(.quiz-active) .main>.content{padding-bottom:calc(28px + env(safe-area-inset-bottom))}
+}
