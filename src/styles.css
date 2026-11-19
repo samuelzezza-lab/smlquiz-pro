@@ -4071,3 +4071,29 @@ html,body,.shell{scroll-behavior:auto!important}
   .resolve-subject-action { gap:4px; font-size:10px; }
   .resolve-subject-action svg { width:13px; height:13px; }
 }
+
+
+/* Tastiera aperta: libera spazio al contenuto e non lascia la barra sopra i campi. */
+@media (max-width: 800px) {
+  .shell:has(input:focus,textarea:focus,select:focus) .mobile-bottom-nav {
+    display:none!important;
+  }
+  .shell:has(input:focus,textarea:focus,select:focus) .main>.content {
+    padding-bottom:calc(22px + env(safe-area-inset-bottom))!important;
+  }
+}
+/* In orizzontale la barra resta compatta per lasciare più altezza utile. */
+@media (max-width: 800px) and (max-height: 500px) {
+  .mobile-bottom-nav {
+    min-height:calc(52px + env(safe-area-inset-bottom));
+    padding-top:3px;
+    padding-bottom:calc(3px + env(safe-area-inset-bottom));
+  }
+  .mobile-bottom-nav button { min-height:42px; gap:2px; }
+  .mobile-bottom-nav button svg { width:17px; height:17px; }
+  .mobile-page-active .main>.content,
+  .home-auth-fullscreen .main>.content,
+  .shell.function-fullscreen:not(.quiz-active) .main>.content {
+    padding-bottom:calc(68px + env(safe-area-inset-bottom));
+  }
+}
