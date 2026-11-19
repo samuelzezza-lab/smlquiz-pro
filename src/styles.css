@@ -5239,3 +5239,55 @@ body{background:radial-gradient(ellipse at 85% -15%,rgba(100,135,181,.19),transp
  .shell.mode-fullscreen .main>.content{padding:64px 14px 30px!important}
  .shell.mode-fullscreen .main:has(.flashcards-page)>.content{padding-top:64px!important}
 }
+
+/* Risolvi: catalogo materie e sessione quiz con gerarchia visiva chiara. */
+.shell.mode-fullscreen .content:has(.resolve-heading){max-width:1600px!important;margin:0 auto!important}
+.shell.mode-fullscreen .resolve-heading{padding:clamp(22px,3vw,38px)!important;border-radius:22px!important;margin-bottom:22px!important}
+.shell.mode-fullscreen .resolve-heading h1{font-size:clamp(32px,4vw,48px)!important;letter-spacing:-.035em!important}
+.shell.mode-fullscreen .resolve-search{max-width:1100px!important;margin:0 auto 24px!important;padding:24px!important;background:var(--qm-panel)!important;border:1px solid var(--qm-border)!important;border-radius:20px!important;box-shadow:var(--qm-shadow)!important}
+.shell.mode-fullscreen .resolve-search .search-label{display:block!important;color:var(--qm-text)!important;font-weight:750!important;margin-bottom:10px!important}
+.shell.mode-fullscreen .resolve-search>div:first-of-type{display:flex!important;align-items:center!important;gap:12px!important;background:#14263B!important;border:1px solid #52708F!important;border-radius:14px!important;padding:0 16px!important;min-height:58px!important}
+.shell.mode-fullscreen .resolve-search>div:first-of-type input{background:transparent!important;border:0!important;box-shadow:none!important;min-height:54px!important;font-size:17px!important}
+.shell.mode-fullscreen .resolve-filter-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px!important;margin-top:16px!important}
+.shell.mode-fullscreen .resolve-filter-grid label{display:grid!important;gap:8px!important;color:var(--qm-muted)!important;font-weight:650!important}
+.shell.mode-fullscreen .resolve-filter-grid select{min-height:48px!important;border-radius:12px!important;padding:0 12px!important}
+.shell.mode-fullscreen .resolve-subject-heading{max-width:1500px!important;margin:0 auto 14px!important;display:flex!important;align-items:center!important;justify-content:space-between!important}
+.shell.mode-fullscreen .resolve-subject-heading h2{font-size:clamp(20px,2vw,27px)!important}
+.shell.mode-fullscreen .resolve-subject-list{max-width:1500px!important;margin:0 auto!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.shell.mode-fullscreen .resolve-subject{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:16px!important;min-height:92px!important;padding:18px 22px!important;text-align:left!important;background:linear-gradient(120deg,#1D3048,#29415B)!important;border:1px solid #45627F!important;border-radius:16px!important;color:var(--qm-text)!important;box-shadow:0 8px 22px rgba(0,0,0,.16)!important;transition:transform .16s ease,border-color .16s ease,background .16s ease!important}
+.shell.mode-fullscreen .resolve-subject:hover{transform:translateY(-2px)!important;border-color:var(--qm-primary)!important;background:linear-gradient(120deg,#294766,#315475)!important}
+.shell.mode-fullscreen .resolve-subject strong{display:block!important;color:#F1F5FA!important;font-size:16px!important;line-height:1.35!important}
+.shell.mode-fullscreen .resolve-subject small{display:block!important;color:#B9C9D9!important;margin-top:5px!important;font-size:12px!important}
+.shell.mode-fullscreen .resolve-subject-action{display:inline-flex!important;align-items:center!important;gap:7px!important;white-space:nowrap!important;color:#8DDDDC!important;font-weight:750!important}
+.shell.mode-fullscreen .quiz-grid{width:100%!important;max-width:1500px!important;margin:0 auto!important;display:grid!important;grid-template-columns:minmax(0,1fr)!important}
+.shell.mode-fullscreen .quiz-column{width:100%!important;max-width:1400px!important;margin:0 auto!important}
+.shell.mode-fullscreen .panel.quiz{padding:clamp(22px,3vw,42px)!important;border-radius:24px!important;background:linear-gradient(145deg,#1D3048,#172A40)!important;border:1px solid #45627F!important;box-shadow:0 22px 60px rgba(0,0,0,.28)!important}
+.shell.mode-fullscreen .quiz-top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:18px!important;margin-bottom:22px!important}
+.shell.mode-fullscreen .quiz-top h2{font-size:clamp(19px,2vw,26px)!important}
+.shell.mode-fullscreen .quiz-top>div:first-child small{color:var(--qm-accent)!important;font-weight:750!important;letter-spacing:.08em!important}
+.shell.mode-fullscreen .quiz-top-actions{display:flex!important;align-items:center!important;gap:12px!important}
+.shell.mode-fullscreen .quiz-top-actions .secondary{display:none!important}
+.shell.mode-fullscreen .progress-label{color:var(--qm-muted)!important;font-weight:650!important}
+.shell.mode-fullscreen .progress-track{height:9px!important;border-radius:99px!important;overflow:hidden!important;background:#3B536C!important;margin:10px 0 28px!important}
+.shell.mode-fullscreen .progress-track i{height:100%!important;background:linear-gradient(90deg,var(--qm-primary),var(--qm-accent))!important;border-radius:99px!important}
+.shell.mode-fullscreen .q-label{color:var(--qm-accent)!important;font-weight:800!important;letter-spacing:.12em!important}
+.shell.mode-fullscreen .question-heading-row{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:18px!important;margin:14px 0 28px!important}
+.shell.mode-fullscreen .question-heading-row .question{font-size:clamp(22px,2.4vw,34px)!important;line-height:1.45!important;letter-spacing:-.018em!important;max-width:1150px!important;color:#F1F5FA!important}
+.shell.mode-fullscreen .bookmark-button{background:#29415B!important;color:#BFE8F0!important;border:1px solid #52708F!important;border-radius:11px!important;padding:10px 14px!important}
+.shell.mode-fullscreen .answers{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:13px!important}
+.shell.mode-fullscreen .answers .answer{display:flex!important;align-items:center!important;gap:14px!important;min-height:76px!important;padding:16px 18px!important;border-radius:15px!important;background:#29415B!important;color:#F1F5FA!important;border:1px solid #45627F!important;text-align:left!important;font-size:clamp(15px,1.3vw,18px)!important;line-height:1.5!important;transition:background .15s ease,border-color .15s ease,transform .15s ease!important}
+.shell.mode-fullscreen .answers .answer:hover:not(:disabled){background:#315475!important;border-color:#78AEE0!important;transform:translateY(-1px)!important}
+.shell.mode-fullscreen .answers .answer>span{display:flex!important;align-items:center!important;justify-content:center!important;flex:0 0 34px!important;width:34px!important;height:34px!important;border-radius:10px!important;background:#172B41!important;color:#9DD6F0!important;font-weight:850!important}
+.shell.mode-fullscreen .quiz-bottom{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;margin-top:28px!important;padding-top:22px!important;border-top:1px solid #3E5872!important}
+.shell.mode-fullscreen .quiz-bottom>span{color:var(--qm-muted)!important;font-size:12px!important}
+.shell.mode-fullscreen .quiz-bottom .primary{min-width:180px!important;min-height:52px!important;border-radius:13px!important}
+.shell.mode-fullscreen .explain,.shell.mode-fullscreen .answer-recorded-note{background:#142B40!important;color:#DCEAF7!important;border:1px solid #456A85!important;border-radius:14px!important;padding:18px!important;margin-top:18px!important}
+@media(max-width:760px){
+ .shell.mode-fullscreen .resolve-subject-list{grid-template-columns:minmax(0,1fr)!important}
+ .shell.mode-fullscreen .resolve-filter-grid{grid-template-columns:minmax(0,1fr)!important}
+ .shell.mode-fullscreen .answers{grid-template-columns:minmax(0,1fr)!important}
+ .shell.mode-fullscreen .quiz-top{align-items:flex-start!important;flex-direction:column!important}
+ .shell.mode-fullscreen .quiz-bottom{flex-wrap:wrap!important}
+ .shell.mode-fullscreen .quiz-bottom .primary{width:100%!important}
+ .shell.mode-fullscreen .question-heading-row{flex-direction:column!important}
+}
