@@ -4435,7 +4435,7 @@ body { position: relative; }
 .shell .main,
 .shell.function-fullscreen .main,
 .shell.quiz-active .main {
-  width: 100%;
+  width: auto;
   height: auto !important;
   min-height: 100dvh;
   overflow: visible !important;
