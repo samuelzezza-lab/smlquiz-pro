@@ -188,7 +188,6 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
         <p>Scegli una materia, leggi la domanda e tocca la carta per vedere la risposta.</p>
       </div>
       <div className="flashcards-hero-side">
-        {showAds && <aside className="compact-ad-slot" aria-label="Spazio pubblicitario"><span>Pubblicità</span><small>Annuncio</small></aside>}
         <div className="flashcards-hero-mark" aria-hidden="true"><Layers3 size={30}/></div>
       </div>
     </header>
@@ -225,12 +224,14 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
         <div className="flashcards-progress-label"><span>Studiate {reviewedCount} / {accessibleTotal}{!unlocked && total > FREE_LIMIT ? ' · Gratis' : ''}</span><span>{displayedCards.length} da fare in questo giro</span></div>
         <div className="flashcards-progress-track"><span style={{width: `${Math.min(100, (reviewedCount / Math.max(1, accessibleTotal)) * 100)}%`}}/></div>
       </div>
+      {showAds && <aside className="compact-ad-slot flashcards-ad-slot flashcards-ad-slot-top" data-ad-slot="flashcards-top" aria-label="Spazio pubblicitario"><span>Pubblicità</span><small>Annuncio</small></aside>}
       <div className="flashcard-stage">
         <div ref={cardRef} className={`flashcard-3d ${flipped ? 'is-flipped' : ''}`} onClick={() => setFlipped(v => !v)} role="button" tabIndex={0} aria-label={flipped ? 'Mostra la domanda' : 'Gira la flashcard'} onKeyDown={e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setFlipped(v => !v) } }}>
           <div className="flashcard-face flashcard-front"><span className="flashcard-kicker">DOMANDA</span><div className="flashcard-copy">{current.question_front}</div><span className="flashcard-hint">Tocca qui per vedere la risposta</span></div>
           <div className="flashcard-face flashcard-back"><span className="flashcard-kicker">RISPOSTA CORRETTA</span><div className="flashcard-copy">{current.answer_back}</div><section className="flashcard-explanation-section" aria-label="Spiegazione"><h3 className="flashcard-explanation-title">SPIEGAZIONE</h3>{current.explanation?.trim() ? <p className="flashcard-explanation">{current.explanation}</p> : <p className="flashcard-explanation flashcard-explanation-missing">Spiegazione non ancora disponibile per questa carta.</p>}</section><span className="flashcard-hint">Quanto è stato facile ricordarlo?</span></div>
         </div>
       </div>
+      {showAds && <aside className="compact-ad-slot flashcards-ad-slot flashcards-ad-slot-middle" data-ad-slot="flashcards-middle" aria-label="Spazio pubblicitario"><span>Pubblicità</span><small>Annuncio</small></aside>}
       {flipped && <div className="flashcard-ratings">
         <button className="rating-difficult" onClick={() => void rate('difficult')}>Difficile</button>
         <button className="rating-medium" onClick={() => void rate('medium')}>Medio</button>
@@ -246,7 +247,6 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
         <button className="secondary" onClick={shuffle}><Shuffle size={15}/> Mescola</button>
       </div>
       <p className="flashcards-footnote">{user ? 'I tuoi progressi vengono salvati sul tuo account.' : 'Puoi provare gratuitamente senza registrazione. Accedi per salvare le valutazioni.'}</p>
-      {showAds && <aside className="compact-ad-slot compact-ad-slot-bottom" aria-label="Spazio pubblicitario"><span>Pubblicità</span><small>Annuncio</small></aside>}
     </>}
     {!loading && deckCompleted && !paywall && <StudyCompletion
       eyebrow={deckMode === 'difficult' ? 'RIPASSO COMPLETATO' : 'SESSIONE COMPLETATA'}
