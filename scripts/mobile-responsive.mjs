@@ -142,6 +142,10 @@ try {
         bodyWidth: document.body.scrollWidth,
         viewportScale: window.visualViewport?.scale ?? 1,
       }))
+      if (route === '/review' && await page.locator('.flashcards-page').count()) {
+        const adSlots = await page.locator('.flashcards-page [data-ad-slot]').count()
+        if (adSlots !== 2) failures.push(`${viewport.name}, flashcard: attesi 2 spazi pubblicitari, trovati ${adSlots}`)
+      }
       const routeOverflow = Math.max(layout.documentWidth, layout.bodyWidth) - layout.width
       if (routeOverflow > 1) failures.push(`${viewport.name}, sezione ${route}: overflow orizzontale di ${routeOverflow}px`)
       if (Math.abs(layout.viewportScale - 1) > 0.01) failures.push(`${viewport.name}, sezione ${route}: scala viewport diversa da 100%`)
