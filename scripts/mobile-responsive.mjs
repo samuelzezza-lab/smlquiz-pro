@@ -62,6 +62,25 @@ try {
     await page.goto(`${baseUrl}/come-funziona`, { waitUntil: 'domcontentloaded', timeout: 45000 })
     await page.locator('.mobile-bottom-nav button').first().waitFor({ state: mobileNavExpected ? 'visible' : 'attached', timeout: 20000 })
     await page.evaluate(() => document.fonts.ready)
+    const catalogHeaders = {
+      'access-control-allow-origin': '*',
+      'access-control-allow-headers': 'authorization, apikey, content-type, x-client-info',
+      'access-control-allow-methods': 'GET, OPTIONS',
+      'content-type': 'application/json'
+    }
+    await page.route('**/rest/v1/facolta**', async route => {
+      if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: catalogHeaders })
+      return route.fulfill({ status: 200, headers: catalogHeaders, body: JSON.stringify([
+        { id: 'faculty-test', nome: 'Medicina e Chirurgia', traduzioni: {} }
+      ]) })
+    })
+    await page.route('**/rest/v1/materie**', async route => {
+      if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: catalogHeaders })
+      return route.fulfill({ status: 200, headers: catalogHeaders, body: JSON.stringify([
+        { id: 'subject-test-1', nome: 'Anatomia I', traduzioni: {}, facolta_id: 'faculty-test', anno_corso: 1, corso_di_laurea: 'Medicina e Chirurgia' },
+        { id: 'subject-test-2', nome: 'Fisiologia', traduzioni: {}, facolta_id: 'faculty-test', anno_corso: 1, corso_di_laurea: 'Medicina e Chirurgia' }
+      ]) })
+    })
     await page.route('**/functions/v1/flashcards-api', async route => {
       const request = route.request()
       const headers = {
