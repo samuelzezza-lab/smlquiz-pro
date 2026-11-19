@@ -3764,3 +3764,37 @@ html,body,.shell{scroll-behavior:auto!important}
   .buy-page .buy-semester-plans h4{font-size:12px}
   .buy-page .buy-semester-plans p{font-size:10px}
 }
+
+
+/* Navigazione più semplice: le funzioni restano tutte disponibili, ma i gruppi secondari sono chiusi. */
+.nav-group{margin:10px 0 0;border-top:1px solid var(--line);padding-top:8px}
+.nav-group>summary{display:flex;align-items:center;gap:10px;padding:10px 12px;color:#9aa8c2;font-size:11px;font-weight:700;cursor:pointer;list-style:none;border-radius:9px}
+.nav-group>summary::-webkit-details-marker{display:none}
+.nav-group>summary svg:last-child{margin-left:auto;color:#71809e}
+.nav-group[open]>summary{color:#dce7fb;background:#ffffff08}
+.nav-group>.nav-link{width:100%;margin:2px 0;height:39px;padding-left:37px}
+.guide-page .page-heading{padding:24px 28px}
+.guide-page .page-heading:after{display:none}
+.guide-page .page-heading h1{font-size:clamp(27px,3.4vw,38px)}
+.guide-primary-grid{margin:18px 0 14px;gap:12px}
+.guide-primary-grid .launch-card{min-height:150px;padding:20px}
+.guide-quick-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 18px}
+.guide-quick-links button{display:flex;align-items:center;gap:12px;min-width:0;padding:14px;border:1px solid var(--line);border-radius:12px;background:var(--surface,#101a2c);color:var(--text,#edf1ff);text-align:left;cursor:pointer}
+.guide-quick-links button>span{display:grid;gap:4px;min-width:0;flex:1}
+.guide-quick-links button b{font-size:12px}
+.guide-quick-links button small{font-size:10px;color:var(--muted,#9ba9c2)}
+.guide-quick-links button>svg:last-child{color:var(--muted,#9ba9c2)}
+.guide-tools{border:1px solid var(--line);border-radius:12px;padding:0;overflow:hidden}
+.guide-tools>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;list-style:none;cursor:pointer;color:var(--text,#edf1ff);font-size:13px;font-weight:700}
+.guide-tools>summary::-webkit-details-marker{display:none}
+.guide-tools>summary span{display:flex;align-items:center;gap:10px}
+.guide-tools>summary>svg{color:var(--muted,#9ba9c2)}
+.guide-tools>p{margin:0 16px 12px}
+.guide-tools .guide-tools-links{padding:0 14px 14px}
+@media(max-width:700px){
+ .guide-page .page-heading{padding:20px}
+ .guide-primary-grid{grid-template-columns:1fr}
+ .guide-primary-grid .launch-card{min-height:125px;padding:17px}
+ .guide-quick-links{grid-template-columns:1fr}
+ .nav-group{margin-top:6px}
+}
