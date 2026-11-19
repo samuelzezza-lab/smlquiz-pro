@@ -54,4 +54,4 @@ if (!app.includes("if(!user&&['progress','leaderboard','settings','buy'].include
 if (!styles.includes('.shell.mode-fullscreen .mobile-bottom-nav{display:none!important}')) fail('Immersive mobile pages must hide global navigation.')
 
 if (process.exitCode) process.exit(process.exitCode)
-console.log('Security contracts passed: Italian-only UI, password policy, CSP and unsafe-sink scan.')
+console.log('Security contracts passed: Italian UI, password policy, CSP, PWA install metadata, Stripe price mapping and unsafe-sink scan.')
