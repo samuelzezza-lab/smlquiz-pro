@@ -4707,3 +4707,165 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 @media(max-width:1050px){.dashboard-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.dashboard-main-grid,.dashboard-bottom-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.dashboard-welcome{padding:20px;align-items:flex-start}.dashboard-quote{display:none}.dashboard-actions{grid-template-columns:1fr}.dashboard-action{min-height:150px}.dashboard-page{gap:13px}.dashboard-panel{padding:15px}}
 @media(max-width:520px){.sidebar{background:#fff}.topbar{background:#fff}.content{padding:22px 16px 85px}.dashboard-stats{gap:9px}.dashboard-stat{padding:13px}.dashboard-stat>strong{font-size:23px}.dashboard-welcome h1{font-size:25px}.dashboard-section-title{align-items:flex-start}.dashboard-action{min-height:140px}}
+
+
+/* SMLQUIZ — menu globale e uniformità visiva blu/arancione */
+@media (max-width: 1100px) {
+  .mobile-page-active .sidebar,
+  .shell.function-fullscreen .sidebar,
+  .shell.quiz-active .sidebar {
+    display: flex !important;
+    visibility: visible !important;
+  }
+  .topbar .crumb > .hamb {
+    display: inline-flex !important;
+    visibility: visible !important;
+  }
+}
+.sidebar.open,
+.mobile-page-active .sidebar.open,
+.shell.function-fullscreen .sidebar.open,
+.shell.quiz-active .sidebar.open {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+  pointer-events: auto !important;
+  z-index: 120 !important;
+  background: #fff !important;
+  color: #14264a !important;
+  border-right: 1px solid #dce6f5 !important;
+  box-shadow: 16px 0 42px rgba(20,38,74,.16) !important;
+}
+.scrim,
+.mobile-page-active .scrim,
+.shell.function-fullscreen .scrim {
+  z-index: 110 !important;
+}
+.sidebar .nav-link {
+  color: #536580 !important;
+  background: transparent !important;
+}
+.sidebar .nav-link:hover {
+  color: #145bd7 !important;
+  background: #eef4ff !important;
+}
+.sidebar .nav-link.active {
+  color: #fff !important;
+  background: linear-gradient(100deg,#145bd7,#2877e7) !important;
+  box-shadow: 0 5px 13px #145bd72b !important;
+}
+.sidebar .nav-link.active svg { color: #fff !important; }
+.sidebar .nav-caption { color: #91a0b8 !important; }
+.sidebar .close.mobile { color: #536580 !important; }
+.hamb {
+  display: inline-flex !important;
+  color: #14264a !important;
+  background: #eef4ff !important;
+  border: 1px solid #d4e2f5 !important;
+  box-shadow: none !important;
+}
+.hamb svg { color: #145bd7 !important; }
+.hamb:hover { background: #e2edff !important; color: #145bd7 !important; }
+
+/* Le modalità e gli strumenti condividono ora superfici chiare e gli stessi accenti. */
+.semestre-filtro,
+.semestre-filtro-page,
+.experiences-page,
+.flashcards-page,
+.exam-experiences-page {
+  color: #14264a !important;
+}
+.semestre-filtro [class^="sf-"],
+.semestre-filtro [class*=" sf-"],
+.semestre-filtro-page [class^="sf-"],
+.semestre-filtro-page [class*=" sf-"],
+.experiences-page [class^="experiences-"],
+.experiences-page [class*=" experiences-"],
+.flashcards-page [class^="flashcards-"],
+.flashcards-page [class*=" flashcards-"] {
+  --sml-blue: #145bd7;
+  --sml-orange: #f28a18;
+}
+.semestre-filtro .panel,
+.semestre-filtro-page .panel,
+.experiences-page .panel,
+.flashcards-page .panel,
+.semestre-filtro [class*="card"],
+.semestre-filtro-page [class*="card"],
+.experiences-page [class*="card"],
+.flashcards-page [class*="card"] {
+  background: #fff !important;
+  color: #14264a !important;
+  border-color: #dce6f4 !important;
+  box-shadow: 0 4px 16px rgba(35,67,107,.07) !important;
+}
+.semestre-filtro h1,.semestre-filtro h2,.semestre-filtro h3,
+.semestre-filtro-page h1,.semestre-filtro-page h2,.semestre-filtro-page h3,
+.experiences-page h1,.experiences-page h2,.experiences-page h3,
+.flashcards-page h1,.flashcards-page h2,.flashcards-page h3 {
+  color: #14264a !important;
+}
+.semestre-filtro p,.semestre-filtro label,.semestre-filtro small,
+.semestre-filtro-page p,.semestre-filtro-page label,.semestre-filtro-page small,
+.experiences-page p,.experiences-page label,.experiences-page small,
+.flashcards-page p,.flashcards-page label,.flashcards-page small {
+  color: #64748b;
+}
+.semestre-filtro input,.semestre-filtro select,.semestre-filtro textarea,
+.semestre-filtro-page input,.semestre-filtro-page select,.semestre-filtro-page textarea,
+.experiences-page input,.experiences-page select,.experiences-page textarea,
+.flashcards-page input,.flashcards-page select,.flashcards-page textarea {
+  color: #14264a !important;
+  background: #f8faff !important;
+  border-color: #d6e1ef !important;
+}
+.semestre-filtro button:not(.primary):not(.secondary),
+.semestre-filtro-page button:not(.primary):not(.secondary),
+.experiences-page button:not(.primary):not(.secondary),
+.flashcards-page button:not(.primary):not(.secondary) {
+  color: #284466;
+}
+.semestre-filtro .primary,.semestre-filtro-page .primary,
+.experiences-page .primary,.flashcards-page .primary {
+  color: #fff !important;
+  background: linear-gradient(120deg,#145bd7,#2878e8) !important;
+  border-color: #145bd7 !important;
+}
+.semestre-filtro .secondary,.semestre-filtro-page .secondary,
+.experiences-page .secondary,.flashcards-page .secondary {
+  color: #284466 !important;
+  background: #fff !important;
+  border-color: #d5e1f1 !important;
+}
+.experiences-hero,
+.flashcards-hero {
+  color: #14264a !important;
+  background: linear-gradient(110deg,#e8f1ff 0%,#fff 68%,#fff0df 100%) !important;
+  border: 1px solid #d7e5f8 !important;
+}
+.experiences-hero h1,.flashcards-hero h1,
+.experiences-hero p,.flashcards-hero p { color: #14264a !important; }
+.flashcard-front {
+  background: linear-gradient(145deg,#145bd7,#2878e8) !important;
+  color: #fff !important;
+}
+.flashcard-back {
+  background: linear-gradient(145deg,#fff,#fff7ee) !important;
+  color: #14264a !important;
+  border: 1px solid #f1dfca !important;
+}
+.flashcard-front *, .flashcard-back * { color: inherit; }
+.sf-review,.sf-question,.sf-question-card,.sf-result-card {
+  background: #fff !important;
+  color: #14264a !important;
+  border-color: #dce6f4 !important;
+}
+.sf-explanation { background: #fff6eb !important; color: #79501f !important; border-color: #f4d8b6 !important; }
+@media (max-width: 800px) {
+  .mobile-page-active .sidebar { display: none !important; }
+  .mobile-page-active .sidebar.open,
+  .shell.function-fullscreen .sidebar.open,
+  .shell.quiz-active .sidebar.open { display: flex !important; }
+  .topbar .crumb > .hamb { display: inline-flex !important; }
+}
