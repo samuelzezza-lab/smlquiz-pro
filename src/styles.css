@@ -3510,3 +3510,6 @@ html,body,#root{max-width:100%;overflow-x:clip}
 .guide-page .launch-card{position:relative;padding-right:112px;}
 .guide-page .launch-ad-placeholder{position:absolute;top:16px;right:16px;width:88px;height:58px;display:flex;align-items:center;justify-content:center;border:1px dashed #8290ad88;border-radius:8px;background:rgba(130,144,173,.07);color:#9aa8c2;font-size:9px;font-weight:700;letter-spacing:.8px;line-height:1.3;text-align:center;}
 @media(max-width:520px){.guide-page .launch-card{padding-right:104px;}.guide-page .launch-ad-placeholder{top:14px;right:14px;width:78px;height:52px;font-size:8px;}}
+
+/* Lo spazio pubblicitario sostituisce la freccia decorativa in alto a destra. */
+.guide-page .launch-card::after{display:none;}
