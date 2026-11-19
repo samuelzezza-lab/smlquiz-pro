@@ -3701,3 +3701,66 @@ body{background:#111827;color:#edf4ff}
 .compact-ad-slot small{font-size:9px;color:#64748b}
 .compact-ad-slot-bottom{width:min(100%,320px);min-height:42px;margin:12px auto 0}
 @media(max-width:640px){.flashcards-hero{align-items:flex-start}.flashcards-hero-side{flex-direction:column-reverse;gap:8px;align-items:flex-end}.compact-ad-slot{width:112px;min-height:42px;padding:5px}.compact-ad-slot-bottom{width:min(100%,280px)}}
+
+
+/* Semplificazione globale: niente animazioni o transizioni decorative. */
+html,body,.shell{scroll-behavior:auto!important}
+*,*::before,*::after{
+  animation:none!important;
+  transition:none!important;
+  scroll-behavior:auto!important;
+}
+:where(button,a,[role="button"],.subject-card,.launch-card):hover,
+:where(button,a,[role="button"]):active{
+  transform:none!important;
+}
+/* Pagina crediti: acquisti principali subito visibili, dettagli secondari compatti. */
+.buy-page{padding-top:24px;padding-bottom:28px}
+.buy-page>.page-heading{margin-bottom:14px}
+.buy-page>.page-heading p{max-width:760px;line-height:1.45}
+.buy-page .buy-semester-panel{padding:13px;margin-bottom:10px}
+.buy-page .buy-semester-heading{margin-bottom:9px}
+.buy-page .buy-semester-heading h3{font-size:17px}
+.buy-page .buy-semester-heading p{font-size:11px}
+.buy-page .buy-semester-plans{gap:8px}
+.buy-page .buy-semester-plans article{padding:10px}
+.buy-page .buy-semester-subject{margin-top:8px}
+.buy-page .account-layout{gap:10px}
+.buy-page .account-main-column,.buy-page .account-side-column{gap:10px}
+.buy-page .buy-more-options{padding:0}
+.buy-page .buy-more-options>summary,
+.buy-page .buy-ledger-details>summary{min-height:48px;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;list-style:none;color:#dce7fa;font-size:12px;font-weight:700}
+.buy-page .buy-more-options>summary::-webkit-details-marker,
+.buy-page .buy-ledger-details>summary::-webkit-details-marker{display:none}
+.buy-page .buy-more-options>summary span,
+.buy-page .buy-ledger-details>summary span{display:flex;align-items:center;gap:9px}
+.buy-page .buy-more-options[open]>summary,
+.buy-page .buy-ledger-details[open]>summary{border-bottom:1px solid var(--line)}
+.buy-page .buy-more-options>.account-panel-heading,
+.buy-page .buy-more-options>.buy-catalog-heading,
+.buy-page .buy-more-options>.pricing-plan,
+.buy-page .buy-more-options>.account-payment-note,
+.buy-page .buy-more-options>.coupon-form{margin-left:12px;margin-right:12px}
+.buy-page .buy-more-options>.account-panel-heading{padding-top:12px}
+.buy-page .buy-more-options>.pricing-plan{margin-top:8px;margin-bottom:8px}
+.buy-page .buy-ledger-details{padding:0}
+.buy-page .buy-ledger-content{padding:0 14px 12px}
+.buy-page .buy-ledger-content>p{font-size:10px;color:var(--muted);margin:10px 0}
+.buy-page .account-ledger-row{padding:9px 0}
+@media(max-width:800px){
+  .buy-page{padding-top:18px;padding-bottom:20px}
+  .buy-page>.page-heading{margin-bottom:11px}
+  .buy-page .buy-semester-panel{padding:11px}
+  .buy-page .buy-semester-plans{grid-template-columns:1fr}
+  .buy-page .buy-semester-plans article{grid-template-columns:minmax(0,1fr) auto}
+  .buy-page .buy-semester-plans button{grid-column:1/-1}
+  .buy-page .account-layout{gap:9px}
+  .buy-page .account-side-column{margin-top:0}
+}
+@media(max-width:520px){
+  .buy-page .buy-semester-heading h3{font-size:16px}
+  .buy-page .buy-semester-heading p{font-size:10px}
+  .buy-page .buy-semester-plans article{padding:9px}
+  .buy-page .buy-semester-plans h4{font-size:12px}
+  .buy-page .buy-semester-plans p{font-size:10px}
+}
