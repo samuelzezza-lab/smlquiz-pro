@@ -38,8 +38,13 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin}:SemestreFil
    const raw=localStorage.getItem(draftKey)
    if(!raw)return
    const draft=JSON.parse(raw) as {examId?:string;exam?:Question[];answers?:Record<string,string>;subject?:SubjectId;startedAt?:number;accessType?:'free'|'single_subject'|'complete'|'unlimited'}
-   if(!draft.examId||!Array.isArray(draft.exam)||draft.exam.length!==31||!draft.startedAt||Date.now()-draft.startedAt>=3000000)return
-   setExamId(draft.examId);setExam(draft.exam);setAnswers(draft.answers||{});setSubject(draft.subject||'biologia');setAccessType(draft.accessType||'');setStartedAt(draft.startedAt);setSeconds(Math.max(0,3000-Math.floor((Date.now()-draft.startedAt)/1000)));setMode('exam')
+   if(!draft.examId||!Array.isArray(draft.exam)||draft.exam.length!==31||!draft.startedAt){localStorage.removeItem(draftKey);return}
+   const elapsed=Math.max(0,Date.now()-draft.startedAt)
+   if(elapsed>=3000000){localStorage.removeItem(draftKey);window.dispatchEvent(new Event('smlquiz-semestre-draft-change'));return}
+   const remaining=Math.max(0,3000-Math.floor(elapsed/1000))
+   const resume=window.confirm(`Hai una simulazione precedente di Semestre Filtro con ${fmt(remaining)} rimanenti. Vuoi riprenderla? Se scegli Annulla, la vecchia bozza verrà eliminata e potrai iniziare una nuova prova da 50:00.`)
+   if(!resume){localStorage.removeItem(draftKey);window.dispatchEvent(new Event('smlquiz-semestre-draft-change'));return}
+   setExamId(draft.examId);setExam(draft.exam);setAnswers(draft.answers||{});setSubject(draft.subject||'biologia');setAccessType(draft.accessType||'');setStartedAt(draft.startedAt);setSeconds(remaining);setMode('exam')
   }catch{localStorage.removeItem(draftKey)}
  },[])
  useEffect(()=>{
