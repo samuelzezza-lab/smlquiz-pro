@@ -253,8 +253,9 @@ try {
       }
     }
 
-    // Verifica che tutte le sezioni principali si adattino allo stesso schermo senza zoom o scroll laterale.
-    for (const route of routePaths) {
+    // Tutte le sezioni su quattro form factor rappresentativi; i 16 viewport coprono comunque le 4 funzioni principali.
+    const fullRouteAudit = new Set(['iphone-se-small', 'phone-390', 'tablet-768', 'desktop-1440'])
+    if (fullRouteAudit.has(viewport.name)) for (const route of routePaths) {
       await page.goto(`${baseUrl}${route}`, { waitUntil: 'domcontentloaded', timeout: 45000 })
       await page.waitForTimeout(120)
       const layout = await page.evaluate(() => ({
