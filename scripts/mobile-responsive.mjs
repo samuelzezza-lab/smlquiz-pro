@@ -66,6 +66,7 @@ try {
       })(),
       navButtons: document.querySelectorAll('.mobile-bottom-nav button').length,
       homeHeaderVisible: (() => { const header = document.querySelector('.topbar:has(.home-wordmark)'); return !!header && getComputedStyle(header).display !== 'none' && header.getBoundingClientRect().height > 0 })(),
+      homeHeaderHeight: Math.round(document.querySelector('.topbar:has(.home-wordmark)')?.getBoundingClientRect().height ?? 0),
       homeMenuVisible: (() => { const button = document.querySelector('.topbar:has(.home-wordmark) .hamb'); return !!button && getComputedStyle(button).display !== 'none' && button.getBoundingClientRect().width > 0 })(),
       creditsVisible: (() => { const button = document.querySelector('.home-buy-credits'); return !!button && getComputedStyle(button).display !== 'none' && button.getBoundingClientRect().width > 0 })(),
       profileVisible: (() => { const button = document.querySelector('.home-profile-avatar'); return !!button && getComputedStyle(button).display !== 'none' && button.getBoundingClientRect().width > 0 })(),
@@ -79,6 +80,7 @@ try {
     if (horizontalOverflow > 1) failures.push(`${viewport.name}: overflow orizzontale di ${horizontalOverflow}px`)
     if (!initial.navVisible) failures.push(`${viewport.name}: navigazione mobile non visibile`)
     if (!initial.homeHeaderVisible) failures.push(`${viewport.name}: barra superiore home non visibile`)
+    if (initial.homeHeaderHeight > 78) failures.push(`${viewport.name}: barra home su più righe (${initial.homeHeaderHeight}px)`)
     if (!initial.homeMenuVisible) failures.push(`${viewport.name}: pulsante Menu home non visibile`)
     if (!initial.creditsVisible) failures.push(`${viewport.name}: acquisto crediti non visibile in home`)
     if (!initial.profileVisible) failures.push(`${viewport.name}: profilo non visibile in home`)
