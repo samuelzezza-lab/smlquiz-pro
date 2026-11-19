@@ -27,6 +27,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Generate standard PWA icons
+        run: python3 scripts/generate-pwa-icons.py
+
       - name: Build website
         run: npm run build
         env:
