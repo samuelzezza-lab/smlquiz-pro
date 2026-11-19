@@ -5400,3 +5400,9 @@ body{background:radial-gradient(ellipse at 85% -15%,rgba(100,135,181,.19),transp
 
 /* Immersive views keep only the dedicated return-home control, not a duplicate top bar. */
 .shell:is(.function-fullscreen,.mode-fullscreen) .topbar{display:none!important}
+
+/* The dashboard header keeps its credit and profile actions visible on mobile. */
+@media(max-width:800px){
+  .topbar:has(.home-wordmark) .home-top-actions{display:flex!important;visibility:visible!important;opacity:1!important}
+  .topbar:has(.home-wordmark) .home-buy-credits,.topbar:has(.home-wordmark) .home-profile-avatar{display:inline-flex!important;visibility:visible!important}
+}
