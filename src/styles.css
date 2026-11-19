@@ -5411,3 +5411,13 @@ body{background:radial-gradient(ellipse at 85% -15%,rgba(100,135,181,.19),transp
   .shell.function-fullscreen:not(.quiz-active) .mobile-bottom-nav{display:none!important}
   .shell.mode-fullscreen .mobile-bottom-nav{display:none!important}
 }
+
+/* Small-phone flashcard stats must shrink inside their two-column grid. */
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-overview-item{min-width:0!important;gap:8px!important}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-overview-item>div{flex:1 1 0%!important;min-width:0!important}
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-overview-item strong,
+.shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-overview-item small{min-width:0!important;max-width:100%!important;overflow-wrap:anywhere!important;word-break:break-word!important}
+@media(max-width:420px){
+  .shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-overview-item{padding:10px 8px!important;gap:7px!important}
+  .shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-overview-icon{width:32px!important;height:32px!important;flex-basis:32px!important}
+}
