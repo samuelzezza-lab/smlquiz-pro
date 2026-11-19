@@ -3683,3 +3683,12 @@ body{background:#111827;color:#edf4ff}
 .resolve-subject small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#a3b2c7;font-size:10px}
 .resolve-subject-action{display:flex;align-items:center;gap:6px;flex:none;color:#7dd3fc;font-size:11px;font-weight:700}
 @media(max-width:650px){.resolve-search{padding:13px}.resolve-subject-list{grid-template-columns:1fr}.resolve-subject{min-height:64px;padding:12px}}
+
+
+/* Avvio quiz: filtri facoltà e anno semplici e accessibili */
+.resolve-filter-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:2px}
+.resolve-filter-grid label{display:grid;gap:6px;color:#dbeafe;font-size:12px;font-weight:700}
+.resolve-filter-grid select{width:100%;min-height:44px;padding:0 12px;border:1px solid rgba(148,163,184,.28);border-radius:8px;background:#111827;color:#f1f5f9;font:inherit;font-size:14px}
+.resolve-filter-grid select:focus-visible,.resolve-search input:focus-visible{outline:2px solid #38bdf8;outline-offset:2px}
+.resolve-clear-filters{justify-self:start;width:max-content;border:0;background:transparent;color:#7dd3fc;font-size:12px;font-weight:700;text-decoration:underline;cursor:pointer;padding:3px 0}
+@media(max-width:480px){.resolve-filter-grid{grid-template-columns:1fr}}
