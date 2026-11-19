@@ -3551,3 +3551,19 @@ html:has(.shell.quiz-active),body:has(.shell.quiz-active),body:has(.shell.quiz-a
 .subject-filter-options label{display:grid;gap:7px;color:#9ba9c2;font-size:10px;font-weight:700}
 .subject-filter-options select{width:100%;min-height:40px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#101a2c;color:#dce4f5;font-size:12px}
 @media(max-width:600px){.subject-finder{padding:13px}.subject-filter-options{grid-template-columns:1fr}}
+
+
+/* Navigazione iniziale: poche azioni principali, strumenti secondari raccolti */
+.guide-primary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:22px 0 30px}
+.guide-primary-grid .launch-card{position:relative;min-height:170px;padding:22px;text-align:left;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.guide-primary-grid .launch-card h3{margin:3px 0 0;font-size:17px}
+.guide-primary-grid .launch-card p{margin:0;color:var(--muted,#9ba9c2);line-height:1.5;font-size:13px}
+.guide-primary-grid .launch-card small{display:flex;align-items:center;gap:7px;margin-top:auto;color:var(--accent,#9bb8ff);font-weight:700}
+.guide-tools{padding-top:4px}
+.guide-tools>h2{font-size:18px;margin:0 0 5px}
+.guide-tools>p{font-size:13px;color:var(--muted,#9ba9c2);margin:0 0 14px}
+.guide-tools-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.guide-tools-links button{display:flex;align-items:center;gap:9px;min-height:48px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface,#101a2c);color:var(--text,#edf1ff);font-size:12px;font-weight:650;text-align:left;cursor:pointer}
+.guide-tools-links button svg:last-child{margin-left:auto;color:var(--muted,#9ba9c2)}
+.guide-tools-links button:hover,.guide-primary-grid .launch-card:hover{border-color:var(--accent,#718dca);transform:translateY(-1px)}
+@media(max-width:700px){.guide-primary-grid{grid-template-columns:1fr;gap:10px}.guide-primary-grid .launch-card{min-height:130px;padding:17px}.guide-tools-links{grid-template-columns:repeat(2,minmax(0,1fr))}.guide-tools-links button{font-size:11px;padding:9px;gap:7px}}
