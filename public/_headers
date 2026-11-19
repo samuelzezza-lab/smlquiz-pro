@@ -6,7 +6,7 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains
   Cross-Origin-Opener-Policy: same-origin-allow-popups
   X-XSS-Protection: 0
-  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com 'sha256-I1/sAebckR36QuHYgHZsvsmbr0xEPvo1FFk5KywGvCQ=' 'sha256-aL+VljjWJc8CRRHF2yQkgvXO784TmgZKWvmp2b283lo=' 'sha256-kdulEwemlA4EqCmp5CjkBPEIxyJkYJqMga4qwqrsWV8=' 'sha256-v+9Rltxerd6s6sgXafIELnwyfIZnVC6s+2k2BNhpaKQ=' 'sha256-LSQP0Q4rCcMnYawcTth4X8BhCncb04N0HnQE7zuahKM=' 'sha256-J2MVOc5u1mlRk8kvmLi10kDr8SaM2QRqz0Jv2KbGT8A=' 'sha256-SDvqE79UxVbiBvjUyTH74S4dRad+4J68864MUHiI3vM=' 'sha256-JdezJ1NnqxaFiL9U76ok2rtf0mq56zg13yW/Ylhisus='; script-src-attr 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://fgrwwauwnxvrcgqqpksp.supabase.co wss://fgrwwauwnxvrcgqqpksp.supabase.co https://challenges.cloudflare.com https://api.pwnedpasswords.com; frame-src https://challenges.cloudflare.com; form-action 'self' https://checkout.stripe.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests
+  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com 'sha256-I1/sAebckR36QuHYgHZsvsmbr0xEPvo1FFk5KywGvCQ=' 'sha256-aL+VljjWJc8CRRHF2yQkgvXO784TmgZKWvmp2b283lo=' 'sha256-kdulEwemlA4EqCmp5CjkBPEIxyJkYJqMga4qwqrsWV8=' 'sha256-v+9Rltxerd6s6sgXafIELnwyfIZnVC6s+2k2BNhpaKQ=' 'sha256-LSQP0Q4rCcMnYawcTth4X8BhCncb04N0HnQE7zuahKM=' 'sha256-J2MVOc5u1mlRk8kvmLi10kDr8SaM2QRqz0Jv2KbGT8A=' 'sha256-SDvqE79UxVbiBvjUyTH74S4dRad+4J68864MUHiI3vM=' 'sha256-JdezJ1NnqxaFiL9U76ok2rtf0mq56zg13yW/Ylhisus='; script-src-attr 'unsafe-hashes' 'sha256-MhtPZXr7+LpJUY5qtMutB+qWfQtMaPccfe7QXtCcEYc='; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://fgrwwauwnxvrcgqqpksp.supabase.co wss://fgrwwauwnxvrcgqqpksp.supabase.co https://challenges.cloudflare.com https://api.pwnedpasswords.com; frame-src https://challenges.cloudflare.com; form-action 'self' https://checkout.stripe.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; upgrade-insecure-requests
 
 /index.html
   Cache-Control: no-cache, no-store, must-revalidate
@@ -14,8 +14,3 @@
 /sw.js
   Cache-Control: no-cache
 
-/manifest.webmanifest
-  Cache-Control: public, max-age=3600
-
-/assets/*
-  Cache-Control: public, max-age=31536000, immutable
