@@ -53,7 +53,6 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
   const easyCount = Object.values(sessionRatings).filter(value => value === 'easy').length
   const difficultCount = Object.values(sessionRatings).filter(value => value === 'difficult').length
   const mediumCount = Object.values(sessionRatings).filter(value => value === 'medium').length
-  const ratedCount = reviewedCount
   const title = selectedSubject?.traduzioni?.it?.nome || selectedSubject?.nome || 'Flashcard'
 
   const loadDeck = useCallback(async (id: string) => {
@@ -98,7 +97,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       setRepeatCounts({})
       setTotal(cardTotal)
       setUnlocked(hasUnlock)
-      setPaywall(data?.paywall === true && loaded.length === 0)
+      setPaywall(false)
       setDeckCompleted(loaded.length === 0 && cardTotal === 0)
     } catch (err) {
       notifyRef.current(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
@@ -172,7 +171,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       ? sessionRatings[card.id] !== 'easy'
       : (sessionRatings[card.id] ?? ratings[card.id] ?? card.user_rating) === 'difficult')
     setSessionQueue(eligible.map(card => card.id))
-    setIndex(0); setFlipped(false); setDeckCompleted(false); setPaywall(false)
+    setIndex(0); setFlipped(false); setDeckCompleted(mode === 'all' && eligible.length === 0); setPaywall(false)
   }
 
   useEffect(() => {
@@ -269,15 +268,15 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     {paywall && <div className="flashcards-paywall-backdrop"><div className="flashcards-paywall panel flashcards-tinder-paywall">
       <div className="flashcards-paywall-top"><span><Heart size={15} fill="currentColor"/> SMLQUIZ PREMIUM</span><span className="flashcards-free-tag">50 / 50 COMPLETATE</span></div>
       <div className="flashcards-paywall-art" aria-hidden="true">
-        <div className="flashcards-preview-card preview-card-back"><span>FLASHCARD {Math.min(total,53)}</span><Lock size={19}/></div>
+        <div className="flashcards-preview-card preview-card-back"><span>FLASHCARD 53</span><Lock size={19}/></div>
         <div className="flashcards-preview-card preview-card-mid"><span>FLASHCARD 52</span><Lock size={19}/></div>
-        <div className="flashcards-preview-card preview-card-front"><small>IL TUO PROSSIMO LIVELLO</small><strong>51–{Math.max(300,total).toLocaleString('it-IT')}+</strong><span>FLASHCARD BLOCCATE</span><div><Lock size={15}/> CONTENUTI PREMIUM</div></div>
+        <div className="flashcards-preview-card preview-card-front"><small>IL TUO PROSSIMO LIVELLO</small><strong>51–300</strong><span>FLASHCARD BLOCCATE</span><div><Lock size={15}/> CONTENUTI PREMIUM</div></div>
         <div className="flashcards-preview-spark">✦</div>
       </div>
       <span className="flashcards-paywall-kicker">HAI SBLOCCATO IL GUSTO DI STUDIARE</span>
       <h2>Non fermarti proprio adesso.</h2>
-      <p className="flashcards-paywall-lead">Hai completato le tue <strong>50 flashcard gratuite</strong> di <strong>{title}</strong>. Le successive, dalla <strong>51ª alla {Math.max(300,total).toLocaleString('it-IT')}ª e oltre</strong>, ti aspettano: sblocca l'intero mazzo e continua senza interruzioni.</p>
-      <div className="flashcards-premium-perks"><span><Check size={14}/> Tutte le {total.toLocaleString('it-IT')}+ flashcard</span><span><Check size={14}/> Nuove carte future incluse</span><span><Check size={14}/> Paghi una volta, senza abbonamento</span></div>
+      <p className="flashcards-paywall-lead">Hai completato le tue <strong>50 flashcard gratuite</strong> di <strong>{title}</strong>. Le successive, dalla <strong>51ª alla 300ª</strong>, ti aspettano: sblocca l'intero mazzo e continua senza interruzioni.</p>
+      <div className="flashcards-premium-perks"><span><Check size={14}/> Tutte le flashcard fino alla 300ª</span><span><Check size={14}/> Nuove carte future incluse</span><span><Check size={14}/> Paghi una volta, senza abbonamento</span></div>
       <div className="flashcards-paywall-price"><strong>1,99 €</strong><span>una tantum · accesso per sempre</span></div>
       <label className="flashcards-consent"><input type="checkbox" checked={consent} onChange={e=>setConsent(e.target.checked)}/> Acconsento alla fornitura immediata dei contenuti digitali e riconosco la perdita del diritto di recesso nei limiti previsti dalla legge.</label>
       <button className="primary flashcards-unlock" disabled={!consent} onClick={() => onBuy(PRICE_ID,[subjectId],true)}>Sblocca tutte le flashcard <ArrowRight size={17}/></button>
