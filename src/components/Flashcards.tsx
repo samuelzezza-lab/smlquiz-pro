@@ -187,7 +187,10 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
         <h1>Flashcard</h1>
         <p>Scegli una materia, leggi la domanda e tocca la carta per vedere la risposta.</p>
       </div>
-      <div className="flashcards-hero-mark" aria-hidden="true"><Layers3 size={30}/></div>
+      <div className="flashcards-hero-side">
+        {showAds && <aside className="compact-ad-slot" aria-label="Spazio pubblicitario"><span>Pubblicità</span><small>Annuncio</small></aside>}
+        <div className="flashcards-hero-mark" aria-hidden="true"><Layers3 size={30}/></div>
+      </div>
     </header>
     <div className="flashcards-subject-panel panel">
       <div className="flashcards-subject-label"><BookOpen size={16}/><span>Scegli una materia</span></div>
@@ -243,6 +246,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
         <button className="secondary" onClick={shuffle}><Shuffle size={15}/> Mescola</button>
       </div>
       <p className="flashcards-footnote">{user ? 'I tuoi progressi vengono salvati sul tuo account.' : 'Puoi provare gratuitamente senza registrazione. Accedi per salvare le valutazioni.'}</p>
+      {showAds && <aside className="compact-ad-slot compact-ad-slot-bottom" aria-label="Spazio pubblicitario"><span>Pubblicità</span><small>Annuncio</small></aside>}
     </>}
     {!loading && deckCompleted && !paywall && <StudyCompletion
       eyebrow={deckMode === 'difficult' ? 'RIPASSO COMPLETATO' : 'SESSIONE COMPLETATA'}
