@@ -5782,3 +5782,15 @@ body{background:radial-gradient(ellipse at 75% -10%,#123c91 0,transparent 38%),l
     padding-top:calc(118px + env(safe-area-inset-top))!important;
   }
 }
+
+
+/* Verified landscape collision fix: target the actual main content section on protected immersive routes. */
+@media (min-width: 801px) and (max-height: 500px){
+  .shell:has(> button.function-home-back) > .main > .content{
+    padding-top:220px!important;
+  }
+  .shell:has(> button.function-home-back) > .main > .content .page-heading,
+  .shell:has(> button.function-home-back) > .main > .content .account-heading{
+    margin-top:0!important;
+  }
+}
