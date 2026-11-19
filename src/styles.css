@@ -3954,3 +3954,100 @@ html,body,.shell{scroll-behavior:auto!important}
 @media (prefers-reduced-motion: reduce) {
   .sidebar,.scrim,.modal-backdrop { transition:none!important; }
 }
+
+
+/* iPhone-first: azioni principali sempre a portata di pollice */
+@media (max-width: 800px) {
+  /* La navigazione inferiore sostituisce il menu duplicato nella barra alta. */
+  .topbar .crumb > .hamb { display:none!important; }
+  .topbar .crumb { min-width:0; }
+  .topbar .crumb>b,.topbar .crumb .home-wordmark { display:block; }
+  .mobile-bottom-nav {
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    min-height:calc(62px + env(safe-area-inset-bottom));
+    padding-top:5px;
+    padding-bottom:calc(5px + env(safe-area-inset-bottom));
+  }
+  .mobile-bottom-nav button { min-height:48px; gap:3px; font-size:9px; }
+  .mobile-bottom-nav button svg { width:19px; height:19px; }
+  /* Il consenso cookie non deve coprire i pulsanti della navigazione. */
+  .cookie-banner {
+    bottom:calc(70px + env(safe-area-inset-bottom));
+    max-height:min(42svh,320px);
+  }
+  .mobile-page-active .main>.content,
+  .home-auth-fullscreen .main>.content {
+    padding-bottom:calc(78px + env(safe-area-inset-bottom));
+  }
+  /* Ricerca e filtri compatti: nome materia sopra, facolta e anno affiancati. */
+  .resolve-search { gap:7px; padding:12px; margin-bottom:14px; }
+  .resolve-search>div { min-height:46px; }
+  .resolve-filter-grid { grid-template-columns:repeat(2,minmax(0,1fr))!important; gap:8px; }
+  .resolve-filter-grid select { min-height:44px; padding:0 9px; }
+  .resolve-subject-heading { margin-bottom:8px; }
+  .resolve-subject-list { gap:7px; }
+  .resolve-subject { min-height:58px; padding:10px 11px; gap:7px; }
+  .resolve-subject strong { font-size:12px; line-height:1.3; }
+  .resolve-subject small { font-size:10px; line-height:1.25; }
+  .resolve-subject-action { font-size:10px; white-space:nowrap; }
+  /* Tre funzioni principali: schede brevi, tutte subito visibili. */
+  .guide-primary-grid { gap:8px; margin:12px 0; }
+  .guide-primary-grid .launch-card {
+    display:grid;
+    grid-template-columns:28px minmax(0,1fr) 66px;
+    grid-template-rows:auto auto;
+    align-items:center;
+    column-gap:10px;
+    min-height:76px;
+    padding:10px 11px;
+    padding-right:11px;
+    border-radius:12px;
+    text-align:left;
+  }
+  .guide-primary-grid .launch-card>svg {
+    grid-column:1;
+    grid-row:1/3;
+    width:23px;
+    height:23px;
+    margin:0;
+  }
+  .guide-primary-grid .launch-card h3 {
+    grid-column:2;
+    grid-row:1;
+    align-self:end;
+    margin:0;
+    font-size:13px;
+    line-height:1.2;
+  }
+  .guide-primary-grid .launch-card p {
+    grid-column:2;
+    grid-row:2;
+    align-self:start;
+    min-width:0;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:10px;
+    line-height:1.3;
+  }
+  .guide-primary-grid .launch-card small { display:none; }
+  .guide-page .launch-ad-placeholder {
+    grid-column:3;
+    grid-row:1/3;
+    position:static;
+    width:66px;
+    height:40px;
+    font-size:8px;
+  }
+  .guide-page>.page-heading { margin-bottom:12px; padding:15px; }
+  .guide-page>.page-heading h1 { font-size:26px; }
+  .guide-page>.page-heading p { margin-top:5px; font-size:11px; line-height:1.4; }
+}
+@media (max-width: 390px) {
+  .mobile-bottom-nav button { font-size:8px; }
+  .mobile-bottom-nav button svg { width:18px; height:18px; }
+  .guide-primary-grid .launch-card { grid-template-columns:24px minmax(0,1fr) 58px; column-gap:8px; }
+  .guide-page .launch-ad-placeholder { width:58px; height:36px; }
+  .resolve-subject { padding:9px; }
+  .resolve-subject-action { font-size:9px; }
+}
