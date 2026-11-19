@@ -11,6 +11,46 @@ import StudyCompletion from './components/StudyCompletion'
 const SemestreFiltro = lazy(() => import('./components/SemestreFiltro'))
 const ReferralCard = lazy(() => import('./components/FreeGrowthTools').then(module => ({ default: module.ReferralCard })))
 
+let adcashScriptPromise: Promise<void> | null = null
+function loadAdcashScript(): Promise<void> {
+  const w = window as Window & { aclib?: { runBanner: (options: { zoneId: string }) => void } }
+  if (w.aclib) return Promise.resolve()
+  if (adcashScriptPromise) return adcashScriptPromise
+  adcashScriptPromise = new Promise<void>((resolve, reject) => {
+    let script = document.getElementById('aclib') as HTMLScriptElement | null
+    if (!script) {
+      script = document.createElement('script')
+      script.id = 'aclib'
+      script.type = 'text/javascript'
+      script.src = 'https://acscdn.com/script/aclib.js'
+      script.async = true
+      document.head.appendChild(script)
+    }
+    script.addEventListener('load', () => resolve(), { once: true })
+    script.addEventListener('error', () => { adcashScriptPromise = null; reject(new Error('Adcash non disponibile')) }, { once: true })
+  })
+  return adcashScriptPromise
+}
+function AdcashBanner({ zoneId, width, height, consent, className = '' }: { zoneId: string; width: number; height: number; consent: boolean; className?: string }) {
+  const slotRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const slot = slotRef.current
+    if (!consent || !slot || slot.dataset.adcashStarted === '1') return
+    slot.dataset.adcashStarted = '1'
+    void loadAdcashScript().then(() => {
+      const w = window as Window & { aclib?: { runBanner: (options: { zoneId: string }) => void } }
+      if (slot.isConnected && w.aclib) w.aclib.runBanner({ zoneId })
+    }).catch(error => {
+      if (slot.isConnected) slot.dataset.adcashStarted = '0'
+      console.warn('Caricamento banner Adcash non riuscito:', error)
+    })
+  }, [consent, zoneId])
+  return <div className={'sml-ad-slot adcash-slot '+className} style={{'--ad-width':width+'px','--ad-height':height+'px'} as CSSProperties} aria-label="Spazio pubblicitario">
+    <span className="sml-ad-label">Pubblicità</span><div ref={slotRef} className="sml-ad-content" />
+  </div>
+}
+
+
 type User = { id: string; email?: string; acceptedPrivacy?: boolean }
 type Faculty = { id: string; nome: string; traduzioni?: Record<string,{nome?:string}> }
 type Subject = { id: string; nome: string; traduzioni?: Record<string,{nome?:string}>; facolta_id: string; anno_corso: number | null; corso_di_laurea: string | null }
@@ -489,7 +529,7 @@ export default function App(){
  const leaderboardSubjects=useMemo(()=>{const norm=(v:string)=>v.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();const q=norm(leaderboardSubjectSearch.trim());return subjects.filter(s=>s.anno_corso!==null).filter(s=>!q||norm([localizedName(s,language),faculties.find(f=>f.id===s.facolta_id)?.nome||'',String(s.anno_corso)].join(' ')).includes(q)).sort((a,b)=>a.facolta_id.localeCompare(b.facolta_id)||Number(a.anno_corso)-Number(b.anno_corso)||localizedName(a,language).localeCompare(localizedName(b,language)))},[subjects,faculties,language,leaderboardSubjectSearch]);
  function requireLogin(){setRegistrationPrompt(true);setAuthMode('login');setPage('account');setMenu(false);setAccountMenu(false);window.history.pushState({page:'account'},'','/account');notify(tr('accountSignInRequired'))}
  function go(p:Page){if(!user&&['review','progress','leaderboard','settings','buy'].includes(p)){requireLogin();return}const path=p==='home'?'/quiz':p==='semestre'?'/semestre-filtro':p==='experiences'?'/esperienze-esame':p==='account'?'/account':p==='buy'?'/compra-quiz':p==='guide'?'/come-funziona':'/'+p;window.history.pushState({page:p},'',path);setPage(p);setMenu(false);setAccountMenu(false);window.scrollTo(0,0);document.querySelector<HTMLElement>('.main')?.scrollTo(0,0);if(p==='leaderboard')void loadLeaderboard()}
- const immersiveMode=((page as string)!=='home'&&(page as string)!=='guide')||Boolean(questions.length&&current&&!quizPaused&&!quizDismissed);
+ const immersiveMode=Boolean(questions.length&&current&&!quizPaused&&!quizDismissed);
  return <div className={"shell "+(page!=='home'?"mobile-page-active ":"")+(page==='home'&&user?" home-auth-fullscreen ":"")+(questions.length&&current&&!quizPaused&&!quizDismissed?"quiz-active ":"")+(immersiveMode?"function-fullscreen":"")} style={{'--scale':font/100} as CSSProperties}>
  {immersiveMode&&<button type="button" className="function-home-back" aria-label="Torna alla home e alle modalità" title="Torna alle modalità" onClick={()=>{if(questions.length&&current&&!quizPaused&&!quizDismissed){setQuizPaused(true);setQuizDismissed(true)}go('guide')}}><ArrowLeft size={21}/></button>}
  <a className="skip-link" href="#main-content">{tr('skipToContent')}</a>
@@ -501,6 +541,9 @@ export default function App(){
  {menu&&<button className="scrim" onClick={()=>setMenu(false)} aria-label={tr('settings')}/>}
  {!cookieChoice&&<div className="cookie-banner"><div><b>{tr('cookieTitle')}</b><p>{tr('cookieDescription')} <button type="button" className="simple-link" onClick={()=>go('legal')}>Cookie Policy</button></p></div><button type="button" className="secondary" onClick={()=>{localStorage.setItem('smlquiz.cookies.v1','necessary');setCookieChoice('necessary')}}>{tr('necessaryOnly')}</button><button type="button" className="primary" onClick={()=>{localStorage.setItem('smlquiz.cookies.v1','all');setCookieChoice('all')}}>{tr('acceptAll')}</button></div>}
  {/* Il consenso per gli annunci viene gestito prima del caricamento dei partner pubblicitari. */}<main className="main" id="main-content" tabIndex={-1}><header className="topbar">{page==='home'?<><div className="crumb"><button className="hamb" type="button" onClick={()=>setMenu(true)} aria-label="Apri menu"><Menu size={18}/> <span>Menu</span></button><b className="home-wordmark">SMLQUIZ</b></div><div className="top-actions home-top-actions"><button type="button" className="home-buy-credits" onClick={()=>go('buy')}><CreditCard size={15}/><span>Acquista crediti</span></button><button type="button" className="top-avatar home-profile-avatar" aria-label={tr('personalArea')} title={tr('personalArea')} onClick={()=>go('account')}>{(displayName||user?.email||'U').trim()[0].toUpperCase()}</button></div></>:<><div className="crumb"><button className="hamb" type="button" onClick={()=>setMenu(true)} aria-label="Apri menu"><Menu size={18}/> <span>Menu</span></button><b>{nav.find(n=>n.id===page)?.label||({calculator:tr('weightedAverageNav'),legal:tr('legalInfoNav'),settings:tr('settings'),buy:tr('buyQuizNav'),guide:'SMLQUIZ'} as Record<string,string>)[page]||tr('startQuiz')}</b></div><div className="top-actions">{quizPaused&&questions.length>0&&<button type="button" className="secondary" onClick={()=>{setPage('home');setQuizDismissed(false);setStarted(Date.now()-(45*questions.length-secondsRef.current)*1000);setQuizPaused(false);window.history.pushState({page:'home'},'','/quiz')}}>{tr('backToQuiz')} <ArrowRight size={14}/></button>}<span className={'online-dot '+(online?'':'offline')}/><span className="online-label">{online?tr('connected'):tr('disconnected')}</span>{user&&<button type="button" className="secondary" onClick={()=>go('buy')} style={{padding:'7px 10px',fontSize:12,whiteSpace:'nowrap'}}><CreditCard size={14}/> Compra quiz</button>}{user&&<div className="credit-chip"><Sparkles size={13}/>{wallet.ownerUnlimited?'∞ '+tr('unlimitedQuizzes'):`5 gratis/materia · ${wallet.paidCredits} Jolly`}</div>}<button type="button" className="font-btn" aria-label="Riduci dimensione testo" title="Riduci testo" disabled={font<=90} onClick={()=>setFont(v=>Math.max(90,v-10))}>A−</button><button type="button" className="font-btn" aria-label="Aumenta dimensione testo" title="Aumenta testo" disabled={font>=130} onClick={()=>setFont(v=>Math.min(130,v+10))}>A+</button><span className="font-size-indicator" aria-live="polite">{font}%</span><button type="button" className="top-avatar" aria-label={tr('personalArea')} aria-expanded={accountMenu} onClick={()=>user?setAccountMenu(v=>!v):go('account')}>{(displayName||user?.email||'U').trim()[0].toUpperCase()}</button>{accountMenu&&user&&<><button className="account-menu-dismiss" aria-label={tr('settings')} onClick={()=>setAccountMenu(false)}/><div className="account-dropdown"><button type="button" className="account-dropdown-close" aria-label="Chiudi menu" onClick={()=>setAccountMenu(false)}><X size={22} strokeWidth={3}/></button><div className="account-dropdown-user"><span className="account-dropdown-avatar">{(displayName||user.email||'U').trim()[0].toUpperCase()}</span><div><b>{displayName||user.email?.split('@')[0]||tr('account')}</b><small>{user.email}</small></div></div><button type="button" onClick={()=>{setAccountMenu(false);go('account')}}><UserRound size={16}/>{tr('personalArea')}<ArrowRight size={14}/></button><button type="button" onClick={()=>{setAccountMenu(false);go('settings')}}><Settings size={16}/>{tr('settings')}<ArrowRight size={14}/></button><button type="button" onClick={()=>{setAccountMenu(false);go('progress')}}><BarChart3 size={16}/>{tr('progress')}<ArrowRight size={14}/></button><button type="button" className="account-dropdown-logout" onClick={()=>{setAccountMenu(false);void logout()}}><LogOut size={16}/>{tr('signOutAccount')}</button></div></>}</div></>}</header>
+  <AdcashBanner zoneId="12467658" width={720} height={90} consent={cookieChoice==='all'} className="adcash-desktop" />
+  <AdcashBanner zoneId="12467702" width={468} height={60} consent={cookieChoice==='all'} className="adcash-tablet" />
+  <AdcashBanner zoneId="12467674" width={300} height={100} consent={cookieChoice==='all'} className="adcash-mobile" />
  {!supabaseReady&&<div className="notice"><CircleHelp size={18}/><div><b>{tr('supabaseNoticeTitle')}</b><span>{tr('supabaseNotice')}</span></div></div>}
  {page==='home'&&<section className="content home-page">
 {catalogExhaustedSubject&&<StudyCompletion eyebrow="CATALOGO COMPLETATO" title="Hai completato tutte le domande disponibili." description="Per ora hai raggiunto la fine delle domande presenti per questa materia. SMLQUIZ è in continua crescita: con l'ampliamento del catalogo arriveranno nuove domande, flashcard e simulazioni. Torna a trovarci: il tuo percorso di studio continuerà ad arricchirsi." meta={localizedName(catalogExhaustedSubject,language)} primaryLabel="Torna al catalogo" onPrimary={()=>{setCatalogExhaustedSubject(null);setPage('home');window.history.pushState({page:'home'},'','/quiz')}} secondaryLabel="Ripassa con le flashcard" onSecondary={()=>{setCatalogExhaustedSubject(null);go('review')}}/>}
@@ -739,7 +782,9 @@ export default function App(){
    <button type="button" onClick={()=>setLegalDoc(legalDocuments.find(doc=>doc.key==='about')??null)}>Chi siamo</button>
    <a href="mailto:smlquiz@virgilio.it">Contatti</a>
    <span className="footer-consent-note">Preferenze pubblicitarie gestite dal messaggio privacy Google</span>
-  </footer></main>
+  </footer>
+  <AdcashBanner zoneId="12467710" width={250} height={250} consent={cookieChoice==='all'} className="adcash-square" />
+  </main>>
   {!(questions.length&&current&&!quizPaused&&!quizDismissed)&&<nav className="mobile-bottom-nav" aria-label="Navigazione principale">
    <button type="button" className={page==='home'?'active':''} aria-current={page==='home'?'page':undefined} onClick={()=>go('home')}><Target size={19}/><span>{tr('startQuiz')}</span></button>
    <button type="button" className={page==='semestre'?'active':''} aria-current={page==='semestre'?'page':undefined} onClick={()=>go('semestre')}><GraduationCap size={19}/><span>Semestre</span></button>
