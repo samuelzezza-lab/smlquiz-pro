@@ -5874,3 +5874,136 @@ body{background:radial-gradient(ellipse at 75% -10%,#123c91 0,transparent 38%),l
 .shell .sf-page.sf-mode-screen{
   background:#061642!important;
 }
+
+
+/* SMLQUIZ — allineamento al riferimento Quizmind fornito dall'utente */
+:root{
+ --qm-bg:#0A192F;
+ --qm-bg2:#10243E;
+ --qm-panel:#162E4D;
+ --qm-panel2:#1B365D;
+ --qm-line:rgba(148,190,235,.22);
+ --qm-blue:#2563EB;
+ --qm-cyan:#38BDF8;
+ --qm-violet:#6366F1;
+ --qm-text:#F8FAFC;
+ --qm-muted:#AFC3DA;
+}
+body{
+ background:radial-gradient(ellipse at 78% 0%,#173d70 0,transparent 38%),linear-gradient(135deg,#08172b,#0a192f 58%,#0b1d35)!important;
+}
+.shell .sidebar{
+ background:linear-gradient(180deg,#0a192f 0%,#071426 100%)!important;
+ border-right:1px solid rgba(125,169,218,.2)!important;
+}
+.shell .brand-logo{background:linear-gradient(145deg,#38bdf8,#2563eb)!important}
+.shell .nav-link.active{background:linear-gradient(100deg,#2563eb,#3159bd)!important}
+.shell .panel,.shell .dashboard-panel,.shell .dashboard-stat,.shell .subject-card,.shell .filters,.shell .count{
+ background:linear-gradient(145deg,#162e4d,#10243e)!important;
+ border-color:rgba(148,190,235,.22)!important;
+}
+.shell .dashboard-welcome{
+ min-height:280px;
+ padding:clamp(28px,4vw,48px)!important;
+ background:radial-gradient(ellipse at 82% 48%,rgba(37,99,235,.42),transparent 38%),linear-gradient(112deg,#0a192f 0%,#102b50 64%,#153d70 100%)!important;
+ border:1px solid rgba(88,166,255,.38)!important;
+ box-shadow:0 22px 58px rgba(0,0,0,.28)!important;
+}
+.shell .dashboard-welcome .eyebrow{
+ display:inline-flex;align-items:center;gap:8px;
+ padding:8px 13px;border-radius:999px;
+ background:linear-gradient(100deg,#5146bd,#315bd2);
+ color:#fff!important;font-size:11px;font-weight:800;letter-spacing:.7px;
+}
+.shell .dashboard-welcome h1{max-width:700px;font-size:clamp(34px,4vw,52px)!important;line-height:1.08!important}
+.shell .dashboard-welcome p{max-width:620px;font-size:16px!important}
+.shell .dashboard-start-button{margin-top:14px;padding:13px 22px!important}
+.shell .dashboard-quote{
+ width:min(32%,330px);min-height:190px;display:flex;flex-direction:column;
+ align-items:center;justify-content:center;gap:18px;text-align:center;
+ color:#8edcff!important;border:1px solid rgba(110,185,255,.28);
+ background:linear-gradient(145deg,rgba(20,65,125,.72),rgba(12,37,77,.78));
+ box-shadow:inset 0 1px rgba(255,255,255,.06);
+}
+.shell .dashboard-quote svg{width:76px;height:76px;filter:drop-shadow(0 10px 18px #020b2c88)}
+.shell .dashboard-quote span{font-size:10px;font-weight:850;letter-spacing:1.5px;line-height:1.6;color:#c7e7ff}
+.shell .dashboard-stats{gap:14px}
+.shell .dashboard-stat{border-radius:15px!important}
+.shell .dashboard-actions{grid-template-columns:repeat(4,minmax(0,1fr))!important}
+.shell .dashboard-action{
+ min-height:190px;border-radius:16px!important;
+ background:linear-gradient(145deg,#162f50,#10243e)!important;
+ border:1px solid rgba(120,174,232,.3)!important;
+ box-shadow:0 12px 28px rgba(0,0,0,.16);
+}
+.shell .dashboard-action.blue{background:linear-gradient(145deg,#163b68,#102746)!important}
+.shell .dashboard-action.violet{background:linear-gradient(145deg,#302d70,#1a2854)!important}
+.shell .dashboard-action.gold{background:linear-gradient(145deg,#4a3b28,#1c2b43)!important}
+.shell .dashboard-action.violet svg{color:#aaa4ff!important}
+.shell .dashboard-action.gold svg{color:#f6c66c!important}
+.shell .dashboard-action:hover{transform:translateY(-3px);border-color:#58bfff!important}
+.shell .dashboard-bottom-grid{grid-template-columns:1.1fr .9fr}
+.shell .dashboard-panel{border-radius:16px!important}
+.shell .dashboard-subject{border-color:rgba(130,177,232,.2)!important}
+.shell .dashboard-subject:hover{background:#1b3b63!important}
+.shell .dashboard-result{border-color:rgba(130,177,232,.2)!important}
+.shell .dashboard-stat.orange{background:linear-gradient(145deg,#203d62,#142b49)!important}
+.shell .dashboard-stat.blue{background:linear-gradient(145deg,#173e70,#102746)!important}
+
+/* La pagina Progressi riprende la variante chiara del riferimento, mantenendo la sidebar navy. */
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page{
+ width:100%;max-width:none;min-height:calc(100dvh - 70px);
+ margin:0;padding:34px clamp(20px,3vw,48px) 56px!important;
+ background:linear-gradient(145deg,#f8fbff,#edf4fc)!important;
+ color:#10243e!important;
+}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page h1,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page h2,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page h3{color:#10243e!important}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .page-heading p,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .eyebrow{color:#52739a!important}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .stat,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .panel{
+ background:#fff!important;color:#10243e!important;
+ border:1px solid #d9e5f2!important;
+ box-shadow:0 8px 24px rgba(25,63,104,.07)!important;
+}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .stat>span,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .stat>small,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page p,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page small{color:#60758e!important}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .stat>b{color:#2563eb!important}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .progress-activity-panel,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .progress-insight-panel,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .subject-performance,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .progress-next-step{
+ background:#fff!important;color:#10243e!important;border-color:#d9e5f2!important;
+}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .progress-activity-panel h2,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .progress-insight-panel h3,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .subject-performance h3{color:#10243e!important}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .progress-day-bar{background:#e5edf7!important}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .progress-day-bar i,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .performance-track i{background:linear-gradient(180deg,#38bdf8,#2563eb)!important}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .progress-insight-metric{border-color:#e1eaf4!important}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .progress-insight-metric b{color:#2563eb!important}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .progress-weak-topic-list,
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .weak-topic-row{color:#10243e!important}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .weak-topic-track{background:#e5edf7!important}
+.shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page .weak-topic-track i{background:#38bdf8!important}
+@media(max-width:1050px){
+ .shell .dashboard-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:800px){
+ .shell .dashboard-welcome{min-height:0}
+ .shell .dashboard-quote{width:100%;min-height:130px;margin-top:18px}
+ .shell .dashboard-quote svg{width:54px;height:54px}
+ .shell .dashboard-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .shell .dashboard-action{min-height:155px}
+ .shell .dashboard-action:last-child{grid-column:auto}
+ .shell:not(.mode-fullscreen):not(.function-fullscreen) .progress-page{padding:22px 16px 40px!important}
+}
+@media(max-width:420px){
+ .shell .dashboard-actions{grid-template-columns:1fr!important}
+ .shell .dashboard-action{min-height:132px}
+}
