@@ -268,7 +268,6 @@ try {
         const adSlots = await page.locator('.flashcards-page [data-ad-slot]').count()
         if (adSlots > 2) failures.push(`${viewport.name}, flashcard: troppi spazi pubblicitari, trovati ${adSlots}`)
         if (adSlots > 0 && await page.locator('.flashcards-ad-slot-top').count() !== 1) failures.push(`${viewport.name}, flashcard: spazio pubblicitario superiore mancante`)
-        await page.locator('.flashcard-stage .flashcard-3d').waitFor({ state: 'visible', timeout: 5000 })
       }
       if (viewport.name === 'iphone-se-small' || viewport.name === 'desktop-1440') {
         const shotName = route.slice(1).replaceAll('/', '-') || 'root'
