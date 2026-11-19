@@ -219,6 +219,12 @@ try {
         if (index === 2 && viewport.name === 'iphone-se-small') await page.screenshot({ path: 'artifacts/mobile-responsive/iphone-se-small-flashcards.png', fullPage: true })
         await page.locator('.flashcard-3d').click()
         await page.locator('.flashcard-ratings').waitFor({ state: 'visible', timeout: 5000 })
+        const flippedMetrics = await page.evaluate(() => ({
+          overflow: Math.max(document.documentElement.scrollWidth, document.body.scrollWidth) - window.innerWidth,
+          ratingHeights: [...document.querySelectorAll('.flashcard-ratings button')].map(button => button.getBoundingClientRect().height)
+        }))
+        if (flippedMetrics.overflow > 1) failures.push(`${viewport.name}: overflow dopo aver girato la flashcard di ${flippedMetrics.overflow}px`)
+        if (flippedMetrics.ratingHeights.some(height => height < 44)) failures.push(`${viewport.name}: pulsanti di valutazione flashcard troppo piccoli`)
         if (viewport.name === 'iphone-se-small') await page.screenshot({ path: 'artifacts/mobile-responsive/iphone-se-small-flashcards-back.png', fullPage: true })
         if (!(await page.locator('.flashcard-explanation').isVisible())) failures.push(`${viewport.name}: spiegazione flashcard non visibile sul retro`)
         await page.locator('.rating-easy').click()
