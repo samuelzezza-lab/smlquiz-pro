@@ -5389,3 +5389,11 @@ body{background:radial-gradient(ellipse at 85% -15%,rgba(100,135,181,.19),transp
  .shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-deck-actions{grid-template-columns:1fr!important}
  .shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-deck-actions button:last-child{grid-column:auto!important}
 }
+
+
+/* Final immersive rule: function pages are distraction-free on phones too. */
+@media(max-width:800px){
+  .shell.function-fullscreen:not(.quiz-active) .mobile-bottom-nav{display:none!important}
+  .shell.mode-fullscreen .mobile-bottom-nav{display:none!important}
+  .shell:is(.function-fullscreen,.mode-fullscreen) .main>.content{padding-bottom:28px!important}
+}
