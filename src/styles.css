@@ -5421,3 +5421,5 @@ body{background:radial-gradient(ellipse at 85% -15%,rgba(100,135,181,.19),transp
   .shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-overview-item{padding:10px 8px!important;gap:7px!important}
   .shell:is(.function-fullscreen,.mode-fullscreen) .flashcards-overview-icon{width:32px!important;height:32px!important;flex-basis:32px!important}
 }
+
+.shell:is(.function-fullscreen,.mode-fullscreen){overflow-x:clip!important}
