@@ -64,6 +64,29 @@ try {
       'access-control-allow-methods': 'GET, OPTIONS',
       'content-type': 'application/json'
     }
+    await page.route('**/rest/v1/**', async route => {
+      const url = route.request().url()
+      if (url.includes('/facolta') || url.includes('/materie')) return route.fallback()
+      if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: catalogHeaders })
+      return route.fulfill({ status: 200, headers: catalogHeaders, body: '[]' })
+    })
+    await page.route('**/auth/v1/user**', async route => route.fulfill({
+      status: 200, headers: { 'content-type': 'application/json', 'access-control-allow-origin': '*' },
+      body: JSON.stringify({ id: '00000000-0000-4000-8000-000000000001', aud: 'authenticated', role: 'authenticated', email: 'responsive@example.com', app_metadata: { provider: 'email', providers: ['email'] }, user_metadata: {}, created_at: '2026-01-01T00:00:00.000Z' })
+    }))
+    await page.route('**/functions/v1/quiz-api', async route => {
+      const request = route.request()
+      const headers = { 'content-type': 'application/json', 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, apikey, content-type, x-client-info', 'access-control-allow-methods': 'POST, OPTIONS' }
+      if (request.method() === 'OPTIONS') return route.fulfill({ status: 204, headers })
+      let payload = {}
+      try { payload = request.postDataJSON() || {} } catch {}
+      const data = payload.action === 'session-check' ? { sessionOk: true }
+        : payload.action === 'wallet' ? { paidCredits: 0, freeUsed: 0, freeRemaining: 5, ledger: [], ownerUnlimited: false }
+        : payload.action === 'streaks' ? { streak: { current_streak: 0, longest_streak: 0 }, achievements: [] }
+        : payload.action === 'profile' ? { profile: { display_name: 'Studente test', language: 'it', leaderboard_opt_in: false } }
+        : {}
+      return route.fulfill({ status: 200, headers, body: JSON.stringify(data) })
+    })
     await page.route('**/rest/v1/facolta**', async route => {
       if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers: catalogHeaders })
       return route.fulfill({ status: 200, headers: catalogHeaders, body: JSON.stringify([
@@ -177,6 +200,22 @@ try {
     })
 
     await page.screenshot({ path: `artifacts/mobile-responsive/${viewport.name}-home.png`, fullPage: true })
+
+    // Prima prova il blocco anonimo; poi crea una sessione di test locale per esercitare le funzioni protette.
+    await page.goto(`${baseUrl}/review`, { waitUntil: 'domcontentloaded', timeout: 45000 })
+    await page.getByRole('heading', { name: 'Accedi per continuare.' }).waitFor({ state: 'visible', timeout: 10000 })
+    if (await page.locator('.flashcards-page').count()) failures.push(`${viewport.name}: flashcard visibili senza autenticazione`)
+    await page.locator('button').filter({ hasText: 'Accedi o crea un account' }).click()
+    await page.locator('.auth-form').waitFor({ state: 'visible', timeout: 10000 })
+    const testToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwMDAwMDAwMC0wMDAwLTQwMDAtODAwMC0wMDAwMDAwMDAwMDEiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwicm9sZSI6ImF1dGhlbnRpY2F0ZWQiLCJlbWFpbCI6InJlc3BvbnNpdmVAZXhhbXBsZS5jb20iLCJzZXNzaW9uX2lkIjoiMDAwMDAwMDAtMDAwMC00MDAwLTgwMDAtMDAwMDAwMDAwMDAyIiwiZXhwIjo0MTAyNDQ0ODAwfQ.signature'
+    await page.evaluate(({ token, user }) => {
+      localStorage.setItem('sb-fgrwwauwnxvrcgqqpksp-auth-token', JSON.stringify({
+        access_token: token, token_type: 'bearer', expires_in: 3600, expires_at: Math.floor(Date.now() / 1000) + 3600,
+        refresh_token: 'responsive-test-refresh-token', user
+      }))
+    }, { token: testToken, user: { id: '00000000-0000-4000-8000-000000000001', aud: 'authenticated', role: 'authenticated', email: 'responsive@example.com', app_metadata: { provider: 'email', providers: ['email'] }, user_metadata: {}, created_at: '2026-01-01T00:00:00.000Z' } })
+    await page.goto(`${baseUrl}/come-funziona`, { waitUntil: 'domcontentloaded', timeout: 45000 })
+    await page.getByText('responsive@example.com').first().waitFor({ state: 'visible', timeout: 10000 })
 
     // Torna alla dashboard prima di ogni prova: le funzioni sono immersive e nascondono la nav globale.
     const expectedPaths = ['/quiz', '/semestre-filtro', '/review', '/account']
