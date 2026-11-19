@@ -5029,3 +5029,95 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
  .shell.mode-fullscreen .content{padding:18px 14px 30px!important}
  .shell.mode-fullscreen .main{margin-left:0!important}
 }
+
+
+/* QUIZMIND DESIGN SYSTEM — unica fonte colori Graphite + Amber */
+:root{
+  --qm-bg:#202832;
+  --qm-sidebar:#252E39;
+  --qm-panel:#303B49;
+  --qm-surface:#394653;
+  --qm-surface-2:#435160;
+  --qm-border:#596879;
+  --qm-blue:#6487B5;
+  --qm-blue-strong:#526F96;
+  --qm-amber:#F0AD42;
+  --qm-text:#F4F2ED;
+  --qm-muted:#C0C5CC;
+  --qm-success:#6FC39A;
+  --qm-danger:#E58A80;
+  --qm-shadow:0 12px 30px rgba(5,10,18,.22);
+}
+html,body,#root,.shell,.main,.content{background-color:var(--qm-bg)!important;color:var(--qm-text)!important}
+body{background:radial-gradient(ellipse at 85% -15%,rgba(100,135,181,.19),transparent 44%),var(--qm-bg)!important}
+.shell{color:var(--qm-text)!important}
+.shell :where(h1,h2,h3,h4,h5,strong,b,.question,.panel-title){color:var(--qm-text)}
+.shell :where(p,small,label,.muted,.description,.hint,.caption){color:var(--qm-muted)}
+.shell :where(.panel,.stat,.subject-card,.dashboard-panel,.dashboard-stat,.account-metric,.account-panel,.account-buy-panel,.calc-overview-card,.calc-panel,.career-planner,.quiz,.history-line,.account-detail,.exam-row,.experience-form,.experience-card,.experiences-filters,.experiences-empty,.flashcards-subject-panel,.flashcards-overview-item,.sf-hero,.sf-question,.sf-exam-aside,.sf-result-hero,.sf-review,.sf-paywall,.sf-subscription-active,.flashcards-paywall){
+  background:var(--qm-panel)!important;color:var(--qm-text)!important;border:1px solid var(--qm-border)!important;box-shadow:var(--qm-shadow)!important
+}
+.shell :where(.dashboard-welcome,.hero,.experiences-hero,.flashcards-hero,.sf-hero,.flashcards-subject-panel){
+  background:linear-gradient(125deg,#344354 0%,#303B49 66%,#453B30 100%)!important;color:var(--qm-text)!important;border-color:#617184!important
+}
+.shell :where(.dashboard-action,.dashboard-stat,.dashboard-result,.dashboard-subject,.flashcards-overview-item,.experience-card,.sf-options button,.sf-radio,.answer,.package-row,.report-form,.auth-tabs,.calc-steps,.filters,.notice,.help-card,.count,.wallet-summary,.experience-community-rules,.experience-privacy-note,.experience-moderation-notice){
+  background:var(--qm-surface)!important;color:var(--qm-text)!important;border-color:var(--qm-border)!important
+}
+.shell :where(.dashboard-stat.orange,.dashboard-action.orange,.flashcards-overview-item:nth-child(even),.sf-explanation,.flashcard-back,.tag,.credit-chip,.timer,.cookie-banner){
+  background:#453B30!important;color:#F6D6A2!important;border-color:#8B6B3C!important
+}
+.shell :where(input,textarea,select,.experience-search,.flashcards-subject-picker,.sf-fill){
+  background:#252E39!important;color:var(--qm-text)!important;border:1px solid var(--qm-border)!important
+}
+.shell :where(input,textarea,select)::placeholder{color:#AEB8C4!important;opacity:1}
+.shell select option{background:var(--qm-panel)!important;color:var(--qm-text)!important}
+.shell :where(button.primary,.primary,.dashboard-action strong,.home-buy-credits){
+  background:linear-gradient(120deg,var(--qm-blue-strong),var(--qm-blue))!important;color:#fff!important;border:1px solid #7898C0!important
+}
+.shell :where(button.secondary,.secondary,.back-home-button,.sf-mode-back){
+  background:var(--qm-surface)!important;color:var(--qm-text)!important;border:1px solid #617184!important
+}
+.shell :where(.back-home-button){background:linear-gradient(110deg,var(--qm-blue-strong),#D99432)!important;color:#fff!important;border:1px solid #8797A8!important}
+.shell :where(.eyebrow,.simple-link,.hero-link,.dashboard-result-icon,.experiences-eyebrow,.flashcards-eyebrow,.sf-kicker,.sf-question-meta){color:var(--qm-amber)!important}
+.shell :where(.progress-track,.progress-day-bar,.flashcards-progress-track,.calc-goal-track,.dashboard-bars){background:#4A5868!important}
+.shell :where(.progress-track i,.dashboard-bar span,.flashcards-progress-track>span,.calc-goal-track i){background:linear-gradient(90deg,var(--qm-blue),var(--qm-amber))!important}
+.shell :where(.flashcard-front){background:linear-gradient(145deg,#526F96,#344354)!important;color:#fff!important}
+.shell :where(.flashcard-back){background:linear-gradient(145deg,#394653,#453B30)!important;color:var(--qm-text)!important}
+.shell :where(.flashcard-front *, .flashcard-back *){color:inherit!important}
+.shell :where(.sf-options button.chosen,.answer.chosen){background:#344B67!important;border-color:#83A4D0!important;color:#fff!important}
+.shell :where(.answer.right){background:#244638!important;color:#E8FFF1!important;border-color:#64B88D!important}
+.shell :where(.answer.wrong){background:#4B302F!important;color:#FFEAE7!important;border-color:#D47D70!important}
+.shell :where(.experience-difficulty,.experience-outcome,.flashcard-ratings button){border-color:var(--qm-border)!important}
+.shell :where(.modal-backdrop){background:rgba(9,14,21,.88)!important}
+.shell :where(.modal-backdrop .panel,.flashcards-paywall){background:var(--qm-panel)!important;color:var(--qm-text)!important}
+.shell :where(.topbar){background:rgba(37,46,57,.97)!important;border-color:#465363!important}
+.shell :where(.sidebar){background:var(--qm-sidebar)!important;border-color:#465363!important}
+.shell :where(.nav-link){color:#C0C9D3!important}
+.shell :where(.nav-link:hover){background:var(--qm-surface)!important;color:#fff!important}
+.shell :where(.nav-link.active){background:linear-gradient(100deg,#526F96,#6487B5)!important;color:#fff!important;box-shadow:inset 3px 0 var(--qm-amber)!important}
+.shell :where(.footer,.mobile-bottom-nav){background:var(--qm-sidebar)!important;border-color:#465363!important;color:var(--qm-muted)!important}
+.shell :where(button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible){outline:3px solid var(--qm-amber)!important;outline-offset:2px!important}
+
+/* Tutte le funzioni, non solo il quiz, sono ambienti a schermo intero. */
+.shell.mode-fullscreen .sidebar,
+.shell.mode-fullscreen .scrim,
+.shell.mode-fullscreen .mobile-bottom-nav,
+.shell.mode-fullscreen .footer,
+.shell.mode-fullscreen .cookie-banner,
+.shell.mode-fullscreen .mobile-resume-quiz,
+.shell.mode-fullscreen .top-actions,
+.shell.mode-fullscreen .current-page-title,
+.shell.mode-fullscreen .offline,
+.shell.mode-fullscreen .toast,
+.shell.mode-fullscreen .compact-ad-slot{display:none!important}
+.shell.mode-fullscreen .main{margin:0!important;padding:0!important;width:100%!important;max-width:none!important;min-width:0!important}
+.shell.mode-fullscreen .topbar{height:64px!important;min-height:64px!important;position:sticky!important;top:0!important;z-index:100!important;padding:0 clamp(16px,3vw,42px)!important;justify-content:flex-start!important;background:rgba(37,46,57,.98)!important;border-bottom:1px solid var(--qm-border)!important}
+.shell.mode-fullscreen .crumb{width:100%!important;display:flex!important;align-items:center!important}
+.shell.mode-fullscreen .back-home-button{display:inline-flex!important;align-items:center!important;gap:9px!important}
+.shell.mode-fullscreen .content{width:100%!important;max-width:none!important;margin:0!important;padding:clamp(18px,3vw,38px) clamp(16px,3vw,42px) 48px!important}
+.shell.mode-fullscreen .main:has(.flashcards-page),
+.shell.mode-fullscreen .main:has(.semestre-filtro),
+.shell.mode-fullscreen .main:has(.experiences-page){min-height:calc(100vh - 64px)!important;background:var(--qm-bg)!important}
+@media(max-width:800px){
+ .shell.mode-fullscreen .topbar{height:58px!important;min-height:58px!important;padding:0 14px!important}
+ .shell.mode-fullscreen .content{padding:18px 14px 30px!important}
+}
