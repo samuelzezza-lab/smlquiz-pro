@@ -266,6 +266,11 @@ try {
       if (route === '/review' && await page.locator('.flashcards-page').count()) {
         const adSlots = await page.locator('.flashcards-page [data-ad-slot]').count()
         if (adSlots !== 2) failures.push(`${viewport.name}, flashcard: attesi 2 spazi pubblicitari, trovati ${adSlots}`)
+        await page.locator('.flashcard-stage .flashcard-3d').waitFor({ state: 'visible', timeout: 5000 })
+      }
+      if (viewport.name === 'iphone-se-small' || viewport.name === 'desktop-1440') {
+        const shotName = route.slice(1).replaceAll('/', '-') || 'root'
+        await page.screenshot({ path: `artifacts/mobile-responsive/${viewport.name}-section-${shotName}.png`, fullPage: true })
       }
       const routeOverflow = Math.max(layout.documentWidth, layout.bodyWidth) - layout.width
       if (routeOverflow > 1) failures.push(`${viewport.name}, sezione ${route}: overflow orizzontale di ${routeOverflow}px`)
@@ -273,6 +278,8 @@ try {
     }
 
     if (pageErrors.length) failures.push(`${viewport.name}: errori JavaScript: ${pageErrors.join(' | ')}`)
+    await page.goto(`${baseUrl}/account`, { waitUntil: 'domcontentloaded', timeout: 45000 })
+    await page.waitForTimeout(120)
     await page.screenshot({ path: `artifacts/mobile-responsive/${viewport.name}-account.png`, fullPage: true })
     results.push({ viewport: viewport.name, dimensions: `${viewport.width}x${viewport.height}`, overflow: Math.max(0, horizontalOverflow), nav: initial.navVisible ? 'visibile' : 'non visibile', errors: pageErrors.length })
     await page.close()
