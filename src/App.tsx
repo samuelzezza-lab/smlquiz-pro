@@ -492,7 +492,7 @@ export default function App(){
  const immersiveMode=Boolean(questions.length&&current&&!quizPaused&&!quizDismissed);
  const modeFullscreen=page!=='guide';
  return <div className={"shell "+(page!=='home'?"mobile-page-active ":"")+(page==='home'&&user?" home-auth-fullscreen ":"")+(questions.length&&current&&!quizPaused&&!quizDismissed?"quiz-active ":"")+(immersiveMode?"function-fullscreen ":"")+(modeFullscreen?"mode-fullscreen":"")} style={{'--scale':font/100} as CSSProperties}>
- {immersiveMode&&<button type="button" className="function-home-back" aria-label="Torna alla home e alle modalità" title="Torna alle modalità" onClick={()=>{if(questions.length&&current&&!quizPaused&&!quizDismissed){setQuizPaused(true);setQuizDismissed(true)}go('guide')}}><ArrowLeft size={21}/></button>}
+ {page!=='guide'&&<button type="button" className="function-home-back" aria-label="Torna alla home" title="Torna alla home" onClick={()=>{if(immersiveMode){setQuizPaused(true);setQuizDismissed(true)}go('guide')}}><ArrowLeft size={19}/><span>Torna alla home</span></button>}
  <a className="skip-link" href="#main-content">{tr('skipToContent')}</a>
  
  {semestreDraftActive&&page!=='semestre'&&<button type="button" className="mobile-resume-quiz semestre-resume-button" onClick={()=>go('semestre')}>Torna alla simulazione <ArrowRight size={14}/></button>}
