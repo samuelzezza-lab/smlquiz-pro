@@ -4203,3 +4203,8 @@ html,body,.shell{scroll-behavior:auto!important}
     margin-left:6px;
   }
 }
+
+
+@media (max-height: 500px) and (orientation: landscape) {
+  .topbar:has(.home-wordmark) .crumb>.hamb { display:inline-flex!important; }
+}
