@@ -23,7 +23,7 @@ jobs:
       - name: Install browser test runner
         run: npm install --no-save --package-lock=false playwright@1.55.0
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
       - name: Test phone, tablet and landscape layouts
         run: node scripts/mobile-responsive.mjs
       - name: Save responsive screenshots
