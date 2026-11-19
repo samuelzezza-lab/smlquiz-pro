@@ -39,7 +39,7 @@ class AppErrorBoundary extends React.Component<React.PropsWithChildren, ErrorBou
 
   render() {
     if (this.state.hasError) {
-      return <main role="alert" style={{minHeight:'100vh',display:'grid',placeContent:'center',padding:24,background:'#050915',color:'#edf1ff',fontFamily:'system-ui,sans-serif',textAlign:'center'}}>
+      return <main role="alert" style={{minHeight:'100vh',display:'grid',placeContent:'center',padding:24,background:'#09091f',color:'#edf1ff',fontFamily:'system-ui,sans-serif',textAlign:'center'}}>
         <div style={{maxWidth:460}}>
           <div style={{fontSize:13,fontWeight:800,letterSpacing:2,color:'#a78bfa'}}>SMLQUIZ PRO</div>
           <h1 style={{fontSize:26,margin:'16px 0 8px'}}>Si è verificato un problema</h1>
