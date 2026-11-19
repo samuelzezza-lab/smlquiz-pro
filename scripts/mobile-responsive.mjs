@@ -129,9 +129,21 @@ try {
           const style = getComputedStyle(el)
           return { tag: el.tagName, cls: typeof el.className === 'string' ? el.className.slice(0,90) : '', right: Math.round(rect.right), width: Math.round(rect.width), display: style.display, position: style.position }
         }).filter(x => x.display !== 'none' && x.width > 0 && x.right > window.innerWidth + 1).slice(0,5)
-        return { documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth, width: window.innerWidth, path: window.location.pathname, offenders }
+        const homeBack = document.querySelector('.function-home-back')
+        const topbar = document.querySelector('.topbar')
+        const nav = document.querySelector('.mobile-bottom-nav')
+        return {
+          documentWidth: document.documentElement.scrollWidth, bodyWidth: document.body.scrollWidth,
+          width: window.innerWidth, path: window.location.pathname, offenders,
+          homeBackVisible: !!homeBack && getComputedStyle(homeBack).display !== 'none' && homeBack.getBoundingClientRect().width > 0,
+          topbarVisible: !!topbar && getComputedStyle(topbar).display !== 'none' && topbar.getBoundingClientRect().height > 0,
+          navVisible: !!nav && getComputedStyle(nav).display !== 'none' && nav.getBoundingClientRect().height > 0
+        }
       })
       if (state.path !== expectedPaths[index]) failures.push(`${viewport.name}, destinazione ${index + 1}: percorso ${state.path}, atteso ${expectedPaths[index]}`)
+      if (!state.homeBackVisible) failures.push(`${viewport.name}, ${state.path}: pulsante Torna alla home non visibile`)
+      if (state.topbarVisible) failures.push(`${viewport.name}, ${state.path}: barra superiore ancora visibile in modalità immersiva`)
+      if (state.navVisible) failures.push(`${viewport.name}, ${state.path}: navigazione globale ancora visibile in modalità immersiva`)
       const overflow = Math.max(state.documentWidth, state.bodyWidth) - state.width
       if (overflow > 1) failures.push(`${viewport.name}, destinazione ${index + 1} ${state.path}: overflow di ${overflow}px; elementi: ${JSON.stringify(state.offenders)}`)
       if (index === 2 && viewport.name === 'iphone-se-small') await page.screenshot({ path: 'artifacts/mobile-responsive/iphone-se-small-flashcards.png', fullPage: true })
