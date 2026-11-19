@@ -5771,3 +5771,14 @@ body{background:radial-gradient(ellipse at 75% -10%,#123c91 0,transparent 38%),l
     margin-top:0!important;
   }
 }
+
+
+/* Reserve space for the fixed return control on every protected route, including account and semester filter. */
+.shell:has(> .function-home-back) .content{
+  padding-top:164px!important;
+}
+@media(max-width:800px){
+  .shell:has(> .function-home-back) .content{
+    padding-top:calc(118px + env(safe-area-inset-top))!important;
+  }
+}
