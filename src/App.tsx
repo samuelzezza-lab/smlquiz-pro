@@ -671,7 +671,7 @@ export default function App(){
    <button type="button" className="primary quiz-preview-cta" onClick={()=>go('home')}>Apri i quiz <ArrowRight size={15}/></button>
   </section>
  </div>
- <div className="<div className="dashboard-reference-grid">
+ <div className="dashboard-reference-grid">
  <section className="dashboard-panel dashboard-semester-preview"><div className="dashboard-section-title"><div><h2><GraduationCap size={19}/> Semestre Filtro</h2><p>Allenati sulle prove di Biologia, Chimica e Fisica</p></div></div><div className="semester-preview-subjects"><span>Biologia</span><span>Chimica</span><span>Fisica</span></div><button type="button" className="primary semester-preview-cta" onClick={()=>go('semestre')}>Vai al Semestre Filtro <ArrowRight size={15}/></button></section>
 </div>
  </section>}{page==='calculator'&&<section className="content calculator-page">
