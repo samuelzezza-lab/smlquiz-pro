@@ -528,13 +528,13 @@ export default function App(){
    <div className="resolve-filter-grid">
      <label htmlFor="resolve-faculty">Facoltà
        <select id="resolve-faculty" value={faculty} onChange={e=>{setFaculty(e.target.value);setVisibleSubjects(24)}}>
-         <option value="">Tutte le facoltà</option>
+         <option value="">Tutte</option>
          {faculties.map(f=><option key={f.id} value={f.id}>{localizedName(f,language)}</option>)}
        </select>
      </label>
      <label htmlFor="resolve-year">Anno
        <select id="resolve-year" value={year} onChange={e=>{setYear(e.target.value);setVisibleSubjects(24)}}>
-         <option value="all">Tutti gli anni</option>
+         <option value="all">Tutti</option>
          {[...new Set(subjects.map(s=>s.anno_corso).filter((v):v is number=>Number.isInteger(v)))].sort((a,b)=>a-b).map(v=><option key={v} value={String(v)}>{v}° anno</option>)}
        </select>
      </label>
