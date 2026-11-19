@@ -214,7 +214,9 @@ try {
       }))
     }, { token: testToken, user: { id: '00000000-0000-4000-8000-000000000001', aud: 'authenticated', role: 'authenticated', email: 'responsive@example.com', app_metadata: { provider: 'email', providers: ['email'] }, user_metadata: {}, created_at: '2026-01-01T00:00:00.000Z' } })
     await page.goto(`${baseUrl}/come-funziona`, { waitUntil: 'domcontentloaded', timeout: 45000 })
-    await page.getByText('responsive@example.com').first().waitFor({ state: 'visible', timeout: 10000 })
+    await page.locator('.home-profile-avatar').waitFor({ state: 'visible', timeout: 10000 })
+    const storedTestSession = await page.evaluate(() => Object.keys(localStorage).some(key => key.endsWith('-auth-token')))
+    if (!storedTestSession) failures.push(`${viewport.name}: sessione di test non mantenuta dopo il login simulato`)
 
     // Torna alla dashboard prima di ogni prova: le funzioni sono immersive e nascondono la nav globale.
     const expectedPaths = ['/quiz', '/semestre-filtro', '/review', '/account']
