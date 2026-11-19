@@ -52,8 +52,15 @@ for (const path of files) {
 if (!html.includes('<link rel="manifest" href="/manifest.webmanifest"/>')) fail('The installable PWA manifest must be linked from index.html.')
 if (!manifest.includes('"display": "standalone"') || !manifest.includes('/icon-192.png') || !manifest.includes('/icon-512.png')) fail('The PWA manifest must define standalone display and both app icons.')
 if (!app.includes("single:'price_1Uc9w5BCybXKHSfRCFwx5NAT'") || !checkout.includes('price_1Uc9w5BCybXKHSfRCFwx5NAT') || !webhook.includes('price_1Uc9w5BCybXKHSfRCFwx5NAT')) fail('Single-subject purchase must use the same Stripe product in frontend, checkout and webhook.')
-if (app.includes("if(authReady&&!user&&['review','progress'")) fail('Free flashcards must remain reachable for guest users.')
-if (!app.includes("if(!user&&['progress','leaderboard','settings','buy'].includes(p))")) fail('Protected account areas must still require authentication.')
+const accountGate = app.slice(app.indexOf('const accountRequiredPages:'), app.indexOf('const pricing ='))
+for (const page of ["'home'","'semestre'","'experiences'","'review'","'progress'","'result'","'buy'","'settings'","'calculator'","'leaderboard'"]) {
+  if (!accountGate.includes(page)) fail('Study and paid page must require an account: ' + page)
+}
+if (!app.includes('if(!user&&accountRequiredPages.includes(p))')) fail('Client navigation must block unauthenticated access to every study and paid page.')
+if (!app.includes('if(!user&&accountRequiredPages.includes(next))')) fail('Direct URL and browser-history navigation must block unauthenticated access.')
+if (!app.includes('if(!authReady)return <div role="status"')) fail('The app must wait for Supabase session restoration before showing protected content.')
+if (!app.includes("if(!user&&accountRequiredPages.includes(page))return")) fail('Protected routes must not render their contents to unauthenticated visitors.')
+if (!app.includes('Accesso richiesto per proteggere account, progressi e contenuti.') && !app.includes('L\'accesso è richiesto per proteggere account, progressi e contenuti.')) fail('The account gate must explain why login is required.')
 if (!styles.includes('.shell.mode-fullscreen .mobile-bottom-nav{display:none!important}')) fail('Immersive mobile pages must hide global navigation.')
 
 if (process.exitCode) process.exit(process.exitCode)
