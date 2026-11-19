@@ -27,15 +27,49 @@ window.addEventListener('appinstalled', () => {
   deferredInstallPrompt = null;
 });
 
-// Registra il Service Worker in background senza cancellare le registrazioni
-// e senza forzare un secondo caricamento della pagina.
+// Aggiorna la PWA quando l'utente torna alla scheda dopo aver usato un'altra app.
+// Se arriva un nuovo Service Worker, ricarica una sola volta per montare il bundle aggiornato.
 if ('serviceWorker' in navigator) {
+  let appRegistration: ServiceWorkerRegistration | null = null;
+  let lastUpdateCheck = 0;
+  let refreshingForWorkerUpdate = false;
+  let hadController = Boolean(navigator.serviceWorker.controller);
+
+  const checkForAppUpdate = () => {
+    if (document.visibilityState !== 'visible' || !appRegistration) return;
+    const now = Date.now();
+    if (now - lastUpdateCheck < 30_000) return;
+    lastUpdateCheck = now;
+    void appRegistration.update().catch(error => {
+      console.warn('Controllo aggiornamenti SMLQUIZ non riuscito:', error);
+    });
+  };
+
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) {
+      hadController = true;
+      return;
+    }
+    if (refreshingForWorkerUpdate) return;
+    refreshingForWorkerUpdate = true;
+    window.location.reload();
+  });
+
+  // pageshow copre anche il ripristino dalla BFCache dopo il ritorno da WhatsApp.
+  window.addEventListener('pageshow', checkForAppUpdate);
+  window.addEventListener('focus', checkForAppUpdate);
+  document.addEventListener('visibilitychange', checkForAppUpdate);
+
   const registerAppWorker = () => {
     void navigator.serviceWorker.register('/sw.js', {
       scope: '/',
       updateViaCache: 'none'
+    }).then(registration => {
+      appRegistration = registration;
+      checkForAppUpdate();
     }).catch(error => console.warn('Registrazione PWA non riuscita:', error));
   };
+
   if (document.readyState === 'complete') {
     window.setTimeout(registerAppWorker, 0);
   } else {
