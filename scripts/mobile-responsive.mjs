@@ -83,7 +83,7 @@ try {
     }))
 
     const pwa = await page.evaluate(async () => {
-      const link = document.querySelector('link[rel="manifest"]') as HTMLLinkElement | null
+      const link = document.querySelector('link[rel="manifest"]')
       if (!link) return { linked: false, status: 0, display: '', icons: 0 }
       const response = await fetch(link.href)
       if (!response.ok) return { linked: true, status: response.status, display: '', icons: 0 }
