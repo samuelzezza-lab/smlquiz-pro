@@ -10,6 +10,7 @@ const preview = spawn('npm', ['run', 'preview', '--', '--host', '127.0.0.1', '--
 })
 const failures = []
 const results = []
+const routePaths = ['/quiz', '/semestre-filtro', '/esperienze-esame', '/review', '/progress', '/account', '/compra-quiz', '/settings', '/calculator', '/legal', '/leaderboard', '/come-funziona']
 let browser
 
 const viewports = [
@@ -62,6 +63,8 @@ try {
 
     const initial = await page.evaluate(() => ({
       width: window.innerWidth,
+      viewportMeta: document.querySelector('meta[name="viewport"]')?.getAttribute('content') || '',
+      visualScale: window.visualViewport?.scale ?? 1,
       documentWidth: document.documentElement.scrollWidth,
       bodyWidth: document.body.scrollWidth,
       navVisible: (() => {
@@ -81,6 +84,8 @@ try {
       }),
     }))
 
+    if (!initial.viewportMeta.includes('width=device-width') || !initial.viewportMeta.includes('initial-scale=1')) failures.push(`${viewport.name}: meta viewport assente o non corretta`)
+    if (Math.abs(initial.visualScale - 1) > 0.01) failures.push(`${viewport.name}: scala iniziale diversa da 100% (${initial.visualScale})`)
     const horizontalOverflow = Math.max(initial.documentWidth, initial.bodyWidth) - initial.width
     if (horizontalOverflow > 1) failures.push(`${viewport.name}: overflow orizzontale di ${horizontalOverflow}px`)
     if (!initial.navVisible) failures.push(`${viewport.name}: navigazione mobile non visibile`)
@@ -111,6 +116,21 @@ try {
       if (state.path !== expectedPaths[index]) failures.push(`${viewport.name}, destinazione ${index + 1}: percorso ${state.path}, atteso ${expectedPaths[index]}`)
       const overflow = Math.max(state.documentWidth, state.bodyWidth) - state.width
       if (overflow > 1) failures.push(`${viewport.name}, destinazione ${index + 1}: overflow di ${overflow}px`)
+    }
+
+    // Verifica che tutte le sezioni principali si adattino allo stesso schermo senza zoom o scroll laterale.
+    for (const route of routePaths) {
+      await page.goto(`${baseUrl}${route}`, { waitUntil: 'domcontentloaded', timeout: 45000 })
+      await page.waitForTimeout(120)
+      const layout = await page.evaluate(() => ({
+        width: window.innerWidth,
+        documentWidth: document.documentElement.scrollWidth,
+        bodyWidth: document.body.scrollWidth,
+        viewportScale: window.visualViewport?.scale ?? 1,
+      }))
+      const routeOverflow = Math.max(layout.documentWidth, layout.bodyWidth) - layout.width
+      if (routeOverflow > 1) failures.push(`${viewport.name}, sezione ${route}: overflow orizzontale di ${routeOverflow}px`)
+      if (Math.abs(layout.viewportScale - 1) > 0.01) failures.push(`${viewport.name}, sezione ${route}: scala viewport diversa da 100%`)
     }
 
     if (pageErrors.length) failures.push(`${viewport.name}: errori JavaScript: ${pageErrors.join(' | ')}`)
