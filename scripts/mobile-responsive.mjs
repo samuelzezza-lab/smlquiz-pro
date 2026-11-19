@@ -86,7 +86,9 @@ try {
     if (Math.abs(initial.visualScale - 1) > 0.01) failures.push(`${viewport.name}: scala iniziale diversa da 100% (${initial.visualScale})`)
     const horizontalOverflow = Math.max(initial.documentWidth, initial.bodyWidth) - initial.width
     if (horizontalOverflow > 1) failures.push(`${viewport.name}: overflow orizzontale di ${horizontalOverflow}px`)
-    const mobileNavExpected = viewport.width <= 800\n    if (mobileNavExpected && !initial.navVisible) failures.push(`${viewport.name}: navigazione mobile non visibile nella dashboard`)\n    if (!mobileNavExpected && initial.navVisible) failures.push(`${viewport.name}: navigazione mobile inattesa su viewport desktop`)
+    const mobileNavExpected = viewport.width <= 800
+    if (mobileNavExpected && !initial.navVisible) failures.push(`${viewport.name}: navigazione mobile non visibile nella dashboard`)
+    if (!mobileNavExpected && initial.navVisible) failures.push(`${viewport.name}: navigazione mobile inattesa su viewport desktop`)
     if (!initial.homeHeaderVisible) failures.push(`${viewport.name}: barra superiore home non visibile`)
     if (initial.homeHeaderHeight > 78) failures.push(`${viewport.name}: barra home su più righe (${initial.homeHeaderHeight}px)`)
     if (mobileNavExpected && !initial.homeMenuVisible) failures.push(`${viewport.name}: pulsante Menu home non visibile`)
