@@ -39,15 +39,23 @@ Deno.serve(async (req: Request) => {
 
     let unlocked = false;
     if (userId) {
-      const [entitlements, purchases] = await Promise.all([
+      const now = new Date().toISOString();
+      const [siteSubscriptions, entitlements, purchases] = await Promise.all([
+        admin.from("user_site_subscriptions").select("id").eq("user_id", userId)
+          .in("status", ["active", "trialing"])
+          .or("current_period_end.is.null,current_period_end.gt." + now).limit(1),
         admin.from("user_subject_entitlements").select("id").eq("user_id", userId)
-          .eq("materia_id", subjectId).gt("expires_at", new Date().toISOString()).limit(1),
+          .eq("materia_id", subjectId).lte("starts_at", now).gt("expires_at", now).limit(1),
         admin.from("user_purchases").select("id").eq("user_id", userId)
           .eq("subject_id", subjectId).eq("payment_status", "paid").limit(1)
       ]);
+      if (siteSubscriptions.error) throw siteSubscriptions.error;
       if (entitlements.error) throw entitlements.error;
       if (purchases.error) throw purchases.error;
-      unlocked = (entitlements.data ?? []).length > 0 || (purchases.data ?? []).length > 0;
+      // L'abbonamento Tutto il Sito include anche l'intero mazzo flashcard.
+      unlocked = (siteSubscriptions.data ?? []).length > 0
+        || (entitlements.data ?? []).length > 0
+        || (purchases.data ?? []).length > 0;
     }
 
     const freeLimit = 50;
