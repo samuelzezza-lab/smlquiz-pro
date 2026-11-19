@@ -664,8 +664,11 @@ export default function App(){
     <button type="button" className="dashboard-action gold" onClick={()=>go('leaderboard')}><Trophy size={34}/><b>Classifica</b><span>Confrontati con gli altri studenti.</span><strong>Scopri la classifica <ArrowRight size={15}/></strong></button>
    </div>
   </section>
-  <section className="dashboard-panel dashboard-progress"><div className="dashboard-section-title"><div><h2><BarChart3 size={19}/> I tuoi progressi</h2><p>Riepilogo delle ultime attività</p></div><button type="button" className="simple-link" onClick={()=>go('progress')}>Vedi tutti <ArrowRight size={13}/></button></div>
-   {history.length?<div className="dashboard-bars">{history.slice(0,7).reverse().map(h=><div className="dashboard-bar" key={h.id}><span style={{height:Math.max(8,Math.min(100,h.score/30*100))+'%'}}/><small>{new Date(h.date).toLocaleDateString('it-IT',{weekday:'short'})}</small></div>)}</div>:<div className="dashboard-empty"><BarChart3 size={27}/><b>I tuoi progressi appariranno qui</b><span>Completa un quiz per iniziare a vedere i tuoi risultati.</span></div>}
+  <section className="dashboard-panel dashboard-quiz-preview"><div className="dashboard-section-title"><div><h2><Target size={19}/> Quiz universitario</h2><p>Un'anteprima della modalità di esercitazione</p></div><span className="quiz-preview-pill">10 DOMANDE</span></div>
+   <div className="quiz-preview-meta"><span>ANATOMIA · FISIOLOGIA</span><span>DOMANDA 01 / 10</span></div>
+   <h3>Qual è la funzione principale del muscolo cardiaco?</h3>
+   <div className="quiz-preview-options"><div><b>A</b><span>Produrre gli impulsi nervosi</span></div><div className="selected"><b>B</b><span>Pompare il sangue attraverso il sistema circolatorio</span><i>Selezionata</i></div><div><b>C</b><span>Filtrare le sostanze presenti nel sangue</span></div><div><b>D</b><span>Regolare direttamente la temperatura corporea</span></div></div>
+   <button type="button" className="primary quiz-preview-cta" onClick={()=>go('home')}>Apri i quiz <ArrowRight size={15}/></button>
   </section>
  </div>
  <div className="dashboard-bottom-grid">
@@ -676,6 +679,17 @@ export default function App(){
   <section className="dashboard-panel"><div className="dashboard-section-title"><h2><Clock3 size={19}/> Ultimi risultati</h2><button type="button" className="simple-link" onClick={()=>go('progress')}>Vedi tutti <ArrowRight size={13}/></button></div>
    {history.slice(0,4).map(h=><div className="dashboard-result" key={h.id}><span className="dashboard-result-icon"><GraduationCap size={17}/></span><span><b>{h.subject}</b><small>{h.correct}/{h.total} risposte corrette</small></span><strong>{h.score.toFixed(1)}/30</strong></div>)}
    {!history.length&&<div className="dashboard-empty"><Trophy size={24}/><b>Nessun risultato ancora</b><span>Il primo quiz è a un clic da qui.</span></div>}
+  </section>
+ </div>
+ <div className="dashboard-reference-grid">
+  <section className="dashboard-panel dashboard-ranking-preview"><div className="dashboard-section-title"><div><h2><Trophy size={19}/> Classifica</h2><p>Confronta i risultati con gli altri studenti</p></div><button type="button" className="simple-link" onClick={()=>go('leaderboard')}>Apri <ArrowRight size={13}/></button></div>
+   {leaderboardRows.slice(0,3).map((row,i)=><div className="dashboard-rank-row" key={row.rank_position}><span className={'dashboard-rank-medal medal-'+(i+1)}>{row.rank_position}</span><span><b>{row.display_name}{row.is_current_user?' · TU':''}</b><small>{row.correct_answers}/{row.total_answers} risposte corrette</small></span><strong>{Number(row.accuracy).toFixed(1)}%</strong></div>)}
+   {!leaderboardRows.length&&<div className="dashboard-empty compact"><Trophy size={24}/><b>La tua prossima sfida inizia qui</b><span>Apri la classifica per scegliere una materia e vedere la graduatoria reale.</span></div>}
+  </section>
+  <section className="dashboard-panel dashboard-semester-preview"><div className="dashboard-section-title"><div><h2><GraduationCap size={19}/> Semestre Filtro</h2><p>Allenati sulle prove di Biologia, Chimica e Fisica</p></div></div><div className="semester-preview-subjects"><span>Biologia</span><span>Chimica</span><span>Fisica</span></div><button type="button" className="primary semester-preview-cta" onClick={()=>go('semestre')}>Vai al Semestre Filtro <ArrowRight size={15}/></button></section>
+  <section className="dashboard-panel dashboard-phone-panel"><div className="dashboard-section-title"><div><h2><BookOpen size={19}/> SMLQUIZ ovunque</h2><p>La tua area studio, anche da smartphone</p></div></div><div className="dashboard-phone"><div className="dashboard-phone-speaker"/><div className="dashboard-phone-screen"><span className="dashboard-phone-brand">SML<span>QUIZ</span></span><small>IL TUO SPAZIO UNIVERSITARIO</small><b>Il prossimo esame, <em>si prepara qui.</em></b><button type="button" onClick={()=>go('home')}>Inizia a studiare <ArrowRight size={12}/></button><div className="dashboard-phone-icons"><span><Target size={14}/>Quiz</span><span><Layers size={14}/>Flashcard</span><span><BarChart3 size={14}/>Progressi</span></div></div><div className="dashboard-phone-nav"><span>⌂</span><span>▤</span><span>◉</span><span>☰</span></div></div></section>
+  <section className="dashboard-panel dashboard-progress"><div className="dashboard-section-title"><div><h2><BarChart3 size={19}/> I tuoi progressi</h2><p>Riepilogo delle ultime attività</p></div><button type="button" className="simple-link" onClick={()=>go('progress')}>Vedi tutti <ArrowRight size={13}/></button></div>
+   {history.length?<div className="dashboard-bars">{history.slice(0,7).reverse().map(h=><div className="dashboard-bar" key={h.id}><span style={{height:Math.max(8,Math.min(100,h.score/30*100))+'%'}}/><small>{new Date(h.date).toLocaleDateString('it-IT',{weekday:'short'})}</small></div>)}</div>:<div className="dashboard-empty"><BarChart3 size={27}/><b>I tuoi progressi appariranno qui</b><span>Completa un quiz per iniziare a vedere i tuoi risultati.</span></div>}
   </section>
  </div>
  </section>}{page==='calculator'&&<section className="content calculator-page">
