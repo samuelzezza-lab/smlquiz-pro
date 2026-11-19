@@ -3692,3 +3692,12 @@ body{background:#111827;color:#edf4ff}
 .resolve-filter-grid select:focus-visible,.resolve-search input:focus-visible{outline:2px solid #38bdf8;outline-offset:2px}
 .resolve-clear-filters{justify-self:start;width:max-content;border:0;background:transparent;color:#7dd3fc;font-size:12px;font-weight:700;text-decoration:underline;cursor:pointer;padding:3px 0}
 @media(max-width:480px){.resolve-filter-grid{grid-template-columns:1fr}}
+
+
+/* Spazi pubblicitari compatti: massimo due nella pagina Flashcard */
+.flashcards-hero-side{display:flex;align-items:center;gap:12px;flex:0 0 auto}
+.compact-ad-slot{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:148px;min-height:54px;padding:7px 10px;border:1px dashed rgba(148,163,184,.28);border-radius:8px;background:rgba(15,23,42,.28);color:#8493ad;text-align:center}
+.compact-ad-slot span{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.compact-ad-slot small{font-size:9px;color:#64748b}
+.compact-ad-slot-bottom{width:min(100%,320px);min-height:42px;margin:12px auto 0}
+@media(max-width:640px){.flashcards-hero{align-items:flex-start}.flashcards-hero-side{flex-direction:column-reverse;gap:8px;align-items:flex-end}.compact-ad-slot{width:112px;min-height:42px;padding:5px}.compact-ad-slot-bottom{width:min(100%,280px)}}
