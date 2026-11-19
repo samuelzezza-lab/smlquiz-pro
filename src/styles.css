@@ -4051,3 +4051,14 @@ html,body,.shell{scroll-behavior:auto!important}
   .resolve-subject { padding:9px; }
   .resolve-subject-action { font-size:9px; }
 }
+
+
+/* Navigazione mobile sempre disponibile nelle schermate interne; il quiz resta immersivo. */
+@media (max-width: 800px) {
+  .shell.function-fullscreen:not(.quiz-active) .mobile-bottom-nav {
+    display:grid!important;
+  }
+  .shell.function-fullscreen:not(.quiz-active) .main>.content {
+    padding-bottom:calc(94px + env(safe-area-inset-bottom));
+  }
+}
