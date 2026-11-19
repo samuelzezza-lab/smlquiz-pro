@@ -660,7 +660,7 @@ export default function App(){
    <div className="dashboard-actions">
     <button type="button" className="dashboard-action blue" onClick={()=>go('home')}><Target size={34}/><b>Risolvi Quiz</b><span>10 domande, correzione finale e spiegazioni.</span><strong>Inizia ora <ArrowRight size={15}/></strong></button>
     <button type="button" className="dashboard-action violet" onClick={()=>go('review')}><Layers size={34}/><b>Flashcard</b><span>Ripassa e consolida gli argomenti in modo efficace.</span><strong>Ripassa ora <ArrowRight size={15}/></strong></button>
-    <button type="button" className="dashboard-action blue" onClick={()=>go('progress')}><BarChart3 size={34}/><b>Progressi</b><span>Monitora i risultati e migliora ogni giorno.</span><strong>Vedi progressi <ArrowRight size={15}/></strong></button>
+    <button type="button" className="dashboard-action blue" onClick={()=>go('semestre')}><GraduationCap size={34}/><b>Semestre Filtro</b><span>Allenati con simulazioni e materie del semestre filtro.</span><strong>Inizia ora <ArrowRight size={15}/></strong></button>
 
    </div>
   </section>
