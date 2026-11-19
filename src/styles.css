@@ -4494,3 +4494,65 @@ html, body, #root, .shell, .shell .main, .shell .main > .content {
   overscroll-behavior-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
 }
+
+
+/* FIX DEFINITIVO: un solo scroll verticale nativo sull'intero documento.
+   La rotellina deve funzionare anche con il puntatore sopra il contenuto centrale;
+   su mobile lo scorrimento resta affidato al gesto naturale del dito. */
+html {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-x: clip !important;
+  overflow-y: scroll !important;
+  overscroll-behavior-y: auto !important;
+  scrollbar-width: none !important;
+}
+body {
+  position: static !important;
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow-x: clip !important;
+  overflow-y: visible !important;
+  overscroll-behavior-y: auto !important;
+}
+#root {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow: visible !important;
+}
+.shell,
+.shell.quiz-active,
+.shell.function-fullscreen,
+.shell:not(.quiz-active) {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow: visible !important;
+}
+.shell .main,
+.shell.quiz-active .main,
+.shell.function-fullscreen .main {
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow: visible !important;
+  overscroll-behavior: auto !important;
+  -webkit-overflow-scrolling: auto !important;
+}
+.shell .main > .content,
+.shell.quiz-active .main > .content,
+.shell.function-fullscreen .main > .content {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+  flex: 0 0 auto !important;
+}
+@media (max-width: 800px) {
+  body { overflow-y: visible !important; }
+  .shell, .shell .main, .shell .main > .content {
+    height: auto !important;
+    min-height: 0 !important;
+    overflow: visible !important;
+  }
+  .shell .main > .content {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  }
+}
