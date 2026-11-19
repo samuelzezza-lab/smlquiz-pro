@@ -4097,3 +4097,64 @@ html,body,.shell{scroll-behavior:auto!important}
     padding-bottom:calc(68px + env(safe-area-inset-bottom));
   }
 }
+
+
+/* Anche i telefoni in orizzontale mantengono la navigazione mobile. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .main { width:100%; min-width:0; margin-left:0!important; }
+  .sidebar {
+    position:fixed;
+    inset:0 auto 0 0;
+    z-index:52;
+    width:min(290px,45vw);
+    height:100dvh;
+    max-height:100dvh;
+    overflow-y:auto;
+    transform:translateX(-100%);
+  }
+  .sidebar.open,
+  .mobile-page-active .sidebar.open,
+  .shell.function-fullscreen .sidebar.open { display:flex!important; transform:translateX(0); }
+  .mobile-page-active .sidebar { display:none!important; }
+  .scrim,
+  .mobile-page-active .scrim,
+  .shell.function-fullscreen .scrim {
+    display:block!important;
+    position:fixed;
+    inset:0;
+    z-index:48;
+    background:rgba(2,6,19,.78);
+    border:0;
+  }
+  .topbar .crumb>.hamb { display:none!important; }
+  .mobile-bottom-nav {
+    position:fixed;
+    inset:auto 0 0;
+    z-index:38;
+    display:grid!important;
+    grid-template-columns:repeat(5,minmax(0,1fr));
+    gap:2px;
+    min-height:calc(52px + env(safe-area-inset-bottom));
+    padding:3px max(6px,env(safe-area-inset-left)) calc(3px + env(safe-area-inset-bottom)) max(6px,env(safe-area-inset-right));
+    background:rgba(8,14,27,.97);
+    border-top:1px solid var(--line);
+  }
+  .mobile-bottom-nav button { min-height:42px; gap:2px; font-size:8px; }
+  .mobile-bottom-nav button svg { width:17px; height:17px; }
+  .main>.content { padding-bottom:calc(68px + env(safe-area-inset-bottom)); }
+  .mobile-page-active .main>.content,
+  .home-auth-fullscreen .main>.content,
+  .shell.function-fullscreen:not(.quiz-active) .main>.content {
+    padding-bottom:calc(68px + env(safe-area-inset-bottom));
+  }
+  .shell.quiz-active .mobile-bottom-nav { display:none!important; }
+  .cookie-banner {
+    position:fixed;
+    left:8px;
+    right:8px;
+    bottom:calc(58px + env(safe-area-inset-bottom));
+    z-index:45;
+    max-height:45svh;
+    overflow:auto;
+  }
+}
