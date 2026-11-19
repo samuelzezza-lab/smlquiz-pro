@@ -84,6 +84,8 @@ try {
       if (target.width < 44 || target.height < 40) failures.push(`${viewport.name}: pulsante ${index + 1} troppo piccolo (${target.width}x${target.height}px)`)
     })
 
+    await page.screenshot({ path: `artifacts/mobile-responsive/${viewport.name}-home.png`, fullPage: true })
+
     // Prova le quattro destinazioni principali tramite gli stessi pulsanti usati dagli utenti.
     for (let index = 0; index < 4; index++) {
       await page.locator('.mobile-bottom-nav button').nth(index).evaluate(element => element.click())
@@ -101,7 +103,7 @@ try {
     }
 
     if (pageErrors.length) failures.push(`${viewport.name}: errori JavaScript: ${pageErrors.join(' | ')}`)
-    await page.screenshot({ path: `artifacts/mobile-responsive/${viewport.name}.png`, fullPage: true })
+    await page.screenshot({ path: `artifacts/mobile-responsive/${viewport.name}-account.png`, fullPage: true })
     results.push({ viewport: viewport.name, dimensions: `${viewport.width}x${viewport.height}`, overflow: Math.max(0, horizontalOverflow), nav: initial.navVisible ? 'visibile' : 'non visibile', errors: pageErrors.length })
     await page.close()
   }
