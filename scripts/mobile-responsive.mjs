@@ -51,6 +51,9 @@ try {
     page.on('pageerror', error => pageErrors.push(error.message))
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 45000 })
     await page.locator('.mobile-bottom-nav button').first().waitFor({ state: 'visible', timeout: 20000 })
+    // I test partono dalla panoramica: apri Avvia quiz per verificare la vera home.
+    await page.locator('.mobile-bottom-nav button').first().click()
+    await page.waitForURL('**/quiz', { timeout: 10000 })
     await page.evaluate(() => document.fonts.ready)
 
     const initial = await page.evaluate(() => ({
