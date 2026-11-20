@@ -500,6 +500,7 @@ export default function StudyApp(){
   }catch(err){notify(err instanceof Error?err.message:'Classifica non disponibile.')}
   finally{setBusy(false)}
  }
+ useEffect(()=>{if(view==='leaderboard')void loadLeaderboard()},[view,user?.id])
  function saveQuestion(question:Question){
   if(savedQuestions.some(q=>q.id===question.id)){notify('Questa domanda è già salvata.');return}
   setSavedQuestions(v=>[question,...v]);notify('Domanda aggiunta ai materiali salvati.')
