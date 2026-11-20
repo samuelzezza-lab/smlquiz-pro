@@ -478,3 +478,6 @@
   .study-mode-title{font-size:10px}
   .sf-mini-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
 }
+
+/* The app has its own in-app navigation; prevent the legacy floating back control from covering touch navigation. */
+body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{display:none!important}
