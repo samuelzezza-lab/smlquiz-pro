@@ -1259,3 +1259,52 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
  .progress-highlight-icon{width:32px;height:32px;flex-basis:32px}
  .progress-highlight small{font-size:9px}
 }
+
+
+/* Layout professionale per Pacchetti e Profilo */
+.buy-page,.account-page{width:100%;max-width:1180px;margin:0 auto;padding:clamp(22px,3vw,38px) clamp(12px,2vw,24px) 44px}
+.buy-page>.inner-heading,.account-page>.inner-heading{margin-bottom:28px;align-items:center}
+.buy-page .inner-heading h1,.account-page .inner-heading h1{font-size:clamp(27px,3vw,36px);letter-spacing:-.035em}
+.buy-page .inner-heading p,.account-page .inner-heading p{max-width:620px}
+.buy-page .digital-consent{max-width:100%;margin:0 0 22px;padding:16px 19px;border-radius:12px}
+.buy-page .pricing-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;align-items:stretch}
+.buy-page .pricing-plan{min-width:0;min-height:300px;padding:23px;gap:15px;border-radius:16px;background:linear-gradient(155deg,#122b3a,#0d202e);box-shadow:0 12px 30px rgba(0,0,0,.12)}
+.buy-page .pricing-plan.featured{border-color:rgba(91,216,189,.42);background:linear-gradient(150deg,#174047,#102a38)}
+.buy-page .pricing-plan>div:first-child{flex:1}
+.buy-page .pricing-plan h3{font-size:19px;line-height:1.3;margin:10px 0}
+.buy-page .pricing-plan p{font-size:12px;line-height:1.65;margin:8px 0}
+.buy-page .pricing-plan strong{font-size:27px;margin-top:14px}
+.buy-page .pricing-plan strong small{display:inline;color:#9db5bb;font-size:12px;letter-spacing:0}
+.buy-page .pricing-plan input[type=search],.buy-page .pricing-plan select{min-height:43px;font-size:13px}
+.buy-page .purchase-results{max-height:150px;padding-right:3px}
+.buy-page .purchase-results>button,.buy-page .purchase-option{min-height:36px;font-size:12px}
+.buy-page .pricing-plan .confirm-button{min-height:44px;font-size:12px}
+.account-page{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-content:start}
+.account-page>.inner-heading{grid-column:1/-1}
+.account-page>.workspace-card,.account-page>.profile-form{min-width:0;margin:0;padding:24px;border-radius:16px;background:linear-gradient(155deg,#122b3a,#0d202e);border:1px solid rgba(142,182,192,.16);box-shadow:0 12px 30px rgba(0,0,0,.1)}
+.account-page>.profile-form{gap:16px}
+.account-page>.profile-form h2,.account-page>.workspace-card h2{font-size:18px;margin:0 0 8px}
+.account-page>.workspace-card p{font-size:12px;line-height:1.7}
+.account-page .account-metrics{gap:12px;margin:18px 0}
+.account-page .account-metrics>div{padding:16px;border-radius:12px;background:rgba(5,18,29,.55);border:1px solid rgba(142,182,192,.12)}
+.account-page .account-metrics small{font-size:11px;line-height:1.5}
+.account-page .account-metrics strong{font-size:26px}
+.account-page .profile-form>label:not(.inline-check){font-size:12px;gap:8px}
+.account-page .profile-form input:not([type=checkbox]),.account-page .profile-form select{min-height:44px;font-size:13px}
+.account-page>.delete-account-form{grid-column:1/-1;border-color:rgba(220,115,102,.28);background:linear-gradient(145deg,rgba(67,34,39,.35),#0d202e)}
+.account-page>.delete-account-form h2{color:#e4b0a8}
+.account-page>.delete-account-form .danger-button{justify-self:start}
+.account-page .referral-link input{min-height:42px;font-size:12px}
+@media(max-width:1000px){
+ .buy-page .pricing-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+ .buy-page,.account-page{padding:22px 12px calc(28px + env(safe-area-inset-bottom))}
+ .buy-page>.inner-heading,.account-page>.inner-heading{margin-bottom:18px}
+ .buy-page .pricing-grid{grid-template-columns:1fr;gap:12px}
+ .buy-page .pricing-plan{min-height:0;padding:19px}
+ .account-page{grid-template-columns:1fr;gap:12px}
+ .account-page>.inner-heading,.account-page>.delete-account-form{grid-column:1}
+ .account-page>.workspace-card,.account-page>.profile-form{padding:19px}
+ .account-page .account-metrics{gap:9px}
+}
