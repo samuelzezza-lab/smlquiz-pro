@@ -568,5 +568,10 @@
   "cardBuyDesc": "Controlla i quiz disponibili, acquista pacchetti e consulta i movimenti.",
   "openMode": "APRI MODALITÀ →",
   "openSimulations": "APRI SIMULAZIONI →",
-  "openArchive": "APRI ARCHIVIO →"
+  "openArchive": "APRI ARCHIVIO →",
+  "storageNoticeTitle": "Informativa sull’archiviazione tecnica",
+  "storageNoticeDescription": "SMLQUIZ utilizza archiviazione locale necessaria per sessione, preferenze e funzioni di studio. Questo avviso non raccoglie il consenso per pubblicità o strumenti non necessari.",
+  "storageNoticeDismiss": "Ho capito",
+  "storageNoticeSettings": "Le preferenze locali servono al funzionamento dell’app e non costituiscono un consenso pubblicitario.",
+  "cookiePolicyLink": "Cookie Policy"
 }
