@@ -253,7 +253,7 @@ export default function StudyApp(){
   setAuthBusy(true)
   try{
    if(authMode==='reset'){
-    const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/app/'})
+    const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/app/'+location.search})
     if(error)throw error
     notify('Ti abbiamo inviato un link per reimpostare la password.');setAuthOpen(false);return
    }
