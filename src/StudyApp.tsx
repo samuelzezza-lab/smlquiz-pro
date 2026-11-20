@@ -273,7 +273,7 @@ export default function StudyApp(){
    if(!active)return
    if(error||data?.error){notify(data?.error||'Non è stato possibile registrare l’invito.');return}
    if(data?.claimed)notify(data?.status==='rewarded'?'Invito registrato: il premio è stato assegnato.':'Invito registrato. Il premio sarà assegnato dopo il primo quiz completato.')
-   window.history.replaceState({},'', '/?app=1')
+   window.history.replaceState({},'', '/app/')
   }).catch(()=>{})
   return()=>{active=false}
  },[user?.id])
@@ -317,7 +317,7 @@ export default function StudyApp(){
   setAuthBusy(true)
   try{
    if(authMode==='reset'){
-    const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/?app=1'})
+    const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/app/'})
     if(error)throw error
     setNotice('Ti abbiamo inviato un link per reimpostare la password.');setAuthMode('login');return
    }
@@ -325,7 +325,7 @@ export default function StudyApp(){
      if(password.length<12||!/[a-z]/.test(password)||!/[A-Z]/.test(password)||!/[0-9]/.test(password)||! /[^A-Za-z0-9]/.test(password)){
      throw new Error('Usa almeno 12 caratteri con maiuscola, minuscola, numero e simbolo.')
     }
-    const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:location.origin+'/?app=1'}})
+    const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:location.origin+'/app/'}})
     if(error)throw error
     setPassword('')
     if(data.session&&data.user?.email_confirmed_at){setUser(data.session.user);setNotice('Registrazione completata. Benvenuto in SMLQUIZ Pro.')}
