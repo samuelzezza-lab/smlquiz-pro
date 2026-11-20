@@ -18,6 +18,8 @@ jobs:
         run: npm install
       - name: Build the new site
         run: npm run build
+      - name: Run production smoke tests
+        run: npm run test:smoke
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
         with:
