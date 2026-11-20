@@ -568,5 +568,10 @@
   "cardBuyDesc": "查看可用测验、购买套餐并查询交易记录。",
   "openMode": "打开模式 →",
   "openSimulations": "打开模拟考试 →",
-  "openArchive": "打开经验档案 →"
+  "openArchive": "打开经验档案 →",
+  "storageNoticeTitle": "技术存储说明",
+  "storageNoticeDescription": "SMLQUIZ 使用本地存储来支持会话、偏好设置和学习功能。本提示不用于征求广告或非必要工具的同意。",
+  "storageNoticeDismiss": "知道了",
+  "storageNoticeSettings": "本地偏好设置仅用于应用功能，不构成广告同意。",
+  "cookiePolicyLink": "Cookie 政策"
 }
