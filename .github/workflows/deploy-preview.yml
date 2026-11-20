@@ -67,5 +67,5 @@ jobs:
 
       - name: Report preview URL
         run: |
-          echo "Cloudflare Pages preview deployments are served from the adsense-rebuild branch."
+          echo "Cloudflare Pages preview deployments are served from the adsense-review branch."
           echo "Production branch and custom domains are not changed by this workflow."
