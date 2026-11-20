@@ -1,37 +1,5 @@
-import { useMemo, useState } from 'react'
 import StudyApp from './StudyApp'
-import {
-  ArrowRight, BookOpen, Brain, Check, ChevronDown, CircleHelp, Clock3,
-  GraduationCap, Layers3, LayoutDashboard, Menu, Search,
-  Sparkles, Target, X
-} from 'lucide-react'
-
-type Section = 'home' | 'quiz' | 'flashcards' | 'semester' | 'path'
-
-const faculties = [
-  'Medicina e Chirurgia', 'Odontoiatria e Protesi Dentaria', 'Medicina Veterinaria',
-  'Farmacia', 'Biotecnologie', 'Biologia', 'Chimica', 'Fisica', 'Matematica',
-  'Informatica', 'Ingegneria', 'Architettura', 'Economia', 'Giurisprudenza',
-  'Scienze Politiche', 'Psicologia', 'Scienze della Formazione', 'Lettere',
-  'Filosofia', 'Lingue e Letterature', 'Scienze della Comunicazione',
-  'Scienze Motorie', 'Agraria', 'Professioni Sanitarie', 'Scienze Naturali'
-]
-
-const subjectsByFaculty: Record<string, string[]> = {
-  'Medicina e Chirurgia': ['Anatomia I', 'Biologia', 'Chimica e Propedeutica Biochimica', 'Fisica medica', 'Istologia', 'Fisiologia'],
-  'Odontoiatria e Protesi Dentaria': ['Anatomia', 'Biologia', 'Chimica', 'Istologia', 'Fisiologia'],
-  'Medicina Veterinaria': ['Anatomia', 'Biologia', 'Chimica', 'Istologia', 'Fisiologia'],
-  'Ingegneria': ['Analisi matematica I', 'Geometria', 'Fisica I', 'Informatica', 'Chimica'],
-  'Economia': ['Microeconomia', 'Matematica generale', 'Economia aziendale', 'Statistica'],
-  'Giurisprudenza': ['Diritto privato', 'Diritto costituzionale', 'Filosofia del diritto', 'Diritto romano']
-}
-
-const sectionInfo: Record<Exclude<Section, 'home'>, { title: string; subtitle: string; icon: typeof Brain }> = {
-  quiz: { title: 'Quiz universitari', subtitle: 'Mettiti alla prova con domande mirate al tuo programma.', icon: Brain },
-  flashcards: { title: 'Flashcard', subtitle: 'Ripassa definizioni, concetti e collegamenti in modo attivo.', icon: Layers3 },
-  semester: { title: 'Semestre filtro', subtitle: 'Uno spazio dedicato alla preparazione e al ripasso degli argomenti.', icon: Target },
-  path: { title: 'Il mio percorso', subtitle: 'Organizza il tuo studio partendo da facoltà, anno e materia.', icon: GraduationCap }
-}
+import { ArrowRight, BookOpen, Brain, GraduationCap, Layers3, Target } from 'lucide-react'
 
 function PublicHome() {
  return <div className="public-site">

@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, ArrowRight, BarChart3, BookOpen, Brain, Calculator, Check, ChevronDown, Clock3, GraduationCap, Layers3, LogIn, LogOut, Menu, Search, Target, Trophy, UserRound, X } from 'lucide-react'
-import { supabase, supabaseReady } from './lib/supabase'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { ArrowRight, BarChart3, BookOpen, Brain, Calculator, Check, ChevronDown, Clock3, GraduationCap, Layers3, LogIn, LogOut, Search, Target, Trophy, UserRound, X } from 'lucide-react'
+import { supabase } from './lib/supabase'
 
 type Faculty = { id: string; nome: string; traduzioni?: Record<string,{nome?:string}> }
 type Subject = { id: string; nome: string; facolta_id: string; anno_corso: number|null; corso_di_laurea: string|null; traduzioni?: Record<string,{nome?:string}> }
@@ -28,7 +28,6 @@ export default function StudyApp(){
  const [subjectSearch,setSubjectSearch]=useState('')
  const [confirmed,setConfirmed]=useState(false)
  const [user,setUser]=useState<any>(null)
- const [authReady,setAuthReady]=useState(false)
  const [authOpen,setAuthOpen]=useState(false)
  const [authMode,setAuthMode]=useState<'login'|'reset'>('login')
  const [email,setEmail]=useState('')
@@ -39,7 +38,6 @@ export default function StudyApp(){
  const [wallet,setWallet]=useState<any>(null)
  const [history,setHistory]=useState<HistoryItem[]>([])
  const [streak,setStreak]=useState<any>({current_streak:0,longest_streak:0})
- const [quizSetId,setQuizSetId]=useState('')
  const [attemptId,setAttemptId]=useState('')
  const [questions,setQuestions]=useState<Question[]>([])
  const [questionIndex,setQuestionIndex]=useState(0)
@@ -88,8 +86,8 @@ export default function StudyApp(){
  useEffect(()=>{
   if(!supabase){setAuthReady(true);return}
   let active=true
-  supabase.auth.getSession().then(({data})=>{if(active){setUser(data.session?.user??null);setAuthReady(true)}}).catch(()=>{if(active)setAuthReady(true)})
-  const {data}=supabase.auth.onAuthStateChange((_event,session)=>{setUser(session?.user??null);setAuthReady(true)})
+  supabase.auth.getSession().then(({data})=>{if(active){setUser(data.session?.user??null)}}).catch(()=>{if(active)setAuthReady(true)})
+  const {data}=supabase.auth.onAuthStateChange((_event,session)=>{setUser(session?.user??null)})
   return()=>{active=false;data.subscription.unsubscribe()}
  },[])
 
@@ -133,7 +131,7 @@ export default function StudyApp(){
  }
  function notify(message:string){setNotice(message);window.setTimeout(()=>setNotice(v=>v===message?'':v),4500)}
  function go(next:View){setView(next);setNotice('');if(next==='home')setAuthOpen(false)}
- async function authenticate(e:React.FormEvent){
+ async function authenticate(e:FormEvent){
   e.preventDefault();if(!supabase||authBusy)return
   setAuthBusy(true)
   try{
@@ -181,7 +179,7 @@ export default function StudyApp(){
    const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'start',materiaId:selectedSubject.id,quizSetId:next.id,idempotencyKey:crypto.randomUUID(),language:'it'}})
    if(error)throw error;if(data?.error)throw new Error(data.error)
    if(!Array.isArray(data?.questions)||data.questions.length!==10)throw new Error('La simulazione non contiene esattamente 10 domande valide.')
-   setQuizSetId(next.id);setAttemptId(data.attemptId);setQuestions(data.questions);setQuestionIndex(0);setSelectedOption(null);setAnswered({});setSeconds(450);setReview([]);setResult(null);go('quiz')
+   setAttemptId(data.attemptId);setQuestions(data.questions);setQuestionIndex(0);setSelectedOption(null);setAnswered({});setSeconds(450);setReview([]);setResult(null);go('quiz')
   }catch(err){notify(err instanceof Error?err.message:'Non è stato possibile avviare il quiz.')}
   finally{setBusy(false)}
  }
