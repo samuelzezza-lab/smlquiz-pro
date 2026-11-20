@@ -6,7 +6,7 @@ import { ArrowRight, BookOpen, Brain, GraduationCap, Layers3 } from 'lucide-reac
 function platformUrl() {
  const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
  params.set('app', '1')
- return '/?' + params.toString()
+ return '/app/?' + params.toString()
 }
 
 function PublicHome() {
