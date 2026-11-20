@@ -1098,8 +1098,8 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
 .app-shell.is-fullscreen-view .content{
   width:100%;
   max-width:none !important;
-  min-height:calc(100vh - 76px);
-  min-height:calc(100dvh - 76px);
+  min-height:0;
+  flex:1 1 auto;
   margin:0;
   padding:clamp(16px,2.2vw,34px);
 }
@@ -1150,9 +1150,9 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
 }
 @media(max-width:760px){
   .app-shell.is-fullscreen-view .content{
-    min-height:calc(100vh - 64px);
-    min-height:calc(100dvh - 64px);
-    padding:14px 14px calc(104px + env(safe-area-inset-bottom));
+    min-height:0;
+    flex:1 1 auto;
+    padding:14px 14px calc(24px + env(safe-area-inset-bottom));
   }
   .app-shell.is-fullscreen-view .sf-page.content{
     padding:0 14px calc(104px + env(safe-area-inset-bottom)) !important;
