@@ -19,6 +19,13 @@ const redirectResponse = await onRequest({
 assert.equal(redirectResponse.status, 301)
 assert.equal(redirectResponse.headers.get('location'), 'https://smlquiz.it/guide/anatomia/?source=test')
 
+const legacyAppResponse = await onRequest({
+  request: new Request('https://smlquiz.it/app/?source=legacy'),
+  next: async () => new Response('next was unexpectedly called'),
+})
+assert.equal(legacyAppResponse.status, 302)
+assert.equal(legacyAppResponse.headers.get('location'), 'https://smlquiz.it/?source=legacy&app=1')
+
 let nextCalled = false
 const apexResponse = await onRequest({
   request: new Request('https://smlquiz.it/'),
