@@ -7,7 +7,7 @@ function platformUrl(mode?: 'quiz'|'flashcards'|'semester') {
  const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')
  params.set('app', '1')
  if (mode) params.set('mode', mode)
- return '/app/?' + params.toString()
+ return '/?' + params.toString()
 }
 
 function PublicHome() {
