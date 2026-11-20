@@ -278,6 +278,24 @@ export default function StudyApp(){
   try{const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'subject-leaderboard',materiaId:subjectId}});if(error)throw error;if(data?.error)throw new Error(data.error);setLeaderboard(data?.leaderboard||[])}
   catch(err){notify(err instanceof Error?err.message:'Classifica non disponibile.')}finally{setBusy(false)}
  }
+ function saveQuestion(question:Question){
+  if(savedQuestions.some(q=>q.id===question.id)){notify('Questa domanda è già salvata.');return}
+  setSavedQuestions(v=>[question,...v]);notify('Domanda aggiunta ai materiali salvati.')
+ }
+ function removeSavedQuestion(id:string){setSavedQuestions(v=>v.filter(q=>q.id!==id))}
+ function createCollection(e:FormEvent){
+  e.preventDefault();const name=collectionName.trim();if(!name)return
+  setStudyCollections(v=>[{id:crypto.randomUUID(),name,questionIds:[],createdAt:new Date().toISOString()},...v]);setCollectionName('')
+ }
+ function addQuestionToCollection(collectionId:string,questionId:string){
+  setStudyCollections(v=>v.map(c=>c.id===collectionId?{...c,questionIds:Array.from(new Set([...c.questionIds,questionId]))}:c))
+  notify('Domanda aggiunta alla raccolta.')
+ }
+ function createStudyExam(e:FormEvent){
+  e.preventDefault();if(!examName.trim()||!examDate)return
+  setStudyExams(v=>[...v,{id:crypto.randomUUID(),name:examName.trim(),date:examDate,note:examNote.trim()}].sort((a,b)=>a.date.localeCompare(b.date)))
+  setExamName('');setExamDate('');setExamNote('')
+ }
  function addGrade(e:React.FormEvent){
   e.preventDefault();const g=Number(grade),c=Number(cfu)
   if(!Number.isFinite(g)||g<18||g>30||!Number.isFinite(c)||c<=0){notify('Inserisci un voto tra 18 e 30 e CFU maggiori di zero.');return}
