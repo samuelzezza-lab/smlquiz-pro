@@ -95,6 +95,11 @@ export default function StudyApp(){
  const percent=questions.length?Math.round((questionIndex+(selectedOption!==null?1:0))/questions.length*100):0
 
  useEffect(()=>{
+  window.scrollTo(0,0)
+  document.querySelector('.app-shell .content')?.scrollTo(0,0)
+ },[view])
+
+ useEffect(()=>{
   document.title='Area studio — SMLQUIZ Pro'
   let robots=document.querySelector('meta[name="robots"]')
   if(!robots){robots=document.createElement('meta');robots.setAttribute('name','robots');document.head.appendChild(robots)}
@@ -256,7 +261,7 @@ export default function StudyApp(){
   if(first){setSubjectId(first.id);}
  }
  function notify(message:string){setNotice(message);window.setTimeout(()=>setNotice(v=>v===message?'':v),4500)}
- function go(next:View){setView(next);setMobileMenu(false);setNotice('')}
+ function go(next:View){setView(next);setMobileMenu(false);setNotice('');window.scrollTo(0,0);document.querySelector('.app-shell .content')?.scrollTo(0,0)}
  async function authenticate(e:FormEvent){
   e.preventDefault();if(!supabase||authBusy)return
   setAuthBusy(true)
