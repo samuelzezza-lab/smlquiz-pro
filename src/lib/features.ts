@@ -78,24 +78,24 @@ export async function callFeaturesApi<T>(
 export const featureApi = {
   getProfile: () => callFeaturesApi<{ profile: FeatureProfile }>('profile.get'),
   updateProfile: (profile: Partial<Pick<FeatureProfile, 'full_name' | 'city' | 'study_area' | 'course_year' | 'university'>>) =>
-    callFeaturesApi<{ profile: FeatureProfile }>('profile.update', profile as Record<string, unknown>),
+    callFeaturesApi<{ profile: FeatureProfile }>('profile.update', profile as unknown as Record<string, unknown>),
 
   listPosts: (limit = 20) => callFeaturesApi<{ posts: CommunityPost[] }>('posts.list', { limit }),
   createPost: (post: Pick<CommunityPost, 'category' | 'title' | 'description' | 'city'>) =>
-    callFeaturesApi<{ post: CommunityPost }>('posts.create', post as Record<string, unknown>),
+    callFeaturesApi<{ post: CommunityPost }>('posts.create', post as unknown as Record<string, unknown>),
   updatePost: (id: string, patch: Partial<Pick<CommunityPost, 'category' | 'title' | 'description' | 'city'>>) =>
     callFeaturesApi<{ post: CommunityPost }>('posts.update', { id, ...patch }),
   deletePost: (id: string) => callFeaturesApi<{ deleted: true }>('posts.delete', { id }),
 
   listExams: () => callFeaturesApi<{ exams: ExamMatch[] }>('exams.list'),
   createExam: (exam: Pick<ExamMatch, 'course_name' | 'exam_date'> & { status?: string }) =>
-    callFeaturesApi<{ exam: ExamMatch }>('exams.create', exam as Record<string, unknown>),
+    callFeaturesApi<{ exam: ExamMatch }>('exams.create', exam as unknown as Record<string, unknown>),
   updateExam: (id: string, patch: Partial<Pick<ExamMatch, 'course_name' | 'exam_date' | 'status'>>) =>
     callFeaturesApi<{ exam: ExamMatch }>('exams.update', { id, ...patch }),
   deleteExam: (id: string) => callFeaturesApi<{ deleted: true }>('exams.delete', { id }),
 
   listExpenses: () => callFeaturesApi<{ expenses: HouseExpense[] }>('expenses.list'),
   createExpense: (expense: Pick<HouseExpense, 'group_name' | 'amount' | 'description'>) =>
-    callFeaturesApi<{ expense: HouseExpense }>('expenses.create', expense as Record<string, unknown>),
+    callFeaturesApi<{ expense: HouseExpense }>('expenses.create', expense as unknown as Record<string, unknown>),
   deleteExpense: (id: string) => callFeaturesApi<{ deleted: true }>('expenses.delete', { id }),
 }
