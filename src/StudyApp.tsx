@@ -220,9 +220,10 @@ export default function StudyApp(){
   if(!client||!user){setStudyDataReady(false);setSavedQuestions([]);setStudyCollections([]);setStudyExams([]);setLegacyStudyExamsBackup([]);setDailyGoal(20);return}
   let active=true
   setStudyDataReady(false)
+  setSavedQuestions([]);setStudyCollections([]);setStudyExams([]);setLegacyStudyExamsBackup([]);setDailyGoal(20)
   client.from('user_study_data').select('data').eq('user_id',user.id).maybeSingle().then(async({data,error})=>{
    if(!active)return
-   if(error){notify('Sincronizzazione dei materiali personali non disponibile.');setStudyDataReady(true);return}
+   if(error){notify('Sincronizzazione dei materiali personali non disponibile.');return}
    const cloud=data?.data||{}
    const legacyExams=Array.isArray(cloud.studyExams)?cloud.studyExams as StudyExam[]:[]
    setSavedQuestions(Array.isArray(cloud.savedQuestions)?cloud.savedQuestions:[])
@@ -237,7 +238,7 @@ export default function StudyApp(){
     if(active){setStudyExams(legacyExams);notify('Il calendario esami non è raggiungibile in questo momento. I dati già presenti restano conservati.')}
    }
    if(active)setStudyDataReady(true)
-  },()=>{if(active){notify('Errore durante il caricamento dei materiali personali.');setStudyDataReady(true)}})
+  },()=>{if(active)notify('Errore durante il caricamento dei materiali personali.')})
   return()=>{active=false}
  },[user?.id])
 
@@ -477,11 +478,12 @@ export default function StudyApp(){
   if(deleteConfirm!=='ELIMINA'){notify('Scrivi ELIMINA per confermare.');return}
   setDeleteBusy(true)
   try{
+   await featureApi.deleteAccountData()
    const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'delete-account',password:deletePassword,confirmation:'ELIMINA'}})
    if(error)throw error;if(data?.error)throw new Error(data.error)
    await supabase.auth.signOut()
    Object.keys(localStorage).filter(k=>k.startsWith('smlquiz.')).forEach(k=>localStorage.removeItem(k))
-   setUser(null);setWallet(null);setHistory([]);setSavedQuestions([]);setStudyCollections([]);setStudyExams([])
+   setUser(null);setWallet(null);setHistory([]);setSavedQuestions([]);setStudyCollections([]);setStudyExams([]);setLegacyStudyExamsBackup([]);setStudyDataReady(false)
    setDeletePassword('');setDeleteConfirm('');go('home');notify('Account eliminato.')
   }catch(err){notify(err instanceof Error?err.message:'Non è stato possibile eliminare l’account.')}
   finally{setDeleteBusy(false)}
