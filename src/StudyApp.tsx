@@ -297,28 +297,17 @@ export default function StudyApp(){
   finally{setBusy(false)}
  }
  async function buyPackage(priceId:string,subjectIds:string[]=[],consentConfirmed=false){
-  if(!consentConfirmed){notify('Per continuare, conferma il consenso richiesto per il contenuto digitale.');return}
+  const recurring=priceId===pricing.site
+  if(!recurring&&!consentConfirmed){notify('Per continuare, conferma il consenso richiesto per il contenuto digitale.');return}
   if(!supabase||!user){setAuthOpen(true);return}
   try{
-   const {data,error}=await supabase.functions.invoke('stripe-checkout',{body:{priceId,subjectIds,digitalContentConsent:true,digitalContentConsentAt:new Date().toISOString()},headers:{'Idempotency-Key':crypto.randomUUID()}})
+   const body={priceId,subjectIds,...(!recurring?{digitalContentConsent:true,digitalContentConsentAt:new Date().toISOString()}:{})}
+   const {data,error}=await supabase.functions.invoke('stripe-checkout',{body,headers:{'Idempotency-Key':crypto.randomUUID()}})
    if(error)throw error
    if(data?.error)throw new Error(data.error)
    if(typeof data?.url!=='string'||!data.url.startsWith('https://checkout.stripe.com/'))throw new Error('Checkout non disponibile al momento.')
    window.location.assign(data.url)
   }catch(err){notify(err instanceof Error?err.message:'Non è stato possibile avviare il pagamento.')}
- }
- async function saveProfile(e:FormEvent){
-  e.preventDefault();if(!supabase||!user)return
-  setProfileBusy(true)
-  try{
-   const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'profile',mode:'update',displayName,language:'it',leaderboardOptIn,universityId:universityId||null,universityCourse}})
-   if(error)throw error;if(data?.error)throw new Error(data.error)
-   notify('Profilo aggiornato.')
-  }catch(err){notify(err instanceof Error?err.message:'Impossibile salvare il profilo.')}
-  finally{setProfileBusy(false)}
- }
- function toggleSessionSubject(id:string){
-  setSessionIds(v=>v.includes(id)?v.filter(x=>x!==id):v.length<5?[...v,id]:v)
  }
  async function loadLeaderboard(){
   if(!supabase||!subjectId)return
