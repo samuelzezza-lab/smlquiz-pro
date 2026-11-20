@@ -121,8 +121,14 @@ export default function StudyApp(){
    const fs=(f.data||[]) as Faculty[],ss=(s.data||[]) as Subject[]
    setFaculties(fs);setSubjects(ss);setCatalogLoading(false)
    try{localStorage.setItem('smlquiz.catalog.v1',JSON.stringify({faculties:fs,subjects:ss,savedAt:Date.now()}))}catch{}
-   const med=fs.find(x=>x.nome==='Medicina e Chirurgia')||fs[0]
-   if(med){setFacultyId(med.id);const first=ss.find(x=>x.facolta_id===med.id&&x.anno_corso===1);if(first){setSubjectId(first.id);setSubjectSearch(first.nome)}}
+   const params=new URLSearchParams(window.location.search)
+   const requestedFaculty=params.get('faculty')
+   const requestedSubject=params.get('subject')
+   const requestedYear=params.get('year')
+   const linkedSubject=ss.find(x=>x.id===requestedSubject)
+   const linkedFaculty=fs.find(x=>x.id===(linkedSubject?.facolta_id||requestedFaculty))
+   if(linkedFaculty){setFacultyId(linkedFaculty.id);setYear(linkedSubject?.anno_corso?String(linkedSubject.anno_corso):(requestedYear||'1'));if(linkedSubject){setSubjectId(linkedSubject.id);setSubjectSearch(linkedSubject.nome);setConfirmed(true)}}
+   else {const med=fs.find(x=>x.nome==='Medicina e Chirurgia')||fs[0];if(med){setFacultyId(med.id);const first=ss.find(x=>x.facolta_id===med.id&&x.anno_corso===1);if(first){setSubjectId(first.id);setSubjectSearch(first.nome)}}}
   }).catch(()=>{if(active){setCatalogLoading(false);setNotice('Errore di connessione durante il caricamento del catalogo.')}})
   return()=>{active=false}
  },[])
