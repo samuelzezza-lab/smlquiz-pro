@@ -951,47 +951,53 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
 }
 
 
-/* Navigation consistency: every study-mode Back control stays at the bottom of the viewport. */
-.app-shell.is-study-mode .study-home-button,
+/* Navigazione: tutti i comandi Indietro restano in alto a sinistra. */
+.app-shell.is-study-mode .study-mode-header{
+  grid-template-columns:auto minmax(0,1fr);
+  justify-content:start;
+}
+.app-shell.is-study-mode .study-home-button{
+  grid-column:1;
+  grid-row:1;
+  justify-self:start;
+  position:static !important;
+  transform:none !important;
+  min-height:40px;
+  padding:8px 12px;
+  border:1px solid rgba(142,182,192,.2);
+  border-radius:9px;
+  background:#102735;
+  box-shadow:none;
+  color:#cfe1e2;
+}
+.app-shell.is-study-mode .study-mode-title{
+  grid-column:2;
+  grid-row:1;
+  justify-self:start;
+  min-width:0;
+}
 .app-shell:not(.is-study-mode) .screen-back-button,
 .app-shell.is-study-mode .fc-back-link,
 .app-shell.is-study-mode .sf-mode-back{
-  position:fixed !important;
-  left:50% !important;
+  position:static !important;
+  left:auto !important;
   right:auto !important;
   top:auto !important;
-  bottom:max(18px,env(safe-area-inset-bottom)) !important;
-  z-index:1200 !important;
-  transform:translateX(-50%) !important;
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  min-height:46px !important;
-  padding:0 20px !important;
-  border:1px solid rgba(91,216,189,.42) !important;
-  border-radius:999px !important;
-  background:rgba(10,29,43,.96) !important;
-  box-shadow:0 10px 34px rgba(0,0,0,.38) !important;
-  color:#75dfc8 !important;
-  white-space:nowrap !important;
+  bottom:auto !important;
+  transform:none !important;
+  justify-self:start;
+  margin:0;
 }
 .app-shell.is-study-mode .fc-study-header{padding-bottom:8px}
-.app-shell.is-study-mode .content{padding-bottom:100px !important}
+.app-shell.is-study-mode .content{padding-bottom:clamp(14px,3vw,34px) !important}
 .app-shell.is-study-mode .fc-back-link{grid-column:1;grid-row:1}
 .app-shell.is-study-mode .sf-mode-toolbar{min-height:0}
 @media(max-width:760px){
-  .app-shell.is-study-mode .study-home-button,
-  .app-shell:not(.is-study-mode) .screen-back-button,
-  .app-shell.is-study-mode .fc-back-link,
-  .app-shell.is-study-mode .sf-mode-back{
-    bottom:max(14px,env(safe-area-inset-bottom)) !important;
-    min-height:48px !important;
-    padding:0 22px !important;
-  }
-  .app-shell.is-study-mode .content{padding-bottom:110px !important}
+  .app-shell.is-study-mode .study-mode-header{grid-template-columns:auto minmax(0,1fr);gap:8px}
+  .app-shell.is-study-mode .study-home-button{min-height:40px;padding:8px 9px;font-size:11px}
+  .app-shell.is-study-mode .content{padding-bottom:24px !important}
 }
-
-
+ 
 /* Percorso: scelta essenziale, senza elenco materie */
 .path-selection-simple{grid-template-columns:minmax(0,1.05fr) minmax(0,.65fr) minmax(0,1.2fr) auto!important;align-items:end}
 .path-selection-simple .confirm-button{grid-column:auto!important;min-width:170px}
