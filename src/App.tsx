@@ -1,5 +1,5 @@
 import StudyApp from './StudyApp'
-import { ArrowRight, BookOpen, Brain, GraduationCap, Layers3, Target } from 'lucide-react'
+import { ArrowRight, BookOpen, Brain, GraduationCap, Layers3 } from 'lucide-react'
 
 function PublicHome() {
  return <div className="public-site">
