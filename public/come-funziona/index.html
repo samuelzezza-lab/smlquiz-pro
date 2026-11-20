@@ -60,9 +60,12 @@ nav{display:flex;gap:19px;flex-wrap:wrap}nav a{font-size:12px;text-decoration:no
 #sml-global-back svg{width:16px;height:16px;stroke:#69ddc4;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:680px){#sml-global-back{min-height:38px;padding:0 10px;margin:0 10px 0 0!important;font-size:11px}}
 </style>
+<style>/* Public information pages: keep the back control in the top navigation. */
+#sml-global-back{position:static!important;inset:auto!important;display:inline-flex;align-items:center;gap:8px;flex:0 0 auto;margin:0 16px 0 0!important;min-height:40px;padding:0 13px;border:1px solid rgba(102,220,195,.42);border-radius:10px;background:rgba(9,28,42,.96);color:#e7f5f3;box-shadow:none;font:650 12px system-ui,-apple-system,'Segoe UI',sans-serif;cursor:pointer;white-space:nowrap}
+#sml-global-back:hover{background:#153746;border-color:#69ddc4}
+#sml-global-back svg{width:16px;height:16px;stroke:#69ddc4;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:680px){#sml-global-back{min-height:38px;padding:0 10px;margin:0 10px 0 0!important;font-size:11px}}</style>
 <button id="sml-global-back" type="button" aria-label="Torna alla pagina precedente"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6M9 12h12"/></svg><span>Indietro</span></button>
 
-<script>
-(()=>{const b=document.getElementById('sml-global-back');if(!b||b.dataset.ready)return;b.dataset.ready='1';const host=document.querySelector('.topin, .top .wrap, header .wrap, header');if(host)host.insertBefore(b,host.firstChild);b.addEventListener('click',()=>{if(window.history.length>1){window.history.back();return;}window.location.assign('/');});})();
-</script>
+<script>(()=>{const b=document.getElementById('sml-global-back');if(!b||b.dataset.ready)return;b.dataset.ready='1';const host=document.querySelector('.topin, .top .wrap, header .wrap, header');if(host)host.insertBefore(b,host.firstChild);b.addEventListener('click',()=>{if(window.history.length>1){window.history.back();return;}window.location.assign('/');});})();</script>
 </body></html>
