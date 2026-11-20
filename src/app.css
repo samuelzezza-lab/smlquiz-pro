@@ -599,3 +599,9 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+
+@media(max-width:900px){
+  .app-shell:not(.is-study-mode) .toast-notice{bottom:calc(82px + env(safe-area-inset-bottom))}
+}
+/* mobile-toast-clears-bottom-nav */
