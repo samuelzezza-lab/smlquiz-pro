@@ -300,14 +300,14 @@ export default function StudyApp(){
  function openStudyMode(mode:'quiz'|'flashcards'|'semester'){
   if((mode==='quiz'||mode==='flashcards')&&(!confirmed||!selectedSubject)){notify('Conferma prima il percorso di studio.');return}
   let acknowledged=false
-  try{acknowledged=localStorage.getItem('smlquiz.study-free-info.v1')==='1'}catch{}
+  try{acknowledged=localStorage.getItem(`smlquiz.study-free-info.v2.${mode}`)==='1'}catch{}
   if(!acknowledged){setPendingStudyMode(mode);setShowFreeInfo(true);setMobileMenu(false);return}
   if(mode==='quiz')void startQuiz()
   else go(mode)
  }
  function acknowledgeFreeInfo(){
-  try{localStorage.setItem('smlquiz.study-free-info.v1','1')}catch{}
   const mode=pendingStudyMode
+  if(mode){try{localStorage.setItem(`smlquiz.study-free-info.v2.${mode}`,'1')}catch{}}
   setShowFreeInfo(false);setPendingStudyMode(null)
   if(mode==='quiz')void startQuiz()
   else if(mode)go(mode)
@@ -553,16 +553,18 @@ export default function StudyApp(){
   </nav>}
   {showFreeInfo&&<div className="study-free-modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setShowFreeInfo(false);setPendingStudyMode(null)}}}>
    <section className="study-free-modal" role="dialog" aria-modal="true" aria-labelledby="study-free-title">
-    <div className="study-free-modal-top"><span className="study-free-mark"><GraduationCap size={19}/></span><span className="study-free-kicker">BENVENUTO IN SMLQUIZ PRO</span><button type="button" className="study-free-close" aria-label="Chiudi" onClick={()=>{setShowFreeInfo(false);setPendingStudyMode(null)}}><X size={18}/></button></div>
-    <h2 id="study-free-title">Inizia gratis. Scegli come continuare.</h2>
-    <p className="study-free-intro">Prima di iniziare, ecco cosa puoi utilizzare gratuitamente e quali opzioni hai per ampliare l'accesso.</p>
-    <div className="study-free-grid">
-     <article><span className="study-free-icon"><Brain size={18}/></span><div><b>Quiz universitari</b><strong>5 quiz gratuiti per materia</strong><small>Per allenarti con domande e correzione finale.</small></div></article>
-     <article><span className="study-free-icon"><Layers3 size={18}/></span><div><b>Flashcard</b><strong>Prime 50 carte gratuite per materia</strong><small>Il pass completo per una materia costa 1,99 €.</small></div></article>
-     <article><span className="study-free-icon"><Target size={18}/></span><div><b>Semestre Filtro</b><strong>5 simulazioni gratuite totali</strong><small>Accesso illimitato: 1,99 € per materia oppure 3,99 € per tutte e tre.</small></div></article>
+    <div className="study-free-modal-top"><span className="study-free-mark">{pendingStudyMode==='quiz'?<Brain size={19}/>:pendingStudyMode==='flashcards'?<Layers3 size={19}/>:<Target size={19}/>}</span><span className="study-free-kicker">{pendingStudyMode==='quiz'?'QUIZ UNIVERSITARI':pendingStudyMode==='flashcards'?'FLASHCARD':'SEMESTRE FILTRO'}</span><button type="button" className="study-free-close" aria-label="Chiudi" onClick={()=>{setShowFreeInfo(false);setPendingStudyMode(null)}}><X size={18}/></button></div>
+    <h2 id="study-free-title">{pendingStudyMode==='quiz'?'Preparati agli esami, un quiz alla volta.':pendingStudyMode==='flashcards'?'Ripassa e consolida ciò che hai studiato.':'Allenati con simulazioni dedicate al Semestre Filtro.'}</h2>
+    <p className="study-free-intro">{pendingStudyMode==='quiz'?'Ecco cosa include la modalità Quiz e quali possibilità hai per aumentare il tuo accesso.':pendingStudyMode==='flashcards'?'Ecco come puoi usare le Flashcard gratuitamente e come sbloccare il ripasso completo.':'Ecco cosa puoi fare con le simulazioni del Semestre Filtro, senza confondere questa modalità con gli altri strumenti.'}</p>
+    <div className="study-free-grid study-free-grid-single">
+     {pendingStudyMode==='quiz'&&<article><span className="study-free-icon"><Brain size={18}/></span><div><b>Quiz universitari</b><strong>5 quiz gratuiti per ogni materia</strong><small>Domande a risposta multipla, risultato e correzione al termine della prova.</small></div></article>}
+     {pendingStudyMode==='flashcards'&&<article><span className="study-free-icon"><Layers3 size={18}/></span><div><b>Flashcard</b><strong>Le prime 50 carte gratuite per materia</strong><small>Ripassa con carte fronte/retro e valuta quanto è stato facile ricordare la risposta. Il pass completo per una materia costa 1,99 €.</small></div></article>}
+     {pendingStudyMode==='semester'&&<article><span className="study-free-icon"><Target size={18}/></span><div><b>Simulazioni Semestre Filtro</b><strong>5 simulazioni gratuite complessive</strong><small>Per continuare senza limiti: 1,99 € per ciascuna materia oppure 3,99 € per tutte e tre le materie.</small></div></article>}
     </div>
-    <div className="study-free-extra"><b>Vuoi più strumenti?</b><span>Quiz: pass materia 1,99 €, 100 crediti Jolly 3,49 €, 5 materie per 180 giorni 4,99 €. Tutto il Sito: 9,99 €/mese.</span></div>
-    <p className="study-free-footnote">Le opzioni gratuite richiedono un account. Gli acquisti sono facoltativi e non vengono attivati automaticamente.</p>
+    {pendingStudyMode==='quiz'&&<div className="study-free-extra"><b>Altre opzioni per i Quiz</b><span>Pass per una materia: 1,99 €. 100 crediti Jolly: 3,49 €. Pacchetto 5 materie per 180 giorni: 4,99 €. Tutto il Sito: 9,99 €/mese.</span></div>}
+    {pendingStudyMode==='flashcards'&&<div className="study-free-extra"><b>Accesso completo</b><span>Pass Flashcard per una materia: 1,99 €. Puoi anche scegliere Tutto il Sito a 9,99 €/mese.</span></div>}
+    {pendingStudyMode==='semester'&&<div className="study-free-extra"><b>Accesso completo alle simulazioni</b><span>Scegli una singola materia a 1,99 € oppure tutte e tre a 3,99 €.</span></div>}
+    <p className="study-free-footnote">L'accesso gratuito richiede un account. Gli acquisti sono facoltativi e non vengono attivati automaticamente.</p>
     <button type="button" className="study-free-confirm" onClick={acknowledgeFreeInfo}>Ho capito, continua <ArrowRight size={17}/></button>
    </section>
   </div>}
