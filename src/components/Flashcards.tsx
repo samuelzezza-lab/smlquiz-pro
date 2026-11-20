@@ -111,10 +111,13 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       setDueDates(mergedDue)
       setTotal(cardTotal)
       setUnlocked(hasUnlock)
-      const remainingCards = loaded.filter(card => !(card.user_rating)).length
-      const previewFinished = !hasUnlock && cardTotal > FREE_LIMIT && remainingCards === 0
-      setPaywall(data?.paywall === true && (loaded.length === 0 || previewFinished))
-      setDeckCompleted(loaded.length > 0 && remainingCards === 0 && !previewFinished)
+      const dueRemaining = loaded.filter(card => {
+        const rating = card.user_rating
+        const dueAt = card.user_due_at
+        return !rating || !dueAt || new Date(dueAt).getTime() <= Date.now()
+      }).length
+      setPaywall(false)
+      setDeckCompleted(loaded.length > 0 && dueRemaining === 0)
     } catch (err) {
       notifyRef.current(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
     } finally { setLoading(false) }
@@ -180,8 +183,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       return
     }
     if (displayedCards.length <= 1) {
-      if (!unlocked && total > FREE_LIMIT) setPaywall(true)
-      else setDeckCompleted(true)
+      setDeckCompleted(true)
     } else if (index >= displayedCards.length - 1) setIndex(0)
   }
 
