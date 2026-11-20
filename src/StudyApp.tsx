@@ -56,7 +56,7 @@ export default function StudyApp(){
  const [sessionIds,setSessionIds]=useState<string[]>([])
  const [semesterPurchaseSubject,setSemesterPurchaseSubject]=useState('biologia')
  const [history,setHistory]=useState<HistoryItem[]>([])
- const [weakTopics,setWeakTopics]=useState<any[]>([])
+ const [weakTopics,setWeakTopics]=useState<any[]>([])\n const [wrongQuestions,setWrongQuestions]=useState<Question[]>([])\n const [achievements,setAchievements]=useState<{achievement_key:string;unlocked_at:string}[]>([])
  const [savedQuestions,setSavedQuestions]=useState<Question[]>([])
  const [studyCollections,setStudyCollections]=useState<StudyCollection[]>([])
  const [studyExams,setStudyExams]=useState<StudyExam[]>([])
@@ -131,7 +131,7 @@ export default function StudyApp(){
    if(!active)return
    if(!w.error&&w.data)setWallet(w.data)
    if(!h.error&&Array.isArray(h.data?.attempts))setHistory(h.data.attempts)
-   if(!s.error&&s.data?.streak)setStreak(s.data.streak)
+   if(!s.error&&s.data?.streak){setStreak(s.data.streak);setAchievements(Array.isArray(s.data.achievements)?s.data.achievements:[])}
   }).catch(()=>{})
   return()=>{active=false}
  },[user?.id])
@@ -194,6 +194,15 @@ export default function StudyApp(){
   }).catch(()=>{})
   return()=>{active=false}
  },[user?.id])
+
+ useEffect(()=>{
+  if(view!=='progress'||!supabase||!user)return
+  let active=true
+  supabase.functions.invoke('quiz-api',{body:{action:'wrong-questions'}}).then(({data,error})=>{
+   if(active&&!error&&Array.isArray(data?.questions))setWrongQuestions(data.questions)
+  }).catch(()=>{})
+  return()=>{active=false}
+ },[view,user?.id])
 
  useEffect(()=>{
   if(view!=='quiz'||!attemptId)return
