@@ -103,7 +103,5 @@ footer{border-top:1px solid #ffffff14;background:#06101c;padding:38px 0 30px}.fo
 </main>
 <footer><div class="wrap"><div class="footer-main"><div class="footer-brand"><a class="brand" href="/"><span class="brand-mark">S.</span><span class="brand-word">SMLQUIZ<span>PRO</span></span></a><p>Strumenti digitali per esercitarsi, ripassare e organizzare lo studio universitario. I contenuti didattici sono di supporto e non sostituiscono i programmi ufficiali e le indicazioni dei docenti.</p></div>
 <div class="footer-links"><div class="footer-col"><b>PIATTAFORMA</b><a href="/quiz">Accedi</a><a href="#strumenti">Strumenti di studio</a><a href="#catalogo">Catalogo</a><a href="#approfondimenti">Centro Studio</a></div><div class="footer-col"><b>INFORMAZIONI</b><a href="/legal">Privacy e condizioni</a><a href="mailto:smlquiz@virgilio.it">Contatti e assistenza</a></div></div></div><div class="footer-bottom"><span>© 2026 SMLQUIZ Pro. Tutti i diritti riservati.</span><span>Un supporto allo studio, materia per materia.</span></div></div></footer>
-<script>
-const menuButton=document.querySelector('.menu-toggle');const nav=document.querySelector('.nav');menuButton?.addEventListener('click',()=>{const open=nav.classList.toggle('open');menuButton.setAttribute('aria-expanded',String(open));menuButton.textContent=open?'×':'☰'});nav?.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{nav.classList.remove('open');menuButton?.setAttribute('aria-expanded','false');if(menuButton)menuButton.textContent='☰'}));
-</script>
+<script src="/home.js" defer></script>
 </body></html>
