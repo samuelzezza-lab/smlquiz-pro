@@ -954,3 +954,44 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
  .study-free-grid article{padding:11px 12px;grid-template-columns:36px minmax(0,1fr);gap:10px}
  .study-free-icon{width:34px;height:34px}
 }
+
+
+/* Navigation consistency: every study-mode Back control stays at the bottom of the viewport. */
+.app-shell.is-study-mode .study-home-button,
+.app-shell:not(.is-study-mode) .screen-back-button,
+.app-shell.is-study-mode .fc-back-link,
+.app-shell.is-study-mode .sf-mode-back{
+  position:fixed !important;
+  left:50% !important;
+  right:auto !important;
+  top:auto !important;
+  bottom:max(18px,env(safe-area-inset-bottom)) !important;
+  z-index:1200 !important;
+  transform:translateX(-50%) !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  min-height:46px !important;
+  padding:0 20px !important;
+  border:1px solid rgba(91,216,189,.42) !important;
+  border-radius:999px !important;
+  background:rgba(10,29,43,.96) !important;
+  box-shadow:0 10px 34px rgba(0,0,0,.38) !important;
+  color:#75dfc8 !important;
+  white-space:nowrap !important;
+}
+.app-shell.is-study-mode .fc-study-header{padding-bottom:8px}
+.app-shell.is-study-mode .content{padding-bottom:100px !important}
+.app-shell.is-study-mode .fc-back-link{grid-column:1;grid-row:1}
+.app-shell.is-study-mode .sf-mode-toolbar{min-height:0}
+@media(max-width:760px){
+  .app-shell.is-study-mode .study-home-button,
+  .app-shell:not(.is-study-mode) .screen-back-button,
+  .app-shell.is-study-mode .fc-back-link,
+  .app-shell.is-study-mode .sf-mode-back{
+    bottom:max(14px,env(safe-area-inset-bottom)) !important;
+    min-height:48px !important;
+    padding:0 22px !important;
+  }
+  .app-shell.is-study-mode .content{padding-bottom:110px !important}
+}
