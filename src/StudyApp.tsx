@@ -146,7 +146,7 @@ export default function StudyApp(){
   if(!client||!user||!studyDataReady)return
   const payload={savedQuestions,studyCollections,studyExams,dailyGoal}
   const timer=window.setTimeout(()=>{
-   supabase.from('user_study_data').upsert({user_id:user.id,data:payload},{onConflict:'user_id'}).then(({error})=>{
+   client.from('user_study_data').upsert({user_id:user.id,data:payload},{onConflict:'user_id'}).then(({error})=>{
     if(error)notify('Non è riuscita la sincronizzazione dei materiali sul cloud.')
    })
   },700)
