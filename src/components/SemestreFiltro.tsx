@@ -88,6 +88,7 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComple
   }catch(e){const message=e instanceof Error?e.message:'Non riesco a preparare la simulazione.';if(message.toLowerCase().includes('accedere')){onRequireLogin();return}setError(message)}
   finally{setLoading(false)}
  }
+ useEffect(()=>{window.scrollTo(0,0);document.querySelector('.app-shell .content')?.scrollTo(0,0)},[mode])
  const review=useMemo(()=>result?.review||[],[result])
  return <section className={"content progress-page sf-page "+(mode!=='intro'?"sf-mode-screen":"")}>
   {mode==='intro'&&<>
