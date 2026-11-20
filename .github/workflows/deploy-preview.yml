@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: smlquiz-adsense-preview
+  group: smlquiz-adsense-preview-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
@@ -63,7 +63,7 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist --project-name smlquiz-pro --branch adsense-rebuild
+          command: pages deploy dist --project-name smlquiz-pro --branch adsense-review
 
       - name: Report preview URL
         run: |
