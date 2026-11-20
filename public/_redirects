@@ -14,4 +14,5 @@
 /compra-quiz /app.html 200
 /semestre-filtro /app.html 200
 /semestre-filtro/ /app.html 200
-/come-funziona / / 301
+/come-funziona /app.html 200
+/result /app.html 200
