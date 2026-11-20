@@ -112,11 +112,6 @@ export default function Flashcards({ subjects, selectedSubjectId, onBackToPath, 
       setDueDates(mergedDue)
       setTotal(cardTotal)
       setUnlocked(hasUnlock)
-      const dueRemaining = loaded.filter(card => {
-        const rating = card.user_rating
-        const dueAt = card.user_due_at
-        return !rating || !dueAt || new Date(dueAt).getTime() <= Date.now()
-      }).length
       setPaywall(false)
       setDeckCompleted(false)
       setSessionStarted(false)
@@ -231,7 +226,7 @@ export default function Flashcards({ subjects, selectedSubjectId, onBackToPath, 
       </div>
       <div className="fc-setup-footer"><span>Ripetizione dilazionata · Progressi salvati automaticamente</span><button type="button" className="primary" onClick={() => startSession('all')}>Avvia ripasso <ArrowRight size={17}/></button></div>
     </div>}
-    {!loading && sessionStarted && sessionCards.length === 0 && !paywall && <StudyCompletion eyebrow="TUTTO IN PARI" title="Non hai carte da ripassare adesso." description="Le carte nuove o quelle in scadenza compariranno qui quando sarà il momento." primaryLabel="Torna alle opzioni" onPrimary={() => {setSessionStarted(false);setDeckCompleted(false)}} />}
+    {!loading && sessionStarted && sessionCards.length === 0 && deckCompleted && !paywall && <StudyCompletion eyebrow="TUTTO IN PARI" title="Non hai carte da ripassare adesso." description="Le carte nuove o quelle in scadenza compariranno qui quando sarà il momento." primaryLabel="Torna alle opzioni" onPrimary={() => {setSessionStarted(false);setDeckCompleted(false)}} />}
     {!loading && sessionStarted && cards.length > 0 && !paywall && !deckCompleted && current && <>
       <div className="fc-session-toolbar"><button type="button" onClick={() => {setSessionStarted(false);setFlipped(false)}}><ArrowLeft size={15}/> Esci dal ripasso</button><span>{index + 1} <i>/</i> {sessionCards.length}</span><span className="fc-key-hint">SPAZIO per girare</span></div>
       <div className="flashcards-progress">
@@ -256,7 +251,7 @@ export default function Flashcards({ subjects, selectedSubjectId, onBackToPath, 
       {showAds && <div className="flashcards-ad-slot flashcards-ad-slot-bottom" data-sml-ad-slot="flashcards-bottom" aria-label="Spazio pubblicitario" />}
       <p className="flashcards-footnote">{user ? 'I tuoi progressi vengono salvati sul tuo account.' : 'Puoi provare gratuitamente senza registrazione. Accedi per salvare le valutazioni.'}</p>
     </>}
-    {!loading && deckCompleted && !paywall && <StudyCompletion
+    {!loading && deckCompleted && sessionCardIds.length > 0 && !paywall && <StudyCompletion
       eyebrow={deckMode === 'difficult' ? 'RIPASSO MIRATO COMPLETATO' : 'RIPASSO DI OGGI COMPLETATO'}
       title={deckMode === 'difficult' ? 'Hai ripassato tutte le carte difficili.' : 'Ottimo lavoro: hai completato tutte le flashcard.'}
       description={deckMode === 'difficult' ? 'Non restano carte difficili o impossibili in scadenza. Puoi tornare al ripasso programmato oppure continuare con un quiz.' : 'La sessione è terminata. Le carte che hai valutato torneranno in base alla difficoltà che hai indicato.'}
