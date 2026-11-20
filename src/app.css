@@ -1088,3 +1088,81 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
  .flashcards-redesign .fc-flip-action{margin:14px auto}
  .flashcards-redesign .fc-flip-action .primary{width:100%;min-height:52px}
 }
+
+
+/* Global full-width layout for every internal feature, not only the three study modes. */
+.app-shell.is-fullscreen-view{
+  min-height:100vh;
+  min-height:100dvh;
+}
+.app-shell.is-fullscreen-view .main-area{
+  min-width:0;
+  width:100%;
+  flex:1 1 auto;
+}
+.app-shell.is-fullscreen-view .content{
+  width:100%;
+  max-width:none !important;
+  min-height:calc(100vh - 76px);
+  min-height:calc(100dvh - 76px);
+  margin:0;
+  padding:clamp(16px,2.2vw,34px);
+}
+.app-shell.is-fullscreen-view .quiz-workspace,
+.app-shell.is-fullscreen-view .result-workspace,
+.app-shell.is-fullscreen-view .flashcards-page,
+.app-shell.is-fullscreen-view .flashcards-redesign,
+.app-shell.is-fullscreen-view .sf-page,
+.app-shell.is-fullscreen-view .inner-content{
+  width:100% !important;
+  max-width:none !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+.app-shell.is-fullscreen-view .workspace-card,
+.app-shell.is-fullscreen-view .quality-note{
+  width:100%;
+  max-width:none;
+}
+.app-shell.is-fullscreen-view .quiz-workspace .question-card,
+.app-shell.is-fullscreen-view .result-workspace .review-card{
+  width:100%;
+}
+.app-shell.is-fullscreen-view .flashcards-redesign .fc-session-setup,
+.app-shell.is-fullscreen-view .flashcards-redesign .fc-session-toolbar,
+.app-shell.is-fullscreen-view .flashcards-redesign .flashcards-progress,
+.app-shell.is-fullscreen-view .flashcards-redesign .flashcard-stage,
+.app-shell.is-fullscreen-view .flashcards-redesign .flashcards-ratings,
+.app-shell.is-fullscreen-view .flashcards-redesign .flashcards-controls{
+  width:100% !important;
+  max-width:none !important;
+}
+.app-shell.is-fullscreen-view .sf-page .sf-intro-grid,
+.app-shell.is-fullscreen-view .sf-page .sf-subject-section,
+.app-shell.is-fullscreen-view .sf-page .sf-exam-layout,
+.app-shell.is-fullscreen-view .sf-page .sf-result-hero,
+.app-shell.is-fullscreen-view .sf-page .sf-review{
+  width:100%;
+  max-width:none;
+}
+.app-shell.is-fullscreen-view .sf-page .sf-exam-layout{
+  grid-template-columns:minmax(0,1fr) minmax(250px,300px);
+}
+@media(max-width:900px){
+  .app-shell.is-fullscreen-view .sf-page .sf-exam-layout{
+    grid-template-columns:minmax(0,1fr);
+  }
+}
+@media(max-width:760px){
+  .app-shell.is-fullscreen-view .content{
+    min-height:calc(100vh - 64px);
+    min-height:calc(100dvh - 64px);
+    padding:14px 14px calc(104px + env(safe-area-inset-bottom));
+  }
+  .app-shell.is-fullscreen-view .sf-page.content{
+    padding:0 14px calc(104px + env(safe-area-inset-bottom)) !important;
+  }
+  .app-shell.is-fullscreen-view .inner-content{
+    padding-top:22px;
+  }
+}
