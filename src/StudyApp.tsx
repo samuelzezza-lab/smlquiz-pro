@@ -24,6 +24,8 @@ const navigation:{id:View;label:string;icon:typeof BookOpen}[]=[
 
 export default function StudyApp(){
  const [view,setView]=useState<View>('home')
+ const [showFreeInfo,setShowFreeInfo]=useState(false)
+ const [pendingStudyMode,setPendingStudyMode]=useState<'quiz'|'flashcards'|'semester'|null>(null)
  const [mobileMenu,setMobileMenu]=useState(false)
  useEffect(()=>{
   if(!mobileMenu)return
@@ -297,6 +299,21 @@ export default function StudyApp(){
  }
  function notify(message:string){setNotice(message);window.setTimeout(()=>setNotice(v=>v===message?'':v),4500)}
  function go(next:View){setView(next);setMobileMenu(false);setNotice('');window.scrollTo(0,0);document.querySelector('.app-shell .content')?.scrollTo(0,0)}
+ function openStudyMode(mode:'quiz'|'flashcards'|'semester'){
+  if((mode==='quiz'||mode==='flashcards')&&(!confirmed||!selectedSubject)){notify('Conferma prima il percorso di studio.');return}
+  let acknowledged=false
+  try{acknowledged=localStorage.getItem('smlquiz.study-free-info.v1')==='1'}catch{}
+  if(!acknowledged){setPendingStudyMode(mode);setShowFreeInfo(true);setMobileMenu(false);return}
+  if(mode==='quiz')void startQuiz()
+  else go(mode)
+ }
+ function acknowledgeFreeInfo(){
+  try{localStorage.setItem('smlquiz.study-free-info.v1','1')}catch{}
+  const mode=pendingStudyMode
+  setShowFreeInfo(false);setPendingStudyMode(null)
+  if(mode==='quiz')void startQuiz()
+  else if(mode)go(mode)
+ }
  async function authenticate(e:FormEvent){
   e.preventDefault();if(!supabase||authBusy)return
   setAuthBusy(true)
@@ -494,7 +511,7 @@ export default function StudyApp(){
   {!isStudyMode&&<aside id="sml-mobile-sidebar" className={`sidebar ${mobileMenu ? "sidebar-open" : ""}`}>
    <a className="brand" href="/" onClick={e=>{e.preventDefault();location.href='/'}}><span className="brand-symbol">S<span>.</span></span><span className="brand-name">SMLQUIZ <b>PRO</b></span></a>
    <div className="side-caption">IL TUO SPAZIO UNIVERSITARIO</div>
-   <nav className="side-nav">{navigation.map(item=>{const Icon=item.icon;return <button key={item.id} className={`nav-link ${view===item.id?'active':''}`} onClick={()=>{if(item.id==='flashcards'&&(!confirmed||!selectedSubject)){notify('Conferma prima il percorso di studio.');setMobileMenu(false);return}go(item.id);setMobileMenu(false)}}><Icon size={18}/><span>{item.label}</span>{view===item.id&&<span className="active-mark"/>}</button>})}</nav>
+   <nav className="side-nav">{navigation.map(item=>{const Icon=item.icon;return <button key={item.id} className={`nav-link ${view===item.id?'active':''}`} onClick={()=>{if(item.id==='quiz'||item.id==='flashcards'||item.id==='semester'){openStudyMode(item.id);return}go(item.id);setMobileMenu(false)}}><Icon size={18}/><span>{item.label}</span>{view===item.id&&<span className="active-mark"/>}</button>})}</nav>
    <div className="sidebar-bottom"><div className="sidebar-tip"><BookOpen size={17}/><strong>Studia con metodo.</strong><p>Quiz, ripasso e strumenti per organizzare il tuo percorso.</p></div><div className="sidebar-foot">© 2026 SMLQUIZ Pro · Diritti riservati<br/><a href="/termini/">Tutela dei contenuti e Termini d’uso</a></div></div>
   </aside>}
   {!isStudyMode&&mobileMenu&&<button className="mobile-scrim" aria-label="Chiudi menu" onClick={()=>setMobileMenu(false)}/>}
@@ -511,9 +528,9 @@ export default function StudyApp(){
       {confirmed&&selectedSubject&&<div className="confirmed-summary"><Check size={15}/><span>{faculty?.nome}</span><b>·</b><span>{selectedSubject.anno_corso?selectedSubject.anno_corso+'° anno':'Anno non specificato'}</span><b>·</b><strong>{selectedSubject.nome}</strong></div>}
      </section>
      <section className="tools-section"><div className="tools-heading"><div><span className="section-kicker">02 / SCEGLI IL TUO STRUMENTO</span><h2>Come vuoi studiare?</h2></div><span className="tools-hint">Tre modi per prepararti</span></div><div className="tool-grid">
-      <button className="tool-card" onClick={()=>{if(!confirmed){notify('Conferma prima il percorso di studio.');return}void startQuiz()}}><div className="tool-top"><span className="tool-icon quiz-icon"><Brain size={21}/></span><span className="tool-number">01</span></div><h3>Quiz universitari</h3><p>10 domande a risposta multipla. Le soluzioni si vedono soltanto alla fine.</p><span className="tool-action">Avvia un quiz <ArrowRight size={16}/></span></button>
-      <button className="tool-card" onClick={()=>{if(!confirmed||!selectedSubject){notify('Conferma prima il percorso di studio.');return}go('flashcards')}}><div className="tool-top"><span className="tool-icon cards-icon"><Layers3 size={21}/></span><span className="tool-number">02</span></div><h3>Flashcard</h3><p>Ripasso attivo per consolidare definizioni e concetti.</p><span className="tool-action">Apri flashcard <ArrowRight size={16}/></span></button>
-      <button className="tool-card" onClick={()=>go('semester')}><div className="tool-top"><span className="tool-icon target-icon"><Target size={21}/></span><span className="tool-number">03</span></div><h3>Semestre filtro</h3><p>Allenamento dedicato a Biologia, Chimica e Fisica.</p><span className="tool-action">Entra nell'area <ArrowRight size={16}/></span></button>
+      <button className="tool-card" onClick={()=>openStudyMode('quiz')}><div className="tool-top"><span className="tool-icon quiz-icon"><Brain size={21}/></span><span className="tool-number">01</span></div><h3>Quiz universitari</h3><p>10 domande a risposta multipla. Le soluzioni si vedono soltanto alla fine.</p><span className="tool-action">Avvia un quiz <ArrowRight size={16}/></span></button>
+      <button className="tool-card" onClick={()=>openStudyMode('flashcards')}><div className="tool-top"><span className="tool-icon cards-icon"><Layers3 size={21}/></span><span className="tool-number">02</span></div><h3>Flashcard</h3><p>Ripasso attivo per consolidare definizioni e concetti.</p><span className="tool-action">Apri flashcard <ArrowRight size={16}/></span></button>
+      <button className="tool-card" onClick={()=>openStudyMode('semester')}><div className="tool-top"><span className="tool-icon target-icon"><Target size={21}/></span><span className="tool-number">03</span></div><h3>Semestre filtro</h3><p>Allenamento dedicato a Biologia, Chimica e Fisica.</p><span className="tool-action">Entra nell'area <ArrowRight size={16}/></span></button>
      </div></section>
      <div className="bottom-note"><Clock3 size={15}/><span>Catalogo collegato al database: {faculties.length} facoltà e {subjects.length} materie.</span></div>
     </>}
@@ -531,11 +548,26 @@ export default function StudyApp(){
   </main>
   {!isStudyMode&&<nav className="mobile-bottom-nav" aria-label="Navigazione principale">
    <button type="button" className={view==='home'?'active':''} aria-current={view==='home'?'page':undefined} onClick={()=>{go('home');setMobileMenu(false)}}><BookOpen size={19}/><span>Home</span></button>
-   <button type="button" onClick={()=>{if(!confirmed){notify('Conferma prima il percorso di studio.');return}void startQuiz()}}><Brain size={19}/><span>Quiz</span></button>
-   <button type="button" className={view==='flashcards'?'active':''} onClick={()=>{if(!confirmed||!selectedSubject){notify('Conferma prima il percorso di studio.');return}go('flashcards')}}><Layers3 size={19}/><span>Flashcard</span></button>
-   <button type="button" className={view==='semester'?'active':''} onClick={()=>{go('semester');setMobileMenu(false)}}><Target size={19}/><span>Semestre</span></button>
+   <button type="button" onClick={()=>openStudyMode('quiz')}><Brain size={19}/><span>Quiz</span></button>
+   <button type="button" className={view==='flashcards'?'active':''} onClick={()=>openStudyMode('flashcards')}><Layers3 size={19}/><span>Flashcard</span></button>
+   <button type="button" className={view==='semester'?'active':''} onClick={()=>openStudyMode('semester')}><Target size={19}/><span>Semestre</span></button>
    <button type="button" className={mobileMenu?'active':''} aria-expanded={mobileMenu} onClick={()=>setMobileMenu(v=>!v)}><Menu size={19}/><span>Altro</span></button>
   </nav>}
+  {showFreeInfo&&<div className="study-free-modal-backdrop" role="presentation" onMouseDown={e=>{if(e.target===e.currentTarget){setShowFreeInfo(false);setPendingStudyMode(null)}}}>
+   <section className="study-free-modal" role="dialog" aria-modal="true" aria-labelledby="study-free-title">
+    <div className="study-free-modal-top"><span className="study-free-mark"><GraduationCap size={19}/></span><span className="study-free-kicker">BENVENUTO IN SMLQUIZ PRO</span><button type="button" className="study-free-close" aria-label="Chiudi" onClick={()=>{setShowFreeInfo(false);setPendingStudyMode(null)}}><X size={18}/></button></div>
+    <h2 id="study-free-title">Inizia gratis. Scegli come continuare.</h2>
+    <p className="study-free-intro">Prima di iniziare, ecco cosa puoi utilizzare gratuitamente e quali opzioni hai per ampliare l'accesso.</p>
+    <div className="study-free-grid">
+     <article><span className="study-free-icon"><Brain size={18}/></span><div><b>Quiz universitari</b><strong>5 quiz gratuiti per materia</strong><small>Per allenarti con domande e correzione finale.</small></div></article>
+     <article><span className="study-free-icon"><Layers3 size={18}/></span><div><b>Flashcard</b><strong>Prime 50 carte gratuite per materia</strong><small>Il pass completo per una materia costa 1,99 €.</small></div></article>
+     <article><span className="study-free-icon"><Target size={18}/></span><div><b>Semestre Filtro</b><strong>5 simulazioni gratuite totali</strong><small>Accesso illimitato: 1,99 € per materia oppure 3,99 € per tutte e tre.</small></div></article>
+    </div>
+    <div className="study-free-extra"><b>Vuoi più strumenti?</b><span>Quiz: pass materia 1,99 €, 100 crediti Jolly 3,49 €, 5 materie per 180 giorni 4,99 €. Tutto il Sito: 9,99 €/mese.</span></div>
+    <p className="study-free-footnote">Le opzioni gratuite richiedono un account. Gli acquisti sono facoltativi e non vengono attivati automaticamente.</p>
+    <button type="button" className="study-free-confirm" onClick={acknowledgeFreeInfo}>Ho capito, continua <ArrowRight size={17}/></button>
+   </section>
+  </div>
   {notice&&<div className="toast-notice" role="status">{notice}<button onClick={()=>setNotice('')}><X size={15}/></button></div>}
  </div>
 }
