@@ -481,3 +481,14 @@
 
 /* The app has its own in-app navigation; prevent the legacy floating back control from covering touch navigation. */
 body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{display:none!important}
+
+/* Keep the public editorial links reachable on small screens without squeezing the app header. */
+@media(max-width:900px){
+  .topbar:has(.home-public-nav){height:auto;min-height:94px;flex-wrap:wrap;align-content:center;gap:7px;padding:8px 14px}
+  .topbar:has(.home-public-nav) .mobile-menu-button{order:0}
+  .topbar:has(.home-public-nav) .breadcrumb{order:1;flex:1;min-width:0}
+  .topbar:has(.home-public-nav) .topbar-right{order:2;margin-left:auto}
+  .topbar:has(.home-public-nav) .home-public-nav{display:flex;order:3;flex:1 0 100%;justify-content:flex-start;gap:19px;overflow-x:auto;padding:1px 1px 5px;scrollbar-width:none}
+  .topbar:has(.home-public-nav) .home-public-nav::-webkit-scrollbar{display:none}
+  .topbar:has(.home-public-nav) .home-public-nav a{font-size:10px;padding:5px 0;white-space:nowrap}
+}
