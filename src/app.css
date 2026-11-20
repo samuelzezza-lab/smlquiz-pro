@@ -1224,3 +1224,32 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
  .leaderboard-row>strong{font-size:12px}
  .leaderboard-table-head{padding:14px 12px}
 }
+
+
+/* Progressi: riepilogo essenziale in quattro indicatori */
+.progress-redesign{width:100%;max-width:1040px;margin:0 auto;padding-top:clamp(34px,6vh,70px)}
+.progress-intro{margin:0 0 34px}
+.progress-intro .section-kicker{margin-bottom:13px}
+.progress-intro h1{margin:0;color:#f0f5f7;font-size:clamp(30px,4vw,43px);font-weight:760;letter-spacing:-.055em;line-height:1.12}
+.progress-highlight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.progress-highlight{min-width:0;min-height:150px;display:flex;align-items:center;gap:19px;padding:25px 27px;border:1px solid rgba(142,182,192,.16);border-radius:16px;background:linear-gradient(135deg,rgba(18,42,54,.9),rgba(11,28,42,.94));box-shadow:0 16px 40px rgba(0,0,0,.12)}
+.progress-highlight-icon{width:48px;height:48px;flex:0 0 48px;display:grid;place-items:center;border:1px solid rgba(91,216,189,.2);border-radius:13px;background:rgba(77,203,176,.1);color:#6cddc4}
+.progress-highlight>div{display:grid;gap:7px;min-width:0}
+.progress-highlight strong{color:#f0f6f6;font-size:clamp(27px,3.2vw,36px);font-weight:780;letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
+.progress-highlight small{color:#91a8b0;font-size:12px;font-weight:600;letter-spacing:.01em}
+@media(max-width:760px){
+ .progress-redesign{padding-top:25px}
+ .progress-intro{margin-bottom:23px}
+ .progress-intro h1{font-size:clamp(27px,7vw,34px)}
+ .progress-highlight-grid{gap:10px}
+ .progress-highlight{min-height:122px;gap:11px;padding:16px 13px;border-radius:13px}
+ .progress-highlight-icon{width:37px;height:37px;flex-basis:37px;border-radius:10px}
+ .progress-highlight-icon svg{width:17px;height:17px}
+ .progress-highlight strong{font-size:clamp(23px,6vw,29px)}
+ .progress-highlight small{font-size:10px;line-height:1.35}
+}
+@media(max-width:360px){
+ .progress-highlight{gap:8px;padding:14px 10px}
+ .progress-highlight-icon{width:32px;height:32px;flex-basis:32px}
+ .progress-highlight small{font-size:9px}
+}
