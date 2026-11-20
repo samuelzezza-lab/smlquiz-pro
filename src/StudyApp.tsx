@@ -124,10 +124,11 @@ export default function StudyApp(){
  },[user?.id])
 
  useEffect(()=>{
-  if(!supabase||!user){setStudyDataReady(false);return}
+  const client=supabase
+  if(!client||!user){setStudyDataReady(false);setSavedQuestions([]);setStudyCollections([]);setStudyExams([]);setDailyGoal(20);return}
   let active=true
   setStudyDataReady(false)
-  supabase.from('user_study_data').select('data').eq('user_id',user.id).maybeSingle().then(({data,error})=>{
+  client.from('user_study_data').select('data').eq('user_id',user.id).maybeSingle().then(({data,error})=>{
    if(!active)return
    if(error){notify('Sincronizzazione dei materiali personali non disponibile.');setStudyDataReady(true);return}
    const cloud=data?.data||{}
@@ -136,12 +137,13 @@ export default function StudyApp(){
    setStudyExams(Array.isArray(cloud.studyExams)?cloud.studyExams:[])
    if(Number.isFinite(Number(cloud.dailyGoal)))setDailyGoal(Math.max(1,Math.min(100,Number(cloud.dailyGoal))))
    setStudyDataReady(true)
-  }).catch(()=>{if(active){notify('Errore durante il caricamento dei materiali personali.');setStudyDataReady(true)}})
+  },()=>{if(active){notify('Errore durante il caricamento dei materiali personali.');setStudyDataReady(true)}})
   return()=>{active=false}
  },[user?.id])
 
  useEffect(()=>{
-  if(!supabase||!user||!studyDataReady)return
+  const client=supabase
+  if(!client||!user||!studyDataReady)return
   const payload={savedQuestions,studyCollections,studyExams,dailyGoal}
   const timer=window.setTimeout(()=>{
    supabase.from('user_study_data').upsert({user_id:user.id,data:payload},{onConflict:'user_id'}).then(({error})=>{
