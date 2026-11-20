@@ -143,7 +143,7 @@ export default function StudyApp(){
    const linkedSubject=ss.find(x=>x.id===requestedSubject)
    const linkedFaculty=fs.find(x=>x.id===(linkedSubject?.facolta_id||requestedFaculty))
    if(linkedFaculty){setFacultyId(linkedFaculty.id);setYear(linkedSubject?.anno_corso?String(linkedSubject.anno_corso):(requestedYear||'1'));if(linkedSubject){setSubjectId(linkedSubject.id);setConfirmed(true)}}
-   else {const med=fs.find(x=>x.nome==='Medicina e Chirurgia')||fs[0];if(med){setFacultyId(med.id);const first=ss.find(x=>x.facolta_id===med.id&&x.anno_corso===1);if(first){setSubjectId(first.id);}}}
+   else {const med=fs.find(x=>x.nome==='Medicina e Chirurgia')||fs[0];if(med){setFacultyId(med.id);const first=ss.find(x=>x.facolta_id===med.id&&x.anno_corso===1);if(first){setSubjectId(first.id);setConfirmed(true)}}}
   }).catch(()=>{if(active){setCatalogLoading(false);setNotice('Errore di connessione durante il caricamento del catalogo.')}})
   return()=>{active=false}
  },[])
@@ -290,12 +290,12 @@ export default function StudyApp(){
  function chooseFaculty(id:string){
   setFacultyId(id);setSubjectId('');setConfirmed(false)
   const first=subjects.find(s=>s.facolta_id===id&&(year==='all'||String(s.anno_corso||'')===year))
-  if(first){setSubjectId(first.id);}
+  if(first){setSubjectId(first.id);setConfirmed(true)}
  }
  function chooseYear(value:string){
   setYear(value);setSubjectId('');setConfirmed(false)
   const first=subjects.find(s=>s.facolta_id===facultyId&&(value==='all'||String(s.anno_corso||'')===value))
-  if(first){setSubjectId(first.id);}
+  if(first){setSubjectId(first.id);setConfirmed(true)}
  }
  function notify(message:string){setNotice(message);window.setTimeout(()=>setNotice(v=>v===message?'':v),4500)}
  function go(next:View){setView(next);setMobileMenu(false);setNotice('');window.scrollTo(0,0);document.querySelector('.app-shell .content')?.scrollTo(0,0)}
@@ -520,12 +520,12 @@ export default function StudyApp(){
    <div className="content">
     {view==='home'&&<><section className="welcome-row"><div><div className="eyebrow">IL TUO PERCORSO UNIVERSITARIO</div><h1>Studiare meglio,<br/><em>partendo da qui.</em></h1><p className="welcome-copy">Scegli il tuo corso e la materia. Poi decidi come prepararti: esercitazione, ripasso o simulazione.</p></div><div className="welcome-art"><div className="art-core"><BookOpen size={42}/></div></div></section>
      <section className="path-panel"><div className="panel-heading"><div><span className="section-kicker">01 / IL TUO PERCORSO</span><h2>Da dove vuoi iniziare?</h2><p>Catalogo universitario: {catalogLoading?'caricamento…':faculties.length+' facoltà · '+subjects.length+' materie'}.</p></div><div className="panel-icon"><GraduationCap size={21}/></div></div>
-      <div className="selection-grid"><label className="field"><span>Facoltà</span><div className="select-wrap"><select value={facultyId} onChange={e=>chooseFaculty(e.target.value)} disabled={catalogLoading}><option value="">Seleziona facoltà</option>{faculties.map(f=><option key={f.id} value={f.id}>{f.nome}</option>)}</select><ChevronDown size={16}/></div></label>
-       <label className="field"><span>Anno</span><div className="select-wrap"><select value={year} onChange={e=>chooseYear(e.target.value)}><option value="all">Tutti gli anni</option>{[1,2,3,4,5,6].map(n=><option key={n} value={n}>{n}° anno</option>)}</select><ChevronDown size={16}/></div></label>
-       <label className="field subject-field"><span>Materia{filteredSubjects.length?` (${filteredSubjects.length})`:``}</span><div className="select-wrap subject-wrap"><select value={subjectId} onChange={e=>{const chosen=filteredSubjects.find(s=>s.id===e.target.value);setSubjectId(chosen?.id||``);setConfirmed(false)}} disabled={!facultyId||catalogLoading||filteredSubjects.length===0}><option value="">{catalogLoading?`Caricamento materie…`:!facultyId?`Seleziona prima la facoltà`:filteredSubjects.length===0?`Nessuna materia per questo anno`:`Seleziona materia`}</option>{visibleSubjects.map(s=><option key={s.id} value={s.id}>{s.nome}{s.corso_di_laurea?` — ${s.corso_di_laurea}`:``}</option>)}</select><ChevronDown size={16}/></div></label>
-       <button className={`confirm-button ${confirmed?'confirmed':''}`} onClick={()=>{if(!selectedSubject){notify('Seleziona una materia valida dal catalogo.');return}setConfirmed(true);notify('Percorso confermato. Scegli lo strumento con cui vuoi studiare.')}}>{confirmed?<><Check size={17}/> Percorso confermato</>:<>Conferma scelta <ArrowRight size={17}/></>}</button>
+      <div className="selection-grid path-selection-simple"><label className="field"><span>Facoltà</span><div className="select-wrap"><select value={facultyId} onChange={e=>chooseFaculty(e.target.value)} disabled={catalogLoading}><option value="">Seleziona facoltà</option>{faculties.map(f=><option key={f.id} value={f.id}>{f.nome}</option>)}</select><ChevronDown size={16}/></div></label>
+       <label className="field"><span>Anno di corso</span><div className="select-wrap"><select value={year} onChange={e=>chooseYear(e.target.value)} disabled={!facultyId}><option value="all">Tutti gli anni</option>{[1,2,3,4,5,6].map(n=><option key={n} value={n}>{n}° anno</option>)}</select><ChevronDown size={16}/></div></label>
+       <button className={`confirm-button ${confirmed?'confirmed':''}`} disabled={catalogLoading||!selectedSubject} onClick={()=>{if(!selectedSubject){notify('Non ci sono ancora contenuti disponibili per questa selezione.');return}setConfirmed(true);notify('Percorso pronto. Scegli come vuoi studiare.')}}>{confirmed?<><Check size={17}/> Percorso pronto</>:<>Continua <ArrowRight size={17}/></>}</button>
       </div>
-      {confirmed&&selectedSubject&&<div className="confirmed-summary"><Check size={15}/><span>{faculty?.nome}</span><b>·</b><span>{selectedSubject.anno_corso?selectedSubject.anno_corso+'° anno':'Anno non specificato'}</span><b>·</b><strong>{selectedSubject.nome}</strong></div>}
+      <div className="path-reassurance"><span className="path-reassurance-icon"><Check size={17}/></span><div><strong>Abbiamo pensato a tutto.</strong><p>Il catalogo è già organizzato per facoltà e anno: non devi cercare o selezionare manualmente ogni materia. SMLQUIZ ti porta direttamente ai contenuti disponibili del tuo percorso.</p></div></div>
+      {confirmed&&selectedSubject&&<div className="confirmed-summary"><Check size={15}/><span>{faculty?.nome}</span><b>·</b><span>{year==='all'?'Tutti gli anni':year+'° anno'}</span><span className="path-auto-subject-note">Materie organizzate automaticamente</span></div>}
      </section>
      <section className="tools-section"><div className="tools-heading"><div><span className="section-kicker">02 / SCEGLI IL TUO STRUMENTO</span><h2>Come vuoi studiare?</h2></div><span className="tools-hint">Tre modi per prepararti</span></div><div className="tool-grid">
       <button className="tool-card" onClick={()=>openStudyMode('quiz')}><div className="tool-top"><span className="tool-icon quiz-icon"><Brain size={21}/></span><span className="tool-number">01</span></div><h3>Quiz universitari</h3><p>10 domande a risposta multipla. Le soluzioni si vedono soltanto alla fine.</p><span className="tool-action">Avvia un quiz <ArrowRight size={16}/></span></button>
