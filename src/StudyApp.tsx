@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { ArrowRight, BarChart3, BookOpen, Brain, Calculator, Check, ChevronDown, Clock3, Layers3, LogIn, LogOut, Menu, Target, Trophy, UserRound, X, CreditCard, Bookmark, CalendarDays, FolderPlus, Trash2, GraduationCap, ThumbsUp } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import Flashcards from './components/Flashcards'
