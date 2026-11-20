@@ -34,7 +34,8 @@ a{color:inherit}.wrap{width:min(1120px,calc(100% - 44px));margin:auto}.top{borde
 <script>
 const API='https://fgrwwauwnxvrcgqqpksp.supabase.co/rest/v1';
 const KEY='sb_publishable_IKrVQCoTe6lDMJ04oOgTgw_jt1vmBwj';
-const headers={apikey:KEY,Authorization:'Bearer '+KEY};
+const ANON='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZncnd3YXV3bnh2cmNncXFwa3NwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MzQ0MTAsImV4cCI6MjEwODAxMDQxMH0.KOD4hLI8GCI9yMQegm-TYNg1PVGLOlc8VXGFOJmVOeA';
+const headers={apikey:KEY,Authorization:'Bearer '+ANON};
 let faculties=[],subjects=[],activeFaculty=null,activeFilter='all';
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
