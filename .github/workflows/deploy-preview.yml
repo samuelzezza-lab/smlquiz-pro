@@ -1,0 +1,72 @@
+name: Deploy SMLQUIZ Pro preview to Cloudflare Pages
+
+on:
+  push:
+    branches: [adsense-rebuild]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: smlquiz-adsense-preview
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout preview branch
+        uses: actions/checkout@v5
+        with:
+          ref: adsense-rebuild
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Check preview deployment settings
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
+        run: |
+          set -eu
+          for name in CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID VITE_TURNSTILE_SITE_KEY; do
+            if [ -z "$(printenv "$name")" ]; then
+              echo "::error::GitHub Actions secret $name is missing."
+              exit 1
+            fi
+          done
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate PWA icons
+        run: python3 scripts/generate-pwa-icons.py
+
+      - name: Build preview
+        run: npm run build
+        env:
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
+          VITE_STRIPE_CHECKOUT_ENABLED: 'false'
+
+      - name: Ensure preview Pages project exists
+        run: npx wrangler pages project create smlquiz-pro --production-branch main || true
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Deploy isolated preview
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name smlquiz-pro --branch adsense-rebuild
+
+      - name: Report preview URL
+        run: |
+          echo "Cloudflare Pages preview deployments are served from the adsense-rebuild branch."
+          echo "Production branch and custom domains are not changed by this workflow."
