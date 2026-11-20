@@ -416,17 +416,19 @@ export default function StudyApp(){
  }
  const average=grades.length?grades.reduce((n,x)=>n+x.grade*x.cfu,0)/grades.reduce((n,x)=>n+x.cfu,0):0
  const clock=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0')
+ const isStudyMode=['quiz','result','flashcards','semester'].includes(view)
+ const studyModeLabel=view==='quiz'?'Quiz universitario':view==='result'?'Revisione del quiz':view==='flashcards'?'Flashcard':'Semestre filtro'
 
- return <div className="app-shell">
-  <aside className={`sidebar ${mobileMenu ? "sidebar-open" : ""}`}>
+ return <div className={`app-shell ${isStudyMode?'is-study-mode':''}`}>
+  {!isStudyMode&&<aside className={`sidebar ${mobileMenu ? "sidebar-open" : ""}`}>
    <a className="brand" href="/" onClick={e=>{e.preventDefault();location.href='/'}}><span className="brand-symbol">S<span>.</span></span><span className="brand-name">SMLQUIZ <b>PRO</b></span></a>
    <div className="side-caption">IL TUO SPAZIO UNIVERSITARIO</div>
    <nav className="side-nav">{navigation.map(item=>{const Icon=item.icon;return <button key={item.id} className={`nav-link ${view===item.id?'active':''}`} onClick={()=>go(item.id)}><Icon size={18}/><span>{item.label}</span>{view===item.id&&<span className="active-mark"/>}</button>})}</nav>
    <div className="sidebar-bottom"><div className="sidebar-tip"><BookOpen size={17}/><strong>Studia con metodo.</strong><p>Quiz, ripasso e strumenti per organizzare il tuo percorso.</p></div><div className="sidebar-foot">© 2026 SMLQUIZ Pro</div></div>
-  </aside>
-  {mobileMenu&&<button className="mobile-scrim" aria-label="Chiudi menu" onClick={()=>setMobileMenu(false)}/>}
+  </aside>}
+  {!isStudyMode&&mobileMenu&&<button className="mobile-scrim" aria-label="Chiudi menu" onClick={()=>setMobileMenu(false)}/>}
   <main className="main-area">
-   <header className="topbar"><button className="mobile-menu-button" onClick={()=>setMobileMenu(v=>!v)} aria-label="Apri menu"><Menu size={20}/></button><div className="breadcrumb"><a href="/" onClick={e=>{e.preventDefault();location.href='/'}}>SMLQUIZ Pro</a><b>/</b><strong>{navigation.find(x=>x.id===view)?.label||'Risultato'}</strong></div><div className="topbar-right">{user?<><span className="status-dot"/><span>{user.email}</span><button className="account-logout" onClick={()=>void logout()} aria-label="Esci"><LogOut size={16}/></button></>:<button className="account-login" onClick={()=>setAuthOpen(true)}><LogIn size={15}/> Accedi</button>}</div></header>
+   {isStudyMode?<header className="study-mode-header"><button type="button" className="study-home-button" onClick={()=>go('home')} aria-label="Torna alla Home"><House size={17}/><span>Home</span></button><span className="study-mode-title">{studyModeLabel}</span><span className="study-mode-brand">SMLQUIZ <b>PRO</b></span></header>:<header className="topbar"><button className="mobile-menu-button" onClick={()=>setMobileMenu(v=>!v)} aria-label="Apri menu"><Menu size={20}/></button><div className="breadcrumb"><a href="/" onClick={e=>{e.preventDefault();location.href='/'}}>SMLQUIZ Pro</a><b>/</b><strong>{navigation.find(x=>x.id===view)?.label||'Risultato'}</strong></div><div className="topbar-right">{user?<><span className="status-dot"/><span>{user.email}</span><button className="account-logout" onClick={()=>void logout()} aria-label="Esci"><LogOut size={16}/></button></>:<button className="account-login" onClick={()=>setAuthOpen(true)}><LogIn size={15}/> Accedi</button>}</div></header>}
    <div className="content">
     {view==='home'&&<><section className="welcome-row"><div><div className="eyebrow">IL TUO PERCORSO UNIVERSITARIO</div><h1>Studiare meglio,<br/><em>partendo da qui.</em></h1><p className="welcome-copy">Scegli il tuo corso e la materia. Poi decidi come prepararti: esercitazione, ripasso o simulazione.</p></div><div className="welcome-art"><div className="art-core"><BookOpen size={42}/></div></div></section>
      <section className="path-panel"><div className="panel-heading"><div><span className="section-kicker">01 / IL TUO PERCORSO</span><h2>Da dove vuoi iniziare?</h2><p>Catalogo universitario: {catalogLoading?'caricamento…':faculties.length+' facoltà · '+subjects.length+' materie'}.</p></div><div className="panel-icon"><GraduationCap size={21}/></div></div>
