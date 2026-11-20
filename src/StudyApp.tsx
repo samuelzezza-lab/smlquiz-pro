@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { ArrowRight, BarChart3, BookOpen, Brain, Calculator, Check, ChevronDown, Clock3, Layers3, LogIn, LogOut, Menu, Target, Trophy, UserRound, X, CreditCard, Bookmark, CalendarDays, FolderPlus, Trash2, GraduationCap, ThumbsUp } from 'lucide-react'
 import { supabase } from './lib/supabase'
+import { featureApi } from './lib/features'
 import Flashcards from './components/Flashcards'
 import SemestreFiltro from './components/SemestreFiltro'
 
@@ -154,11 +155,12 @@ export default function StudyApp(){
   const client=supabase
   if(!client){setAuthLoading(false);return}
   let active=true
-  client.auth.getSession().then(({data})=>{if(active){setUser(data.session?.user??null);setAuthLoading(false)}}).catch(()=>{if(active)setAuthLoading(false)})
+  client.auth.getSession().then(({data})=>{if(active){setUser(data.session?.user??null);setAuthLoading(false);if(data.session)void featureApi.getProfile().catch(()=>{})}}).catch(()=>{if(active)setAuthLoading(false)})
   const {data}=client.auth.onAuthStateChange((event,session)=>{
    setUser(session?.user??null);setAuthLoading(false)
    if(event==='SIGNED_IN'&&session){
     window.setTimeout(()=>{void client.functions.invoke('quiz-api',{body:{action:'session-register'}})},0)
+    void featureApi.getProfile().catch(()=>{})
    }
   })
   return()=>{active=false;data.subscription.unsubscribe()}
