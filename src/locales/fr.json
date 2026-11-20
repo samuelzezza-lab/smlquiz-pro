@@ -568,5 +568,10 @@
   "cardBuyDesc": "Consultez les quiz disponibles, achetez des forfaits et suivez vos transactions.",
   "openMode": "OUVRIR →",
   "openSimulations": "OUVRIR LES SIMULATIONS →",
-  "openArchive": "OUVRIR LES EXPÉRIENCES →"
+  "openArchive": "OUVRIR LES EXPÉRIENCES →",
+  "storageNoticeTitle": "Information sur le stockage technique",
+  "storageNoticeDescription": "SMLQUIZ utilise un stockage local nécessaire aux sessions, aux préférences et aux fonctions d’étude. Cet avis ne recueille pas le consentement pour la publicité ou les outils non essentiels.",
+  "storageNoticeDismiss": "Compris",
+  "storageNoticeSettings": "Les préférences locales servent au fonctionnement de l’application et ne constituent pas un consentement publicitaire.",
+  "cookiePolicyLink": "Politique relative aux cookies"
 }
