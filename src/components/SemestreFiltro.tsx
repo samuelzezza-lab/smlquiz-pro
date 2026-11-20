@@ -91,16 +91,46 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComple
  const review=useMemo(()=>result?.review||[],[result])
  return <section className={"content progress-page sf-page "+(mode!=='intro'?"sf-mode-screen":"")}>
   {mode==='intro'&&<>
-   <div className="page-heading"><div><div className="eyebrow"><GraduationCap size={15}/> PROVA NAZIONALE · A.A. 2026/27</div><h1>Semestre Filtro</h1><p>Preparazione per Medicina, Odontoiatria e Veterinaria. Il semestre filtro 2026/27 prevede lo stesso programma nazionale e le stesse tre prove per tutti e tre i corsi.</p></div></div>
-   <div className="sf-hero panel"><div><span className="sf-kicker">FORMATO D'ESAME</span><h2>Allenati come il giorno della prova.</h2><p>31 quesiti · 50 minuti · soluzioni visibili soltanto alla consegna.</p></div><div className="sf-big-number">31<small>quesiti</small></div></div>
-   <div className="sf-specs"><div><b>21 × A–E</b><span>Una sola corretta</span></div><div><b>10</b><span>Completamento</span></div><div><b>50 min</b><span>Per ogni materia</span></div><div><b>+1 / −0,1 / 0</b><span>Corretta / errata / omessa</span></div></div>
-   <div className="notice"><div><b>Un’unica preparazione per tre corsi</b><span>Le simulazioni sono valide per Medicina e Chirurgia, Odontoiatria e Protesi Dentaria e Medicina Veterinaria: il programma e le tre materie del Semestre Filtro sono comuni.</span></div></div>
-   <p className="sf-scoring-note">Simulazione didattica SMLQUIZ, non prova ufficiale ministeriale. Ogni esame riguarda una sola materia: 21 quesiti a scelta multipla con 5 alternative (una sola corretta) e 10 quesiti a completamento, con inserimento della parola o del concetto richiesto. Nel calendario ufficiale le tre prove di Chimica, Fisica e Biologia sono separate; tra una prova e l'altra è prevista una pausa di 30 minuti.</p>
-   <div className="section-head"><div><h2>Scegli la materia</h2><p>Una prova separata per materia, con 31 quesiti e 50 minuti come nell’esame 2026/27.</p></div></div>
-   <div className="sf-subjects">{subjects.map(s=><button key={s.id} className={'sf-subject panel '+(subject===s.id?'selected':'')} onClick={()=>setSubject(s.id)}><span className={'sf-subject-mark '+s.tone}>{s.label[0]}</span><span><b>{s.label}</b><small>Simulazione completa da 31 quesiti</small></span><span className="sf-radio">{subject===s.id?'✓':''}</span></button>)}</div>
-   {error&&<div className="notice">{error}</div>}
-   <div className="sf-start-row"><div><b>5 simulazioni gratuite totali per account</b><small>Non si rinnovano ogni giorno. Dopo le prime cinque puoi scegliere il pacchetto più adatto.</small></div><button className="primary" disabled={loading} onClick={()=>void start()}>{loading?'Preparazione…':'Inizia simulazione'} <ArrowRight size={16}/></button></div>
-   <div className="sf-paywall panel sf-pricing-always"><div className="eyebrow">{paywall?'SIMULAZIONI GRATUITE ESAURITE':'PACCHETTI SEMESTRE FILTRO'}</div><h2>Continua ad allenarti</h2><p>{paywall?'Hai utilizzato tutte le 5 simulazioni gratuite. Sblocca questa materia oppure tutte e tre.':'Puoi acquistare l’accesso anche prima di esaurire le simulazioni gratuite.'}</p><div className="sf-paywall-plans"><article><span>UNA MATERIA</span><h3>Semestre Filtro – {subjects.find(s=>s.id===subject)?.label}</h3><p>Tutte le simulazioni della materia selezionata, senza limiti.</p><strong>1,99 €</strong><button className="primary" disabled={!digitalConsent} onClick={()=>onBuyPackage(semestreSinglePrice,[subject],digitalConsent)}>Sblocca questa materia</button></article><article className="featured"><span>PACCHETTO COMPLETO</span><h3>Semestre Filtro – Completo</h3><p>Accesso illimitato a Biologia, Chimica e Fisica: tutte le 900 domande.</p><strong>3,99 €</strong><button className="primary" disabled={!digitalConsent} onClick={()=>onBuyPackage(semestreCompletePrice,[],digitalConsent)}>Sblocca tutte e 3</button></article></div><label className="sf-digital-consent"><input type="checkbox" checked={digitalConsent} onChange={e=>setDigitalConsent(e.target.checked)}/> Richiedo l'accesso immediato ai contenuti digitali e riconosco che, iniziata la fornitura, perdo il diritto di recesso.</label>{!digitalConsent&&<small className="sf-consent-hint">Conferma per procedere al pagamento.</small>}</div>
+   <header className="sf-page-heading">
+    <div className="sf-heading-icon"><GraduationCap size={23}/></div>
+    <div className="sf-heading-copy"><span className="sf-kicker">PREPARAZIONE · ANNO ACCADEMICO 2026/27</span><h1>Semestre Filtro</h1><p>Allenati sulle tre materie con simulazioni strutturate come le prove del semestre filtro.</p></div>
+    <span className="sf-official-tag">Formato 2026/27</span>
+   </header>
+   <section className="sf-intro-grid" aria-label="Come funziona">
+    <article className="sf-intro-main">
+     <div className="sf-intro-main-top"><span className="sf-kicker">LA SIMULAZIONE</span><span className="sf-pill"><CheckCircle2 size={13}/> Correzione alla fine</span></div>
+     <h2>Una prova alla volta.<br/><em>Un obiettivo chiaro.</em></h2>
+     <p>Scegli la materia, rispondi ai quesiti e consegna quando hai finito. Durante la prova non vedrai le soluzioni: le troverai tutte nella correzione finale.</p>
+     <div className="sf-step-list"><div><span>01</span><b>Scegli</b><small>Biologia, Chimica o Fisica</small></div><div><span>02</span><b>Svolgi</b><small>31 quesiti in 50 minuti</small></div><div><span>03</span><b>Rivedi</b><small>Punteggio, risposte e spiegazioni</small></div></div>
+    </article>
+    <aside className="sf-format-card">
+     <span className="sf-kicker">STRUTTURA DELLA PROVA</span>
+     <div className="sf-format-total"><strong>31</strong><span>quesiti<br/>per materia</span></div>
+     <div className="sf-format-row"><span><b>21</b> scelta multipla</span><small>5 alternative · 1 corretta</small></div>
+     <div className="sf-format-row"><span><b>10</b> completamento</span><small>Inserisci il termine richiesto</small></div>
+     <div className="sf-format-row"><span><b>50 min</b> durata</span><small>Tempo per ogni prova</small></div>
+     <div className="sf-format-score"><b>+1</b> corretta <b>−0,1</b> errata <b>0</b> omessa</div>
+    </aside>
+   </section>
+   <section className="sf-subject-section">
+    <div className="sf-section-title"><div><span className="sf-kicker">PASSAGGIO 1 DI 2</span><h2>Quale materia vuoi allenare?</h2><p>Ogni simulazione riguarda una sola materia. Puoi tornare qui per sceglierne un’altra.</p></div><span className="sf-selection-count">3 materie disponibili</span></div>
+    <div className="sf-subjects">{subjects.map(s=><button key={s.id} type="button" className={'sf-subject sf-subject-card '+s.tone+(subject===s.id?' selected':'')} onClick={()=>{setSubject(s.id);setError('')}} aria-pressed={subject===s.id}>
+     <span className="sf-subject-mark">{s.id==='chimica'?'Ch':s.label[0]}</span><span className="sf-subject-copy"><b>{s.label}</b><small>31 quesiti · 50 minuti</small></span><span className="sf-subject-check">{subject===s.id?<CheckCircle2 size={20}/>:<span/>}</span>
+    </button>)}</div>
+    <div className="sf-selected-summary"><div className="sf-selected-check"><CheckCircle2 size={18}/></div><div><small>MATERIA SELEZIONATA</small><b>{subjects.find(s=>s.id===subject)?.label}</b></div><div className="sf-selected-meta"><span>21 scelta multipla</span><span>10 completamenti</span></div></div>
+    {error&&<div className="sf-error" role="alert">{error}</div>}
+    <div className="sf-start-panel"><div><span className="sf-kicker">PASSAGGIO 2 DI 2</span><b>Pronto per iniziare?</b><small>Hai 5 simulazioni gratuite totali per account. Le risposte vengono salvate su questo dispositivo se esci dalla prova.</small></div><button className="primary sf-start-button" disabled={loading} onClick={()=>void start()}>{loading?'Preparazione della prova…':'Inizia la simulazione'} <ArrowRight size={17}/></button></div>
+   </section>
+   <p className="sf-disclaimer">Le simulazioni SMLQUIZ sono strumenti didattici di preparazione e non costituiscono prove ufficiali ministeriali. Il programma è comune a Medicina e Chirurgia, Odontoiatria e Protesi Dentaria e Medicina Veterinaria. Tra le prove ufficiali è prevista una pausa di 30 minuti.</p>
+   <section className="sf-access-section">
+    <div className="sf-access-heading"><div><span className="sf-kicker">ACCESSO ALLE SIMULAZIONI</span><h2>Continua ad allenarti</h2><p>{paywall?'Hai utilizzato tutte le 5 simulazioni gratuite. Scegli come proseguire.':'Le prime 5 simulazioni sono gratuite. Puoi acquistare un accesso esteso in qualsiasi momento.'}</p></div><span className="sf-access-free">5 prove gratuite</span></div>
+    <div className="sf-paywall-plans">
+     <article><span>ACCESSO SINGOLO</span><h3>Una materia</h3><p>Tutte le simulazioni di {subjects.find(s=>s.id===subject)?.label}, senza limiti.</p><strong>1,99 €</strong><button className="primary" disabled={!digitalConsent} onClick={()=>onBuyPackage(semestreSinglePrice,[subject],digitalConsent)}>Sblocca questa materia</button></article>
+     <article className="featured"><span>ACCESSO COMPLETO</span><h3>Tutte e tre le materie</h3><p>Biologia, Chimica e Fisica: accesso illimitato alle simulazioni.</p><strong>3,99 €</strong><button className="primary" disabled={!digitalConsent} onClick={()=>onBuyPackage(semestreCompletePrice,[],digitalConsent)}>Sblocca il pacchetto completo</button></article>
+    </div>
+    <label className="sf-digital-consent"><input type="checkbox" checked={digitalConsent} onChange={e=>setDigitalConsent(e.target.checked)}/> Richiedo l'accesso immediato ai contenuti digitali e riconosco che, iniziata la fornitura, perdo il diritto di recesso.</label>
+    {!digitalConsent&&<small className="sf-consent-hint">Conferma questa opzione per procedere al pagamento.</small>}
+   </section>
   </>}
   {mode==='exam'&&<>
    <div className="sf-mode-toolbar"><button type="button" className="sf-mode-back" onClick={exitMode}><ArrowLeft size={17}/> Indietro</button><span>MODALITÀ ESAME</span></div><div className="sf-exam-top"><div><div className="eyebrow">SEMESTRE FILTRO · {subjects.find(s=>s.id===subject)?.label.toUpperCase()}</div><h1>Simulazione d'esame</h1><p>{answered} di 31 risposte inserite · {mcq} a scelta multipla · 10 completamenti</p></div><div className={'sf-clock '+(seconds<300?'urgent':'')}><Clock3 size={18}/><b>{fmt(seconds)}</b></div></div>
