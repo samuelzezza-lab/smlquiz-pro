@@ -1,0 +1,85 @@
+/* SMLQUIZ Pro — interfaccia unica, compatta e coerente con la nuova home. */
+:root{
+  --mint:#55dfbd;
+  --line:rgba(145,170,190,.18);
+  --surface:#0b1928;
+  --surface-2:#102236;
+  --muted:#9aafc1;
+}
+body{background:#071321;color:#edf4f7}
+.shell{--text:#edf4f7;background:radial-gradient(ellipse at 72% -18%,rgba(64,157,145,.13),transparent 38%),#071321}
+.sidebar{
+  inset:0 0 auto 0;width:100%;height:70px;padding:8px 18px;
+  flex-direction:row;align-items:center;gap:7px;overflow-x:auto;overflow-y:hidden;
+  background:rgba(7,19,33,.97);border-right:0;border-bottom:1px solid rgba(143,180,190,.18);
+  scrollbar-width:thin;scrollbar-color:#315267 transparent
+}
+.sidebar .brand{flex:0 0 auto;padding:0 15px 0 0;margin-right:5px;border-right:1px solid var(--line);gap:9px}
+.sidebar .brand-logo{width:37px;height:37px;border-radius:12px;background:linear-gradient(145deg,#174b4b,#102b3c);color:#d8fff5;box-shadow:none}
+.sidebar .brand b{color:#f0f7f8;letter-spacing:1px}
+.sidebar .brand small{color:#91aeb9;letter-spacing:1px}
+.sidebar .close,.sidebar .nav-caption,.sidebar .help-card{display:none!important}
+.sidebar .nav-link{flex:0 0 auto;height:42px;margin:0;padding:0 11px;white-space:nowrap;border:1px solid transparent;color:#b0c2ce;font-size:11px}
+.sidebar .nav-link:hover{background:#ffffff0a;border-color:#ffffff12;color:#fff}
+.sidebar .nav-link.active{background:#123c3b;color:#dffff7;box-shadow:inset 0 -2px #55dfbd;border-color:#55dfbd33}
+.sidebar .nav-link.active svg{color:#55dfbd}
+.sidebar-bottom{flex:0 0 auto;margin:0 0 0 auto;padding-left:10px}
+.mini-profile{padding:5px 8px;border:1px solid var(--line);border-radius:12px;background:#0c1d2b}
+.mini-profile .avatar{background:#174b4b;color:#d8fff5}
+.main{margin-left:0;padding-top:70px;min-width:0}
+.topbar{top:70px;height:58px;padding:0 clamp(16px,3vw,38px);background:rgba(7,19,33,.92);border-bottom-color:rgba(143,180,190,.13)}
+.crumb{color:#9bb0bc}
+.crumb b{color:#e5f2f2}
+.content{width:min(100%,1320px);padding:clamp(20px,3vw,34px) clamp(16px,3vw,38px) 42px}
+.notice{margin:12px clamp(16px,3vw,38px) 0;background:#12302e;border-color:#39776d;color:#d4fff3}
+.notice span{color:#b6d2cd}
+.primary{background:linear-gradient(120deg,#55dfbd,#39bfa7);color:#06231f;border-color:transparent;box-shadow:0 8px 22px #36c9aa22}
+.primary:hover{filter:brightness(1.05)}
+.secondary{background:#102538;border-color:#2a4659;color:#d6e6e9}
+.eyebrow{color:#65d9c0}
+.panel,.feature,.subject-card,.stat,.account-metric{border-color:rgba(143,180,190,.18)}
+.panel{background:linear-gradient(145deg,#102236,#0b1a29)}
+.home-page{padding-top:18px}
+.home-page>.page-heading{margin-bottom:16px}
+.home-page>.filters{padding:15px;background:#0d2030;border-color:#284455}
+.home-intro{background:linear-gradient(125deg,#123b3c,#10283b 62%,#172c42)!important;border-color:#35675f!important}
+.home-intro .eyebrow{color:#75e5cb}
+.subject-card{background:linear-gradient(145deg,#102638,#0c1c2b)}
+.subject-card button{background:#17433f;color:#dffff7;border-color:#326e63}
+.page-heading h1,.welcome h1{color:#f0f7f7}
+.page-heading p,.welcome p{color:#a3b8c3}
+.function-home-back{top:82px}
+@media(max-width:800px){
+  .sidebar,.mobile-page-active .sidebar{
+    display:flex!important;position:fixed;inset:0 0 auto 0;width:100%;height:64px;
+    padding:6px 9px;transform:none;gap:3px;overflow-x:auto;overflow-y:hidden;
+    z-index:50;background:rgba(7,19,33,.98);border-bottom:1px solid var(--line)
+  }
+  .sidebar .brand{padding-right:9px;margin-right:3px}
+  .sidebar .brand-logo{width:32px;height:32px}
+  .sidebar .brand b{font-size:11px}
+  .sidebar .brand small{display:none}
+  .sidebar .nav-link{height:42px;padding:0 10px;font-size:10px;gap:6px}
+  .sidebar .nav-link svg{width:15px;height:15px}
+  .sidebar-bottom{display:none}
+  .main,.mobile-page-active .main{margin:0;padding-top:64px;width:100%;min-height:100dvh}
+  .topbar,.mobile-page-active .topbar{top:64px;min-height:52px;height:auto;padding:6px 12px;z-index:40}
+  .content,.mobile-page-active .content{padding:18px 14px 30px}
+  .notice{margin:10px 14px 0}
+  .mobile-page-active .hamb{display:none}
+  .function-home-back{display:none}
+  .home-page{padding-top:10px}
+  .home-intro{padding:20px!important;margin-bottom:14px!important}
+  .home-intro h1{font-size:clamp(25px,7vw,34px)!important}
+  .home-intro p{font-size:14px!important}
+}
+@media(max-width:430px){
+  .sidebar{height:60px;padding:5px 6px}
+  .sidebar .brand{gap:6px;padding-right:7px}
+  .sidebar .brand-logo{width:29px;height:29px}
+  .sidebar .brand b{font-size:10px}
+  .sidebar .nav-link{padding:0 8px;font-size:9px}
+  .main,.mobile-page-active .main{padding-top:60px}
+  .topbar,.mobile-page-active .topbar{top:60px}
+  .top-actions .pwa-install-button,.top-actions .online-label,.top-actions .online-dot,.font-size-indicator{display:none}
+}
