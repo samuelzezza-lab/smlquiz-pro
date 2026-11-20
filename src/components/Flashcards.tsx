@@ -34,6 +34,7 @@ export default function Flashcards({ subjects, selectedSubjectId, onBackToPath, 
   const [dueDates, setDueDates] = useState<Record<string, string>>({})
   const [deckMode, setDeckMode] = useState<'all'|'difficult'|'new'>('all')
   const [sessionStarted, setSessionStarted] = useState(false)
+  const [sessionChoice, setSessionChoice] = useState<'all'|'new'|'difficult'>('all')
   const [sessionCardIds, setSessionCardIds] = useState<string[]>([])
   const [sessionRatings, setSessionRatings] = useState<Record<Rating, number>>({ impossible: 0, difficult: 0, easy: 0, very_easy: 0 })
   const touchStartX = useRef<number | null>(null)
@@ -220,11 +221,11 @@ export default function Flashcards({ subjects, selectedSubjectId, onBackToPath, 
       <h2>Come vuoi studiare oggi?</h2>
       <p>Prova a rispondere a memoria, gira la scheda e valuta quanto era facile ricordare. Le prossime ripetizioni saranno programmate in base alla tua valutazione.</p>
       <div className="fc-setup-options">
-        <button type="button" className="fc-setup-option" onClick={() => startSession('all')}><span className="fc-option-icon"><BookOpen size={20}/></span><strong>Tutto il mazzo</strong><small>{availableCards.length} carte nuove o in scadenza</small><span className="fc-option-check">✓</span></button>
-        <button type="button" className="fc-setup-option" onClick={() => startSession('new')}><span className="fc-option-icon"><Shuffle size={20}/></span><strong>Solo nuove</strong><small>{cards.filter(card => !(ratings[card.id] ?? card.user_rating)).length} mai studiate</small><span className="fc-option-check">✓</span></button>
-        <button type="button" className="fc-setup-option" onClick={() => startSession('difficult')}><span className="fc-option-icon"><Heart size={20}/></span><strong>Da ripassare</strong><small>{cards.filter(card => { const r=ratings[card.id]??card.user_rating; const d=dueDates[card.id]??card.user_due_at; return (r==='impossible'||r==='difficult')&&(!d||new Date(d).getTime()<=Date.now()) }).length} difficili in scadenza</small><span className="fc-option-check">✓</span></button>
+        <button type="button" className={`fc-setup-option ${sessionChoice==='all'?'selected':''}`} onClick={() => setSessionChoice('all')}><span className="fc-option-icon"><BookOpen size={20}/></span><strong>Tutto il mazzo</strong><small>{availableCards.length} carte nuove o in scadenza</small><span className="fc-option-check">✓</span></button>
+        <button type="button" className={`fc-setup-option ${sessionChoice==='new'?'selected':''}`} onClick={() => setSessionChoice('new')}><span className="fc-option-icon"><Shuffle size={20}/></span><strong>Solo nuove</strong><small>{cards.filter(card => !(ratings[card.id] ?? card.user_rating)).length} mai studiate</small><span className="fc-option-check">✓</span></button>
+        <button type="button" className={`fc-setup-option ${sessionChoice==='difficult'?'selected':''}`} onClick={() => setSessionChoice('difficult')}><span className="fc-option-icon"><Heart size={20}/></span><strong>Da ripassare</strong><small>{cards.filter(card => { const r=ratings[card.id]??card.user_rating; const d=dueDates[card.id]??card.user_due_at; return (r==='impossible'||r==='difficult')&&(!d||new Date(d).getTime()<=Date.now()) }).length} difficili in scadenza</small><span className="fc-option-check">✓</span></button>
       </div>
-      <div className="fc-setup-footer"><span>Ripetizione dilazionata · Progressi salvati automaticamente</span><button type="button" className="primary" onClick={() => startSession('all')}>Avvia ripasso <ArrowRight size={17}/></button></div>
+      <div className="fc-setup-footer"><span>Ripetizione dilazionata · Progressi salvati automaticamente</span><button type="button" className="primary" onClick={() => startSession(sessionChoice)}>Avvia ripasso <ArrowRight size={17}/></button></div>
     </div>}
     {!loading && sessionStarted && sessionCards.length === 0 && deckCompleted && !paywall && <StudyCompletion eyebrow="TUTTO IN PARI" title="Non hai carte da ripassare adesso." description="Le carte nuove o quelle in scadenza compariranno qui quando sarà il momento." primaryLabel="Torna alle opzioni" onPrimary={() => {setSessionStarted(false);setDeckCompleted(false)}} />}
     {!loading && sessionStarted && cards.length > 0 && !paywall && !deckCompleted && current && <>
