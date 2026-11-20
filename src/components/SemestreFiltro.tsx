@@ -78,13 +78,13 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComple
    if(error)throw error
    const payload=data as {exam_id?:string;questions?:Question[];duration_seconds?:number;paywall?:boolean;access_type?:'free'|'single_subject'|'complete'|'unlimited'}
    if(payload?.paywall){setPaywall(true);return}
-   const questionSet=Array.isArray(payload?.questions)?payload.questions:[]
+   const questionSet:Question[]=Array.isArray(payload?.questions)?payload.questions:[]
    const multipleChoice=questionSet.filter(q=>q.tipo==='scelta_multipla')
    const completion=questionSet.filter(q=>q.tipo==='completamento')
    const validStructure=questionSet.length===31&&multipleChoice.length===21&&completion.length===10&&multipleChoice.every(q=>Array.isArray(q.opzioni)&&q.opzioni.length===5)
    if(!payload?.exam_id||!validStructure)throw new Error('La banca dati non contiene ancora una prova completa nel formato ufficiale 2026/27 (21 quesiti a scelta multipla con 5 opzioni e 10 a completamento). Scegli un’altra materia o riprova più tardi.')
    setPaywall(false);setAccessType(payload.access_type||'')
-   setExamId(payload.exam_id);setExam(payload.questions);setAnswers({});setResult(null);setSeconds(3000);setStartedAt(Date.now());finishLock.current=false;try{localStorage.setItem(draftKey,JSON.stringify({examId:payload.exam_id,exam:payload.questions,answers:{},subject,startedAt:Date.now(),accessType:payload.access_type||''}))}catch{}window.history.pushState({...window.history.state,semestreFiltroMode:true},'','/semestre-filtro');setMode('exam')
+   setExamId(payload.exam_id);setExam(questionSet);setAnswers({});setResult(null);setSeconds(3000);setStartedAt(Date.now());finishLock.current=false;try{localStorage.setItem(draftKey,JSON.stringify({examId:payload.exam_id,exam:payload.questions,answers:{},subject,startedAt:Date.now(),accessType:payload.access_type||''}))}catch{}window.history.pushState({...window.history.state,semestreFiltroMode:true},'','/semestre-filtro');setMode('exam')
   }catch(e){const message=e instanceof Error?e.message:'Non riesco a preparare la simulazione.';if(message.toLowerCase().includes('accedere')){onRequireLogin();return}setError(message)}
   finally{setLoading(false)}
  }
