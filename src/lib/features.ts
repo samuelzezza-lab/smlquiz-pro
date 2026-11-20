@@ -31,6 +31,7 @@ export type ExamMatch = {
   course_name: string | null
   exam_date: string | null
   status: string | null
+  note: string | null
   created_at: string
 }
 
@@ -87,10 +88,12 @@ export const featureApi = {
     callFeaturesApi<{ post: CommunityPost }>('posts.update', { id, ...patch }),
   deletePost: (id: string) => callFeaturesApi<{ deleted: true }>('posts.delete', { id }),
 
+  migrateLegacyExams: (exams: Array<{ id: string; name: string; date: string; note?: string }>) =>
+    callFeaturesApi<{ imported: boolean; count: number }>('exams.migrate_legacy', { exams }),
   listExams: () => callFeaturesApi<{ exams: ExamMatch[] }>('exams.list'),
-  createExam: (exam: Pick<ExamMatch, 'course_name' | 'exam_date'> & { status?: string }) =>
+  createExam: (exam: Pick<ExamMatch, 'course_name' | 'exam_date'> & { status?: string; note?: string }) =>
     callFeaturesApi<{ exam: ExamMatch }>('exams.create', exam as unknown as Record<string, unknown>),
-  updateExam: (id: string, patch: Partial<Pick<ExamMatch, 'course_name' | 'exam_date' | 'status'>>) =>
+  updateExam: (id: string, patch: Partial<Pick<ExamMatch, 'course_name' | 'exam_date' | 'status' | 'note'>>) =>
     callFeaturesApi<{ exam: ExamMatch }>('exams.update', { id, ...patch }),
   deleteExam: (id: string) => callFeaturesApi<{ deleted: true }>('exams.delete', { id }),
 
