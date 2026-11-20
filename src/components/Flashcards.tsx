@@ -4,7 +4,7 @@ import StudyCompletion from './StudyCompletion'
 import { supabase } from '../lib/supabase'
 
 type Subject = { id: string; nome: string; traduzioni?: Record<string, { nome?: string }> }
-type Rating = 'again'|'hard'|'good'|'easy'
+type Rating = 'impossible'|'difficult'|'easy'|'very_easy'
 type Flashcard = { id: string; subject_id: string; question_front: string; answer_back: string; explanation: string | null; order_index: number; quiz_number: number | null; user_rating?: Rating|null; user_due_at?: string|null }
 type Props = {
   subjects: Subject[]
@@ -45,14 +45,14 @@ export default function Flashcards({ subjects, selectedSubjectId, onBackToPath, 
       const rating = ratings[card.id] ?? card.user_rating
       const dueAt = dueDates[card.id] ?? card.user_due_at ?? null
       const due = !rating || !dueAt || new Date(dueAt).getTime() <= now
-      return deckMode === 'difficult' ? (rating === 'again' || rating === 'hard' || rating === 'again' || rating === 'again' || rating === 'hard' || rating === 'impossible' || rating === 'difficult') && due : due
+      return deckMode === 'difficult' ? (rating === 'impossible' || rating === 'difficult') && due : due
     })
   }, [cards, deckMode, ratings, dueDates])
   const current = displayedCards[index]
   const progressTotal = deckMode === 'difficult' ? displayedCards.length : (unlocked ? total : Math.min(total, FREE_LIMIT))
   const completedInDeck = cards.filter(card => Boolean(ratings[card.id] ?? card.user_rating)).length
-  const easyCount = cards.filter(card => ['good','easy','very_easy'].includes(ratings[card.id] ?? card.user_rating ?? '')).length
-  const difficultCount = cards.filter(card => ['again','hard','impossible','difficult'].includes(ratings[card.id] ?? card.user_rating ?? '')).length
+  const easyCount = cards.filter(card => ['easy','very_easy'].includes(ratings[card.id] ?? card.user_rating ?? '')).length
+  const difficultCount = cards.filter(card => ['impossible','difficult'].includes(ratings[card.id] ?? card.user_rating ?? '')).length
   const ratedCount = cards.filter(card => ratings[card.id] || card.user_rating).length
   const title = selectedSubject?.traduzioni?.it?.nome || selectedSubject?.nome || 'Flashcard'
 
@@ -174,7 +174,7 @@ export default function Flashcards({ subjects, selectedSubjectId, onBackToPath, 
       localStorage.setItem(key, JSON.stringify({ ...saved, [subjectId]: subjectRatings }))
     } catch { /* cache locale non disponibile */ }
     setFlipped(false)
-    if (deckMode === 'difficult' && rating !== 'again' && rating !== 'hard' && rating !== 'impossible' && rating !== 'difficult') {
+    if (deckMode === 'difficult' && rating !== 'impossible' && rating !== 'difficult') {
       setIndex(Math.min(index, Math.max(0, displayedCards.length - 2)))
       return
     }
@@ -239,10 +239,10 @@ export default function Flashcards({ subjects, selectedSubjectId, onBackToPath, 
         </div>
       </div>
       {flipped && <div className="flashcards-ratings">
-        <button className="rating-again" onClick={() => void rate('again')}><span>Non ricordata</span><small>Ripeti tra 10 min</small></button>
-        <button className="rating-hard" onClick={() => void rate('hard')}><span>Con difficoltà</span><small>Ripeti domani</small></button>
-        <button className="rating-good" onClick={() => void rate('good')}><span>Ricordata</span><small>Ripeti tra 3 giorni</small></button>
-        <button className="rating-easy" onClick={() => void rate('easy')}><span>Molto bene</span><small>Ripeti tra 7 giorni</small></button>
+        <button className="rating-again" onClick={() => void rate('impossible')}><span>Non ricordata</span><small>Ripeti tra 10 min</small></button>
+        <button className="rating-hard" onClick={() => void rate('difficult')}><span>Con difficoltà</span><small>Ripeti domani</small></button>
+        <button className="rating-good" onClick={() => void rate('easy')}><span>Ricordata</span><small>Ripeti tra 3 giorni</small></button>
+        <button className="rating-easy" onClick={() => void rate('very_easy')}><span>Molto bene</span><small>Ripeti tra 7 giorni</small></button>
       </div>}
       <div className="flashcards-controls">
         <button className="secondary" disabled={index===0} onClick={() => {setIndex(v=>v-1);setFlipped(false)}}><ArrowLeft size={15}/> Precedente</button>
