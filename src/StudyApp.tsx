@@ -444,7 +444,7 @@ export default function StudyApp(){
   {!isStudyMode&&<aside className={`sidebar ${mobileMenu ? "sidebar-open" : ""}`}>
    <a className="brand" href="/" onClick={e=>{e.preventDefault();location.href='/'}}><span className="brand-symbol">S<span>.</span></span><span className="brand-name">SMLQUIZ <b>PRO</b></span></a>
    <div className="side-caption">IL TUO SPAZIO UNIVERSITARIO</div>
-   <nav className="side-nav">{navigation.map(item=>{const Icon=item.icon;return <button key={item.id} className={`nav-link ${view===item.id?'active':''}`} onClick={()=>go(item.id)}><Icon size={18}/><span>{item.label}</span>{view===item.id&&<span className="active-mark"/>}</button>})}</nav>
+   <nav className="side-nav">{navigation.map(item=>{const Icon=item.icon;return <button key={item.id} className={`nav-link ${view===item.id?'active':''}`} onClick={()=>{if(item.id==='flashcards'&&(!confirmed||!selectedSubject)){notify('Conferma prima il percorso di studio.');return}go(item.id)}}><Icon size={18}/><span>{item.label}</span>{view===item.id&&<span className="active-mark"/>}</button>})}</nav>
    <div className="sidebar-bottom"><div className="sidebar-tip"><BookOpen size={17}/><strong>Studia con metodo.</strong><p>Quiz, ripasso e strumenti per organizzare il tuo percorso.</p></div><div className="sidebar-foot">© 2026 SMLQUIZ Pro</div></div>
   </aside>}
   {!isStudyMode&&mobileMenu&&<button className="mobile-scrim" aria-label="Chiudi menu" onClick={()=>setMobileMenu(false)}/>}
