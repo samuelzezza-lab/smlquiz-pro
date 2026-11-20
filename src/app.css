@@ -865,3 +865,92 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
  .sf-page.sf-mode-screen .sf-options button{min-height:64px;padding:13px 14px;grid-template-columns:34px minmax(0,1fr);gap:12px}
  .sf-page.sf-mode-screen .sf-question{padding:17px 14px}
 }
+
+
+/* Full-viewport study workspaces: remove nested width constraints from every study mode. */
+.app-shell.is-study-mode .content{
+  width:100%;
+  max-width:none;
+  padding:clamp(12px,2vw,26px);
+}
+.app-shell.is-study-mode .quiz-workspace,
+.app-shell.is-study-mode .result-workspace,
+.app-shell.is-study-mode .flashcards-page,
+.app-shell.is-study-mode .flashcards-redesign,
+.app-shell.is-study-mode .sf-page{
+  width:100% !important;
+  max-width:none !important;
+  margin-left:0 !important;
+  margin-right:0 !important;
+}
+.app-shell.is-study-mode .sf-page.content{
+  padding:0 !important;
+}
+.app-shell.is-study-mode .sf-exam-layout{
+  width:100%;
+  grid-template-columns:minmax(0,1fr) minmax(250px,300px);
+}
+.app-shell.is-study-mode .sf-question-list{
+  min-width:0;
+}
+.app-shell.is-study-mode .flashcards-redesign .flashcard-stage,
+.app-shell.is-study-mode .flashcards-redesign .flashcards-progress,
+.app-shell.is-study-mode .flashcards-redesign .flashcards-ratings,
+.app-shell.is-study-mode .flashcards-redesign .fc-session-toolbar{
+  width:min(100%,1180px);
+}
+.app-shell.is-study-mode .quiz-workspace,
+.app-shell.is-study-mode .result-workspace{
+  padding-bottom:clamp(24px,4vh,54px);
+}
+@media(max-width:900px){
+ .app-shell.is-study-mode .content{padding:12px 12px calc(18px + env(safe-area-inset-bottom))}
+ .app-shell.is-study-mode .sf-exam-layout{grid-template-columns:minmax(0,1fr)}
+ .app-shell.is-study-mode .sf-exam-aside{position:static}
+}
+@media(min-width:1500px){
+ .app-shell.is-study-mode .content{padding-left:clamp(28px,3vw,64px);padding-right:clamp(28px,3vw,64px)}
+}
+
+/* First-visit pricing and free-access explainer: modal, never a Home-page section. */
+.study-free-modal-backdrop{
+ position:fixed;inset:0;z-index:10000;display:grid;place-items:center;
+ padding:22px;background:rgba(2,9,17,.78);backdrop-filter:blur(9px);
+}
+.study-free-modal{
+ position:relative;width:min(100%,720px);max-height:min(92dvh,850px);overflow-y:auto;
+ padding:clamp(22px,4vw,38px);border:1px solid rgba(94,205,181,.24);
+ border-radius:20px;background:linear-gradient(150deg,#102c3b 0%,#0a1b2a 72%);
+ box-shadow:0 30px 100px rgba(0,0,0,.52);color:#e5f0f1;
+}
+.study-free-modal-top{display:flex;align-items:center;gap:11px}
+.study-free-mark{display:grid;width:38px;height:38px;place-items:center;border-radius:11px;background:rgba(84,207,178,.13);color:#6edbc3}
+.study-free-kicker{color:#76d9c3;font-size:10px;font-weight:850;letter-spacing:.15em}
+.study-free-close{display:grid;width:34px;height:34px;place-items:center;margin-left:auto;border:1px solid rgba(157,189,195,.2);border-radius:9px;background:rgba(255,255,255,.035);color:#adc2c8}
+.study-free-modal h2{margin:22px 0 8px;color:#f1f8f8;font-size:clamp(24px,4vw,32px);line-height:1.16;letter-spacing:-.035em}
+.study-free-intro{max-width:590px;margin:0;color:#9fb7bd;font-size:13px;line-height:1.65}
+.study-free-grid{display:grid;grid-template-columns:1fr;gap:10px;margin:24px 0 16px}
+.study-free-grid article{display:grid;grid-template-columns:42px minmax(0,1fr);align-items:start;gap:13px;padding:14px 15px;border:1px solid rgba(139,181,190,.17);border-radius:12px;background:rgba(5,20,31,.56)}
+.study-free-icon{display:grid;width:38px;height:38px;place-items:center;border-radius:10px;background:rgba(77,195,168,.12);color:#6bd9c0}
+.study-free-grid article div{display:grid;gap:3px;min-width:0}
+.study-free-grid article b{color:#d7e7e8;font-size:13px}
+.study-free-grid article strong{color:#75dfc7;font-size:14px}
+.study-free-grid article small{color:#91aab2;font-size:11px;line-height:1.5}
+.study-free-extra{display:grid;gap:5px;padding:14px 15px;border-left:3px solid #55cdb2;border-radius:0 9px 9px 0;background:rgba(67,157,139,.10)}
+.study-free-extra b{color:#d6e8e7;font-size:12px}
+.study-free-extra span{color:#9eb8bd;font-size:11px;line-height:1.65}
+.study-free-footnote{margin:13px 0 18px;color:#718e99;font-size:10px;line-height:1.5}
+.study-free-confirm{display:flex;width:100%;min-height:49px;align-items:center;justify-content:center;gap:10px;border:0;border-radius:11px;background:#58cdb3;color:#06211f;font-size:13px;font-weight:850;cursor:pointer;transition:filter .18s,transform .18s}
+.study-free-confirm:hover{filter:brightness(1.07);transform:translateY(-1px)}
+@media(min-width:700px){
+ .study-free-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .study-free-grid article{grid-template-columns:1fr;align-content:start;min-height:158px}
+}
+@media(max-width:520px){
+ .study-free-modal-backdrop{padding:10px;align-items:end}
+ .study-free-modal{max-height:94dvh;padding:20px 16px;border-radius:18px 18px 12px 12px}
+ .study-free-modal h2{margin-top:17px}
+ .study-free-grid{gap:8px;margin:17px 0 13px}
+ .study-free-grid article{padding:11px 12px;grid-template-columns:36px minmax(0,1fr);gap:10px}
+ .study-free-icon{width:34px;height:34px}
+}
