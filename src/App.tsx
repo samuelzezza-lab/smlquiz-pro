@@ -28,6 +28,26 @@ function PublicHome() {
  </div>
 }
 export default function App() {
+ useEffect(() => {
+  const previousRestoration = window.history.scrollRestoration
+  const scrollToPageTop = () => {
+   window.scrollTo(0, 0)
+   document.querySelector('.app-shell .content')?.scrollTo(0, 0)
+   window.requestAnimationFrame(() => {
+    window.scrollTo(0, 0)
+    document.querySelector('.app-shell .content')?.scrollTo(0, 0)
+   })
+  }
+  window.history.scrollRestoration = 'manual'
+  scrollToPageTop()
+  window.addEventListener('pageshow', scrollToPageTop)
+  window.addEventListener('popstate', scrollToPageTop)
+  return () => {
+   window.history.scrollRestoration = previousRestoration
+   window.removeEventListener('pageshow', scrollToPageTop)
+   window.removeEventListener('popstate', scrollToPageTop)
+  }
+ }, [])
  if (typeof window !== 'undefined' && window.location.pathname.startsWith('/app')) return <StudyApp/>
  return <PublicHome/>
 }
