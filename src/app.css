@@ -617,3 +617,67 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
   .topbar,.topbar:has(.home-public-nav){height:calc(60px + env(safe-area-inset-top));min-height:calc(60px + env(safe-area-inset-top))}
   .study-mode-header{height:calc(58px + env(safe-area-inset-top));min-height:calc(58px + env(safe-area-inset-top))}
 }
+
+
+/* Flashcards: focused reading layout, inspired by the uncluttered study flow of Quizlet/Anki. */
+.flashcards-redesign{width:100%;max-width:1120px;margin:0 auto;gap:12px!important;padding:8px 0 28px}
+.fc-study-header{display:grid;grid-template-columns:auto minmax(120px,1fr) minmax(160px,auto) auto;align-items:center;gap:18px;padding:10px 0 14px;border-bottom:1px solid rgba(148,163,184,.16)}
+.fc-back-link{display:inline-flex;align-items:center;gap:7px;background:transparent;border:0;color:var(--muted,#9aa7b8);font-size:13px;font-weight:650;cursor:pointer;padding:9px 0}
+.fc-heading span{display:block;color:#8e9aab;font-size:9px;font-weight:800;letter-spacing:.14em}
+.fc-heading h1{font-size:23px;line-height:1.1;margin:3px 0 0;color:var(--text,#f5f7fb)}
+.fc-subject-pill{display:flex;align-items:center;gap:9px;min-width:0;padding:10px 13px;border:1px solid rgba(148,163,184,.2);border-radius:11px;background:rgba(148,163,184,.055);color:#aebbd0}
+.fc-subject-pill strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text,#f5f7fb);font-size:13px}
+.fc-total-pill{display:flex;align-items:baseline;gap:6px;white-space:nowrap;color:#9aa7b8;font-size:12px}
+.fc-total-pill strong{font-size:18px;color:var(--text,#f5f7fb);font-variant-numeric:tabular-nums}
+.fc-mini-stats{display:flex;align-items:center;gap:18px;min-height:30px;color:#98a5b7;font-size:11px}
+.fc-mini-stats b{color:var(--text,#f5f7fb);font-size:12px;margin-right:3px}
+.fc-mini-stats button{display:inline-flex;align-items:center;gap:6px;margin-left:auto;padding:6px 10px;border:1px solid rgba(148,163,184,.2);border-radius:8px;background:transparent;color:#b9c5d6;font-size:11px;cursor:pointer}
+.fc-mini-stats button+button{margin-left:-10px}
+.fc-mini-stats button.active{border-color:#6689d8;color:#a9c4ff;background:rgba(85,125,205,.12)}
+.flashcards-redesign .flashcards-progress{max-width:820px;width:100%;margin:2px auto 0}
+.flashcards-redesign .flashcard-stage{width:100%;max-width:900px;height:clamp(360px,54vh,540px);min-height:360px;margin:0 auto;padding:0}
+.flashcards-redesign .flashcard-3d{width:100%;height:100%;min-height:360px;max-height:540px}
+.flashcards-redesign .flashcard-face{height:100%;min-height:360px;max-height:540px;overflow-y:auto;overflow-x:hidden;justify-content:flex-start;align-items:stretch;padding:clamp(26px,4vw,54px);border-radius:20px}
+.flashcards-redesign .flashcard-kicker{font-size:10px;letter-spacing:.16em;font-weight:850;margin-bottom:20px}
+.flashcards-redesign .flashcard-copy{width:100%;max-width:760px;margin:0 auto;font-size:clamp(21px,2.15vw,29px);line-height:1.62;white-space:pre-wrap;overflow-wrap:anywhere;text-align:left}
+.flashcards-redesign .flashcard-hint{margin-top:auto;padding-top:24px;font-size:11px;opacity:.7}
+.flashcards-redesign .flashcard-explanation-section{width:100%;max-width:760px;margin:24px auto 0;padding:18px 20px;border-radius:12px;background:rgba(148,163,184,.075);border:1px solid rgba(148,163,184,.14);text-align:left}
+.flashcards-redesign .flashcard-explanation-title{font-size:10px;letter-spacing:.12em;margin:0 0 9px;color:#91a8cf}
+.flashcards-redesign .flashcard-explanation{font-size:15px;line-height:1.65;margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.flashcards-redesign .flashcards-ratings{width:100%;max-width:900px;margin:14px auto 0;gap:10px}
+.flashcards-redesign .flashcards-ratings button{min-height:62px;border-radius:11px}
+.flashcards-redesign .flashcards-ratings button span{font-size:13px}
+.flashcards-redesign .flashcards-ratings button small{font-size:11px}
+.flashcards-redesign .flashcards-controls{width:100%;max-width:900px;margin:12px auto 0;display:grid;grid-template-columns:minmax(130px,.7fr) minmax(220px,1.3fr);gap:12px}
+.flashcards-redesign .flashcards-controls button{min-height:48px;border-radius:11px;font-size:13px}
+.flashcards-redesign .flashcards-footnote{max-width:900px;width:100%;margin:4px auto 0;text-align:center;font-size:10px;color:#8290a4}
+.flashcards-redesign .flashcards-ad-slot{max-width:900px;margin:0 auto}
+@media(max-width:760px){
+ .flashcards-redesign{padding:2px 0 20px;gap:10px!important}
+ .fc-study-header{grid-template-columns:auto 1fr auto;gap:8px;padding:6px 0 10px}
+ .fc-back-link{font-size:11px;gap:4px}
+ .fc-heading span{font-size:8px}.fc-heading h1{font-size:20px}
+ .fc-subject-pill{grid-column:1/3;grid-row:2;padding:8px 10px}
+ .fc-subject-pill strong{font-size:12px}
+ .fc-total-pill{grid-column:3;grid-row:2;justify-content:flex-end}
+ .fc-mini-stats{gap:11px;flex-wrap:wrap;font-size:10px}
+ .fc-mini-stats button{margin-left:0;padding:6px 8px}
+ .fc-mini-stats button+button{margin-left:0}
+ .flashcards-redesign .flashcards-progress{margin:3px auto 0}
+ .flashcards-redesign .flashcard-stage{height:clamp(390px,58svh,590px);min-height:390px;padding:0}
+ .flashcards-redesign .flashcard-3d{min-height:390px;max-height:590px}
+ .flashcards-redesign .flashcard-face{min-height:390px;max-height:590px;padding:24px 20px;border-radius:16px}
+ .flashcards-redesign .flashcard-kicker{margin-bottom:16px}
+ .flashcards-redesign .flashcard-copy{font-size:clamp(19px,5vw,24px);line-height:1.55}
+ .flashcards-redesign .flashcard-explanation-section{margin-top:18px;padding:14px}
+ .flashcards-redesign .flashcard-explanation{font-size:14px;line-height:1.6}
+ .flashcards-redesign .flashcards-ratings{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+ .flashcards-redesign .flashcards-ratings button{min-height:58px}
+ .flashcards-redesign .flashcards-controls{grid-template-columns:1fr 1.4fr;gap:8px;margin-top:10px}
+ .flashcards-redesign .flashcards-controls button{min-height:48px;padding:9px 8px;font-size:12px}
+}
+@media(max-width:380px){
+ .fc-mini-stats{gap:8px}
+ .flashcards-redesign .flashcard-face{padding:20px 16px}
+ .flashcards-redesign .flashcards-controls{grid-template-columns:1fr}
+}
