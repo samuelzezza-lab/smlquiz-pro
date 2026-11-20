@@ -747,3 +747,121 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
 
 .flashcards-redesign .fc-setup-option.selected{border-color:#4fc8b1;background:linear-gradient(145deg,rgba(37,106,96,.25),rgba(13,37,48,.96));box-shadow:inset 0 0 0 1px rgba(79,200,177,.16)}
 .flashcards-redesign .fc-setup-option.selected .fc-option-check{opacity:1}
+
+
+/* Semestre Filtro — all exam surfaces use the SMLQUIZ navy/teal palette */
+.sf-page.sf-mode-screen .sf-question,
+.sf-page.sf-mode-screen .sf-review,
+.sf-page.sf-mode-screen .sf-exam-aside{
+  background:linear-gradient(145deg,#102b3a 0%,#0b1d2c 100%) !important;
+  border:1px solid rgba(91,216,189,.19) !important;
+  border-radius:14px;
+  box-shadow:0 12px 32px rgba(0,0,0,.18);
+}
+.sf-page.sf-mode-screen .sf-question{
+  padding:clamp(20px,2.5vw,28px);
+}
+.sf-page.sf-mode-screen .sf-question h3,
+.sf-page.sf-mode-screen .sf-review h3{
+  color:#d3e5e3 !important;
+  margin:16px 0 20px;
+  line-height:1.65;
+  letter-spacing:0;
+}
+.sf-page.sf-mode-screen .sf-options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin-top:18px;
+}
+.sf-page.sf-mode-screen .sf-options button{
+  display:grid;
+  grid-template-columns:36px minmax(0,1fr);
+  align-items:start;
+  gap:13px;
+  width:100%;
+  min-width:0;
+  min-height:72px;
+  padding:16px 17px;
+  border:1px solid rgba(112,169,176,.22);
+  border-radius:11px;
+  background:#0b1d2c;
+  color:#c1d6d5;
+  font-size:14px;
+  line-height:1.6;
+  white-space:normal;
+  transition:background .16s ease,border-color .16s ease,transform .16s ease;
+}
+.sf-page.sf-mode-screen .sf-options button b{
+  display:grid;
+  width:32px;
+  height:32px;
+  place-items:center;
+  margin:0;
+  border:1px solid rgba(100,216,190,.28);
+  border-radius:9px;
+  background:rgba(72,193,166,.12);
+  color:#72dfc7;
+  font-size:13px;
+  line-height:1;
+  font-weight:800;
+}
+.sf-page.sf-mode-screen .sf-options button span{
+  display:block;
+  min-width:0;
+  padding-top:3px;
+  color:inherit;
+  overflow-wrap:anywhere;
+}
+.sf-page.sf-mode-screen .sf-options button:hover{
+  background:#123344;
+  border-color:rgba(91,216,189,.58);
+  transform:translateY(-1px);
+}
+.sf-page.sf-mode-screen .sf-options button.chosen{
+  background:linear-gradient(110deg,rgba(47,145,126,.23),rgba(14,43,55,.96));
+  border-color:#55cdb2;
+  color:#e0f4ef;
+  box-shadow:inset 0 0 0 1px rgba(85,205,178,.14);
+}
+.sf-page.sf-mode-screen .sf-options button.chosen b{
+  background:#55cdb2;
+  color:#08211f;
+  border-color:#55cdb2;
+}
+.sf-page.sf-mode-screen .sf-exam-aside{
+  align-self:start;
+  padding:20px;
+}
+.sf-page.sf-mode-screen .sf-mini-grid button{
+  min-height:34px;
+  border:1px solid rgba(112,169,176,.22);
+  border-radius:8px;
+  background:#0b1d2c;
+  color:#a9c9c8;
+}
+.sf-page.sf-mode-screen .sf-mini-grid button.done{
+  background:rgba(66,174,148,.17);
+  border-color:rgba(91,216,189,.5);
+  color:#75dfc8;
+}
+.sf-page.sf-mode-screen .sf-review{
+  padding:clamp(18px,2.5vw,26px);
+  margin-bottom:12px;
+}
+.sf-page.sf-mode-screen .sf-review p{
+  color:#b4cbcb !important;
+  line-height:1.7;
+}
+.sf-page.sf-mode-screen .sf-review .sf-explanation{
+  padding:14px 16px;
+  border-left:3px solid #58cdb2;
+  border-radius:0 9px 9px 0;
+  background:rgba(65,157,139,.10);
+  color:#a9c8c4 !important;
+}
+@media(max-width:760px){
+ .sf-page.sf-mode-screen .sf-options{grid-template-columns:minmax(0,1fr);gap:9px}
+ .sf-page.sf-mode-screen .sf-options button{min-height:64px;padding:13px 14px;grid-template-columns:34px minmax(0,1fr);gap:12px}
+ .sf-page.sf-mode-screen .sf-question{padding:17px 14px}
+}
