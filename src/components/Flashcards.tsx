@@ -8,6 +8,8 @@ type Rating = 'impossible'|'difficult'|'easy'|'very_easy'
 type Flashcard = { id: string; subject_id: string; question_front: string; answer_back: string; explanation: string | null; order_index: number; quiz_number: number | null; user_rating?: Rating|null; user_due_at?: string|null }
 type Props = {
   subjects: Subject[]
+  selectedSubjectId: string
+  onBackToPath: () => void
   user: { id: string } | null
   onBuy: (priceId: string, subjectIds: string[], consentConfirmed: boolean) => void
   notify: (message: string) => void
@@ -17,9 +19,8 @@ type Props = {
 const PRICE_ID = 'price_1UdBxFBCybXKHSfRwLeImDFx'
 const FREE_LIMIT = 50
 
-export default function Flashcards({ subjects, user, onBuy, notify, showAds = true, onStartQuiz }: Props) {
-  const [subjectId, setSubjectId] = useState('')
-  const [subjectSearch, setSubjectSearch] = useState('')
+export default function Flashcards({ subjects, selectedSubjectId, onBackToPath, user, onBuy, notify, showAds = true, onStartQuiz }: Props) {
+  const [subjectId, setSubjectId] = useState(selectedSubjectId)
   const [cards, setCards] = useState<Flashcard[]>([])
   const [total, setTotal] = useState(0)
   const [index, setIndex] = useState(0)
@@ -36,11 +37,6 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
   const notifyRef = useRef(notify)
   useEffect(() => { notifyRef.current = notify }, [notify])
   const selectedSubject = useMemo(() => subjects.find(s => s.id === subjectId), [subjects, subjectId])
-  const filteredSubjects = useMemo(() => {
-    const query = subjectSearch.trim().toLocaleLowerCase('it')
-    if (!query) return subjects
-    return subjects.filter(subject => (subject.traduzioni?.it?.nome || subject.nome).toLocaleLowerCase('it').includes(query))
-  }, [subjects, subjectSearch])
   // Nel mazzo principale restano soltanto le carte non ancora valutate.
   // Le carte difficili restano accessibili separatamente nel ripasso dedicato.
   const displayedCards = useMemo(() => {
@@ -121,11 +117,11 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     } catch (err) {
       notifyRef.current(err instanceof Error ? err.message : 'Impossibile caricare le flashcard.')
     } finally { setLoading(false) }
-  }, [])
+  }, [user?.id])
 
   useEffect(() => {
-    if (!subjectId && subjects.length) setSubjectId(subjects[0].id)
-  }, [subjectId, subjects])
+    setSubjectId(selectedSubjectId)
+  }, [selectedSubjectId])
   useEffect(() => { if (subjectId) void loadDeck(subjectId) }, [subjectId, loadDeck])
 
   const next = useCallback(async () => {
@@ -208,36 +204,21 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
     return () => window.removeEventListener('keydown', handler)
   }, [current, flipped, index, paywall, displayedCards.length, unlocked, cards.length, total, next])
 
-  return <section className="content flashcards-page">
+  return <section className="flashcards-page">
     <header className="flashcards-hero">
       <div className="flashcards-hero-copy">
         <div className="flashcards-eyebrow"><Sparkles size={14}/> METODO DI STUDIO ATTIVO</div>
         <h1>Flashcard</h1>
-        <p>Memorizza i concetti chiave, verifica ciò che ricordi e concentra il ripasso sugli argomenti più difficili.</p>
+        <p>Ripasso attivo, progressi e ripetizione programmata: tutto il mazzo della materia che hai già selezionato.</p>
       </div>
       <div className="flashcards-hero-mark" aria-hidden="true"><Layers3 size={30}/></div>
     </header>
-    <div className="flashcards-subject-panel panel">
-      <div className="flashcards-subject-label"><BookOpen size={16}/><span>La tua materia</span></div>
-      <div className="flashcards-subject-picker">
-        <input
-          id="flashcards-subject-search"
-          type="search"
-          value={subjectSearch}
-          onChange={e => setSubjectSearch(e.target.value)}
-          placeholder="Cerca una materia…"
-          aria-label="Cerca una materia"
-          autoComplete="off"
-        />
-        <select id="flashcards-subject" aria-label="Seleziona materia" value={subjectId} onChange={e => setSubjectId(e.target.value)}>
-          {selectedSubject && !filteredSubjects.some(subject => subject.id === selectedSubject.id) && <option value={selectedSubject.id}>{selectedSubject.traduzioni?.it?.nome || selectedSubject.nome} · selezionata</option>}
-          {filteredSubjects.map(subject => <option key={subject.id} value={subject.id}>{subject.traduzioni?.it?.nome || subject.nome}</option>)}
-          {filteredSubjects.length === 0 && <option value={subjectId} disabled>Nessuna materia trovata</option>}
-        </select>
-        <span className="flashcards-subject-results">{filteredSubjects.length} materie trovate</span>
-      </div>
-      <div className="flashcards-subject-count"><strong>{total.toLocaleString('it-IT')}</strong><span>carte disponibili</span></div>
-    </div>
+    {selectedSubject && <div className="flashcards-subject-context">
+      <div className="flashcards-subject-context-icon"><BookOpen size={18}/></div>
+      <div className="flashcards-subject-context-copy"><span>MATERIA SELEZIONATA</span><strong>{selectedSubject.traduzioni?.it?.nome || selectedSubject.nome}</strong></div>
+      <div className="flashcards-subject-context-total"><strong>{total.toLocaleString('it-IT')}</strong><span>carte disponibili</span></div>
+    </div>}
+    {!selectedSubjectId && <StudyCompletion eyebrow="PERCORSO NON SELEZIONATO" title="Scegli prima la materia da studiare." description="Torna al tuo percorso universitario, seleziona facoltà, anno e materia, poi apri di nuovo le Flashcard. La scelta verrà mantenuta automaticamente." primaryLabel="Torna al percorso" onPrimary={onBackToPath} />}
     <div className="flashcards-overview">
       <div className="flashcards-overview-item"><span className="flashcards-overview-icon"><BookOpen size={17}/></span><div><strong>{total.toLocaleString('it-IT')}</strong><small>Carte disponibili</small></div></div>
       <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-success"><Check size={17}/></span><div><strong>{easyCount}</strong><small>Facili</small></div></div>
@@ -284,7 +265,7 @@ export default function Flashcards({ subjects, user, onBuy, notify, showAds = tr
       secondaryLabel="Fai un quiz su questa materia"
       onSecondary={() => { if (selectedSubject) onStartQuiz?.(selectedSubject.id) }}
     />}
-    {!loading && total===0 && <StudyCompletion eyebrow="CATALOGO IN CRESCITA" title="Le flashcard di questa materia stanno arrivando." description="Al momento non ci sono ancora carte disponibili per questa materia. SMLQUIZ è in continua crescita: il catalogo verrà ampliato progressivamente con nuove flashcard e contenuti di studio." primaryLabel="Prova un'altra materia" onPrimary={()=>{const nextSubject=subjects.find(s=>s.id!==subjectId);if(nextSubject){setSubjectSearch('');setSubjectId(nextSubject.id)}else setSubjectSearch('')}} secondaryLabel="Allenati con un quiz" onSecondary={()=>{if(selectedSubject)onStartQuiz?.(selectedSubject.id)}}/>}
+    {!loading && subjectId && total===0 && <StudyCompletion eyebrow="CATALOGO IN CRESCITA" title="Le flashcard di questa materia stanno arrivando." description="Al momento non ci sono ancora carte disponibili per questa materia. SMLQUIZ è in continua crescita: il catalogo verrà ampliato progressivamente con nuove flashcard e contenuti di studio." primaryLabel="Torna alla selezione materia" onPrimary={onBackToPath} secondaryLabel="Allenati con un quiz" onSecondary={()=>{if(selectedSubject)onStartQuiz?.(selectedSubject.id)}}/>}
     {!loading && total>0 && deckMode==='difficult' && displayedCards.length===0 && !paywall && <div className="panel empty">Non hai carte difficili da ripassare. <button className="simple-link" onClick={()=>setDeckMode('all')}>Torna a tutte le flashcard</button></div>}
     {paywall && <div className="flashcards-paywall-backdrop"><div className="flashcards-paywall panel flashcards-tinder-paywall">
       <div className="flashcards-paywall-top"><span><Heart size={15} fill="currentColor"/> SMLQUIZ PREMIUM</span><span className="flashcards-free-tag">50 / 50 COMPLETATE</span></div>
