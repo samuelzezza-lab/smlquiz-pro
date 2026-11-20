@@ -1,7 +1,20 @@
+import { useEffect } from 'react'
 import StudyApp from './StudyApp'
+import { supabase } from './lib/supabase'
 import { ArrowRight, BookOpen, Brain, GraduationCap, Layers3 } from 'lucide-react'
 
 function PublicHome() {
+ useEffect(() => {
+  let active = true
+  if (!supabase) return
+  supabase.auth.getSession().then(({ data }) => {
+   if (active && data.session) window.location.replace('/app/' + window.location.search)
+  }).catch(() => {})
+  const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+   if (active && session) window.location.replace('/app/' + window.location.search)
+  })
+  return () => { active = false; data.subscription.unsubscribe() }
+ }, [])
  return <div className="public-site">
   <header className="public-header"><a className="public-brand" href="/"><span className="public-mark">S<span>.</span></span>SMLQUIZ <b>PRO</b></a><nav><a href="/come-funziona/">Come funziona</a><a href="/materie/">Materie</a><a href="/guide/">Guide di studio</a></nav><a className="public-login" href={'/app/'+(typeof window !== 'undefined' ? window.location.search : '')}>Entra nella piattaforma <ArrowRight size={15}/></a></header>
   <main>
