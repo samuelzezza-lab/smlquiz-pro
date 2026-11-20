@@ -502,3 +502,47 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
 .review-card-correct{border-color:rgba(34,201,133,.26)}
 .review-card-wrong{border-color:rgba(255,98,107,.23)}
 .review-card-heading small{margin:0}
+
+
+/* Flashcard: dimensioni compatte, testo leggibile e valutazioni con gerarchia chiara */
+.app-shell.is-study-mode .flashcards-page{gap:0}
+.app-shell.is-study-mode .flashcards-hero{min-height:0;padding:18px 22px;margin-bottom:10px}
+.app-shell.is-study-mode .flashcards-hero h1{font-size:clamp(24px,2.4vw,32px);margin:4px 0}
+.app-shell.is-study-mode .flashcards-hero p{font-size:12px;margin:0;line-height:1.5}
+.app-shell.is-study-mode .flashcards-subject-context{min-height:54px;padding:9px 14px;margin-bottom:10px}
+.app-shell.is-study-mode .flashcards-subject-context-icon{width:34px;height:34px}
+.app-shell.is-study-mode .flashcards-overview{gap:8px;margin:0 0 8px}
+.app-shell.is-study-mode .flashcards-overview-item{min-height:54px;padding:8px 12px;gap:9px}
+.app-shell.is-study-mode .flashcards-overview-item strong{font-size:16px}
+.app-shell.is-study-mode .flashcards-overview-item small{font-size:10px}
+.app-shell.is-study-mode .flashcards-progress{margin:2px 0 8px}
+.app-shell.is-study-mode .flashcard-stage{min-height:0;height:clamp(260px,40vh,410px);padding:10px;margin:8px 0}
+.app-shell.is-study-mode .flashcard-3d{height:100%;min-height:0;max-height:410px}
+.app-shell.is-study-mode .flashcard-face{height:100%;min-height:0;max-height:410px;overflow-y:auto;padding:clamp(16px,2vw,26px);justify-content:center}
+.app-shell.is-study-mode .flashcard-copy{font-size:clamp(17px,1.65vw,23px);line-height:1.4;margin:10px auto;max-width:900px}
+.app-shell.is-study-mode .flashcard-explanation-section{margin:8px auto 0;max-width:850px}
+.app-shell.is-study-mode .flashcard-explanation-title{font-size:10px;margin:0 0 4px}
+.app-shell.is-study-mode .flashcard-explanation{font-size:12px;line-height:1.45;margin:0}
+.app-shell.is-study-mode .flashcard-hint{font-size:9px;margin-top:8px}
+.app-shell.is-study-mode .flashcards-controls{margin:8px 0}
+.app-shell.is-study-mode .flashcards-controls button{min-height:42px}
+.app-shell.is-study-mode .flashcards-ratings{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0}
+.app-shell.is-study-mode .flashcards-ratings button{min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 5px;border-radius:10px;font-weight:750}
+.app-shell.is-study-mode .flashcards-ratings button span{font-size:11px}
+.app-shell.is-study-mode .flashcards-ratings button small{font-size:9px;font-weight:500;opacity:.82}
+.app-shell.is-study-mode .flashcards-ratings .rating-again{border-color:#a64f52;background:#321f2a;color:#ffb4ad}
+.app-shell.is-study-mode .flashcards-ratings .rating-hard{border-color:#9a7540;background:#30291f;color:#f2ca8c}
+.app-shell.is-study-mode .flashcards-ratings .rating-good{border-color:#397c70;background:#17332f;color:#9be4d1}
+.app-shell.is-study-mode .flashcards-ratings .rating-easy{border-color:#397c70;background:#123b37;color:#aaf0dc}
+@media(max-width:760px){
+ .app-shell.is-study-mode .flashcards-hero{padding:14px;margin-bottom:9px}
+ .app-shell.is-study-mode .flashcards-overview{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .app-shell.is-study-mode .flashcards-overview-item{min-height:48px;padding:8px}
+ .app-shell.is-study-mode .flashcard-stage{height:clamp(250px,39vh,350px);padding:8px;margin:7px 0}
+ .app-shell.is-study-mode .flashcard-3d,.app-shell.is-study-mode .flashcard-face{max-height:350px}
+ .app-shell.is-study-mode .flashcard-face{padding:15px 12px}
+ .app-shell.is-study-mode .flashcard-copy{font-size:clamp(16px,4.2vw,20px);line-height:1.35}
+ .app-shell.is-study-mode .flashcard-explanation{font-size:11px;line-height:1.4}
+ .app-shell.is-study-mode .flashcards-ratings{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .app-shell.is-study-mode .flashcards-ratings button{min-height:52px}
+}
