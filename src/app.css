@@ -1086,6 +1086,7 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
 
 
 /* Global full-width layout for every internal feature, not only the three study modes. */
+.app-shell.is-fullscreen-view .mobile-bottom-nav{display:none!important}
 .app-shell.is-fullscreen-view{
   min-height:100vh;
   min-height:100dvh;
