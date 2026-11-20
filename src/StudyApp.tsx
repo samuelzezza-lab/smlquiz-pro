@@ -50,6 +50,9 @@ export default function StudyApp(){
  const [universities,setUniversities]=useState<{id:string;name:string;city:string}[]>([])
  const [profileBusy,setProfileBusy]=useState(false)
  const [referralCopied,setReferralCopied]=useState(false)
+ const [deletePassword,setDeletePassword]=useState('')
+ const [deleteConfirm,setDeleteConfirm]=useState('')
+ const [deleteBusy,setDeleteBusy]=useState(false)
  const [digitalConsent,setDigitalConsent]=useState(false)
  const [purchaseSubjectSearch,setPurchaseSubjectSearch]=useState('')
  const [purchaseSubjectId,setPurchaseSubjectId]=useState('')
@@ -345,6 +348,20 @@ export default function StudyApp(){
   if(!result)return
   const message='Ho completato una simulazione su SMLQUIZ Pro: '+(result.correct??0)+' risposte corrette su '+(result.total??10)+', punteggio '+(Number(result.score??0)*3).toFixed(1)+'/30. Allenati anche tu: https://smlquiz.it/'
   window.open('https://wa.me/?text='+encodeURIComponent(message),'_blank','noopener,noreferrer')
+ }
+ async function deleteAccount(e:FormEvent){
+  e.preventDefault();if(!supabase||!user)return
+  if(deleteConfirm!=='ELIMINA'){notify('Scrivi ELIMINA per confermare.');return}
+  setDeleteBusy(true)
+  try{
+   const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'delete-account',password:deletePassword,confirmation:'ELIMINA'}})
+   if(error)throw error;if(data?.error)throw new Error(data.error)
+   await supabase.auth.signOut()
+   Object.keys(localStorage).filter(k=>k.startsWith('smlquiz.')).forEach(k=>localStorage.removeItem(k))
+   setUser(null);setWallet(null);setHistory([]);setSavedQuestions([]);setStudyCollections([]);setStudyExams([])
+   setDeletePassword('');setDeleteConfirm('');go('home');notify('Account eliminato.')
+  }catch(err){notify(err instanceof Error?err.message:'Non è stato possibile eliminare l’account.')}
+  finally{setDeleteBusy(false)}
  }
  async function saveProfile(e:FormEvent){
   e.preventDefault();if(!supabase||!user)return
