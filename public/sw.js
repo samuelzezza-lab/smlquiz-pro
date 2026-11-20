@@ -14,7 +14,7 @@ const APP_PATHS = new Set([
   '/quiz', '/dashboard', '/account', '/account/', '/esperienze-esame',
   '/experiences', '/studio', '/review', '/progress', '/leaderboard',
   '/calculator', '/legal', '/settings', '/compra-quiz',
-  '/semestre-filtro', '/semestre-filtro/'
+  '/semestre-filtro', '/semestre-filtro/', '/come-funziona', '/result'
 ]);
 
 self.addEventListener('install', event => {
