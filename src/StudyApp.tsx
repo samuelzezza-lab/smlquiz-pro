@@ -99,8 +99,6 @@ export default function StudyApp(){
 
  const faculty=faculties.find(f=>f.id===facultyId)
  const selectedSubject=subjects.find(s=>s.id===subjectId)
- const filteredSubjects=useMemo(()=>subjects.filter(s=>s.facolta_id===facultyId&&(year==='all'||String(s.anno_corso||'')===year)),[subjects,facultyId,year])
- const visibleSubjects=filteredSubjects
  const currentQuestion=questions[questionIndex]
  const completedCount=Object.keys(answered).length + (currentQuestion && selectedOption!==null && answered[currentQuestion.id]===undefined ? 1 : 0)
  const percent=questions.length?Math.round((questionIndex+(selectedOption!==null?1:0))/questions.length*100):0
