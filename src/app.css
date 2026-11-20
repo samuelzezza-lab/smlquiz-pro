@@ -250,3 +250,10 @@
  .home-public-nav a{font-size:10px;padding:6px 0}
  .topbar:has(.home-public-nav) .mobile-menu-button{order:0}
 }
+
+
+/* Back navigation visible on every internal app screen */
+.screen-back-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:36px;padding:0 11px;border:1px solid rgba(142,182,192,.2);border-radius:8px;background:#102735;color:#cfe1e2;font:600 11px system-ui;white-space:nowrap;cursor:pointer;transition:background .18s,border-color .18s}
+.screen-back-button:hover{background:#173745;border-color:rgba(99,217,193,.45)}
+.screen-back-button svg{color:#6edcc4}
+@media(max-width:760px){.screen-back-button{min-height:32px;padding:0 8px;font-size:10px}.topbar:has(.screen-back-button){gap:7px;padding-left:12px;padding-right:12px}.topbar:has(.screen-back-button) .breadcrumb{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
