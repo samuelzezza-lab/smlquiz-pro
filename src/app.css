@@ -257,3 +257,31 @@
 .screen-back-button:hover{background:#173745;border-color:rgba(99,217,193,.45)}
 .screen-back-button svg{color:#6edcc4}
 @media(max-width:760px){.screen-back-button{min-height:32px;padding:0 8px;font-size:10px}.topbar:has(.screen-back-button){gap:7px;padding-left:12px;padding-right:12px}.topbar:has(.screen-back-button) .breadcrumb{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
+
+
+/* Initial authentication gate: shown only without an active session */
+.auth-screen{min-height:100dvh;width:100%;display:grid;place-items:center;padding:28px 18px;background:radial-gradient(ellipse at 15% 15%,rgba(42,112,111,.2),transparent 42%),radial-gradient(ellipse at 90% 85%,rgba(23,74,101,.2),transparent 40%),#081321}
+.auth-screen-card{width:min(100%,470px);padding:clamp(25px,5vw,42px);border:1px solid rgba(91,216,189,.22);border-radius:20px;background:linear-gradient(155deg,rgba(17,40,53,.98),rgba(10,27,41,.98));box-shadow:0 28px 90px rgba(0,0,0,.38)}
+.auth-screen-brand{display:flex;align-items:center;gap:11px;width:max-content;margin-bottom:38px;color:#eaf1f4;text-decoration:none;font-size:14px;font-weight:800;letter-spacing:.09em}
+.auth-screen-brand b{color:#6edcc4;font-size:10px}
+.auth-screen-mark{display:grid;place-items:center;width:40px;height:40px;border:1px solid rgba(110,220,196,.55);border-radius:12px;color:#eaf1f4;font-size:24px;font-weight:850}
+.auth-screen-mark span{color:#6edcc4}
+.auth-screen-kicker{color:#6edcc4;font-size:10px;font-weight:800;letter-spacing:.16em}
+.auth-screen-card h1{margin:11px 0 8px;color:#f1f6f7;font-size:clamp(29px,6vw,36px);letter-spacing:-.04em}
+.auth-screen-intro{margin:0 0 24px;color:#9db1ba;font-size:13px;line-height:1.75}
+.auth-screen-tabs{display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:5px;border:1px solid rgba(142,182,192,.13);border-radius:11px;background:#091a27}
+.auth-screen-tabs button{min-height:42px;border:0;border-radius:8px;background:transparent;color:#91a7af;font-size:12px;font-weight:700;cursor:pointer}
+.auth-screen-tabs button.active{background:#163d45;color:#7ce3cb;box-shadow:inset 0 0 0 1px rgba(110,220,196,.22)}
+.auth-screen-form{display:grid;gap:15px;margin-top:22px}
+.auth-screen-form label{display:grid;gap:8px;color:#b7c8cd;font-size:12px;font-weight:650}
+.auth-screen-form input{width:100%;min-height:48px;padding:0 14px;border:1px solid rgba(144,180,189,.22);border-radius:9px;outline:none;background:#091a27;color:#eaf1f4;font:inherit}
+.auth-screen-form input:focus{border-color:#6edcc4;box-shadow:0 0 0 3px rgba(110,220,196,.1)}
+.auth-screen-form .confirm-button{width:100%;min-height:49px;justify-content:center;margin-top:3px}
+.auth-screen .google-login{min-height:46px;margin-top:12px;cursor:pointer}
+.auth-screen .text-action{margin-top:16px;cursor:pointer}
+.auth-screen-notice{margin:17px 0 0;padding:12px 13px;border:1px solid rgba(110,220,196,.25);border-radius:9px;background:rgba(51,139,119,.12);color:#9be8d7;font-size:12px;line-height:1.6}
+.auth-screen-legal{margin:26px 0 0;padding-top:17px;border-top:1px solid rgba(255,255,255,.08);color:#728b95;font-size:10px;line-height:1.7}
+.auth-screen-legal a{color:#85dcca;text-decoration:none}
+.auth-loading{display:grid;justify-items:center;text-align:center}
+.auth-loading p{margin:15px 0 0;color:#9db1ba;font-size:12px}
+@media(max-width:520px){.auth-screen{padding:16px 12px}.auth-screen-card{padding:25px 20px;border-radius:16px}.auth-screen-brand{margin-bottom:30px}}
