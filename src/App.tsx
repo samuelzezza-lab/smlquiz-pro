@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import {
   ArrowRight, BookOpen, Brain, Check, ChevronDown, CircleHelp, Clock3,
-  GraduationCap, Layers3, LayoutDashboard, Menu, Search, Settings2,
+  GraduationCap, Layers3, LayoutDashboard, Menu, Search,
   Sparkles, Target, X
 } from 'lucide-react'
 
@@ -39,11 +39,9 @@ export default function App() {
   const [subject, setSubject] = useState('Anatomia I')
   const [confirmed, setConfirmed] = useState(false)
   const [mobileMenu, setMobileMenu] = useState(false)
-  const [search, setSearch] = useState('')
   const [notice, setNotice] = useState('')
 
   const subjects = useMemo(() => subjectsByFaculty[faculty] ?? [], [faculty])
-  const filteredFaculties = faculties.filter(item => item.toLowerCase().includes(search.toLowerCase()))
 
   function chooseFaculty(value: string) {
     setFaculty(value)
