@@ -6,6 +6,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-24.04
+    env:
+      VITE_SUPABASE_URL: https://fgrwwauwnxvrcgqqpksp.supabase.co
+      VITE_SUPABASE_PUBLISHABLE_KEY: sb_publishable_IKrVQCoTe6lDMJ04oOgTgw_jt1vmBwj
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
