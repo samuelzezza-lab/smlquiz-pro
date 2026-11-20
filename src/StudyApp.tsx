@@ -308,6 +308,7 @@ export default function StudyApp(){
   const first=subjects.find(s=>s.facolta_id===facultyId&&(value==='all'||String(s.anno_corso||'')===value))
   if(first){setSubjectId(first.id);setConfirmed(true)}
  }
+ function chooseSubject(id:string){setSubjectId(id);setConfirmed(Boolean(id))}
  function notify(message:string){setNotice(message);window.setTimeout(()=>setNotice(v=>v===message?'':v),4500)}
  function go(next:View){setView(next);setMobileMenu(false);setNotice('');window.scrollTo(0,0);document.querySelector('.app-shell .content')?.scrollTo(0,0)}
  function openStudyMode(mode:'quiz'|'flashcards'|'semester'){
