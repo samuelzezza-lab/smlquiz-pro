@@ -309,6 +309,19 @@ export default function StudyApp(){
    window.location.assign(data.url)
   }catch(err){notify(err instanceof Error?err.message:'Non è stato possibile avviare il pagamento.')}
  }
+ async function saveProfile(e:FormEvent){
+  e.preventDefault();if(!supabase||!user)return
+  setProfileBusy(true)
+  try{
+   const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'profile',mode:'update',displayName,language:'it',leaderboardOptIn,universityId:universityId||null,universityCourse}})
+   if(error)throw error;if(data?.error)throw new Error(data.error)
+   notify('Profilo aggiornato.')
+  }catch(err){notify(err instanceof Error?err.message:'Impossibile salvare il profilo.')}
+  finally{setProfileBusy(false)}
+ }
+ function toggleSessionSubject(id:string){
+  setSessionIds(v=>v.includes(id)?v.filter(x=>x!==id):v.length<5?[...v,id]:v)
+ }
  async function loadLeaderboard(){
   if(!supabase||!subjectId)return
   setBusy(true)
