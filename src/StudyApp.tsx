@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { ArrowRight, BarChart3, BookOpen, Brain, Calculator, Check, ChevronDown, Clock3, Layers3, LogIn, LogOut, Menu, Search, Target, Trophy, UserRound, X, CreditCard, Bookmark, CalendarDays, FolderPlus, Trash2, GraduationCap } from 'lucide-react'
+import { ArrowRight, BarChart3, BookOpen, Brain, Calculator, Check, ChevronDown, Clock3, Layers3, LogIn, LogOut, Menu, Target, Trophy, UserRound, X, CreditCard, Bookmark, CalendarDays, FolderPlus, Trash2, GraduationCap } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import Flashcards from './components/Flashcards'
 import SemestreFiltro from './components/SemestreFiltro'
@@ -31,7 +31,6 @@ export default function StudyApp(){
  const [facultyId,setFacultyId]=useState('')
  const [year,setYear]=useState('1')
  const [subjectId,setSubjectId]=useState('')
- const [subjectSearch,setSubjectSearch]=useState('')
  const [confirmed,setConfirmed]=useState(false)
  const [user,setUser]=useState<any>(null)
  const [authMode,setAuthMode]=useState<'login'|'register'|'reset'>('login')
@@ -90,7 +89,7 @@ export default function StudyApp(){
  const faculty=faculties.find(f=>f.id===facultyId)
  const selectedSubject=subjects.find(s=>s.id===subjectId)
  const filteredSubjects=useMemo(()=>subjects.filter(s=>s.facolta_id===facultyId&&(year==='all'||String(s.anno_corso||'')===year)),[subjects,facultyId,year])
- const visibleSubjects=useMemo(()=>filteredSubjects.filter(s=>(s.nome+' '+(s.corso_di_laurea||'')).toLocaleLowerCase('it').includes(subjectSearch.toLocaleLowerCase('it'))),[filteredSubjects,subjectSearch])
+ const visibleSubjects=filteredSubjects
  const currentQuestion=questions[questionIndex]
  const completedCount=Object.keys(answered).length + (currentQuestion && selectedOption!==null && answered[currentQuestion.id]===undefined ? 1 : 0)
  const percent=questions.length?Math.round((questionIndex+(selectedOption!==null?1:0))/questions.length*100):0
@@ -127,7 +126,7 @@ export default function StudyApp(){
    const requestedYear=params.get('year')
    const linkedSubject=ss.find(x=>x.id===requestedSubject)
    const linkedFaculty=fs.find(x=>x.id===(linkedSubject?.facolta_id||requestedFaculty))
-   if(linkedFaculty){setFacultyId(linkedFaculty.id);setYear(linkedSubject?.anno_corso?String(linkedSubject.anno_corso):(requestedYear||'1'));if(linkedSubject){setSubjectId(linkedSubject.id);setSubjectSearch(linkedSubject.nome);setConfirmed(true)}}
+   if(linkedFaculty){setFacultyId(linkedFaculty.id);setYear(linkedSubject?.anno_corso?String(linkedSubject.anno_corso):(requestedYear||'1'));if(linkedSubject){setSubjectId(linkedSubject.id);setConfirmed(true)}}
    else {const med=fs.find(x=>x.nome==='Medicina e Chirurgia')||fs[0];if(med){setFacultyId(med.id);const first=ss.find(x=>x.facolta_id===med.id&&x.anno_corso===1);if(first){setSubjectId(first.id);setSubjectSearch(first.nome)}}}
   }).catch(()=>{if(active){setCatalogLoading(false);setNotice('Errore di connessione durante il caricamento del catalogo.')}})
   return()=>{active=false}
@@ -247,19 +246,14 @@ export default function StudyApp(){
  },[view,attemptId,seconds,busy])
 
  function chooseFaculty(id:string){
-  setFacultyId(id);setSubjectId('');setSubjectSearch('');setConfirmed(false)
+  setFacultyId(id);setSubjectId('');setConfirmed(false)
   const first=subjects.find(s=>s.facolta_id===id&&(year==='all'||String(s.anno_corso||'')===year))
   if(first){setSubjectId(first.id);setSubjectSearch(first.nome)}
  }
  function chooseYear(value:string){
-  setYear(value);setSubjectId('');setSubjectSearch('');setConfirmed(false)
+  setYear(value);setSubjectId('');setConfirmed(false)
   const first=subjects.find(s=>s.facolta_id===facultyId&&(value==='all'||String(s.anno_corso||'')===value))
   if(first){setSubjectId(first.id);setSubjectSearch(first.nome)}
- }
- function changeSubject(value:string){
-  setSubjectSearch(value);setConfirmed(false)
-  const exact=filteredSubjects.find(s=>s.nome.toLocaleLowerCase('it')===value.trim().toLocaleLowerCase('it'))
-  setSubjectId(exact?.id||'')
  }
  function notify(message:string){setNotice(message);window.setTimeout(()=>setNotice(v=>v===message?'':v),4500)}
  function go(next:View){setView(next);setMobileMenu(false);setNotice('')}
