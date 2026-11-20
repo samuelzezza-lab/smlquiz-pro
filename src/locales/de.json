@@ -568,5 +568,10 @@
   "cardBuyDesc": "Entdecke verfügbare Quizze, kaufe Pakete und prüfe deine Transaktionen.",
   "openMode": "MODUS ÖFFNEN →",
   "openSimulations": "SIMULATIONEN ÖFFNEN →",
-  "openArchive": "ARCHIV ÖFFNEN →"
+  "openArchive": "ARCHIV ÖFFNEN →",
+  "storageNoticeTitle": "Hinweis zur technischen Speicherung",
+  "storageNoticeDescription": "SMLQUIZ verwendet lokalen Speicher, der für Sitzungen, Einstellungen und Lernfunktionen erforderlich ist. Dieser Hinweis holt keine Einwilligung für Werbung oder nicht notwendige Tools ein.",
+  "storageNoticeDismiss": "Verstanden",
+  "storageNoticeSettings": "Lokale Einstellungen dienen der App-Funktion und stellen keine Werbeeinwilligung dar.",
+  "cookiePolicyLink": "Cookie-Richtlinie"
 }
