@@ -101,4 +101,5 @@ export const featureApi = {
   createExpense: (expense: Pick<HouseExpense, 'group_name' | 'amount' | 'description'>) =>
     callFeaturesApi<{ expense: HouseExpense }>('expenses.create', expense as unknown as Record<string, unknown>),
   deleteExpense: (id: string) => callFeaturesApi<{ deleted: true }>('expenses.delete', { id }),
+  deleteAccountData: () => callFeaturesApi<{ deleted: true }>('account.purge'),
 }
