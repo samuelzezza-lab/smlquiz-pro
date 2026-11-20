@@ -73,3 +73,52 @@
 .flashcards-ratings .rating-easy{border-color:rgba(91,216,189,.28);background:rgba(29,92,79,.2);color:#85ddc7}
 .flashcards-ratings .rating-very-easy{border-color:rgba(91,216,189,.48);background:rgba(29,92,79,.32);color:#a0ead7}
 @media(max-width:520px){.flashcards-ratings{grid-template-columns:repeat(2,minmax(0,1fr))}.flashcards-ratings button{min-height:48px}}
+
+
+/* Flashcard workspace: usa tutto lo spazio disponibile senza selezionare due volte la materia */
+.app-shell.is-study-mode .flashcards-page{width:100%;max-width:none;min-height:100%;margin:0;padding:0 0 28px;display:flex;flex-direction:column}
+.app-shell.is-study-mode .flashcards-hero{width:100%;min-height:150px;display:flex;align-items:center;justify-content:space-between;padding:clamp(22px,3vw,38px);margin:0 0 16px}
+.app-shell.is-study-mode .flashcards-hero h1{font-size:clamp(30px,3vw,42px)}
+.app-shell.is-study-mode .flashcards-hero p{max-width:760px;font-size:13px}
+.flashcards-subject-context{width:100%;min-height:70px;display:flex;align-items:center;gap:14px;padding:14px 20px;border:1px solid rgba(142,182,192,.15);border-radius:12px;background:linear-gradient(110deg,rgba(20,54,65,.82),rgba(13,31,45,.9));margin-bottom:14px}
+.flashcards-subject-context-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:10px;background:rgba(91,216,189,.12);color:#70dfc8}
+.flashcards-subject-context-copy{display:grid;gap:5px;min-width:0}
+.flashcards-subject-context-copy span{font-size:9px;letter-spacing:.14em;color:#6edbc4;font-weight:750}
+.flashcards-subject-context-copy strong{font-size:15px;color:#edf5f5;overflow-wrap:anywhere}
+.flashcards-subject-context-total{margin-left:auto;display:grid;text-align:right;gap:3px}
+.flashcards-subject-context-total strong{font-size:20px;color:#eff8f7;font-variant-numeric:tabular-nums}
+.flashcards-subject-context-total span{font-size:10px;color:#8fa8af}
+.app-shell.is-study-mode .flashcards-overview{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 14px}
+.app-shell.is-study-mode .flashcards-overview-item{min-height:76px;display:flex;align-items:center;gap:12px;padding:14px 18px}
+.app-shell.is-study-mode .flashcard-stage{width:100%;min-height:clamp(340px,48vh,620px);flex:1;display:grid;place-items:stretch;padding:clamp(14px,2vw,26px);margin:12px 0}
+.app-shell.is-study-mode .flashcard-3d{width:100%;min-height:clamp(300px,43vh,560px)}
+.app-shell.is-study-mode .flashcard-face{width:100%;min-height:clamp(300px,43vh,560px);padding:clamp(24px,4vw,54px);display:flex;flex-direction:column;justify-content:center}
+.app-shell.is-study-mode .flashcard-copy{max-width:1050px;margin:18px auto;font-size:clamp(20px,2.1vw,30px);line-height:1.55;text-align:center}
+.app-shell.is-study-mode .flashcard-kicker,.app-shell.is-study-mode .flashcard-hint{text-align:center}
+.app-shell.is-study-mode .flashcard-explanation-section{max-width:900px;margin:16px auto 0}
+.app-shell.is-study-mode .flashcard-explanation{font-size:14px;line-height:1.75}
+.app-shell.is-study-mode .flashcards-controls{width:100%;justify-content:space-between;margin:14px 0}
+.app-shell.is-study-mode .flashcards-controls button{min-height:48px;padding:0 22px;font-size:12px}
+.app-shell.is-study-mode .flashcards-ratings{width:100%;gap:12px}
+.app-shell.is-study-mode .flashcards-ratings button{min-height:54px;font-size:12px}
+.app-shell.is-study-mode .flashcards-deck-actions{display:flex;justify-content:center;gap:10px}
+.app-shell.is-study-mode .flashcards-progress{width:100%;margin:4px 0 10px}
+.app-shell.is-study-mode .flashcards-footnote{margin-top:12px;text-align:center}
+@media(max-width:760px){
+ .app-shell.is-study-mode .flashcards-page{padding-bottom:14px}
+ .app-shell.is-study-mode .flashcards-hero{min-height:0;padding:18px;margin-bottom:12px}
+ .app-shell.is-study-mode .flashcards-hero-mark{display:none}
+ .app-shell.is-study-mode .flashcards-subject-context{min-height:62px;padding:10px 12px;gap:10px}
+ .flashcards-subject-context-icon{width:34px;height:34px}
+ .flashcards-subject-context-copy strong{font-size:13px}
+ .flashcards-subject-context-total strong{font-size:17px}
+ .app-shell.is-study-mode .flashcards-overview{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .app-shell.is-study-mode .flashcards-overview-item{min-height:62px;padding:10px}
+ .app-shell.is-study-mode .flashcard-stage{min-height:clamp(300px,48vh,500px);padding:10px;margin:8px 0}
+ .app-shell.is-study-mode .flashcard-3d,.app-shell.is-study-mode .flashcard-face{min-height:clamp(280px,44vh,460px)}
+ .app-shell.is-study-mode .flashcard-face{padding:22px 16px}
+ .app-shell.is-study-mode .flashcard-copy{font-size:clamp(19px,5vw,24px)}
+ .app-shell.is-study-mode .flashcards-controls{gap:8px}
+ .app-shell.is-study-mode .flashcards-controls button{flex:1;justify-content:center;padding:0 10px;font-size:11px}
+ .app-shell.is-study-mode .flashcards-ratings{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
