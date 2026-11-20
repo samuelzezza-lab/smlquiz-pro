@@ -47,3 +47,15 @@
  .app-shell.is-study-mode .flashcards-page,.app-shell.is-study-mode .sf-page{padding-bottom:24px}
 }
 @media(max-width:380px){.study-mode-brand{display:none}.study-mode-header{grid-template-columns:auto 1fr}.study-mode-title{justify-self:end}}
+
+/* Quiz: navigazione stile esame patente */
+.question-actions{justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.quiz-nav-previous{min-height:43px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:0 14px;border:1px solid rgba(142,182,192,.24);border-radius:8px;background:#102735;color:#c5d8dc;font-size:11px;font-weight:650;cursor:pointer}
+.quiz-nav-previous:hover:not(:disabled){border-color:rgba(91,216,189,.5);background:#173541}
+.quiz-nav-previous:disabled{opacity:.35;cursor:not-allowed}
+.quiz-arrow-back{transform:rotate(180deg)}
+.quiz-neutral-note{margin:16px 0 0;color:#8099a2;font-size:10px;line-height:1.6}
+.result-actions{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:20px}
+.result-actions .back-button{margin-top:0}
+.result-next-note{margin:9px 0 20px;color:#819ba3;font-size:11px}
+@media(max-width:520px){.question-actions{display:grid;grid-template-columns:1fr 1fr}.question-actions>*{width:100%;padding-left:8px;padding-right:8px;font-size:10px}.result-actions{align-items:stretch;flex-direction:column}.result-actions>*{width:100%}}
