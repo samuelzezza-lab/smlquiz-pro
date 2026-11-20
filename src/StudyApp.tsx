@@ -138,12 +138,38 @@ export default function StudyApp(){
  },[])
 
  useEffect(()=>{
-  if(!supabase){setAuthLoading(false);return}
+  const client=supabase
+  if(!client){setAuthLoading(false);return}
   let active=true
-  supabase.auth.getSession().then(({data})=>{if(active){setUser(data.session?.user??null);setAuthLoading(false)}}).catch(()=>{if(active)setAuthLoading(false)})
-  const {data}=supabase.auth.onAuthStateChange((_event,session)=>{setUser(session?.user??null);setAuthLoading(false)})
+  client.auth.getSession().then(({data})=>{if(active){setUser(data.session?.user??null);setAuthLoading(false)}}).catch(()=>{if(active)setAuthLoading(false)})
+  const {data}=client.auth.onAuthStateChange((event,session)=>{
+   setUser(session?.user??null);setAuthLoading(false)
+   if(event==='SIGNED_IN'&&session){
+    window.setTimeout(()=>{void client.functions.invoke('quiz-api',{body:{action:'session-register'}})},0)
+   }
+  })
   return()=>{active=false;data.subscription.unsubscribe()}
  },[])
+
+ useEffect(()=>{
+  const client=supabase
+  if(!client||!user)return
+  let active=true
+  const checkSession=async()=>{
+   const {error}=await client.functions.invoke('quiz-api',{body:{action:'session-check'}})
+   if(!active||!error)return
+   const context=(error as any).context
+   if(context instanceof Response){
+    const payload=await context.clone().json().catch(()=>null)
+    if(payload?.code==='SESSION_REPLACED'||payload?.code==='INVALID_SESSION'){
+     await client.auth.signOut({scope:'local'})
+     if(active)setNotice('Questo account è stato utilizzato su un altro dispositivo. Accedi di nuovo per continuare.')
+    }
+   }
+  }
+  const timer=window.setInterval(()=>{void checkSession()},90000)
+  return()=>{active=false;window.clearInterval(timer)}
+ },[user?.id])
 
  useEffect(()=>{
   if(!supabase||!user)return
@@ -272,11 +298,17 @@ export default function StudyApp(){
     setNotice('Ti abbiamo inviato un link per reimpostare la password.');setAuthMode('login');return
    }
    if(authMode==='register'){
+    if(password.length<12||!/[a-z]/.test(password)||!/[A-Z]/.test(password)||!/[0-9]/.test(password)||!/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~`]/.test(password)){
+     throw new Error('Usa almeno 12 caratteri con maiuscola, minuscola, numero e simbolo.')
+    }
     const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:location.origin+'/app/'}})
     if(error)throw error
     setPassword('')
-    if(data.session){setUser(data.session.user);setNotice('Registrazione completata. Benvenuto in SMLQUIZ Pro.')}
-    else{setAuthMode('login');setNotice('Registrazione avviata. Controlla la tua email e conferma l’indirizzo per accedere.')}
+    if(data.session&&data.user?.email_confirmed_at){setUser(data.session.user);setNotice('Registrazione completata. Benvenuto in SMLQUIZ Pro.')}
+    else{
+     if(data.session)await supabase.auth.signOut({scope:'local'})
+     setAuthMode('login');setNotice('Registrazione avviata. Controlla la tua email e conferma l’indirizzo prima di accedere.')
+    }
     return
    }
    const {error}=await supabase.auth.signInWithPassword({email,password})
@@ -448,7 +480,7 @@ export default function StudyApp(){
  const studyModeLabel=view==='quiz'?'Quiz universitario':view==='result'?'Revisione del quiz':view==='flashcards'?'Flashcard':'Semestre filtro'
 
  if(authLoading)return <div className="auth-screen"><div className="auth-screen-card auth-loading"><span className="auth-screen-mark">S<span>.</span></span><p>Preparazione dell’area personale…</p></div></div>
- if(!user)return <div className="auth-screen"><div className="auth-screen-card"><a className="auth-screen-brand" href="/"><span className="auth-screen-mark">S<span>.</span></span><span>SMLQUIZ <b>PRO</b></span></a><div className="auth-screen-kicker">IL TUO SPAZIO UNIVERSITARIO</div><h1>{authMode==='register'?'Crea il tuo account':authMode==='reset'?'Recupera la password':'Bentornato'}</h1><p className="auth-screen-intro">{authMode==='register'?'Registrati per accedere a quiz, flashcard, simulazioni e progressi.':authMode==='reset'?'Inserisci la tua email: ti invieremo un link per reimpostare la password.':'Accedi o registrati per entrare nella tua area studio. Dopo l’accesso troverai direttamente la Panoramica e tutte le sezioni della piattaforma.'}</p><div className="auth-screen-tabs"><button type="button" className={authMode!=='register'?'active':''} onClick={()=>{setAuthMode('login');setNotice('')}}>Accedi</button><button type="button" className={authMode==='register'?'active':''} onClick={()=>{setAuthMode('register');setNotice('')}}>Registrati</button></div><form className="auth-screen-form" onSubmit={authenticate}><label>Email<input type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="nome@email.com" required/></label>{authMode!=='reset'&&<label>Password<input type="password" autoComplete={authMode==='register'?'new-password':'current-password'} minLength={authMode==='register'?8:undefined} value={password} onChange={e=>setPassword(e.target.value)} placeholder={authMode==='register'?'Almeno 8 caratteri':'La tua password'} required/></label>}<button className="confirm-button" disabled={authBusy||!supabase}>{authBusy?'Attendi…':authMode==='register'?'Crea account':authMode==='reset'?'Invia link di recupero':'Accedi alla piattaforma'} <ArrowRight size={16}/></button></form>{authMode!=='reset'&&<button type="button" className="google-login" onClick={()=>void googleLogin()}>Continua con Google</button>}{authMode==='login'&&<button type="button" className="text-action" onClick={()=>{setAuthMode('reset');setNotice('')}}>Password dimenticata?</button>}{authMode==='reset'&&<button type="button" className="text-action" onClick={()=>setAuthMode('login')}>Torna all’accesso</button>}{notice&&<p className="auth-screen-notice" role="status">{notice}</p>}<p className="auth-screen-legal">Accedendo continui verso la tua area personale. Consulta <a href="/privacy/">Privacy</a> e <a href="/termini/">Termini d’uso</a>.</p></div></div>
+ if(!user)return <div className="auth-screen"><div className="auth-screen-card"><a className="auth-screen-brand" href="/"><span className="auth-screen-mark">S<span>.</span></span><span>SMLQUIZ <b>PRO</b></span></a><div className="auth-screen-kicker">IL TUO SPAZIO UNIVERSITARIO</div><h1>{authMode==='register'?'Crea il tuo account':authMode==='reset'?'Recupera la password':'Bentornato'}</h1><p className="auth-screen-intro">{authMode==='register'?'Registrati per accedere a quiz, flashcard, simulazioni e progressi.':authMode==='reset'?'Inserisci la tua email: ti invieremo un link per reimpostare la password.':'Accedi o registrati per entrare nella tua area studio. Dopo l’accesso troverai direttamente la Panoramica e tutte le sezioni della piattaforma.'}</p><div className="auth-screen-tabs"><button type="button" className={authMode!=='register'?'active':''} onClick={()=>{setAuthMode('login');setNotice('')}}>Accedi</button><button type="button" className={authMode==='register'?'active':''} onClick={()=>{setAuthMode('register');setNotice('')}}>Registrati</button></div><form className="auth-screen-form" onSubmit={authenticate}><label>Email<input type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="nome@email.com" required/></label>{authMode!=='reset'&&<label>Password<input type="password" autoComplete={authMode==='register'?'new-password':'current-password'} minLength={authMode==='register'?12:undefined} value={password} onChange={e=>setPassword(e.target.value)} placeholder={authMode==='register'?'12+ caratteri, maiuscola, numero e simbolo':'La tua password'} required/></label>}<button className="confirm-button" disabled={authBusy||!supabase}>{authBusy?'Attendi…':authMode==='register'?'Crea account':authMode==='reset'?'Invia link di recupero':'Accedi alla piattaforma'} <ArrowRight size={16}/></button></form>{authMode!=='reset'&&<button type="button" className="google-login" onClick={()=>void googleLogin()}>Continua con Google</button>}{authMode==='login'&&<button type="button" className="text-action" onClick={()=>{setAuthMode('reset');setNotice('')}}>Password dimenticata?</button>}{authMode==='reset'&&<button type="button" className="text-action" onClick={()=>setAuthMode('login')}>Torna all’accesso</button>}{notice&&<p className="auth-screen-notice" role="status">{notice}</p>}<p className="auth-screen-legal">Accedendo continui verso la tua area personale. Consulta <a href="/privacy/">Privacy</a> e <a href="/termini/">Termini d’uso</a>.</p></div></div>
  return <div className={`app-shell ${isStudyMode?'is-study-mode':''} ${mobileMenu?'mobile-menu-active':''}`}>
   {!isStudyMode&&<aside className={`sidebar ${mobileMenu ? "sidebar-open" : ""}`}>
    <a className="brand" href="/" onClick={e=>{e.preventDefault();location.href='/'}}><span className="brand-symbol">S<span>.</span></span><span className="brand-name">SMLQUIZ <b>PRO</b></span></a>
