@@ -152,6 +152,15 @@ export default function StudyApp(){
  },[savedQuestions,studyCollections,studyExams,dailyGoal,user?.id,studyDataReady])
 
  useEffect(()=>{
+  if(!supabase||!user)return
+  let active=true
+  supabase.functions.invoke('quiz-api',{body:{action:'weak-topics'}}).then(({data,error})=>{
+   if(active&&!error&&Array.isArray(data?.topics))setWeakTopics(data.topics)
+  }).catch(()=>{})
+  return()=>{active=false}
+ },[user?.id])
+
+ useEffect(()=>{
   if(view!=='quiz'||!attemptId)return
   if(seconds<=0){void finishQuiz();return}
   const timer=window.setInterval(()=>setSeconds(v=>Math.max(0,v-1)),1000)
@@ -206,6 +215,8 @@ export default function StudyApp(){
   if(!w.error&&w.data)setWallet(w.data)
   if(!h.error&&Array.isArray(h.data?.attempts))setHistory(h.data.attempts)
   if(!s.error&&s.data?.streak)setStreak(s.data.streak)
+  const {data:weak}=await supabase.functions.invoke('quiz-api',{body:{action:'weak-topics'}})
+  if(Array.isArray(weak?.topics))setWeakTopics(weak.topics)
  }
  async function startQuiz(){
   if(!user){setAuthOpen(true);return}
