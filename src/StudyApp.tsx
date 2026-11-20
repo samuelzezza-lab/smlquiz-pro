@@ -35,7 +35,8 @@ export default function StudyApp(){
  const [confirmed,setConfirmed]=useState(false)
  const [user,setUser]=useState<any>(null)
  const [authOpen,setAuthOpen]=useState(false)
- const [authMode,setAuthMode]=useState<'login'|'reset'>('login')
+ const [authMode,setAuthMode]=useState<'login'|'register'|'reset'>('login')
+ const [authLoading,setAuthLoading]=useState(true)
  const [email,setEmail]=useState('')
  const [password,setPassword]=useState('')
  const [authBusy,setAuthBusy]=useState(false)
@@ -134,10 +135,10 @@ export default function StudyApp(){
  },[])
 
  useEffect(()=>{
-  if(!supabase)return
+  if(!supabase){setAuthLoading(false);return}
   let active=true
-  supabase.auth.getSession().then(({data})=>{if(active){setUser(data.session?.user??null)}}).catch(()=>{})
-  const {data}=supabase.auth.onAuthStateChange((_event,session)=>{setUser(session?.user??null)})
+  supabase.auth.getSession().then(({data})=>{if(active){setUser(data.session?.user??null);setAuthLoading(false)}}).catch(()=>{if(active)setAuthLoading(false)})
+  const {data}=supabase.auth.onAuthStateChange((_event,session)=>{setUser(session?.user??null);setAuthLoading(false)})
   return()=>{active=false;data.subscription.unsubscribe()}
  },[])
 
@@ -270,11 +271,19 @@ export default function StudyApp(){
    if(authMode==='reset'){
     const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+'/app/'+location.search})
     if(error)throw error
-    notify('Ti abbiamo inviato un link per reimpostare la password.');setAuthOpen(false);return
+    setNotice('Ti abbiamo inviato un link per reimpostare la password.');setAuthMode('login');return
+   }
+   if(authMode==='register'){
+    const {data,error}=await supabase.auth.signUp({email,password,options:{emailRedirectTo:location.origin+'/app/'}})
+    if(error)throw error
+    setPassword('')
+    if(data.session){setUser(data.session.user);setNotice('Registrazione completata. Benvenuto in SMLQUIZ Pro.')}
+    else{setAuthMode('login');setNotice('Registrazione avviata. Controlla la tua email e conferma l’indirizzo per accedere.')}
+    return
    }
    const {error}=await supabase.auth.signInWithPassword({email,password})
    if(error)throw error
-   setAuthOpen(false);setPassword('');notify('Accesso effettuato.')
+   setPassword('');setNotice('Accesso effettuato.')
   }catch(err){notify(err instanceof Error?err.message:'Accesso non riuscito.')}
   finally{setAuthBusy(false)}
  }
@@ -440,6 +449,8 @@ export default function StudyApp(){
  const isStudyMode=['quiz','result','flashcards','semester'].includes(view)
  const studyModeLabel=view==='quiz'?'Quiz universitario':view==='result'?'Revisione del quiz':view==='flashcards'?'Flashcard':'Semestre filtro'
 
+ if(authLoading)return <div className="auth-screen"><div className="auth-screen-card auth-loading"><span className="auth-screen-mark">S<span>.</span></span><p>Preparazione dell’area personale…</p></div></div>
+ if(!user)return <div className="auth-screen"><div className="auth-screen-card"><a className="auth-screen-brand" href="/"><span className="auth-screen-mark">S<span>.</span></span><span>SMLQUIZ <b>PRO</b></span></a><div className="auth-screen-kicker">IL TUO SPAZIO UNIVERSITARIO</div><h1>{authMode==='register'?'Crea il tuo account':authMode==='reset'?'Recupera la password':'Bentornato'}</h1><p className="auth-screen-intro">{authMode==='register'?'Registrati per accedere a quiz, flashcard, simulazioni e progressi.':authMode==='reset'?'Inserisci la tua email: ti invieremo un link per reimpostare la password.':'Accedi o registrati per entrare nella tua area studio. Dopo l’accesso troverai direttamente la Panoramica e tutte le sezioni della piattaforma.'}</p><div className="auth-screen-tabs"><button type="button" className={authMode!=='register'?'active':''} onClick={()=>{setAuthMode('login');setNotice('')}}>Accedi</button><button type="button" className={authMode==='register'?'active':''} onClick={()=>{setAuthMode('register');setNotice('')}}>Registrati</button></div><form className="auth-screen-form" onSubmit={authenticate}><label>Email<input type="email" autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="nome@email.com" required/></label>{authMode!=='reset'&&<label>Password<input type="password" autoComplete={authMode==='register'?'new-password':'current-password'} minLength={authMode==='register'?8:undefined} value={password} onChange={e=>setPassword(e.target.value)} placeholder={authMode==='register'?'Almeno 8 caratteri':'La tua password'} required/></label>}<button className="confirm-button" disabled={authBusy||!supabase}>{authBusy?'Attendi…':authMode==='register'?'Crea account':authMode==='reset'?'Invia link di recupero':'Accedi alla piattaforma'} <ArrowRight size={16}/></button></form>{authMode!=='reset'&&<button type="button" className="google-login" onClick={()=>void googleLogin()}>Continua con Google</button>}{authMode==='login'&&<button type="button" className="text-action" onClick={()=>{setAuthMode('reset');setNotice('')}}>Password dimenticata?</button>}{authMode==='reset'&&<button type="button" className="text-action" onClick={()=>setAuthMode('login')}>Torna all’accesso</button>}{notice&&<p className="auth-screen-notice" role="status">{notice}</p>}<p className="auth-screen-legal">Accedendo continui verso la tua area personale. Consulta <a href="/privacy/">Privacy</a> e <a href="/termini/">Termini d’uso</a>.</p></div></div>
  return <div className={`app-shell ${isStudyMode?'is-study-mode':''}`}>
   {!isStudyMode&&<aside className={`sidebar ${mobileMenu ? "sidebar-open" : ""}`}>
    <a className="brand" href="/" onClick={e=>{e.preventDefault();location.href='/'}}><span className="brand-symbol">S<span>.</span></span><span className="brand-name">SMLQUIZ <b>PRO</b></span></a>
@@ -480,6 +491,5 @@ export default function StudyApp(){
    </div>
   </main>
   {notice&&<div className="toast-notice" role="status">{notice}<button onClick={()=>setNotice('')}><X size={15}/></button></div>}
-  {authOpen&&<div className="auth-overlay" onClick={()=>setAuthOpen(false)}><div className="auth-card" onClick={e=>e.stopPropagation()}><button className="auth-close" onClick={()=>setAuthOpen(false)}><X size={18}/></button><span className="section-kicker">AREA PERSONALE</span><h2>{authMode==='login'?'Accedi a SMLQUIZ Pro':'Recupera password'}</h2><p>Accedi per salvare le simulazioni e i tuoi progressi.</p><form onSubmit={authenticate}><label>Email<input type="email" value={email} onChange={e=>setEmail(e.target.value)} required/></label>{authMode==='login'&&<label>Password<input type="password" value={password} onChange={e=>setPassword(e.target.value)} required/></label>}<button className="confirm-button" disabled={authBusy}>{authBusy?'Attendi…':authMode==='login'?'Accedi':'Invia link di recupero'}</button></form>{authMode==='login'&&<><button className="google-login" onClick={()=>void googleLogin()}>Continua con Google</button><button className="text-action" onClick={()=>setAuthMode('reset')}>Password dimenticata?</button></>}<p className="auth-foot">Non hai ancora un account? La registrazione sarà attivata dopo il completamento delle informazioni legali e privacy.</p></div></div>}
  </div>
 }
