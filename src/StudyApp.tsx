@@ -161,6 +161,18 @@ export default function StudyApp(){
  },[])
 
  useEffect(()=>{
+  if(authLoading||catalogLoading||!user)return
+  const params=new URLSearchParams(window.location.search)
+  const requestedMode=params.get('mode')
+  if(requestedMode!=='quiz'&&requestedMode!=='flashcards'&&requestedMode!=='semester')return
+  if(requestedMode!=='semester'&&(!confirmed||!selectedSubject))return
+  params.delete('mode')
+  const query=params.toString()
+  window.history.replaceState({},'',window.location.pathname+(query?'?'+query:'')+window.location.hash)
+  openStudyMode(requestedMode)
+ },[authLoading,catalogLoading,user?.id,confirmed,selectedSubject?.id])
+
+ useEffect(()=>{
   const client=supabase
   if(!client||!user)return
   let active=true
