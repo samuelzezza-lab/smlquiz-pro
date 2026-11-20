@@ -95,6 +95,14 @@ export default function StudyApp(){
  const percent=questions.length?Math.round(completedCount/questions.length*100):0
 
  useEffect(()=>{
+  document.title='Area studio — SMLQUIZ Pro'
+  let robots=document.querySelector('meta[name="robots"]')
+  if(!robots){robots=document.createElement('meta');robots.setAttribute('name','robots');document.head.appendChild(robots)}
+  robots.setAttribute('content','noindex,follow')
+  document.querySelector('link[rel="canonical"]')?.remove()
+ },[])
+
+ useEffect(()=>{
   if(!supabase){setCatalogLoading(false);setNotice('Collegamento al database non disponibile.');return}
   let active=true
   const cached=(()=>{try{return JSON.parse(localStorage.getItem('smlquiz.catalog.v1')||'null')}catch{return null}})()
