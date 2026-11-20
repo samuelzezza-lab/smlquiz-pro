@@ -1,9 +1,9 @@
 {
   "name": "SMLQUIZ Pro",
   "short_name": "SMLQUIZ",
-  "id": "/",
+  "id": "/quiz",
   "description": "Quiz universitari, simulazioni d'esame e statistiche per prepararti al meglio.",
-  "start_url": "/",
+  "start_url": "/quiz",
   "scope": "/",
   "display": "standalone",
   "display_override": [
