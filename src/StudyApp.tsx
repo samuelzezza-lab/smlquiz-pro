@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { ArrowRight, BarChart3, BookOpen, Brain, Calculator, Check, ChevronDown, Clock3, GraduationCap, Layers3, LogIn, LogOut, Menu, Search, Target, Trophy, UserRound, X, Bookmark, CalendarDays, FolderPlus, Trash2 } from 'lucide-react'
+import { ArrowRight, BarChart3, BookOpen, Brain, Calculator, Check, ChevronDown, Clock3, GraduationCap, Layers3, LogIn, LogOut, Menu, Search, Target, Trophy, UserRound, X, CreditCard, Bookmark, CalendarDays, FolderPlus, Trash2 } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import Flashcards from './components/Flashcards'
 import SemestreFiltro from './components/SemestreFiltro'
@@ -13,11 +13,11 @@ type ReviewItem = { question:Question; response:ReviewResponse|null }
 type HistoryItem = { id:string; subject:string; score:number; total:number; correct:number; wrong:number; date:string; durationSeconds?:number }
 type StudyCollection = { id:string; name:string; questionIds:string[]; createdAt:string }
 type StudyExam = { id:string; name:string; date:string; note:string }
-type View = 'home'|'quiz'|'result'|'progress'|'flashcards'|'semester'|'experiences'|'account'|'calculator'|'leaderboard'|'library'
+type View = 'home'|'quiz'|'result'|'progress'|'flashcards'|'semester'|'experiences'|'account'|'calculator'|'leaderboard'|'library'|'buy'
 const navigation:{id:View;label:string;icon:typeof BookOpen}[]=[
  {id:'home',label:'Panoramica',icon:BookOpen},{id:'quiz',label:'Quiz',icon:Brain},
  {id:'flashcards',label:'Flashcard',icon:Layers3},{id:'semester',label:'Semestre filtro',icon:Target},
- {id:'progress',label:'Progressi',icon:BarChart3},{id:'library',label:'Raccolte e calendario',icon:FolderPlus},{id:'experiences',label:'Esperienze d’esame',icon:GraduationCap},
+ {id:'progress',label:'Progressi',icon:BarChart3},{id:'library',label:'Raccolte e calendario',icon:FolderPlus},{id:'buy',label:'Crediti e acquisti',icon:CreditCard},{id:'experiences',label:'Esperienze d’esame',icon:GraduationCap},
  {id:'leaderboard',label:'Classifica',icon:Trophy},{id:'calculator',label:'Calcolatrice media',icon:Calculator},
  {id:'account',label:'Account',icon:UserRound}
 ]
@@ -42,6 +42,18 @@ export default function StudyApp(){
  const [notice,setNotice]=useState('')
  const [busy,setBusy]=useState(false)
  const [wallet,setWallet]=useState<any>(null)
+ const [displayName,setDisplayName]=useState('')
+ const [leaderboardOptIn,setLeaderboardOptIn]=useState(false)
+ const [universityId,setUniversityId]=useState('')
+ const [universityCourse,setUniversityCourse]=useState('')
+ const [universities,setUniversities]=useState<{id:string;name:string;city:string}[]>([])
+ const [profileBusy,setProfileBusy]=useState(false)
+ const [digitalConsent,setDigitalConsent]=useState(false)
+ const [purchaseSubjectSearch,setPurchaseSubjectSearch]=useState('')
+ const [purchaseSubjectId,setPurchaseSubjectId]=useState('')
+ const [sessionSearch,setSessionSearch]=useState('')
+ const [sessionIds,setSessionIds]=useState<string[]>([])
+ const [semesterPurchaseSubject,setSemesterPurchaseSubject]=useState('biologia')
  const [history,setHistory]=useState<HistoryItem[]>([])
  const [weakTopics,setWeakTopics]=useState<any[]>([])
  const [savedQuestions,setSavedQuestions]=useState<Question[]>([])
@@ -163,6 +175,26 @@ export default function StudyApp(){
  },[user?.id])
 
  useEffect(()=>{
+  if(!supabase||!user)return
+  let active=true
+  Promise.all([
+   supabase.functions.invoke('quiz-api',{body:{action:'profile',mode:'read'}}),
+   supabase.from('universities').select('id,name,city').order('name')
+  ]).then(([profileResult,universityResult])=>{
+   if(!active)return
+   if(!profileResult.error&&profileResult.data?.profile){
+    const p=profileResult.data.profile
+    setDisplayName(p.display_name||'')
+    setLeaderboardOptIn(Boolean(p.leaderboard_opt_in))
+    setUniversityId(p.university_id||'')
+    setUniversityCourse(p.university_course||'')
+   }
+   if(!universityResult.error)setUniversities((universityResult.data||[]) as {id:string;name:string;city:string}[])
+  }).catch(()=>{})
+  return()=>{active=false}
+ },[user?.id])
+
+ useEffect(()=>{
   if(view!=='quiz'||!attemptId)return
   if(seconds<=0){if(!busy)void finishQuiz();return}
   const timer=window.setInterval(()=>setSeconds(v=>Math.max(0,v-1)),1000)
@@ -273,6 +305,19 @@ export default function StudyApp(){
    if(typeof data?.url!=='string'||!data.url.startsWith('https://checkout.stripe.com/'))throw new Error('Checkout non disponibile al momento.')
    window.location.assign(data.url)
   }catch(err){notify(err instanceof Error?err.message:'Non è stato possibile avviare il pagamento.')}
+ }
+ async function saveProfile(e:FormEvent){
+  e.preventDefault();if(!supabase||!user)return
+  setProfileBusy(true)
+  try{
+   const {data,error}=await supabase.functions.invoke('quiz-api',{body:{action:'profile',mode:'update',displayName,language:'it',leaderboardOptIn,universityId:universityId||null,universityCourse}})
+   if(error)throw error;if(data?.error)throw new Error(data.error)
+   notify('Profilo aggiornato.')
+  }catch(err){notify(err instanceof Error?err.message:'Impossibile salvare il profilo.')}
+  finally{setProfileBusy(false)}
+ }
+ function toggleSessionSubject(id:string){
+  setSessionIds(v=>v.includes(id)?v.filter(x=>x!==id):v.length<5?[...v,id]:v)
  }
  async function loadLeaderboard(){
   if(!supabase||!subjectId)return
