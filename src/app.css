@@ -605,3 +605,15 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
   .app-shell:not(.is-study-mode) .toast-notice{bottom:calc(82px + env(safe-area-inset-bottom))}
 }
 /* mobile-toast-clears-bottom-nav */
+
+
+/* Respect top safe areas on notched phones and dynamic browser chrome. */
+@media(max-width:900px){
+  .topbar,.topbar:has(.home-public-nav){height:calc(66px + env(safe-area-inset-top));min-height:calc(66px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
+  .study-mode-header{height:calc(62px + env(safe-area-inset-top));min-height:calc(62px + env(safe-area-inset-top));padding-top:env(safe-area-inset-top)}
+  .public-header{padding-top:calc(12px + env(safe-area-inset-top))}
+}
+@media(max-width:600px){
+  .topbar,.topbar:has(.home-public-nav){height:calc(60px + env(safe-area-inset-top));min-height:calc(60px + env(safe-area-inset-top))}
+  .study-mode-header{height:calc(58px + env(safe-area-inset-top));min-height:calc(58px + env(safe-area-inset-top))}
+}
