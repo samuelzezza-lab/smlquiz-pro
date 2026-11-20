@@ -285,7 +285,7 @@ export default function StudyApp(){
    if(!active)return
    if(error||data?.error){notify(data?.error||'Non è stato possibile registrare l’invito.');return}
    if(data?.claimed)notify(data?.status==='rewarded'?'Invito registrato: il premio è stato assegnato.':'Invito registrato. Il premio sarà assegnato dopo il primo quiz completato.')
-   window.history.replaceState({},'', '/app/')
+   window.history.replaceState({},'', '/?app=1')
   }).catch(()=>{})
   return()=>{active=false}
  },[user?.id])
