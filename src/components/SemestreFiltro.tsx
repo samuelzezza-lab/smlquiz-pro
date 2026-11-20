@@ -78,7 +78,11 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComple
    if(error)throw error
    const payload=data as {exam_id?:string;questions?:Question[];duration_seconds?:number;paywall?:boolean;access_type?:'free'|'single_subject'|'complete'|'unlimited'}
    if(payload?.paywall){setPaywall(true);return}
-   if(!payload?.exam_id||payload.questions?.length!==31)throw new Error('Il materiale per questa simulazione non è ancora completo. SMLQUIZ è in continua crescita: nuove domande e simulazioni verranno aggiunte progressivamente. Nel frattempo puoi scegliere un’altra materia.')
+   const questionSet=Array.isArray(payload?.questions)?payload.questions:[]
+   const multipleChoice=questionSet.filter(q=>q.tipo==='scelta_multipla')
+   const completion=questionSet.filter(q=>q.tipo==='completamento')
+   const validStructure=questionSet.length===31&&multipleChoice.length===21&&completion.length===10&&multipleChoice.every(q=>Array.isArray(q.opzioni)&&q.opzioni.length===5)
+   if(!payload?.exam_id||!validStructure)throw new Error('La banca dati non contiene ancora una prova completa nel formato ufficiale 2026/27 (21 quesiti a scelta multipla con 5 opzioni e 10 a completamento). Scegli un’altra materia o riprova più tardi.')
    setPaywall(false);setAccessType(payload.access_type||'')
    setExamId(payload.exam_id);setExam(payload.questions);setAnswers({});setResult(null);setSeconds(3000);setStartedAt(Date.now());finishLock.current=false;try{localStorage.setItem(draftKey,JSON.stringify({examId:payload.exam_id,exam:payload.questions,answers:{},subject,startedAt:Date.now(),accessType:payload.access_type||''}))}catch{}window.history.pushState({...window.history.state,semestreFiltroMode:true},'','/semestre-filtro');setMode('exam')
   }catch(e){const message=e instanceof Error?e.message:'Non riesco a preparare la simulazione.';if(message.toLowerCase().includes('accedere')){onRequireLogin();return}setError(message)}
@@ -89,10 +93,10 @@ export default function SemestreFiltro({onBuyPackage,onRequireLogin,onFreeComple
   {mode==='intro'&&<>
    <div className="page-heading"><div><div className="eyebrow"><GraduationCap size={15}/> PROVA NAZIONALE · A.A. 2026/27</div><h1>Semestre Filtro</h1><p>Preparazione per Medicina, Odontoiatria e Veterinaria. Il semestre filtro 2026/27 prevede lo stesso programma nazionale e le stesse tre prove per tutti e tre i corsi.</p></div></div>
    <div className="sf-hero panel"><div><span className="sf-kicker">FORMATO D'ESAME</span><h2>Allenati come il giorno della prova.</h2><p>31 quesiti · 50 minuti · soluzioni visibili soltanto alla consegna.</p></div><div className="sf-big-number">31<small>quesiti</small></div></div>
-   <div className="sf-specs"><div><b>21</b><span>Scelta multipla</span></div><div><b>10</b><span>Completamento</span></div><div><b>50 min</b><span>Tempo massimo</span></div><div><b>+1 / −0,1</b><span>Corretta / errata</span></div></div>
+   <div className="sf-specs"><div><b>21 × A–E</b><span>Una sola corretta</span></div><div><b>10</b><span>Completamento</span></div><div><b>50 min</b><span>Per ogni materia</span></div><div><b>+1 / −0,1 / 0</b><span>Corretta / errata / omessa</span></div></div>
    <div className="notice"><div><b>Un’unica preparazione per tre corsi</b><span>Le simulazioni sono valide per Medicina e Chirurgia, Odontoiatria e Protesi Dentaria e Medicina Veterinaria: il programma e le tre materie del Semestre Filtro sono comuni.</span></div></div>
-   <p className="sf-scoring-note">Queste sono simulazioni didattiche create da SMLQUIZ, non prove ufficiali del Ministero. Ogni simulazione seleziona 31 quesiti dalla banca dati della materia.</p>
-   <div className="section-head"><div><h2>Scegli la materia</h2><p>Ogni prova contiene 21 domande a scelta multipla e 10 a completamento.</p></div></div>
+   <p className="sf-scoring-note">Simulazione didattica SMLQUIZ, non prova ufficiale ministeriale. Ogni esame riguarda una sola materia: 21 quesiti a scelta multipla con 5 alternative (una sola corretta) e 10 quesiti a completamento, con inserimento della parola o del concetto richiesto. Nel calendario ufficiale le tre prove di Chimica, Fisica e Biologia sono separate; tra una prova e l'altra è prevista una pausa di 30 minuti.</p>
+   <div className="section-head"><div><h2>Scegli la materia</h2><p>Una prova separata per materia, con 31 quesiti e 50 minuti come nell’esame 2026/27.</p></div></div>
    <div className="sf-subjects">{subjects.map(s=><button key={s.id} className={'sf-subject panel '+(subject===s.id?'selected':'')} onClick={()=>setSubject(s.id)}><span className={'sf-subject-mark '+s.tone}>{s.label[0]}</span><span><b>{s.label}</b><small>Simulazione completa da 31 quesiti</small></span><span className="sf-radio">{subject===s.id?'✓':''}</span></button>)}</div>
    {error&&<div className="notice">{error}</div>}
    <div className="sf-start-row"><div><b>5 simulazioni gratuite totali per account</b><small>Non si rinnovano ogni giorno. Dopo le prime cinque puoi scegliere il pacchetto più adatto.</small></div><button className="primary" disabled={loading} onClick={()=>void start()}>{loading?'Preparazione…':'Inizia simulazione'} <ArrowRight size={16}/></button></div>

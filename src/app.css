@@ -59,3 +59,8 @@
 .result-actions .back-button{margin-top:0}
 .result-next-note{margin:9px 0 20px;color:#819ba3;font-size:11px}
 @media(max-width:520px){.question-actions{display:grid;grid-template-columns:1fr 1fr}.question-actions>*{width:100%;padding-left:8px;padding-right:8px;font-size:10px}.result-actions{align-items:stretch;flex-direction:column}.result-actions>*{width:100%}}
+
+/* Semestre Filtro: dettagli del formato ministeriale 2026/27 */
+.sf-specs{grid-template-columns:repeat(4,minmax(0,1fr))}
+.sf-specs>div b{font-variant-numeric:tabular-nums}
+@media(max-width:620px){.sf-specs{grid-template-columns:repeat(2,minmax(0,1fr))}}
