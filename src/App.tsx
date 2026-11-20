@@ -67,7 +67,6 @@ export default function App(){
  const [faculties,setFaculties]=useState<Faculty[]>([]),[subjects,setSubjects]=useState<Subject[]>([])
  const [wallet,setWallet]=useState<{paidCredits:number;freeUsed:number;freeRemaining:number;freePerSubject?:boolean;freeUsedBySubject?:Record<string,number>;freeRemainingBySubject?:Record<string,number>;hasAdsRemoved?:boolean;activeSiteSubscription?:{id:string;status:string;current_period_end:string|null;cancel_at_period_end:boolean}|null;activeSubjectEntitlements?:{id:string;materia_id:string;entitlement_type:string;starts_at:string;expires_at:string}[];ledger:LedgerEntry[];ownerUnlimited?:boolean}>({paidCredits:0,freeUsed:0,freeRemaining:5,freePerSubject:true,hasAdsRemoved:false,ledger:[]}),[attemptId,setAttemptId]=useState<string|null>(null)
  const [answerFeedback,setAnswerFeedback]=useState<{correct:boolean;correctAnswer:string;correctIndex:number;correctLetter:string;selectedLetter:string;explanation:string|null}|null>(null)
- const [adsWalletReadyFor,setAdsWalletReadyFor]=useState<string|null>(null)
  const [authReady,setAuthReady]=useState(false)
  const [quizResponses,setQuizResponses]=useState<Record<string,QuizResponse>>({})
  const [completedReview,setCompletedReview]=useState<CompletedReview[]>([])
@@ -184,7 +183,7 @@ export default function App(){
   // Verifica subito il wallet: la pubblicità non deve attendere gli altri caricamenti.
   void client.functions.invoke('quiz-api',{body:{action:'wallet'}}).then(({data,error})=>{
    if(!active)return;
-   if(!error&&data){setWallet(data);setAdsWalletReadyFor(user.id)}
+   if(!error&&data){setWallet(data)}
    else console.warn('Verifica wallet per la pubblicità non riuscita:',error?.message);
   }).catch(error=>{if(active)console.warn('Verifica wallet per la pubblicità non riuscita:',error)});
   Promise.all([
@@ -204,29 +203,6 @@ export default function App(){
   }).catch(err=>{if(active)notify(err instanceof Error?err.message:tr('catalogLoadFailed'))});
   return()=>{active=false}
  },[user])
- useEffect(()=>{
-  // Google Privacy & messaging deve mostrare il consenso prima della scelta.
-  // Il vecchio banner locale non raccoglie segnali TCF e non deve bloccare AdSense.
-  // Attendi il controllo dei diritti senza annunci prima di caricare il tag.
-  const walletChecked=!user||(adsWalletReadyFor===user.id);
-  // Abilitare solo dopo aver pubblicato la European regulations message in AdSense.
-  const googleCmpEnabled=import.meta.env.VITE_GOOGLE_CMP_ENABLED==='true';
-  const eligible=Boolean(googleCmpEnabled&&authReady&&walletChecked&&!wallet.hasAdsRemoved&&!wallet.ownerUnlimited);
-  const scriptId='smlquiz-adsense-loader';
-  const existing=document.getElementById(scriptId);
-  if(!eligible){
-   existing?.remove();
-   document.querySelectorAll('.google-auto-placed,ins.adsbygoogle,iframe[id^="google_ads_iframe"],div[id^="google_ads_iframe"]').forEach(node=>node.remove());
-   return;
-  }
-  if(existing)return;
-  const script=document.createElement('script');
-  script.id=scriptId;
-  script.async=true;
-  script.crossOrigin='anonymous';
-  script.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8117138172088873';
-  document.head.appendChild(script);
- },[authReady,user?.id,adsWalletReadyFor,wallet.hasAdsRemoved,wallet.ownerUnlimited]);
  useEffect(()=>{
   const inviterId=new URLSearchParams(location.search).get('ref');
   if(inviterId&&/^[0-9a-f-]{36}$/i.test(inviterId)){
