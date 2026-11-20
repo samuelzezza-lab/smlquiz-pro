@@ -1,6 +1,7 @@
-const CACHE_NAME = 'smlquiz-pwa-v28';
+const CACHE_NAME = 'smlquiz-pwa-v29';
 const APP_SHELL = [
   '/',
+  '/app.html',
   '/manifest.webmanifest',
   '/favicon.svg',
   '/icon-192.svg',
@@ -9,6 +10,12 @@ const APP_SHELL = [
   '/icon-512.png',
   '/offline.html'
 ];
+const APP_PATHS = new Set([
+  '/quiz', '/dashboard', '/account', '/account/', '/esperienze-esame',
+  '/experiences', '/studio', '/review', '/progress', '/leaderboard',
+  '/calculator', '/legal', '/settings', '/compra-quiz',
+  '/semestre-filtro', '/semestre-filtro/'
+]);
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -34,21 +41,21 @@ self.addEventListener('fetch', event => {
   if (request.method !== 'GET') return;
 
   const url = new URL(request.url);
-  // Non intercettare API Supabase, pagamenti o risorse di altri domini.
   if (url.origin !== self.location.origin) return;
 
   if (request.mode === 'navigate') {
-    // Network-first: non servire una vecchia app shell quando la rete è disponibile.
-    // La cache resta soltanto come fallback offline.
     event.respondWith((async () => {
       const cache = await caches.open(CACHE_NAME);
       try {
         const response = await fetch(request, { cache: 'no-store' });
-        if (response.ok) await cache.put('/', response.clone());
+        if (response.ok) await cache.put(request, response.clone());
         return response;
       } catch {
-        return (await cache.match('/')) ||
-          (await cache.match(request)) ||
+        const appRoute = APP_PATHS.has(url.pathname);
+        const fallback = appRoute
+          ? (await cache.match(request)) || (await cache.match('/app.html'))
+          : (await cache.match(request)) || (await cache.match('/'));
+        return fallback ||
           (await cache.match('/offline.html')) ||
           new Response('Connessione non disponibile', {
             status: 503,
@@ -59,7 +66,6 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // Le risorse statiche con nome versionato restano disponibili offline.
   event.respondWith(
     caches.match(request).then(cached => {
       if (cached) return cached;
