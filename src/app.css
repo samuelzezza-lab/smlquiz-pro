@@ -1308,3 +1308,32 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
  .account-page>.workspace-card,.account-page>.profile-form{padding:19px}
  .account-page .account-metrics{gap:9px}
 }
+
+
+/* Flashcard: scheda ampia e ben leggibile, senza modalità a schermo intero. */
+.flashcards-redesign{max-width:1320px!important;width:100%!important}
+.flashcards-redesign .fc-session-toolbar,
+.flashcards-redesign .flashcards-progress,
+.flashcards-redesign .flashcard-stage,
+.flashcards-redesign .flashcards-ratings{width:min(100%,1120px)!important;max-width:1120px!important}
+.flashcards-redesign .flashcard-stage{margin:8px auto 14px!important;padding:0!important}
+.flashcards-redesign .flashcard-3d{width:100%!important;min-height:clamp(440px,58vh,620px)!important}
+.flashcards-redesign .flashcard-face{padding:clamp(32px,5vw,68px)!important}
+.flashcards-redesign .flashcard-copy{max-width:940px!important;font-size:clamp(25px,2.7vw,36px)!important;line-height:1.5!important}
+.flashcards-redesign .flashcard-back .flashcard-copy{font-size:clamp(22px,2.35vw,31px)!important}
+.flashcards-redesign .flashcard-explanation-section{max-width:960px!important}
+.flashcards-redesign .flashcards-ratings{margin:18px auto 12px!important}
+@media(max-width:760px){
+ .flashcards-redesign{padding-left:0!important;padding-right:0!important}
+ .flashcards-redesign .fc-session-toolbar,
+ .flashcards-redesign .flashcards-progress,
+ .flashcards-redesign .flashcard-stage,
+ .flashcards-redesign .flashcards-ratings{width:100%!important;max-width:none!important}
+ .flashcards-redesign .flashcard-stage{padding:0!important;margin:8px 0 12px!important}
+ .flashcards-redesign .flashcard-3d{width:100%!important;min-height:clamp(410px,62svh,540px)!important}
+ .flashcards-redesign .flashcard-face{padding:28px 22px!important;border-radius:18px}
+ .flashcards-redesign .flashcard-copy{max-width:100%!important;font-size:clamp(23px,5.5vw,30px)!important;line-height:1.48!important;margin:20px auto!important}
+ .flashcards-redesign .flashcard-back .flashcard-copy{font-size:clamp(20px,5vw,26px)!important}
+ .flashcards-redesign .flashcard-explanation-section{width:100%;padding:14px!important}
+ .flashcards-redesign .flashcard-explanation{font-size:13px!important;line-height:1.55}
+}
