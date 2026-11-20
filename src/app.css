@@ -998,14 +998,14 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
 
 
 /* Percorso: scelta essenziale, senza elenco materie */
-.path-selection-simple{grid-template-columns:minmax(0,1fr) minmax(0,.7fr) auto!important;align-items:end}
+.path-selection-simple{grid-template-columns:minmax(0,1.05fr) minmax(0,.65fr) minmax(0,1.2fr) auto!important;align-items:end}
 .path-selection-simple .confirm-button{grid-column:auto!important;min-width:170px}
 .path-reassurance{display:flex;align-items:flex-start;gap:13px;margin-top:19px;padding:16px 18px;border:1px solid rgba(91,216,189,.2);border-radius:11px;background:linear-gradient(110deg,rgba(40,117,101,.14),rgba(13,29,43,.4))}
 .path-reassurance-icon{display:grid;place-items:center;flex:0 0 32px;height:32px;border-radius:9px;background:rgba(91,216,189,.13);color:#68ddc3}
 .path-reassurance strong{display:block;color:#dcefed;font-size:12px;margin:1px 0 4px}
 .path-reassurance p{margin:0;color:#8fa9af;font-size:11px;line-height:1.65}
 .path-auto-subject-note{margin-left:auto;color:#6bd9c2;font-size:10px}
-@media(max-width:760px){.path-selection-simple{grid-template-columns:1fr 1fr!important}.path-selection-simple .confirm-button{grid-column:1/-1!important;width:100%}.path-auto-subject-note{width:100%;margin:5px 0 0}.path-reassurance{padding:14px}}
+@media(max-width:760px){.path-selection-simple{grid-template-columns:1fr 1fr!important}.path-selection-simple .subject-field{grid-column:1/-1!important}.path-selection-simple .confirm-button{grid-column:1/-1!important;width:100%}.path-auto-subject-note{width:100%;margin:5px 0 0}.path-reassurance{padding:14px}}
 
 /* Flashcard study room: inspired by Algor's clear one-card-at-a-time learning flow */
 .flashcards-redesign{max-width:1320px!important;padding:12px clamp(12px,2vw,28px) 36px!important}
