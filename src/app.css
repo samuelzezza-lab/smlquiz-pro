@@ -26,27 +26,24 @@
 /* Modalità di studio a schermo intero */
 .app-shell.is-study-mode{height:100dvh;min-height:100dvh;overflow:hidden;display:flex;flex-direction:column}
 .app-shell.is-study-mode .main-area{width:100%;min-width:0;min-height:0;height:100%;overflow:hidden;display:flex;flex-direction:column}
-.study-mode-header{height:58px;min-height:58px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:14px;padding:0 clamp(14px,3vw,34px);border-bottom:1px solid rgba(142,182,192,.14);background:rgba(8,19,33,.96);position:relative;z-index:30}
-.study-home-button{justify-self:start;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(142,182,192,.2);border-radius:9px;background:#102735;color:#cfe1e2;font:600 12px system-ui;cursor:pointer;transition:background .18s,border-color .18s}
+.study-mode-header{height:58px;min-height:58px;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:14px;padding:0 clamp(14px,3vw,34px);border-bottom:1px solid rgba(142,182,192,.14);background:rgba(8,19,33,.96);position:relative;z-index:30}
+.study-home-button{justify-self:end;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid rgba(142,182,192,.2);border-radius:9px;background:#102735;color:#cfe1e2;font:600 12px system-ui;cursor:pointer;transition:background .18s,border-color .18s}
 .study-home-button:hover{background:#173745;border-color:rgba(99,217,193,.45)}
 .study-home-button svg{color:#6edcc4}
-.study-mode-title{justify-self:center;color:#dce8eb;font-size:12px;font-weight:650;letter-spacing:.02em}
-.study-mode-brand{justify-self:end;color:#9eb2b9;font-size:10px;letter-spacing:.1em;font-weight:800;white-space:nowrap}
-.study-mode-brand b{color:#69d9c1}
+.study-mode-title{justify-self:start;color:#dce8eb;font-size:12px;font-weight:650;letter-spacing:.02em}
 .app-shell.is-study-mode .content{width:100%;max-width:none;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:clamp(14px,3vw,34px);scrollbar-gutter:stable}
 .app-shell.is-study-mode .quiz-workspace,.app-shell.is-study-mode .result-workspace{width:min(100%,1050px);margin:0 auto}
 .app-shell.is-study-mode .flashcards-page{width:min(100%,1100px);max-width:1100px;margin:0 auto;padding:0 0 35px}
 .app-shell.is-study-mode .sf-page{width:min(100%,1200px);max-width:1200px;margin:0 auto;padding:0 0 35px}
 .app-shell.is-study-mode .sf-mode-screen{min-height:0}
 @media(max-width:760px){
- .study-mode-header{height:54px;min-height:54px;grid-template-columns:auto 1fr auto;gap:8px;padding:0 12px}
+ .study-mode-header{height:54px;min-height:54px;grid-template-columns:minmax(0,1fr) auto;gap:8px;padding:0 12px}
  .study-home-button{padding:8px 9px;font-size:11px}
- .study-mode-title{font-size:11px;text-align:center}
- .study-mode-brand{font-size:9px}
- .app-shell.is-study-mode .content{padding:14px 12px 24px}
+ .study-mode-title{font-size:11px;text-align:left}
+  .app-shell.is-study-mode .content{padding:14px 12px 24px}
  .app-shell.is-study-mode .flashcards-page,.app-shell.is-study-mode .sf-page{padding-bottom:24px}
 }
-@media(max-width:380px){.study-mode-brand{display:none}.study-mode-header{grid-template-columns:auto 1fr}.study-mode-title{justify-self:end}}
+@media(max-width:380px){.study-mode-header{grid-template-columns:minmax(0,1fr) auto}.study-mode-title{justify-self:start}}
 
 /* Quiz: navigazione stile esame patente */
 .question-actions{justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
@@ -326,11 +323,10 @@
   .mobile-menu-active .mobile-bottom-nav{display:none}
   .toast-notice{left:14px;right:14px;bottom:calc(18px + env(safe-area-inset-bottom));max-width:none}
   .app-shell.is-study-mode .content{padding:18px 18px calc(28px + env(safe-area-inset-bottom))}
-  .study-mode-header{height:62px;min-height:62px;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;padding:0 18px;padding-top:env(safe-area-inset-top)}
+  .study-mode-header{height:62px;min-height:62px;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:0 18px;padding-top:env(safe-area-inset-top)}
   .study-home-button{min-height:42px;padding:0 12px;font-size:12px}
   .study-mode-title{font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .study-mode-brand{font-size:10px}
-  .app-shell.is-study-mode .quiz-workspace,.app-shell.is-study-mode .result-workspace,.app-shell.is-study-mode .flashcards-page,.app-shell.is-study-mode .sf-page{width:100%;max-width:760px}
+    .app-shell.is-study-mode .quiz-workspace,.app-shell.is-study-mode .result-workspace,.app-shell.is-study-mode .flashcards-page,.app-shell.is-study-mode .sf-page{width:100%;max-width:760px}
   .quiz-head{align-items:flex-start;gap:12px;margin:6px 0 17px}
   .quiz-head h1,.result-workspace h1{font-size:clamp(23px,4vw,30px)}
   .quiz-clock{flex:0 0 auto;padding:9px 11px;border:1px solid rgba(91,216,189,.2);border-radius:10px;background:rgba(91,216,189,.08);font-size:14px}
@@ -410,9 +406,8 @@
   .progress-stats,.account-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
   .progress-stats>div,.account-metrics>div{padding:13px}
   .progress-stats strong,.account-metrics strong{font-size:22px}
-  .study-mode-header{height:58px;min-height:58px;grid-template-columns:auto minmax(0,1fr);padding:0 12px}
-  .study-mode-brand{display:none}
-  .study-mode-title{justify-self:end;font-size:11px}
+  .study-mode-header{height:58px;min-height:58px;grid-template-columns:minmax(0,1fr) auto;padding:0 12px}
+    .study-mode-title{justify-self:start;font-size:11px}
   .app-shell.is-study-mode .content{padding:14px 12px calc(22px + env(safe-area-inset-bottom))}
   .quiz-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}
   .quiz-head h1{font-size:23px}
