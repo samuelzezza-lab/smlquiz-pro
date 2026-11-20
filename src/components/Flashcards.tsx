@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ArrowLeft, ArrowRight, BookOpen, Check, CreditCard, Layers3, Shuffle, Sparkles, Lock, Heart } from 'lucide-react'
+import { ArrowLeft, ArrowRight, BookOpen, Check, Layers3, Shuffle, Sparkles, Lock, Heart } from 'lucide-react'
 import StudyCompletion from './StudyCompletion'
 import { supabase } from '../lib/supabase'
 
