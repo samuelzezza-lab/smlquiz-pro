@@ -568,5 +568,10 @@
   "cardBuyDesc": "Browse available quizzes, buy packages and review transactions.",
   "openMode": "OPEN MODE →",
   "openSimulations": "OPEN SIMULATIONS →",
-  "openArchive": "OPEN ARCHIVE →"
+  "openArchive": "OPEN ARCHIVE →",
+  "storageNoticeTitle": "Notice about technical storage",
+  "storageNoticeDescription": "SMLQUIZ uses local storage needed for sessions, preferences and study features. This notice does not collect consent for advertising or non-essential tools.",
+  "storageNoticeDismiss": "Got it",
+  "storageNoticeSettings": "Local preferences support app functionality and do not constitute advertising consent.",
+  "cookiePolicyLink": "Cookie policy"
 }
