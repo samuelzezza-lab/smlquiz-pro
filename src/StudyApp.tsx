@@ -78,6 +78,7 @@ export default function StudyApp(){
  const [savedQuestions,setSavedQuestions]=useState<Question[]>([])
  const [studyCollections,setStudyCollections]=useState<StudyCollection[]>([])
  const [studyExams,setStudyExams]=useState<StudyExam[]>([])
+ const [legacyStudyExamsBackup,setLegacyStudyExamsBackup]=useState<StudyExam[]>([])
  const [dailyGoal,setDailyGoal]=useState(20)
  const [studyDataReady,setStudyDataReady]=useState(false)
  const [collectionName,setCollectionName]=useState('')
@@ -216,18 +217,26 @@ export default function StudyApp(){
 
  useEffect(()=>{
   const client=supabase
-  if(!client||!user){setStudyDataReady(false);setSavedQuestions([]);setStudyCollections([]);setStudyExams([]);setDailyGoal(20);return}
+  if(!client||!user){setStudyDataReady(false);setSavedQuestions([]);setStudyCollections([]);setStudyExams([]);setLegacyStudyExamsBackup([]);setDailyGoal(20);return}
   let active=true
   setStudyDataReady(false)
-  client.from('user_study_data').select('data').eq('user_id',user.id).maybeSingle().then(({data,error})=>{
+  client.from('user_study_data').select('data').eq('user_id',user.id).maybeSingle().then(async({data,error})=>{
    if(!active)return
    if(error){notify('Sincronizzazione dei materiali personali non disponibile.');setStudyDataReady(true);return}
    const cloud=data?.data||{}
+   const legacyExams=Array.isArray(cloud.studyExams)?cloud.studyExams as StudyExam[]:[]
    setSavedQuestions(Array.isArray(cloud.savedQuestions)?cloud.savedQuestions:[])
    setStudyCollections(Array.isArray(cloud.studyCollections)?cloud.studyCollections:[])
-   setStudyExams(Array.isArray(cloud.studyExams)?cloud.studyExams:[])
+   setLegacyStudyExamsBackup(legacyExams)
    if(Number.isFinite(Number(cloud.dailyGoal)))setDailyGoal(Math.max(1,Math.min(100,Number(cloud.dailyGoal))))
-   setStudyDataReady(true)
+   try{
+    await featureApi.migrateLegacyExams(legacyExams)
+    const {exams}=await featureApi.listExams()
+    if(active)setStudyExams(exams.map(ex=>({id:ex.id,name:ex.course_name||'',date:ex.exam_date||'',note:ex.note||''})))
+   }catch{
+    if(active){setStudyExams(legacyExams);notify('Il calendario esami non è raggiungibile in questo momento. I dati già presenti restano conservati.')}
+   }
+   if(active)setStudyDataReady(true)
   },()=>{if(active){notify('Errore durante il caricamento dei materiali personali.');setStudyDataReady(true)}})
   return()=>{active=false}
  },[user?.id])
@@ -235,14 +244,16 @@ export default function StudyApp(){
  useEffect(()=>{
   const client=supabase
   if(!client||!user||!studyDataReady)return
-  const payload={savedQuestions,studyCollections,studyExams,dailyGoal}
+  // Keep the original exam list as a backup in the main project. New calendar
+  // changes are stored in the secondary project and do not grow this JSON row.
+  const payload={savedQuestions,studyCollections,studyExams:legacyStudyExamsBackup,dailyGoal}
   const timer=window.setTimeout(()=>{
    client.from('user_study_data').upsert({user_id:user.id,data:payload},{onConflict:'user_id'}).then(({error})=>{
     if(error)notify('Non è riuscita la sincronizzazione dei materiali sul cloud.')
    })
   },700)
   return()=>window.clearTimeout(timer)
- },[savedQuestions,studyCollections,studyExams,dailyGoal,user?.id,studyDataReady])
+ },[savedQuestions,studyCollections,legacyStudyExamsBackup,dailyGoal,user?.id,studyDataReady])
 
  useEffect(()=>{
   if(!supabase||!user)return
@@ -517,10 +528,17 @@ export default function StudyApp(){
   setStudyCollections(v=>v.map(c=>c.id===collectionId?{...c,questionIds:Array.from(new Set([...c.questionIds,questionId]))}:c))
   notify('Domanda aggiunta alla raccolta.')
  }
- function createStudyExam(e:FormEvent){
+ async function createStudyExam(e:FormEvent){
   e.preventDefault();if(!examName.trim()||!examDate)return
-  setStudyExams(v=>[...v,{id:crypto.randomUUID(),name:examName.trim(),date:examDate,note:examNote.trim()}].sort((a,b)=>a.date.localeCompare(b.date)))
-  setExamName('');setExamDate('');setExamNote('')
+  try{
+   const {exam}=await featureApi.createExam({course_name:examName.trim(),exam_date:examDate,note:examNote.trim()})
+   setStudyExams(v=>[...v,{id:exam.id,name:exam.course_name||examName.trim(),date:exam.exam_date||examDate,note:exam.note||examNote.trim()}].sort((a,b)=>a.date.localeCompare(b.date)))
+   setExamName('');setExamDate('');setExamNote('')
+  }catch(err){notify(err instanceof Error?err.message:'Non è stato possibile salvare l’appello. Riprova.')}
+ }
+ async function deleteStudyExam(id:string){
+  try{await featureApi.deleteExam(id);setStudyExams(v=>v.filter(x=>x.id!==id))}
+  catch(err){notify(err instanceof Error?err.message:'Non è stato possibile eliminare l’appello. Riprova.')}
  }
  function addGrade(e:React.FormEvent){
   e.preventDefault();const g=Number(grade),c=Number(cfu)
@@ -574,7 +592,7 @@ export default function StudyApp(){
       <article className="progress-highlight"><span className="progress-highlight-icon"><CalendarDays size={19}/></span><div><strong>{Number(streak.current_streak)||0}</strong><small>Giorni di costanza</small></div></article>
      </div>
     </section>}
-    {view==='library'&&<section className="inner-content"><div className="inner-heading"><div className="inner-icon"><FolderPlus/></div><div><span className="section-kicker">I TUOI MATERIALI</span><h1>Raccolte e calendario</h1><p>Domande salvate, raccolte personali e prossimi appelli.</p></div></div><div className="library-grid"><section className="workspace-card"><h2>Domande salvate ({savedQuestions.length})</h2>{savedQuestions.length?savedQuestions.map(q=><article className="review-card" key={q.id}><h3>{q.testo_domanda}</h3><p>{q.spiegazione||'Nessuna spiegazione disponibile.'}</p><div className="library-actions"><select defaultValue="" onChange={e=>{if(e.target.value)addQuestionToCollection(e.target.value,q.id)}}><option value="">Aggiungi a una raccolta…</option>{studyCollections.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select><button className="back-button" onClick={()=>removeSavedQuestion(q.id)}><Trash2 size={14}/> Rimuovi</button></div></article>):<p>Alla fine di un quiz puoi salvare le domande che vuoi ripassare.</p>}</section><section className="workspace-card"><h2>Le tue raccolte</h2><form className="grade-form" onSubmit={createCollection}><input value={collectionName} onChange={e=>setCollectionName(e.target.value)} placeholder="Nome della raccolta" required/><button className="confirm-button"><FolderPlus size={15}/> Crea raccolta</button></form>{studyCollections.length?studyCollections.map(c=><div className="history-row" key={c.id}><span>{c.name}<small>{c.questionIds.length} domande</small></span><button className="icon-remove" onClick={()=>setStudyCollections(v=>v.filter(x=>x.id!==c.id))}><Trash2 size={15}/></button></div>):<p>Crea raccolte per organizzare le domande da ripassare.</p>}</section><section className="workspace-card"><h2>Calendario esami</h2><form className="exam-form" onSubmit={createStudyExam}><input value={examName} onChange={e=>setExamName(e.target.value)} placeholder="Nome dell'esame" required/><input type="date" value={examDate} onChange={e=>setExamDate(e.target.value)} required/><input value={examNote} onChange={e=>setExamNote(e.target.value)} placeholder="Nota (facoltativa)"/><button className="confirm-button"><CalendarDays size={15}/> Aggiungi appello</button></form>{studyExams.length?studyExams.map(ex=><div className="history-row" key={ex.id}><div><b>{ex.name}</b><small>{new Date(ex.date+'T12:00:00').toLocaleDateString('it-IT')} {ex.note?'· '+ex.note:''}</small></div><button className="icon-remove" onClick={()=>setStudyExams(v=>v.filter(x=>x.id!==ex.id))}><Trash2 size={15}/></button></div>):<p>Registra le date degli esami per tenere sott'occhio i prossimi appelli.</p>}</section></div></section>}
+    {view==='library'&&<section className="inner-content"><div className="inner-heading"><div className="inner-icon"><FolderPlus/></div><div><span className="section-kicker">I TUOI MATERIALI</span><h1>Raccolte e calendario</h1><p>Domande salvate, raccolte personali e prossimi appelli.</p></div></div><div className="library-grid"><section className="workspace-card"><h2>Domande salvate ({savedQuestions.length})</h2>{savedQuestions.length?savedQuestions.map(q=><article className="review-card" key={q.id}><h3>{q.testo_domanda}</h3><p>{q.spiegazione||'Nessuna spiegazione disponibile.'}</p><div className="library-actions"><select defaultValue="" onChange={e=>{if(e.target.value)addQuestionToCollection(e.target.value,q.id)}}><option value="">Aggiungi a una raccolta…</option>{studyCollections.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select><button className="back-button" onClick={()=>removeSavedQuestion(q.id)}><Trash2 size={14}/> Rimuovi</button></div></article>):<p>Alla fine di un quiz puoi salvare le domande che vuoi ripassare.</p>}</section><section className="workspace-card"><h2>Le tue raccolte</h2><form className="grade-form" onSubmit={createCollection}><input value={collectionName} onChange={e=>setCollectionName(e.target.value)} placeholder="Nome della raccolta" required/><button className="confirm-button"><FolderPlus size={15}/> Crea raccolta</button></form>{studyCollections.length?studyCollections.map(c=><div className="history-row" key={c.id}><span>{c.name}<small>{c.questionIds.length} domande</small></span><button className="icon-remove" onClick={()=>setStudyCollections(v=>v.filter(x=>x.id!==c.id))}><Trash2 size={15}/></button></div>):<p>Crea raccolte per organizzare le domande da ripassare.</p>}</section><section className="workspace-card"><h2>Calendario esami</h2><form className="exam-form" onSubmit={createStudyExam}><input value={examName} onChange={e=>setExamName(e.target.value)} placeholder="Nome dell'esame" required/><input type="date" value={examDate} onChange={e=>setExamDate(e.target.value)} required/><input value={examNote} onChange={e=>setExamNote(e.target.value)} placeholder="Nota (facoltativa)"/><button className="confirm-button"><CalendarDays size={15}/> Aggiungi appello</button></form>{studyExams.length?studyExams.map(ex=><div className="history-row" key={ex.id}><div><b>{ex.name}</b><small>{new Date(ex.date+'T12:00:00').toLocaleDateString('it-IT')} {ex.note?'· '+ex.note:''}</small></div><button className="icon-remove" onClick={()=>void deleteStudyExam(ex.id)}><Trash2 size={15}/></button></div>):<p>Registra le date degli esami per tenere sott'occhio i prossimi appelli.</p>}</section></div></section>}
     {view==='flashcards'&&<Flashcards subjects={subjects} selectedSubjectId={selectedSubject?.id||''} onBackToPath={()=>go('home')} user={user?{id:user.id}:null} onBuy={(priceId,subjectIds,consent)=>void buyPackage(priceId,subjectIds,consent)} notify={notify} showAds={false} onStartQuiz={(id)=>{const item=subjects.find(x=>x.id===id);if(item){setFacultyId(item.facolta_id);setYear(item.anno_corso?String(item.anno_corso):'all');setSubjectId(item.id);setConfirmed(true);go('home');notify('Materia selezionata. Puoi avviare il quiz dal tuo percorso.')}}}/>}
     {view==='semester'&&<SemestreFiltro onBuyPackage={(priceId,subjectIds,consent)=>void buyPackage(priceId,subjectIds,consent)} onRequireLogin={()=>notify('Accedi per continuare.')} onFreeComplete={()=>void refreshAccount()}/>}
     {view==='leaderboard'&&<section className="inner-content leaderboard-page">
