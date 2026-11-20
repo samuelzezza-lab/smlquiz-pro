@@ -497,6 +497,7 @@ export default function StudyApp(){
    setLeaderboardPeriod(data?.periodStart&&data?.periodEnd?{periodStart:data.periodStart,periodEnd:data.periodEnd}:null)
    setLeaderboardCurrentUserWon(data?.currentUserWon||null)
    setLeaderboardLatestReward(data?.latestReward||null)
+   if(data?.currentUserWon){const {data:updatedWallet,error:walletError}=await supabase.functions.invoke('quiz-api',{body:{action:'wallet'}});if(!walletError&&updatedWallet)setWallet(updatedWallet)}
   }catch(err){notify(err instanceof Error?err.message:'Classifica non disponibile.')}
   finally{setBusy(false)}
  }
