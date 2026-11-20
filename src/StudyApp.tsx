@@ -84,9 +84,9 @@ export default function StudyApp(){
  },[])
 
  useEffect(()=>{
-  if(!supabase){setAuthReady(true);return}
+  if(!supabase)return
   let active=true
-  supabase.auth.getSession().then(({data})=>{if(active){setUser(data.session?.user??null)}}).catch(()=>{if(active)setAuthReady(true)})
+  supabase.auth.getSession().then(({data})=>{if(active){setUser(data.session?.user??null)}}).catch(()=>{})
   const {data}=supabase.auth.onAuthStateChange((_event,session)=>{setUser(session?.user??null)})
   return()=>{active=false;data.subscription.unsubscribe()}
  },[])
