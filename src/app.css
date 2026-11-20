@@ -1337,3 +1337,57 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
  .flashcards-redesign .flashcard-explanation-section{width:100%;padding:14px!important}
  .flashcards-redesign .flashcard-explanation{font-size:13px!important;line-height:1.55}
 }
+
+
+/* Override study-mode constraints: the Flashcard component needs a wider reading surface. */
+.app-shell.is-study-mode .flashcards-redesign .fc-session-toolbar,
+.app-shell.is-study-mode .flashcards-redesign .flashcards-progress,
+.app-shell.is-study-mode .flashcards-redesign .flashcard-stage,
+.app-shell.is-study-mode .flashcards-redesign .flashcards-ratings{
+  width:min(100%,1120px)!important;
+  max-width:1120px!important;
+}
+.app-shell.is-study-mode .flashcards-redesign .flashcard-stage{
+  min-height:clamp(440px,58vh,620px)!important;
+  margin:8px auto 14px!important;
+  padding:0!important;
+}
+.app-shell.is-study-mode .flashcards-redesign .flashcard-3d,
+.app-shell.is-study-mode .flashcards-redesign .flashcard-face{
+  min-height:clamp(440px,58vh,620px)!important;
+}
+.app-shell.is-study-mode .flashcards-redesign .flashcard-copy{
+  max-width:940px!important;
+  font-size:clamp(25px,2.7vw,36px)!important;
+  line-height:1.5!important;
+}
+.app-shell.is-study-mode .flashcards-redesign .flashcard-back .flashcard-copy{
+  font-size:clamp(22px,2.35vw,31px)!important;
+}
+@media(max-width:760px){
+  .app-shell.is-study-mode .flashcards-redesign .fc-session-toolbar,
+  .app-shell.is-study-mode .flashcards-redesign .flashcards-progress,
+  .app-shell.is-study-mode .flashcards-redesign .flashcard-stage,
+  .app-shell.is-study-mode .flashcards-redesign .flashcards-ratings{
+    width:100%!important;
+    max-width:none!important;
+  }
+  .app-shell.is-study-mode .flashcards-redesign .flashcard-stage,
+  .app-shell.is-study-mode .flashcards-redesign .flashcard-3d,
+  .app-shell.is-study-mode .flashcards-redesign .flashcard-face{
+    min-height:clamp(410px,62svh,540px)!important;
+  }
+  .app-shell.is-study-mode .flashcards-redesign .flashcard-stage{
+    margin:8px 0 12px!important;
+    padding:0!important;
+  }
+  .app-shell.is-study-mode .flashcards-redesign .flashcard-face{padding:28px 22px!important}
+  .app-shell.is-study-mode .flashcards-redesign .flashcard-copy{
+    max-width:100%!important;
+    font-size:clamp(23px,5.5vw,30px)!important;
+    line-height:1.48!important;
+  }
+  .app-shell.is-study-mode .flashcards-redesign .flashcard-back .flashcard-copy{
+    font-size:clamp(20px,5vw,26px)!important;
+  }
+}
