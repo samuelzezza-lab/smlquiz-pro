@@ -49,6 +49,7 @@ export default function StudyApp(){
  const [universityCourse,setUniversityCourse]=useState('')
  const [universities,setUniversities]=useState<{id:string;name:string;city:string}[]>([])
  const [profileBusy,setProfileBusy]=useState(false)
+ const [referralCopied,setReferralCopied]=useState(false)
  const [digitalConsent,setDigitalConsent]=useState(false)
  const [purchaseSubjectSearch,setPurchaseSubjectSearch]=useState('')
  const [purchaseSubjectId,setPurchaseSubjectId]=useState('')
@@ -207,6 +208,20 @@ export default function StudyApp(){
  },[view,user?.id])
 
  useEffect(()=>{
+  if(!supabase||!user)return
+  const inviterId=new URLSearchParams(window.location.search).get('ref')
+  if(!inviterId||inviterId===user.id)return
+  let active=true
+  supabase.functions.invoke('quiz-api',{body:{action:'referral-claim',inviterId}}).then(({data,error})=>{
+   if(!active)return
+   if(error||data?.error){notify(data?.error||'Non è stato possibile registrare l’invito.');return}
+   if(data?.claimed)notify(data?.status==='rewarded'?'Invito registrato: il premio è stato assegnato.':'Invito registrato. Il premio sarà assegnato dopo il primo quiz completato.')
+   window.history.replaceState({},'', '/app/')
+  }).catch(()=>{})
+  return()=>{active=false}
+ },[user?.id])
+
+ useEffect(()=>{
   if(view!=='quiz'||!attemptId)return
   if(seconds<=0){if(!busy)void finishQuiz();return}
   const timer=window.setInterval(()=>setSeconds(v=>Math.max(0,v-1)),1000)
@@ -319,6 +334,17 @@ export default function StudyApp(){
    if(typeof data?.url!=='string'||!data.url.startsWith('https://checkout.stripe.com/'))throw new Error('Checkout non disponibile al momento.')
    window.location.assign(data.url)
   }catch(err){notify(err instanceof Error?err.message:'Non è stato possibile avviare il pagamento.')}
+ }
+ async function copyReferralLink(){
+  if(!user)return
+  const link=window.location.origin+'/?ref='+encodeURIComponent(user.id)
+  try{await navigator.clipboard.writeText(link);setReferralCopied(true);window.setTimeout(()=>setReferralCopied(false),2200);notify('Link invito copiato.')}
+  catch{notify('Non è stato possibile copiare il link.')}
+ }
+ function shareResultWhatsApp(){
+  if(!result)return
+  const message='Ho completato una simulazione su SMLQUIZ Pro: '+(result.correct??0)+' risposte corrette su '+(result.total??10)+', punteggio '+(Number(result.score??0)*3).toFixed(1)+'/30. Allenati anche tu: https://smlquiz.it/'
+  window.open('https://wa.me/?text='+encodeURIComponent(message),'_blank','noopener,noreferrer')
  }
  async function saveProfile(e:FormEvent){
   e.preventDefault();if(!supabase||!user)return
