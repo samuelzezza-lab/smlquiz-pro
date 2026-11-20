@@ -567,7 +567,7 @@ export default function StudyApp(){
     <p className="study-free-footnote">Le opzioni gratuite richiedono un account. Gli acquisti sono facoltativi e non vengono attivati automaticamente.</p>
     <button type="button" className="study-free-confirm" onClick={acknowledgeFreeInfo}>Ho capito, continua <ArrowRight size={17}/></button>
    </section>
-  </div>
+  </div>}
   {notice&&<div className="toast-notice" role="status">{notice}<button onClick={()=>setNotice('')}><X size={15}/></button></div>}
  </div>
 }
