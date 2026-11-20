@@ -204,26 +204,18 @@ export default function Flashcards({ subjects, selectedSubjectId, onBackToPath, 
     return () => window.removeEventListener('keydown', handler)
   }, [current, flipped, index, paywall, displayedCards.length, unlocked, cards.length, total, next])
 
-  return <section className="flashcards-page">
-    <header className="flashcards-hero">
-      <div className="flashcards-hero-copy">
-        <div className="flashcards-eyebrow"><Sparkles size={14}/> METODO DI STUDIO ATTIVO</div>
-        <h1>Flashcard</h1>
-        <p>Ripasso attivo, progressi e ripetizione programmata: tutto il mazzo della materia che hai già selezionato.</p>
-      </div>
-      <div className="flashcards-hero-mark" aria-hidden="true"><Layers3 size={30}/></div>
+  return <section className="flashcards-page flashcards-redesign">
+    <header className="fc-study-header">
+      <button type="button" className="fc-back-link" onClick={onBackToPath}><ArrowLeft size={16}/> Percorso</button>
+      <div className="fc-heading"><span>MODALITÀ DI STUDIO</span><h1>Flashcard</h1></div>
+      <div className="fc-subject-pill"><BookOpen size={15}/><strong>{selectedSubject?.traduzioni?.it?.nome || selectedSubject?.nome || 'Seleziona materia'}</strong></div>
+      <div className="fc-total-pill"><strong>{total.toLocaleString('it-IT')}</strong><span>carte</span></div>
     </header>
-    {selectedSubject && <div className="flashcards-subject-context">
-      <div className="flashcards-subject-context-icon"><BookOpen size={18}/></div>
-      <div className="flashcards-subject-context-copy"><span>MATERIA SELEZIONATA</span><strong>{selectedSubject.traduzioni?.it?.nome || selectedSubject.nome}</strong></div>
-      <div className="flashcards-subject-context-total"><strong>{total.toLocaleString('it-IT')}</strong><span>carte disponibili</span></div>
-    </div>}
     {!selectedSubjectId && <StudyCompletion eyebrow="PERCORSO NON SELEZIONATO" title="Scegli prima la materia da studiare." description="Torna al tuo percorso universitario, seleziona facoltà, anno e materia, poi apri di nuovo le Flashcard. La scelta verrà mantenuta automaticamente." primaryLabel="Torna al percorso" onPrimary={onBackToPath} />}
-    <div className="flashcards-overview">
-      <div className="flashcards-overview-item"><span className="flashcards-overview-icon"><BookOpen size={17}/></span><div><strong>{total.toLocaleString('it-IT')}</strong><small>Carte disponibili</small></div></div>
-      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-success"><Check size={17}/></span><div><strong>{easyCount}</strong><small>Facili</small></div></div>
-      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-review"><Sparkles size={17}/></span><div><strong>{difficultCount}</strong><small>Da ripassare</small></div></div>
-      <div className="flashcards-overview-item"><span className="flashcards-overview-icon is-progress"><Layers3 size={17}/></span><div><strong>{ratedCount}</strong><small>Valutate</small></div></div>
+    <div className="fc-mini-stats">
+      <span><b>{ratedCount}</b> valutate</span><span><b>{easyCount}</b> ricordate</span><span><b>{difficultCount}</b> da ripassare</span>
+      {unlocked && <button type="button" onClick={shuffle}><Shuffle size={14}/> Mescola</button>}
+      {unlocked && <button type="button" className={deckMode==='difficult'?'active':''} onClick={() => {setDeckMode(v=>v==='difficult'?'all':'difficult');setIndex(0);setFlipped(false);setDeckCompleted(false)}}>Solo difficili</button>}
     </div>
     {showAds && <div className="flashcards-ad-slot" data-sml-ad-slot="flashcards-top" aria-label="Spazio pubblicitario" />}
     {loading && <div className="panel empty">Caricamento flashcard…</div>}
@@ -248,7 +240,7 @@ export default function Flashcards({ subjects, selectedSubjectId, onBackToPath, 
         <button className="secondary" disabled={index===0} onClick={() => {setIndex(v=>v-1);setFlipped(false)}}><ArrowLeft size={15}/> Precedente</button>
         <button className="primary" onClick={() => void next()} disabled={loading}>{flipped ? (index === displayedCards.length - 1 ? (!unlocked && total > FREE_LIMIT ? 'Sblocca le altre carte' : cards.length >= total ? 'Completa sessione' : 'Carica altre carte') : 'Prossima carta') : 'Gira la carta'} <ArrowRight size={15}/></button>
       </div>
-      {unlocked && <div className="flashcards-deck-actions"><button className="secondary" onClick={shuffle}><Shuffle size={15}/> Mescola</button><button className={deckMode==='difficult'?'primary':'secondary'} onClick={() => {setDeckMode(v=>v==='difficult'?'all':'difficult');setIndex(0);setFlipped(false);setDeckCompleted(false)}}>Solo difficili</button></div>}
+
       {showAds && <div className="flashcards-ad-slot flashcards-ad-slot-bottom" data-sml-ad-slot="flashcards-bottom" aria-label="Spazio pubblicitario" />}
       <p className="flashcards-footnote">{user ? 'I tuoi progressi vengono salvati sul tuo account.' : 'Puoi provare gratuitamente senza registrazione. Accedi per salvare le valutazioni.'}</p>
     </>}
