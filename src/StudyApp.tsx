@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react'
-import { ArrowRight, BarChart3, BookOpen, Brain, Calculator, Check, ChevronDown, Clock3, GraduationCap, Layers3, LogIn, LogOut, Menu, Search, Target, Trophy, UserRound, X } from 'lucide-react'
+import { ArrowRight, BarChart3, BookOpen, Brain, Calculator, Check, ChevronDown, Clock3, GraduationCap, Layers3, LogIn, LogOut, Menu, Search, Target, Trophy, UserRound, X, Bookmark, CalendarDays, FolderPlus, Trash2 } from 'lucide-react'
 import { supabase } from './lib/supabase'
 import Flashcards from './components/Flashcards'
 import SemestreFiltro from './components/SemestreFiltro'
@@ -11,11 +11,13 @@ type Question = { id: string; testo_domanda: string; opzioni: string[]; spiegazi
 type ReviewResponse = { selectedAnswer?:string; selectedLetter?:string; correctAnswer?:string; correctLetter?:string; correctIndex?:number; isCorrect?:boolean; explanation?:string|null }
 type ReviewItem = { question:Question; response:ReviewResponse|null }
 type HistoryItem = { id:string; subject:string; score:number; total:number; correct:number; wrong:number; date:string; durationSeconds?:number }
-type View = 'home'|'quiz'|'result'|'progress'|'flashcards'|'semester'|'experiences'|'account'|'calculator'|'leaderboard'
+type StudyCollection = { id:string; name:string; questionIds:string[]; createdAt:string }
+type StudyExam = { id:string; name:string; date:string; note:string }
+type View = 'home'|'quiz'|'result'|'progress'|'flashcards'|'semester'|'experiences'|'account'|'calculator'|'leaderboard'|'library'
 const navigation:{id:View;label:string;icon:typeof BookOpen}[]=[
  {id:'home',label:'Panoramica',icon:BookOpen},{id:'quiz',label:'Quiz',icon:Brain},
  {id:'flashcards',label:'Flashcard',icon:Layers3},{id:'semester',label:'Semestre filtro',icon:Target},
- {id:'progress',label:'Progressi',icon:BarChart3},{id:'experiences',label:'Esperienze d’esame',icon:GraduationCap},
+ {id:'progress',label:'Progressi',icon:BarChart3},{id:'library',label:'Raccolte e calendario',icon:FolderPlus},{id:'experiences',label:'Esperienze d’esame',icon:GraduationCap},
  {id:'leaderboard',label:'Classifica',icon:Trophy},{id:'calculator',label:'Calcolatrice media',icon:Calculator},
  {id:'account',label:'Account',icon:UserRound}
 ]
@@ -41,6 +43,16 @@ export default function StudyApp(){
  const [busy,setBusy]=useState(false)
  const [wallet,setWallet]=useState<any>(null)
  const [history,setHistory]=useState<HistoryItem[]>([])
+ const [weakTopics,setWeakTopics]=useState<any[]>([])
+ const [savedQuestions,setSavedQuestions]=useState<Question[]>([])
+ const [studyCollections,setStudyCollections]=useState<StudyCollection[]>([])
+ const [studyExams,setStudyExams]=useState<StudyExam[]>([])
+ const [dailyGoal,setDailyGoal]=useState(20)
+ const [studyDataReady,setStudyDataReady]=useState(false)
+ const [collectionName,setCollectionName]=useState('')
+ const [examName,setExamName]=useState('')
+ const [examDate,setExamDate]=useState('')
+ const [examNote,setExamNote]=useState('')
  const [streak,setStreak]=useState<any>({current_streak:0,longest_streak:0})
  const [attemptId,setAttemptId]=useState('')
  const [questions,setQuestions]=useState<Question[]>([])
@@ -110,6 +122,34 @@ export default function StudyApp(){
   }).catch(()=>{})
   return()=>{active=false}
  },[user?.id])
+
+ useEffect(()=>{
+  if(!supabase||!user){setStudyDataReady(false);return}
+  let active=true
+  setStudyDataReady(false)
+  supabase.from('user_study_data').select('data').eq('user_id',user.id).maybeSingle().then(({data,error})=>{
+   if(!active)return
+   if(error){notify('Sincronizzazione dei materiali personali non disponibile.');setStudyDataReady(true);return}
+   const cloud=data?.data||{}
+   setSavedQuestions(Array.isArray(cloud.savedQuestions)?cloud.savedQuestions:[])
+   setStudyCollections(Array.isArray(cloud.studyCollections)?cloud.studyCollections:[])
+   setStudyExams(Array.isArray(cloud.studyExams)?cloud.studyExams:[])
+   if(Number.isFinite(Number(cloud.dailyGoal)))setDailyGoal(Math.max(1,Math.min(100,Number(cloud.dailyGoal))))
+   setStudyDataReady(true)
+  }).catch(()=>{if(active){notify('Errore durante il caricamento dei materiali personali.');setStudyDataReady(true)}})
+  return()=>{active=false}
+ },[user?.id])
+
+ useEffect(()=>{
+  if(!supabase||!user||!studyDataReady)return
+  const payload={savedQuestions,studyCollections,studyExams,dailyGoal}
+  const timer=window.setTimeout(()=>{
+   supabase.from('user_study_data').upsert({user_id:user.id,data:payload},{onConflict:'user_id'}).then(({error})=>{
+    if(error)notify('Non è riuscita la sincronizzazione dei materiali sul cloud.')
+   })
+  },700)
+  return()=>window.clearTimeout(timer)
+ },[savedQuestions,studyCollections,studyExams,dailyGoal,user?.id,studyDataReady])
 
  useEffect(()=>{
   if(view!=='quiz'||!attemptId)return
