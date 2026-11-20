@@ -3,12 +3,12 @@ import StudyApp from './StudyApp'
 import { supabase } from './lib/supabase'
 import { ArrowRight, BookOpen, Brain, GraduationCap, Layers3 } from 'lucide-react'
 
-function PublicHome() {
+function platformUrl() {\n const params = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '')\n params.set('app', '1')\n return '/?' + params.toString()\n}\n\nfunction PublicHome() {
  useEffect(() => {
   let active = true
   if (!supabase) return
   supabase.auth.getSession().then(({ data }) => {
-   if (active && data.session) window.location.replace('/app/' + window.location.search)
+   if (active && data.session) window.location.replace(platformUrl())
   }).catch(() => {})
   const { data } = supabase.auth.onAuthStateChange((_event, session) => {
    if (active && session) window.location.replace('/app/' + window.location.search)
@@ -16,7 +16,7 @@ function PublicHome() {
   return () => { active = false; data.subscription.unsubscribe() }
  }, [])
  return <div className="public-site">
-  <header className="public-header"><a className="public-brand" href="/"><span className="public-mark">S<span>.</span></span>SMLQUIZ <b>PRO</b></a><nav><a href="/come-funziona/">Come funziona</a><a href="/materie/">Materie</a><a href="/guide/">Guide di studio</a></nav><a className="public-login" href={'/app/'+(typeof window !== 'undefined' ? window.location.search : '')}>Entra nella piattaforma <ArrowRight size={15}/></a></header>
+  <header className="public-header"><a className="public-brand" href="/"><span className="public-mark">S<span>.</span></span>SMLQUIZ <b>PRO</b></a><nav><a href="/come-funziona/">Come funziona</a><a href="/materie/">Materie</a><a href="/guide/">Guide di studio</a></nav><a className="public-login" href={platformUrl()}>Entra nella piattaforma <ArrowRight size={15}/></a></header>
   <main>
    <section className="public-hero"><div><div className="public-eyebrow">IL TUO SPAZIO PER LO STUDIO UNIVERSITARIO</div><h1>Preparati agli esami.<br/><em>Con metodo, non a caso.</em></h1><p>SMLQUIZ Pro riunisce strumenti di esercitazione, ripasso e organizzazione dello studio. Scegli la materia, individua ciò che devi migliorare e trasforma ogni sessione in un passo concreto verso l'esame.</p><div className="public-actions"><a className="public-primary" href={'/app/'+(typeof window !== 'undefined' ? window.location.search : '')}>Inizia a studiare <ArrowRight size={17}/></a><a href="/come-funziona/">Scopri come funziona</a></div><div className="public-proof"><span>✓ Percorsi per materia</span><span>✓ Ripasso attivo</span><span>✓ Feedback ragionato</span></div></div><div className="public-art"><div className="public-art-book"><BookOpen size={56}/><b>STUDY<br/>SMARTER</b></div><span className="art-label label-a">Allenamento mirato</span><span className="art-label label-b">Obiettivi chiari</span></div></section>
    <section className="public-intro"><div><small>UN METODO PIÙ CHIARO</small><h2>Non solo domande.<br/>Un percorso per imparare.</h2></div><p>Un quiz può misurare una risposta. Un buon percorso di studio ti aiuta a capire perché hai sbagliato, cosa ripassare e quale argomento affrontare dopo. Per questo SMLQUIZ Pro mette in relazione esercitazioni, spiegazioni e strumenti di ripasso.</p></section>
@@ -48,6 +48,6 @@ export default function App() {
    window.removeEventListener('popstate', scrollToPageTop)
   }
  }, [])
- if (typeof window !== 'undefined' && window.location.pathname.startsWith('/app')) return <StudyApp/>
+ if (typeof window !== 'undefined' && (window.location.pathname.startsWith('/app') || new URLSearchParams(window.location.search).get('app') === '1')) return <StudyApp/>
  return <PublicHome/>
 }
