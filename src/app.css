@@ -492,3 +492,13 @@ body:has(.app-shell) #sml-global-back,body:has(.auth-screen) #sml-global-back{di
   .topbar:has(.home-public-nav) .home-public-nav::-webkit-scrollbar{display:none}
   .topbar:has(.home-public-nav) .home-public-nav a{font-size:10px;padding:5px 0;white-space:nowrap}
 }
+
+
+/* Immediate visual verdict on each answer in the final quiz review */
+.review-card-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:9px}
+.review-verdict{width:36px;height:36px;flex:0 0 36px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid currentColor}
+.review-verdict.is-correct{color:#22c985;background:rgba(34,201,133,.13);box-shadow:0 0 0 3px rgba(34,201,133,.07)}
+.review-verdict.is-wrong{color:#ff626b;background:rgba(255,98,107,.12);box-shadow:0 0 0 3px rgba(255,98,107,.06)}
+.review-card-correct{border-color:rgba(34,201,133,.26)}
+.review-card-wrong{border-color:rgba(255,98,107,.23)}
+.review-card-heading small{margin:0}
