@@ -36,7 +36,7 @@ export default {
       if (length > 140000) return json({ error: "Richiesta troppo grande." }, 413, origin);
       const authorization = request.headers.get("Authorization") || "";
       if (!authorization.startsWith("Bearer ")) return json({ error: "Accesso richiesto. Accedi al tuo account." }, 401, origin);
-      const authCheck = await fetch(env.SUPABASE_URL.replace(/\\/$/, "") + "/auth/v1/user", {
+      const authCheck = await fetch(env.SUPABASE_URL.replace(/\/$/, "") + "/auth/v1/user", {
         headers: { "Authorization": authorization, "apikey": env.SUPABASE_ANON_KEY }
       });
       if (!authCheck.ok) return json({ error: "Sessione non valida. Accedi nuovamente." }, 401, origin);
@@ -53,10 +53,7 @@ export default {
         mappa: "Trasforma il materiale in una mappa concettuale gerarchica in Markdown, in italiano. Usa ESCLUSIVAMENTE una struttura di titoli (#, ##, ###) e punti elenco (-), con un solo concetto principale al livello #, concetti secondari ## e dettagli ### o elenchi. Niente introduzione o conclusione in prosa. Mantieni le relazioni concettuali e non inventare informazioni.",
         quiz: "Crea 10 domande universitarie a scelta multipla basate esclusivamente sul materiale. Ogni domanda deve avere quattro opzioni A-D, una sola corretta. Dopo le domande inserisci una sezione Soluzioni con risposta corretta e breve spiegazione. Usa Markdown e non introdurre argomenti esterni."
       };
-      const prompt = instructions[tipo] + "
-
-MATERIALE DA ELABORARE:
-" + testoInput;
+      const prompt = instructions[tipo] + String.fromCharCode(10, 10) + "MATERIALE DA ELABORARE:" + String.fromCharCode(10) + testoInput;
       const upstream = await fetch("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-goog-api-key": env.GEMINI_API_KEY },
