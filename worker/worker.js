@@ -10,7 +10,7 @@ function corsHeaders(origin) {
   return {
     "Access-Control-Allow-Origin": ALLOWED_ORIGINS.has(origin) ? origin : "https://smlquiz.it",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Vary": "Origin"
   };
 }
@@ -29,12 +29,12 @@ export default {
     }
     if (origin && !ALLOWED_ORIGINS.has(origin)) return json({ error: "Origine non autorizzata." }, 403, origin);
     if (request.method !== "POST") return json({ error: "Metodo non consentito." }, 405, origin);
-    if (!env.GEMINI_API_KEY) return json({ error: "Servizio AI non configurato." }, 503, origin);
+    if (!env.GEMINI_API_KEY || !env.SUPABASE_URL || !env.SUPABASE_ANON_KEY) return json({ error: "Servizio AI non configurato." }, 503, origin);
 
     try {
       const length = Number(request.headers.get("Content-Length") || 0);
       if (length > 140000) return json({ error: "Richiesta troppo grande." }, 413, origin);
-      const body = await request.json();
+      const authorization = request.headers.get("Authorization") || "";\n      if (!authorization.startsWith("Bearer ")) return json({ error: "Accesso richiesto. Accedi al tuo account." }, 401, origin);\n      const authCheck = await fetch(env.SUPABASE_URL.replace(/\\/$/, "") + "/auth/v1/user", {\n        headers: { "Authorization": authorization, "apikey": env.SUPABASE_ANON_KEY }\n      });\n      if (!authCheck.ok) return json({ error: "Sessione non valida. Accedi nuovamente." }, 401, origin);\n\n      const body = await request.json();
       const testoInput = typeof body.testoInput === "string" ? body.testoInput.trim() : "";
       const tipo = body.tipo;
       if (!MODES.has(tipo)) return json({ error: "Tipo di elaborazione non valido." }, 400, origin);
