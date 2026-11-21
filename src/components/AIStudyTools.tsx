@@ -5,7 +5,6 @@ import { Transformer } from 'markmap-lib'
 import { Markmap } from 'markmap-view'
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist'
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
-import 'markmap-view/dist/style.css'
 import { supabase } from '../lib/supabase'
 import { FileText, GitBranch, LoaderCircle, Pause, Sparkles, Upload, Volume2 } from 'lucide-react'
 
