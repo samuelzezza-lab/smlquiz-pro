@@ -4,9 +4,12 @@ import DOMPurify from 'dompurify'
 import { Transformer } from 'markmap-lib'
 import { Markmap } from 'markmap-view'
 import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist'
+import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
+import 'markmap-view/dist/style.css'
+import { supabase } from '../lib/supabase'
 import { ArrowLeft, FileText, GitBranch, Headphones, LoaderCircle, Pause, Play, Sparkles, Upload, Volume2 } from 'lucide-react'
 
-GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString()
+GlobalWorkerOptions.workerSrc = pdfWorker
 
 type Mode = 'riassunto' | 'mappa' | 'quiz'
 const MAX_TEXT = 30_000
@@ -112,9 +115,12 @@ export default function AIStudyTools() {
     setOutput('')
     stopSpeech()
     try {
+      if (!supabase) throw new Error('Accesso non disponibile: verifica la connessione del servizio account.')
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession()
+      if (sessionError || !sessionData.session?.access_token) throw new Error('Accedi nuovamente per utilizzare gli strumenti AI.')
       const response = await fetch(workerUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + sessionData.session.access_token },
         body: JSON.stringify({ testoInput: source.slice(0, MAX_TEXT), tipo: mode }),
       })
       const payload = await response.json().catch(() => ({}))
