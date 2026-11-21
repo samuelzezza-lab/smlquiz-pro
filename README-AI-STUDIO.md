@@ -8,13 +8,13 @@
 - Il Worker richiede una sessione Supabase valida prima di chiamare Gemini.
 
 ## 1. Configurare Cloudflare Worker
-1. Apri Cloudflare Dashboard → Workers & Pages → Create → Worker.
-2. Crea il Worker usando i file in `worker/`; il file principale è `worker/worker.js` e il nome suggerito è `smlquiz-ai`.
-3. Nelle impostazioni del Worker aggiungi questi secrets/variabili:
+1. Apri Cloudflare Dashboard → Workers & Pages → Create application → Create Worker → Start with Hello World.
+2. Dai al Worker il nome `smlquiz-ai`, apri Edit code e sostituisci tutto il codice di esempio con il contenuto completo del file `worker/worker.js` presente in questo repository; quindi salva e fai Deploy.
+3. Apri il Worker → Settings → Variables and Secrets → Add. Crea i seguenti valori (usa il tipo Secret quando indicato):
    - `GEMINI_API_KEY`: chiave creata in Google AI Studio (Secret).
    - `SUPABASE_URL`: URL del progetto Supabase già usato da SMLQuiz.
    - `SUPABASE_ANON_KEY`: chiave publishable/anon già usata dal frontend.
-4. Pubblica il Worker e copia il suo URL HTTPS, ad esempio `https://smlquiz-ai.<account>.workers.dev`.
+4. Se hai già pubblicato il Worker, copia il suo URL HTTPS dalla pagina Overview, ad esempio `https://smlquiz-ai.<account>.workers.dev`.
 5. Il Worker accetta richieste soltanto da `https://smlquiz.it`, `https://www.smlquiz.it` e localhost per sviluppo. Non mettere mai la chiave Gemini in GitHub o nelle variabili `VITE_*`.
 
 ### Deploy con Wrangler (alternativa)
