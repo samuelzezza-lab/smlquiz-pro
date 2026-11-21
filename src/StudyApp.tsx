@@ -278,9 +278,12 @@ export default function StudyApp(){
  useEffect(()=>{
   if(!supabase||!user)return
   let active=true
-  supabase.from('universities').select('id,name,city').order('name').then(({data,error})=>{
-   if(active&&!error)setUniversities((data||[]) as {id:string;name:string;city:string}[])
-  }).catch(()=>{})
+  void (async()=>{
+   try{
+    const {data,error}=await supabase.from('universities').select('id,name,city').order('name')
+    if(active&&!error)setUniversities((data||[]) as {id:string;name:string;city:string}[])
+   }catch{}
+  })()
   return()=>{active=false}
  },[user?.id])
 
