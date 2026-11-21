@@ -7,7 +7,7 @@ import { getDocument, GlobalWorkerOptions } from 'pdfjs-dist'
 import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.mjs?url'
 import 'markmap-view/dist/style.css'
 import { supabase } from '../lib/supabase'
-import { ArrowLeft, FileText, GitBranch, Headphones, LoaderCircle, Pause, Play, Sparkles, Upload, Volume2 } from 'lucide-react'
+import { FileText, GitBranch, LoaderCircle, Pause, Sparkles, Upload, Volume2 } from 'lucide-react'
 
 GlobalWorkerOptions.workerSrc = pdfWorker
 
