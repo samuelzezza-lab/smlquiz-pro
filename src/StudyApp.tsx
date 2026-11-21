@@ -126,7 +126,8 @@ export default function StudyApp(){
   if(!supabase){setCatalogLoading(false);setNotice('Collegamento al database non disponibile.');return}
   let active=true
   const cached=(()=>{try{return JSON.parse(localStorage.getItem('smlquiz.catalog.v1')||'null')}catch{return null}})()
-  if(Array.isArray(cached?.faculties)&&Array.isArray(cached?.subjects)){
+  const hasUsableCache=Array.isArray(cached?.faculties)&&cached.faculties.length>0&&Array.isArray(cached?.subjects)&&cached.subjects.length>0
+  if(hasUsableCache){
    setFaculties(cached.faculties);setSubjects(cached.subjects);setCatalogLoading(false)
    const med=cached.faculties.find((f:Faculty)=>f.nome==='Medicina e Chirurgia')
    if(med)setFacultyId(med.id)
@@ -136,7 +137,7 @@ export default function StudyApp(){
    supabase.from('materie').select('id,nome,traduzioni,facolta_id,anno_corso,corso_di_laurea').order('nome')
   ]).then(([f,s])=>{
    if(!active)return
-   if(f.error||s.error){setNotice('Non è stato possibile caricare il catalogo. Riprova tra poco.');setCatalogLoading(false);return}
+   if(f.error||s.error){setNotice(hasUsableCache?'Connessione temporaneamente non disponibile: sto usando il catalogo salvato.':'Non è stato possibile caricare il catalogo. Riprova tra poco.');setCatalogLoading(false);return}
    const fs=(f.data||[]) as Faculty[],ss=(s.data||[]) as Subject[]
    setFaculties(fs);setSubjects(ss);setCatalogLoading(false)
    try{localStorage.setItem('smlquiz.catalog.v1',JSON.stringify({faculties:fs,subjects:ss,savedAt:Date.now()}))}catch{}
@@ -148,7 +149,7 @@ export default function StudyApp(){
    const linkedFaculty=fs.find(x=>x.id===(linkedSubject?.facolta_id||requestedFaculty))
    if(linkedFaculty){setFacultyId(linkedFaculty.id);setYear(linkedSubject?.anno_corso?String(linkedSubject.anno_corso):(requestedYear||'1'));if(linkedSubject){setSubjectId(linkedSubject.id);setConfirmed(true)}}
    else {const med=fs.find(x=>x.nome==='Medicina e Chirurgia')||fs[0];if(med){setFacultyId(med.id);const first=ss.find(x=>x.facolta_id===med.id&&x.anno_corso===1);if(first){setSubjectId(first.id);setConfirmed(true)}}}
-  }).catch(()=>{if(active){setCatalogLoading(false);setNotice('Errore di connessione durante il caricamento del catalogo.')}})
+  }).catch(()=>{if(active){setCatalogLoading(false);setNotice(hasUsableCache?'Connessione temporaneamente non disponibile: sto usando il catalogo salvato.':'Errore di connessione durante il caricamento del catalogo.')}})
   return()=>{active=false}
  },[])
 
