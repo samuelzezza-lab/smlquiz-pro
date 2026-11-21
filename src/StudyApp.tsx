@@ -201,15 +201,19 @@ export default function StudyApp(){
  useEffect(()=>{
   if(!supabase||!user)return
   let active=true
-  Promise.all([
-   supabase.functions.invoke('quiz-api',{body:{action:'wallet'}}),
-   supabase.functions.invoke('quiz-api',{body:{action:'history'}}),
-   supabase.functions.invoke('quiz-api',{body:{action:'streaks'}})
-  ]).then(([w,h,s])=>{
-   if(!active)return
-   if(!w.error&&w.data)setWallet(w.data)
-   if(!h.error&&Array.isArray(h.data?.attempts))setHistory(h.data.attempts)
-   if(!s.error&&s.data?.streak){setStreak(s.data.streak);setAchievements(Array.isArray(s.data.achievements)?s.data.achievements:[])}
+  supabase.functions.invoke('quiz-api',{body:{action:'bootstrap'}}).then(({data,error})=>{
+   if(!active||error||!data)return
+   if(data.wallet)setWallet(data.wallet)
+   if(Array.isArray(data.history?.attempts))setHistory(data.history.attempts)
+   if(data.streaks?.streak){setStreak(data.streaks.streak);setAchievements(Array.isArray(data.streaks.achievements)?data.streaks.achievements:[])}
+   if(Array.isArray(data.weakTopics?.topics))setWeakTopics(data.weakTopics.topics)
+   if(data.profile?.profile){
+    const p=data.profile.profile
+    setDisplayName(p.display_name||'')
+    setLeaderboardOptIn(Boolean(p.leaderboard_opt_in))
+    setUniversityId(p.university_id||'')
+    setUniversityCourse(p.university_course||'')
+   }
   }).catch(()=>{})
   return()=>{active=false}
  },[user?.id])
@@ -274,28 +278,8 @@ export default function StudyApp(){
  useEffect(()=>{
   if(!supabase||!user)return
   let active=true
-  supabase.functions.invoke('quiz-api',{body:{action:'weak-topics'}}).then(({data,error})=>{
-   if(active&&!error&&Array.isArray(data?.topics))setWeakTopics(data.topics)
-  }).catch(()=>{})
-  return()=>{active=false}
- },[user?.id])
-
- useEffect(()=>{
-  if(!supabase||!user)return
-  let active=true
-  Promise.all([
-   supabase.functions.invoke('quiz-api',{body:{action:'profile',mode:'read'}}),
-   supabase.from('universities').select('id,name,city').order('name')
-  ]).then(([profileResult,universityResult])=>{
-   if(!active)return
-   if(!profileResult.error&&profileResult.data?.profile){
-    const p=profileResult.data.profile
-    setDisplayName(p.display_name||'')
-    setLeaderboardOptIn(Boolean(p.leaderboard_opt_in))
-    setUniversityId(p.university_id||'')
-    setUniversityCourse(p.university_course||'')
-   }
-   if(!universityResult.error)setUniversities((universityResult.data||[]) as {id:string;name:string;city:string}[])
+  supabase.from('universities').select('id,name,city').order('name').then(({data,error})=>{
+   if(active&&!error)setUniversities((data||[]) as {id:string;name:string;city:string}[])
   }).catch(()=>{})
   return()=>{active=false}
  },[user?.id])
